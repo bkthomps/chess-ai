@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f5f3ec">
+  <title>Chess</title>
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/style.css">
+  <script defer src="/app.js"></script>
+</head>
+<body>
+  <div id="menu-background" class="menu-background" aria-hidden="true"></div>
+  <main>
+    <section id="menu" class="menu" aria-labelledby="menu-title">
+      <h1 id="menu-title">Chess</h1>
+      <form id="setup-form">
+        <fieldset>
+          <legend>Players</legend>
+          <div class="options">
+            <label><input type="radio" name="mode" value="one" checked> One player</label>
+            <label><input type="radio" name="mode" value="two"> Two players</label>
+          </div>
+        </fieldset>
+        <div id="solo-options">
+          <fieldset>
+            <legend>Your color</legend>
+            <div class="options">
+              <label><input type="radio" name="color" value="white" checked> White</label>
+              <label><input type="radio" name="color" value="black"> Black</label>
+            </div>
+          </fieldset>
+        </div>
+        <div class="time-control-row">
+          <label for="time-control">Time control</label>
+          <select id="time-control" name="time-control">
+            <option value="unlimited">Unlimited</option>
+            <option value="1">1 min</option>
+            <option value="2+1">2 min + 1 sec</option>
+            <option value="5" selected>5 min</option>
+            <option value="10+5">10 min + 5 sec</option>
+            <option value="custom">Custom</option>
+          </select>
+        </div>
+        <div id="custom-time" class="custom-time" hidden>
+          <label for="base-minutes">Base minutes<input id="base-minutes" name="minutes" type="number" min="0.1" max="180" step="0.1" value="5" required disabled></label>
+          <label for="increment-seconds">Increment (sec)<input id="increment-seconds" name="increment" type="number" min="0" max="600" step="1" value="0" required disabled></label>
+        </div>
+        <div id="unlimited-thinking" hidden>
+          <div class="time-control-row">
+            <label for="thinking-time">Thinking time</label>
+            <select id="thinking-time" name="thinking-time" disabled>
+              <option value="1">1 second</option>
+              <option value="2">2 seconds</option>
+              <option value="3" selected>3 seconds</option>
+              <option value="4">4 seconds</option>
+              <option value="5">5 seconds</option>
+              <option value="custom">Custom</option>
+            </select>
+          </div>
+          <div id="custom-thinking" class="custom-time custom-thinking" hidden>
+            <label for="thinking-seconds">Seconds per move<input id="thinking-seconds" name="thinking-seconds" type="number" min="0.000000001" step="any" value="3" required disabled></label>
+          </div>
+        </div>
+        <button id="start" class="primary" type="submit">Start game</button>
+        <button id="resume" class="text-button" type="button" hidden>Resume game</button>
+      </form>
+    </section>
+
+    <section id="game" class="game-layout" aria-label="Chess game" hidden>
+      <div class="game-heading">
+        <div>
+          <div id="status" role="status" aria-live="polite"></div>
+          <p id="game-mode" class="game-meta"></p>
+        </div>
+        <button id="menu-button" class="text-button" type="button">New game</button>
+      </div>
+      <div class="play-area">
+        <div id="game-clocks" class="clocks" aria-label="Game clocks">
+          <div id="clock-white" class="clock"><span id="white-clock-label">White</span><time id="white-time" aria-label="White time remaining">5:00</time></div>
+          <div id="clock-black" class="clock"><span id="black-clock-label">Black</span><time id="black-time" aria-label="Black time remaining">5:00</time></div>
+        </div>
+        <div id="board" class="board" role="group" aria-label="Chessboard. Use arrow keys to navigate and Enter to select a piece or destination."></div>
+        <div class="game-tools" aria-label="Game controls">
+          <button id="undo" type="button">Undo</button>
+          <button id="flip" type="button">Flip board</button>
+          <button id="sound-toggle" type="button" aria-label="Game sounds" aria-pressed="true" title="Mute game sounds">Sound</button>
+          <button id="resign" type="button">Resign</button>
+        </div>
+      </div>
+      <aside class="game-sidebar" aria-label="Moves and engine">
+        <section id="move-history" class="side-panel" aria-labelledby="moves-title">
+          <h2 id="moves-title">Moves</h2>
+          <p id="history-empty" class="empty-state">No moves yet.</p>
+          <div id="history-scroll">
+            <table id="history-table" hidden>
+              <thead><tr><th scope="col">#</th><th scope="col">White</th><th scope="col">Black</th></tr></thead>
+              <tbody id="history"></tbody>
+            </table>
+          </div>
+        </section>
+        <details id="engine-info" class="side-panel">
+          <summary>Inside the engine</summary>
+          <p class="engine-description">Minimax with alpha-beta pruning and Zobrist hashing.</p>
+          <p id="engine-status" class="empty-state"></p>
+          <dl id="engine-stats" hidden>
+            <div><dt>Time allowance</dt><dd id="engine-budget"></dd></div>
+            <div><dt>Depth reached</dt><dd id="engine-depth"></dd></div>
+            <div><dt>Nodes searched</dt><dd id="engine-nodes"></dd></div>
+            <div><dt>Cache hits</dt><dd id="engine-hits"></dd></div>
+            <div><dt>Search time</dt><dd id="engine-time"></dd></div>
+          </dl>
+        </details>
+      </aside>
+    </section>
+    <div id="error" class="error" role="alert" hidden><span id="error-text"></span><button id="dismiss-error" class="text-button" aria-label="Dismiss error">×</button></div>
+    <noscript><p>Enable JavaScript to play.</p></noscript>
+  </main>
+  <dialog id="promotion-dialog" aria-labelledby="promotion-title">
+    <h2 id="promotion-title">Promote pawn</h2>
+    <div id="promotion-choices"></div>
+    <form method="dialog"><button class="text-button">Cancel</button></form>
+  </dialog>
+  <dialog id="resign-dialog" aria-labelledby="resign-title">
+    <h2 id="resign-title">Resign this game?</h2>
+    <p id="resign-detail"></p>
+    <div class="dialog-actions">
+      <form method="dialog"><button>Keep playing</button></form>
+      <button id="confirm-resign" class="primary" type="button">Resign</button>
+    </div>
+  </dialog>
+</body>
+</html>

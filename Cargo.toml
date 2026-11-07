@@ -1,0 +1,13 @@
+[package]
+name = "chess-ai"
+version = "0.1.0"
+edition = "2021"
+rust-version = "1.70"
+description = "Dependency-free chess with a local graphical UI and an alpha-beta engine"
+license = "MIT"
+
+[dependencies]
+
+[profile.release]
+lto = true
+codegen-units = 1

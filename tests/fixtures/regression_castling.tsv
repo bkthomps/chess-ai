@@ -1,0 +1,24 @@
+# castle count	in check	FEN
+1	false	r3k2r/3N4/8/8/8/8/8/4K3 b kq - 0 1
+2	false	r3k2r/8/8/8/8/8/8/R3K2R w KQkq - 0 1
+0	true	r3k2r/4q3/8/8/8/8/8/R3K2R w KQkq - 0 1
+1	false	r3k2r/5q2/8/8/8/8/8/R3K2R w KQkq - 0 1
+1	false	r3k2r/6q1/8/8/8/8/8/R3K2R w KQkq - 0 1
+1	false	r3k2r/3q4/8/8/8/8/8/R3K2R w KQkq - 0 1
+1	false	r3k2r/2q5/8/8/8/8/8/R3K2R w KQkq - 0 1
+0	false	r3k2r/2q3r1/8/8/8/8/8/R3K2R w KQkq - 0 1
+2	false	4k3/r7/8/8/8/8/8/R3K2R w KQ - 0 1
+2	false	4k3/1r6/8/8/8/8/8/R3K2R w KQ - 0 1
+2	false	4k3/7r/8/8/8/8/8/R3K2R w KQ - 0 1
+0	false	4k3/8/8/8/8/8/8/R3K2R w - - 0 1
+2	false	r3k2r/8/8/8/8/8/8/4K3 b kq - 0 1
+0	true	r3k2r/8/8/8/8/8/4R3/4K3 b kq - 0 1
+1	false	r3k2r/8/8/8/8/8/5R2/4K3 b kq - 0 1
+1	false	r3k2r/8/8/8/8/8/6R1/4K3 b kq - 0 1
+1	false	r3k2r/8/8/8/8/8/3R4/4K3 b kq - 0 1
+1	false	r3k2r/8/8/8/8/8/2R5/4K3 b kq - 0 1
+0	false	r3k2r/8/8/8/8/8/2R3R1/4K3 b kq - 0 1
+2	false	r3k2r/8/8/8/8/8/R7/4K3 b kq - 0 1
+2	false	r3k2r/8/8/8/8/8/7R/4K3 b kq - 0 1
+2	false	r3k2r/8/8/8/8/8/R6R/4K3 b kq - 0 1
+0	false	r3k2r/8/8/8/8/8/8/4K3 b - - 0 1
