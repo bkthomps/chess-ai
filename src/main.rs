@@ -30,7 +30,7 @@ struct App {
     revision: u64,
     thinking: bool,
     pondering: bool,
-    worker: Option<Sender<EngineJob>>,
+    worker: Option<Sender<EngineTask>>,
     cache_epoch: u64,
     stats: Option<SearchResult>,
     analysis: Option<Analysis>,
@@ -64,6 +64,12 @@ impl App {
         self.thinking = false;
         self.pondering = false;
     }
+    fn release_cache(&mut self) {
+        self.cancel_search();
+        if let Some(worker) = &self.worker {
+            let _ = worker.send(EngineTask::Release);
+        }
+    }
     fn tick(&mut self, now: Instant) {
         if self.unlimited {
             return;
@@ -75,7 +81,7 @@ impl App {
                     flagged,
                 ));
                 self.revision += 1;
-                self.cancel_search();
+                self.release_cache();
             }
         }
     }
@@ -94,6 +100,7 @@ impl App {
         }
         if self.game.result().is_some() {
             self.clock.stop(now);
+            self.release_cache();
         }
         self.clock_history.push(self.clock.remaining);
         self.revision += 1;
@@ -108,6 +115,11 @@ impl Drop for App {
 }
 
 type Shared = Arc<Mutex<App>>;
+
+enum EngineTask {
+    Analyze(EngineJob),
+    Release,
+}
 
 struct Analysis {
     progress: Arc<Mutex<SearchProgress>>,
@@ -215,17 +227,25 @@ fn queue_engine(app: &Shared, a: &mut App) {
         revision: a.revision,
     });
     if a.worker.is_none() {
-        let (sender, receiver) = mpsc::channel::<EngineJob>();
+        let (sender, receiver) = mpsc::channel::<EngineTask>();
         // The worker must not keep an abandoned game (or a test) alive.
         let weak = Arc::downgrade(app);
         thread::spawn(move || {
             let mut cache = SearchCache::default();
             let mut epoch = None;
-            while let Ok(mut job) = receiver.recv() {
+            while let Ok(mut task) = receiver.recv() {
                 // Rapid new games/undos may enqueue several obsolete positions.
                 for newer in receiver.try_iter() {
-                    job = newer;
+                    task = newer;
                 }
+                let job = match task {
+                    EngineTask::Analyze(job) => job,
+                    EngineTask::Release => {
+                        cache = SearchCache::default();
+                        epoch = None;
+                        continue;
+                    }
+                };
                 if job.cancel.load(Ordering::Relaxed) {
                     continue;
                 }
@@ -291,7 +311,7 @@ fn queue_engine(app: &Shared, a: &mut App) {
     a.worker
         .as_ref()
         .unwrap()
-        .send(EngineJob {
+        .send(EngineTask::Analyze(EngineJob {
             position,
             keys: a.game.keys.clone(),
             budget,
@@ -300,7 +320,7 @@ fn queue_engine(app: &Shared, a: &mut App) {
             revision: a.revision,
             cache_epoch: a.cache_epoch,
             progress,
-        })
+        }))
         .unwrap();
 }
 
@@ -462,6 +482,9 @@ fn serve_connection(
                 } else {
                     Some(color == "white")
                 };
+                if a.human.is_none() {
+                    a.release_cache();
+                }
                 let now = Instant::now();
                 a.clock = Clock::new(
                     Duration::from_secs(base),
@@ -553,7 +576,7 @@ fn serve_connection(
                     if loser { "Black" } else { "White" }
                 ));
                 a.revision += 1;
-                a.cancel_search();
+                a.release_cache();
                 a.clock.stop(Instant::now());
             }
             Ok(state_json(&mut a))
@@ -829,6 +852,35 @@ mod tests {
             assert_eq!(a.game.moves.len(), 1);
             assert!(!a.game.position().white);
         }
+    }
+
+    #[test]
+    fn undo_after_resignation_restarts_pondering_with_a_fresh_cache() {
+        let app = shared();
+        new_game(&app, "one", "white");
+        play(&app, "e2e4");
+        wait_for_engine(&app);
+        request(&app, "POST", "/api/resign", 200);
+        assert!(!app.lock().unwrap().pondering);
+        request(&app, "POST", "/api/undo", 200);
+        let a = app.lock().unwrap();
+        assert!(a.game.moves.is_empty());
+        assert!(a.adjudicated.is_none());
+        assert!(a.pondering);
+        assert!(!a.cancel.load(Ordering::Relaxed));
+    }
+
+    #[test]
+    fn a_new_game_can_replace_a_pending_cache_release() {
+        let app = shared();
+        new_game(&app, "one", "black");
+        request(&app, "POST", "/api/resign", 200);
+        new_game(&app, "one", "black");
+        wait_for_engine(&app);
+        let a = app.lock().unwrap();
+        assert_eq!(a.game.moves.len(), 1);
+        assert!(a.adjudicated.is_none());
+        assert!(a.pondering);
     }
     #[test]
     fn pondering_preserves_the_human_turn_and_computer_clock() {

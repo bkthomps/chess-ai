@@ -435,45 +435,44 @@ impl Position {
         self.hash
     }
     pub fn insufficient_material(&self) -> bool {
-        let pcs: Vec<_> = self
-            .squares
-            .iter()
-            .enumerate()
-            .filter(|(_, p)| **p != 0 && p.abs() != 6)
-            .collect();
-        if pcs.is_empty() {
-            return true;
+        let (mut knights, mut bishops, mut bishop_colors) = (0, 0, 0u8);
+        for (square, piece) in self.squares.iter().enumerate() {
+            match piece.abs() {
+                0 | KING => {}
+                KNIGHT => knights += 1,
+                BISHOP => {
+                    bishops += 1;
+                    bishop_colors |= 1 << ((square % 8 + square / 8) % 2);
+                }
+                _ => return false,
+            }
         }
-        if pcs.len() == 1 {
-            return pcs[0].1.abs() == 3 || pcs[0].1.abs() == 2;
-        }
-        pcs.iter().all(|(_, p)| p.abs() == 3)
-            && pcs
-                .iter()
-                .all(|(s, _)| (s % 8 + s / 8) % 2 == (pcs[0].0 % 8 + pcs[0].0 / 8) % 2)
+        knights + bishops <= 1 || knights == 0 && bishop_colors.count_ones() <= 1
     }
     /// Whether this side lacks mating material, allowing help from opposing
     /// pieces. This is asymmetric: a bare king cannot win on time even against
     /// a queen. Two knights can mate with cooperation and are not insufficient.
     /// Like the normal material draw check, this does not solve fortresses.
     pub fn insufficient_mating_material(&self, white: bool) -> bool {
-        let own: Vec<_> = self
-            .squares
-            .iter()
-            .enumerate()
-            .filter(|(_, p)| **p != 0 && (**p > 0) == white && p.abs() != KING)
-            .collect();
-        if own.is_empty() {
+        let (mut own_count, mut knights, mut color) = (0, 0, 0);
+        for (square, &piece) in self.squares.iter().enumerate() {
+            if piece == 0 || (piece > 0) != white || piece.abs() == KING {
+                continue;
+            }
+            own_count += 1;
+            if own_count == 1 {
+                color = (square % 8 + square / 8) % 2;
+            }
+            if [PAWN, ROOK, QUEEN].contains(&piece.abs()) {
+                return false;
+            }
+            knights += usize::from(piece.abs() == KNIGHT);
+        }
+        if own_count == 0 {
             return true;
         }
-        if own
-            .iter()
-            .any(|(_, p)| [PAWN, ROOK, QUEEN].contains(&p.abs()))
-        {
-            return false;
-        }
-        if own.iter().any(|(_, p)| p.abs() == KNIGHT) {
-            if own.len() != 1 {
+        if knights > 0 {
+            if own_count != 1 {
                 return false;
             }
             // A lone knight can mate if an enemy pawn/minor/rook helps block
@@ -484,7 +483,6 @@ impl Position {
         }
         // Only bishops remain. Opposite-color bishops, or any pawn/knight,
         // can make a cooperative mating position possible.
-        let color = (own[0].0 % 8 + own[0].0 / 8) % 2;
         !self.squares.iter().enumerate().any(|(s, p)| {
             [PAWN, KNIGHT].contains(&p.abs()) || p.abs() == BISHOP && (s % 8 + s / 8) % 2 != color
         })

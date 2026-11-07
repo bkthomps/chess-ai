@@ -608,15 +608,47 @@ fn value(piece: i8) -> i32 {
     }
 }
 fn order(p: &Position, moves: &mut [Move], best: Option<Move>) {
-    moves.sort_by_cached_key(|&m| {
-        -(if Some(m) == best { 100_000 } else { 0 }
+    let priority = |m: Move| {
+        (if Some(m) == best { 100_000 } else { 0 }
             + if p.is_capture(m) {
                 10_000 + value(p.squares[m.to]).max(100) * 10 - value(p.squares[m.from])
             } else {
                 0
             }
             + value(m.promotion))
-    });
+    };
+    // Most moves share the quiet-move priority. Stable insertion keeps their
+    // existing order without allocating cached keys or a sorting buffer.
+    let mut priorities = [0; 64];
+    if moves.len() <= priorities.len() {
+        for (score, &m) in priorities.iter_mut().zip(moves.iter()) {
+            *score = priority(m);
+        }
+        for index in 1..moves.len() {
+            let m = moves[index];
+            let score = priorities[index];
+            let mut target = index;
+            while target > 0 && priorities[target - 1] < score {
+                moves[target] = moves[target - 1];
+                priorities[target] = priorities[target - 1];
+                target -= 1;
+            }
+            moves[target] = m;
+            priorities[target] = score;
+        }
+        return;
+    }
+    // Unusually large move lists still have no size limit or heap scratch.
+    for index in 1..moves.len() {
+        let m = moves[index];
+        let score = priority(m);
+        let mut target = index;
+        while target > 0 && priority(moves[target - 1]) < score {
+            moves[target] = moves[target - 1];
+            target -= 1;
+        }
+        moves[target] = m;
+    }
 }
 fn evaluate(p: &Position) -> i32 {
     let endgame = p
@@ -678,6 +710,38 @@ mod tests {
     use super::*;
     use crate::game::Game;
     use std::{sync::mpsc, thread};
+
+    #[test]
+    fn move_order_keeps_cache_capture_promotion_priority_and_quiet_ties() {
+        let p = Position::from_fen("4k3/P7/8/3p4/4P3/8/8/4K3 w - - 0 1").unwrap();
+        let legal = p.legal_moves();
+        let mut moves: Vec<_> = [
+            "e4e5", "e1d1", "a7a8n", "e4d5", "a7a8q", "e1f1", "a7a8r", "a7a8b",
+        ]
+        .iter()
+        .map(|uci| *legal.iter().find(|m| m.to_string() == *uci).unwrap())
+        .collect();
+        let cached = moves[5];
+        order(&p, &mut moves, Some(cached));
+        assert_eq!(
+            moves.iter().map(ToString::to_string).collect::<Vec<_>>(),
+            ["e1f1", "e4d5", "a7a8q", "a7a8r", "a7a8b", "a7a8n", "e4e5", "e1d1"]
+        );
+    }
+
+    #[test]
+    fn move_order_preserves_lists_larger_than_the_stack_buffer() {
+        let p = Position::from_fen("k7/8/8/8/1Q1Q1Q1Q/Q1Q1Q1Q1/8/7K w - - 0 1").unwrap();
+        let mut moves = p.legal_moves();
+        assert!(moves.len() > 64);
+        let mut original = moves.clone();
+        let cached = *moves.last().unwrap();
+        order(&p, &mut moves, Some(cached));
+        assert_eq!(moves[0], cached);
+        moves.sort_unstable_by_key(|m| (m.from, m.to, m.promotion));
+        original.sort_unstable_by_key(|m| (m.from, m.to, m.promotion));
+        assert_eq!(moves, original);
+    }
 
     #[test]
     fn compact_cache_layout() {
