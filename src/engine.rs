@@ -1,27 +1,194 @@
 //! Iterative-deepening negamax (minimax), alpha-beta pruning, and a Zobrist
 //! transposition table. Search runs on a worker thread, away from the UI.
 use crate::chess::{random_key, Move, Position};
-use std::collections::HashMap;
 use std::sync::{
     atomic::{AtomicBool, Ordering},
-    Arc,
+    Arc, Mutex,
 };
 use std::time::{Duration, Instant};
 
 const MATE: i32 = 30_000;
 const INF: i32 = 32_000;
-#[derive(Clone, Copy)]
+const TABLE_SIZE: usize = 2_000_000;
+const BUCKET_SIZE: usize = 4;
+const GENERATION_MASK: u8 = 63;
+const STALE_AGE: u8 = 32;
+const SWEEP_PARTS: usize = 16;
+const EXACT_BONUS: i16 = 2;
+const AGE_PENALTY: i16 = 4;
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+#[repr(u8)]
 enum Bound {
     Exact,
     Lower,
     Upper,
 }
-#[derive(Clone, Copy)]
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
 struct Entry {
     depth: u8,
     score: i32,
     bound: Bound,
     best: Option<Move>,
+}
+
+/// Six bytes: a lossless score, packed move, depth, and a byte containing
+/// two bound/occupancy bits plus a six-bit search generation.
+#[derive(Clone, Copy, Default)]
+#[repr(C)]
+struct PackedEntry {
+    score: i16,
+    best: u16,
+    depth: u8,
+    flags: u8,
+}
+impl PackedEntry {
+    fn pack(entry: Entry, generation: u8) -> Option<Self> {
+        let best = entry.best.map_or(0, |m| {
+            debug_assert!(m.from < 64 && m.to < 64 && m.from != m.to);
+            debug_assert!([0, 2, 3, 4, 5].contains(&m.promotion));
+            // Six bits per square and three for promotion. Zero represents
+            // no move: a1-a1 without promotion is never a legal chess move.
+            m.from as u16 | (m.to as u16) << 6 | (m.promotion as u16) << 12
+        });
+        Some(Self {
+            // Unusual supplied positions can evaluate outside i16. Skip
+            // caching those scores instead of truncating or clamping them.
+            score: i16::try_from(entry.score).ok()?,
+            best,
+            depth: entry.depth,
+            flags: (entry.bound as u8 + 1) | (generation & GENERATION_MASK) << 2,
+        })
+    }
+    fn unpack(self) -> Option<Entry> {
+        let bound = match self.flags & 3 {
+            1 => Bound::Exact,
+            2 => Bound::Lower,
+            3 => Bound::Upper,
+            _ => return None,
+        };
+        Some(Entry {
+            score: i32::from(self.score),
+            best: (self.best != 0).then_some(Move {
+                from: (self.best & 63) as usize,
+                to: ((self.best >> 6) & 63) as usize,
+                promotion: ((self.best >> 12) & 7) as i8,
+            }),
+            depth: self.depth,
+            bound,
+        })
+    }
+    fn is_empty(self) -> bool {
+        self.flags & 3 == 0
+    }
+    fn refresh(&mut self, generation: u8) {
+        self.flags = self.flags & 3 | (generation & GENERATION_MASK) << 2;
+    }
+    fn age(self, generation: u8) -> u8 {
+        generation.wrapping_sub(self.flags >> 2) & GENERATION_MASK
+    }
+    fn retention(self, generation: u8) -> i16 {
+        let exact_bonus = if self.flags & 3 == 1 { EXACT_BONUS } else { 0 };
+        i16::from(self.depth) + exact_bonus - i16::from(self.age(generation)) * AGE_PENALTY
+    }
+    fn improves(self, old: Self) -> bool {
+        if self.depth != old.depth {
+            return self.depth > old.depth;
+        }
+        match (self.flags & 3, old.flags & 3) {
+            (1, _) => true,
+            (_, 1) => false,
+            (2, 2) => self.score >= old.score,
+            (3, 3) => self.score <= old.score,
+            _ => true,
+        }
+    }
+}
+
+/// Parallel arrays avoid padding each six-byte entry to an eight-byte key's
+/// alignment. Each logical slot uses 8 + 6 bytes with aligned key accesses.
+#[derive(Default)]
+struct Table {
+    keys: Vec<u64>,
+    entries: Vec<PackedEntry>,
+    generation: u8,
+}
+impl Table {
+    fn resize(&mut self, len: usize) {
+        assert!(len > 0 && len % BUCKET_SIZE == 0);
+        self.keys.resize(len, 0);
+        self.entries.resize(len, PackedEntry::default());
+    }
+    fn next_generation(&mut self) {
+        self.generation = self.generation.wrapping_add(1) & GENERATION_MASK;
+        // Visit every entry within 16 searches and retire unused entries at
+        // age 32. This prevents a 64-generation wrap from making them young.
+        let part = self.generation as usize % SWEEP_PARTS;
+        let start = self.entries.len() * part / SWEEP_PARTS;
+        let end = self.entries.len() * (part + 1) / SWEEP_PARTS;
+        for entry in &mut self.entries[start..end] {
+            if !entry.is_empty() && entry.age(self.generation) >= STALE_AGE {
+                *entry = PackedEntry::default();
+            }
+        }
+    }
+    fn bucket_start(&self, key: u64) -> usize {
+        key as usize % (self.keys.len() / BUCKET_SIZE) * BUCKET_SIZE
+    }
+    fn probe(&mut self, key: u64) -> Option<Entry> {
+        let start = self.bucket_start(key);
+        for index in start..start + BUCKET_SIZE {
+            if self.keys[index] == key {
+                if let Some(entry) = self.entries[index].unpack() {
+                    self.entries[index].refresh(self.generation);
+                    return Some(entry);
+                }
+            }
+        }
+        None
+    }
+    fn store(&mut self, key: u64, entry: Entry) {
+        let Some(packed) = PackedEntry::pack(entry, self.generation) else {
+            return;
+        };
+        let start = self.bucket_start(key);
+        let mut empty = None;
+        let mut victim = start;
+        let mut weakest = i16::MAX;
+        for index in start..start + BUCKET_SIZE {
+            let old = self.entries[index];
+            if old.is_empty() {
+                empty.get_or_insert(index);
+            } else if self.keys[index] == key {
+                // Keep deeper results for this exact position, and prefer an
+                // exact score (or a tighter bound) when depth is equal.
+                if packed.improves(old) {
+                    self.entries[index] = packed;
+                }
+                self.entries[index].refresh(self.generation);
+                return;
+            } else {
+                let retention = old.retention(self.generation);
+                if retention < weakest {
+                    victim = index;
+                    weakest = retention;
+                }
+            }
+        }
+        let index = match empty {
+            Some(index) => index,
+            None if packed.retention(self.generation) >= weakest => victim,
+            None => return,
+        };
+        self.keys[index] = key;
+        self.entries[index] = packed;
+    }
+}
+
+/// Owned by the search worker and retained across pondering and computer moves.
+/// Four-way buckets retain deeper, exact, and recently used results.
+#[derive(Default)]
+pub struct SearchCache {
+    table: Table,
 }
 #[derive(Clone, Debug)]
 pub struct SearchResult {
@@ -32,14 +199,28 @@ pub struct SearchResult {
     pub hits: u64,
     pub elapsed: Duration,
 }
-struct Search {
-    table: HashMap<u64, Entry>,
+/// A coherent snapshot of one search, including an unfinished depth.
+#[derive(Clone, Copy, Debug, Default)]
+pub struct SearchProgress {
+    pub depth: u8,
+    pub searching_depth: u8,
+    pub nodes: u64,
+    pub hits: u64,
+    pub elapsed: Duration,
+}
+struct Search<'a> {
+    table: &'a mut Table,
     keys: Vec<u64>,
-    deadline: Instant,
+    deadline: Option<Instant>,
     nodes: u64,
     hits: u64,
     aborted: bool,
     cancelled: Arc<AtomicBool>,
+    progress: Option<&'a Mutex<SearchProgress>>,
+    started: Instant,
+    published: Instant,
+    depth: u8,
+    searching_depth: u8,
 }
 
 /// Allocate roughly 1/36 of the clock in the opening, increasing toward 1/18
@@ -74,66 +255,185 @@ pub fn search_with_cancel(
     budget: Duration,
     cancelled: Arc<AtomicBool>,
 ) -> SearchResult {
-    let start = Instant::now();
-    let mut s = Search {
-        table: HashMap::new(),
-        keys: history.to_vec(),
-        deadline: start + budget,
-        nodes: 0,
-        hits: 0,
-        aborted: false,
-        cancelled,
-    };
-    if s.keys.last() != Some(&position.repetition_key()) {
-        s.keys.push(position.repetition_key());
-    }
-    let legal = position.legal_moves();
-    let mut result = SearchResult {
-        best: legal.first().copied(),
-        score: 0,
-        depth: 0,
-        nodes: 0,
-        hits: 0,
-        elapsed: Duration::ZERO,
-    };
-    if legal.is_empty() || s.is_draw(position) {
-        result.best = None;
-        return result;
-    }
-    if legal.len() == 1 {
-        // There is no decision to search: save the clock for later moves.
-        result.elapsed = start.elapsed();
-        return result;
-    }
-    let mut depth = 1;
-    while Instant::now() < s.deadline && !s.cancelled.load(Ordering::Relaxed) {
-        let (score, best) = s.negamax(position, depth, 0, -INF, INF);
-        if s.aborted {
-            break;
-        }
-        result.best = best;
-        result.score = score;
-        result.depth = depth;
-        if score.abs() > MATE - 256 {
-            break;
-        }
-        // There is no depth target. Saturation protects the representation;
-        // the deadline still controls termination at its maximum value.
-        depth = depth.saturating_add(1);
-    }
-    result.nodes = s.nodes;
-    result.hits = s.hits;
-    result.elapsed = start.elapsed();
-    result
+    SearchCache::default().search(position, history, budget, cancelled)
 }
 
-impl Search {
+impl SearchCache {
+    pub fn search(
+        &mut self,
+        position: &Position,
+        history: &[u64],
+        budget: Duration,
+        cancelled: Arc<AtomicBool>,
+    ) -> SearchResult {
+        self.run(position, history, Some(budget), cancelled, None)
+    }
+
+    pub fn search_with_progress(
+        &mut self,
+        position: &Position,
+        history: &[u64],
+        budget: Duration,
+        cancelled: Arc<AtomicBool>,
+        progress: &Mutex<SearchProgress>,
+    ) -> SearchResult {
+        self.run(position, history, Some(budget), cancelled, Some(progress))
+    }
+
+    /// Explore the human's possible moves and the computer's replies until
+    /// cancelled. The caller must never play the resulting human-side move.
+    pub fn ponder(
+        &mut self,
+        position: &Position,
+        history: &[u64],
+        cancelled: Arc<AtomicBool>,
+    ) -> SearchResult {
+        self.run(position, history, None, cancelled, None)
+    }
+
+    pub fn ponder_with_progress(
+        &mut self,
+        position: &Position,
+        history: &[u64],
+        cancelled: Arc<AtomicBool>,
+        progress: &Mutex<SearchProgress>,
+    ) -> SearchResult {
+        self.run(position, history, None, cancelled, Some(progress))
+    }
+
+    fn run(
+        &mut self,
+        position: &Position,
+        history: &[u64],
+        budget: Option<Duration>,
+        cancelled: Arc<AtomicBool>,
+        progress: Option<&Mutex<SearchProgress>>,
+    ) -> SearchResult {
+        let start = Instant::now();
+        self.table.resize(TABLE_SIZE);
+        self.table.next_generation();
+        let mut s = Search {
+            table: &mut self.table,
+            keys: history.to_vec(),
+            deadline: budget.map(|budget| start + budget),
+            nodes: 0,
+            hits: 0,
+            aborted: false,
+            cancelled,
+            progress,
+            started: start,
+            published: start,
+            depth: 0,
+            searching_depth: 0,
+        };
+        if s.keys.last() != Some(&position.repetition_key()) {
+            s.keys.push(position.repetition_key());
+        }
+        let legal = position.legal_moves();
+        let mut result = SearchResult {
+            best: legal.first().copied(),
+            score: 0,
+            depth: 0,
+            nodes: 0,
+            hits: 0,
+            elapsed: Duration::ZERO,
+        };
+        if legal.is_empty() || s.is_draw(position) {
+            result.best = None;
+            s.publish(true);
+            return result;
+        }
+        if legal.len() == 1 && budget.is_some() {
+            // There is no decision to search: save the clock for later moves.
+            result.elapsed = start.elapsed();
+            s.publish(true);
+            return result;
+        }
+        // A pondered child can now be the root. Only exact scores establish a
+        // completed depth; bounds still help move ordering and alpha-beta cutoffs.
+        if let Some(entry) = s.probe(s.table_key(position)) {
+            if matches!(entry.bound, Bound::Exact) && entry.best.is_some_and(|m| legal.contains(&m))
+            {
+                result.best = entry.best;
+                result.score = from_table(entry.score, 0);
+                result.depth = entry.depth;
+                s.hits += 1;
+            }
+        }
+        s.depth = result.depth;
+        s.searching_depth = result.depth.saturating_add(1);
+        s.publish(true);
+        let mut depth = result.depth.saturating_add(1);
+        while !s.cancelled.load(Ordering::Relaxed)
+            && s.deadline
+                .map_or(true, |deadline| Instant::now() < deadline)
+        {
+            if result.score.abs() > MATE - 256 {
+                break;
+            }
+            s.searching_depth = depth;
+            let (score, best) = s.negamax(position, depth, 0, -INF, INF);
+            if s.aborted {
+                break;
+            }
+            result.best = best;
+            result.score = score;
+            result.depth = depth;
+            s.depth = depth;
+            s.searching_depth = depth.saturating_add(1);
+            s.publish(false);
+            if score.abs() > MATE - 256 {
+                break;
+            }
+            // There is no depth target. Saturation protects the representation;
+            // the deadline still controls termination at its maximum value.
+            depth = depth.saturating_add(1);
+        }
+        result.nodes = s.nodes;
+        result.hits = s.hits;
+        result.elapsed = start.elapsed();
+        s.searching_depth = 0;
+        s.publish(true);
+        result
+    }
+}
+
+impl Search<'_> {
+    fn publish(&mut self, force: bool) {
+        if let Some(progress) = self.progress {
+            let now = Instant::now();
+            if force || now.duration_since(self.published) >= Duration::from_millis(250) {
+                // Never wait for a reader, and never take the game's mutex.
+                if let Ok(mut snapshot) = progress.try_lock() {
+                    *snapshot = SearchProgress {
+                        depth: self.depth,
+                        searching_depth: self.searching_depth,
+                        nodes: self.nodes,
+                        hits: self.hits,
+                        elapsed: now.duration_since(self.started),
+                    };
+                    self.published = now;
+                }
+            }
+        }
+    }
+    fn probe(&mut self, key: u64) -> Option<Entry> {
+        self.table.probe(key)
+    }
     fn expired(&mut self) -> bool {
         self.nodes += 1;
         if self.cancelled.load(Ordering::Relaxed)
-            || (self.nodes == 1 || self.nodes & 31 == 0) && Instant::now() >= self.deadline
+            || (self.nodes == 1 || self.nodes & 31 == 0)
+                && self
+                    .deadline
+                    .is_some_and(|deadline| Instant::now() >= deadline)
         {
             self.aborted = true;
+        }
+        // Only sample publication time every 1024 nodes. Most nodes perform
+        // no extra clock read, synchronization, or allocation for live status.
+        if self.nodes & 1023 == 0 {
+            self.publish(false);
         }
         self.aborted
     }
@@ -181,7 +481,7 @@ impl Search {
         }
         let key = self.table_key(p);
         let original_alpha = alpha;
-        let entry = self.table.get(&key).copied();
+        let entry = self.probe(key);
         if let Some(e) = entry {
             if e.depth >= depth {
                 let score = from_table(e.score, ply);
@@ -214,23 +514,21 @@ impl Search {
                 break;
             }
         }
-        if self.table.len() < 200_000 {
-            self.table.insert(
-                key,
-                Entry {
-                    depth,
-                    score: to_table(value, ply),
-                    best,
-                    bound: if value <= original_alpha {
-                        Bound::Upper
-                    } else if value >= beta {
-                        Bound::Lower
-                    } else {
-                        Bound::Exact
-                    },
+        self.table.store(
+            key,
+            Entry {
+                depth,
+                score: to_table(value, ply),
+                best,
+                bound: if value <= original_alpha {
+                    Bound::Upper
+                } else if value >= beta {
+                    Bound::Lower
+                } else {
+                    Bound::Exact
                 },
-            );
-        }
+            },
+        );
         (value, best)
     }
     fn quiescence(
@@ -372,5 +670,372 @@ fn evaluate(p: &Position) -> i32 {
         score
     } else {
         -score
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::game::Game;
+    use std::{sync::mpsc, thread};
+
+    #[test]
+    fn compact_cache_layout() {
+        use std::mem::size_of;
+        assert_eq!(size_of::<PackedEntry>(), 6);
+        let mut table = Table::default();
+        table.resize(TABLE_SIZE);
+        let bytes = table.keys.capacity() * size_of::<u64>()
+            + table.entries.capacity() * size_of::<PackedEntry>();
+        assert_eq!(TABLE_SIZE, 2_000_000);
+        assert_eq!(bytes, 28_000_000);
+        println!("Cache: 14 bytes per slot, {bytes} allocated bytes for {TABLE_SIZE} slots");
+    }
+
+    #[test]
+    fn packed_entries_round_trip_moves_promotions_scores_and_bounds() {
+        // Include every square pair and promotion, so the move encoding cannot
+        // alias an ordinary move, promotion, or the no-move sentinel.
+        for from in 0..64 {
+            for to in 0..64 {
+                if from == to {
+                    continue;
+                }
+                for promotion in [0, 2, 3, 4, 5] {
+                    let entry = Entry {
+                        depth: u8::MAX,
+                        score: -MATE,
+                        bound: Bound::Exact,
+                        best: Some(Move {
+                            from,
+                            to,
+                            promotion,
+                        }),
+                    };
+                    for generation in [0, 1, GENERATION_MASK] {
+                        let packed = PackedEntry::pack(entry, generation).unwrap();
+                        assert_eq!(packed.unpack(), Some(entry));
+                        assert_eq!(packed.age(generation), 0);
+                    }
+                }
+            }
+        }
+        for score in [i16::MIN as i32, -MATE, -1, 0, 1, MATE, i16::MAX as i32] {
+            for bound in [Bound::Exact, Bound::Lower, Bound::Upper] {
+                for depth in [0, 1, u8::MAX] {
+                    let entry = Entry {
+                        depth,
+                        score,
+                        bound,
+                        best: None,
+                    };
+                    assert_eq!(
+                        PackedEntry::pack(entry, GENERATION_MASK).unwrap().unpack(),
+                        Some(entry)
+                    );
+                }
+            }
+        }
+    }
+
+    #[test]
+    fn compact_table_checks_full_keys_and_never_truncates_scores() {
+        let mut table = Table::default();
+        table.resize(BUCKET_SIZE);
+        assert_eq!(table.probe(0), None);
+        let entry = Entry {
+            depth: 7,
+            score: MATE - 5,
+            bound: Bound::Lower,
+            best: Some(Move {
+                from: 0,
+                to: 63,
+                promotion: 0,
+            }),
+        };
+        table.store(0, entry);
+        assert_eq!(table.probe(0), Some(entry));
+        // These keys collide and share their low bits. Match all 64 key bits.
+        let other_key = 1 << 63;
+        assert_eq!(table.probe(other_key), None);
+        table.store(other_key, entry);
+        assert_eq!(table.probe(0), Some(entry));
+        assert_eq!(table.probe(other_key), Some(entry));
+        for score in [i32::MIN, i16::MIN as i32 - 1, i16::MAX as i32 + 1, i32::MAX] {
+            table.store(1, Entry { score, ..entry });
+            assert_eq!(table.probe(1), None);
+            assert_eq!(table.probe(0), Some(entry));
+            assert_eq!(table.probe(other_key), Some(entry));
+        }
+    }
+
+    fn cache_entry(depth: u8, bound: Bound) -> Entry {
+        Entry {
+            depth,
+            bound,
+            score: 17,
+            best: Some(Move {
+                from: 1,
+                to: 18,
+                promotion: 0,
+            }),
+        }
+    }
+
+    #[test]
+    fn colliding_positions_share_a_bucket_and_keep_the_strongest_results() {
+        let mut table = Table::default();
+        table.resize(BUCKET_SIZE);
+        for (key, entry) in [
+            (0, cache_entry(8, Bound::Exact)),
+            (1, cache_entry(8, Bound::Lower)),
+            (2, cache_entry(9, Bound::Upper)),
+            (3, cache_entry(10, Bound::Exact)),
+        ] {
+            table.store(key, entry);
+        }
+        // No same-generation shallow result can displace these deep entries.
+        table.store(4, cache_entry(1, Bound::Exact));
+        assert_eq!(table.probe(4), None);
+        for key in 0..4 {
+            assert!(table.probe(key).is_some());
+        }
+        // At equal depth an exact score wins over a bound. The other exact
+        // depth-eight result survives even though it was inserted first.
+        table.store(4, cache_entry(8, Bound::Exact));
+        assert_eq!(table.probe(1), None);
+        assert_eq!(table.probe(0), Some(cache_entry(8, Bound::Exact)));
+        assert_eq!(table.probe(4), Some(cache_entry(8, Bound::Exact)));
+        assert!(table.probe(2).is_some());
+        assert!(table.probe(3).is_some());
+    }
+
+    #[test]
+    fn same_position_keeps_deep_exact_results_and_tightens_bounds() {
+        let mut table = Table::default();
+        table.resize(BUCKET_SIZE);
+        let deep = cache_entry(8, Bound::Exact);
+        table.store(0, deep);
+        table.store(0, cache_entry(7, Bound::Exact));
+        table.store(0, cache_entry(8, Bound::Lower));
+        assert_eq!(table.probe(0), Some(deep));
+        let deeper_bound = cache_entry(9, Bound::Lower);
+        table.store(0, deeper_bound);
+        table.store(
+            0,
+            Entry {
+                score: 16,
+                ..deeper_bound
+            },
+        );
+        assert_eq!(table.probe(0), Some(deeper_bound));
+        table.store(
+            0,
+            Entry {
+                score: 18,
+                ..deeper_bound
+            },
+        );
+        assert_eq!(table.probe(0).unwrap().score, 18);
+        let exact = cache_entry(9, Bound::Exact);
+        table.store(0, exact);
+        assert_eq!(table.probe(0), Some(exact));
+        let upper = cache_entry(9, Bound::Upper);
+        table.store(1, upper);
+        table.store(1, Entry { score: 18, ..upper });
+        assert_eq!(table.probe(1), Some(upper));
+        table.store(1, Entry { score: 16, ..upper });
+        assert_eq!(table.probe(1).unwrap().score, 16);
+        // A hole before an existing position must not create duplicate entries.
+        table.entries[0] = PackedEntry::default();
+        table.store(1, cache_entry(10, Bound::Exact));
+        assert_eq!(table.probe(1), Some(cache_entry(10, Bound::Exact)));
+        assert_eq!(
+            (0..BUCKET_SIZE)
+                .filter(|&i| table.keys[i] == 1 && !table.entries[i].is_empty())
+                .count(),
+            1
+        );
+    }
+
+    #[test]
+    fn eviction_ages_unused_entries_and_refreshes_looked_up_positions() {
+        let mut table = Table::default();
+        table.resize(BUCKET_SIZE);
+        for key in 0..4 {
+            table.store(key, cache_entry(10, Bound::Exact));
+        }
+        for _ in 0..3 {
+            table.next_generation();
+        }
+        assert!(table.probe(0).is_some());
+        table.store(4, cache_entry(5, Bound::Lower));
+        assert!(table.probe(0).is_some());
+        assert_eq!(table.probe(1), None);
+        assert_eq!(table.probe(4), Some(cache_entry(5, Bound::Lower)));
+    }
+
+    #[test]
+    fn generation_wrap_cannot_resurrect_unused_entries() {
+        let mut table = Table::default();
+        table.resize(BUCKET_SIZE);
+        table.store(0, cache_entry(255, Bound::Exact));
+        table.store(1, cache_entry(9, Bound::Exact));
+        for _ in 0..128 {
+            table.next_generation();
+            assert_eq!(table.probe(1), Some(cache_entry(9, Bound::Exact)));
+        }
+        assert_eq!(table.probe(0), None);
+        assert_eq!(table.generation, 0);
+    }
+
+    // Complete a known depth deterministically, using the same search as ponder.
+    fn at_depth(
+        cache: &mut SearchCache,
+        p: &Position,
+        keys: &[u64],
+        depth: u8,
+        ply: i32,
+    ) -> (i32, Option<Move>) {
+        cache.table.resize(TABLE_SIZE);
+        cache.table.next_generation();
+        Search {
+            table: &mut cache.table,
+            keys: keys.to_vec(),
+            deadline: None,
+            nodes: 0,
+            hits: 0,
+            aborted: false,
+            cancelled: Arc::new(AtomicBool::new(false)),
+            progress: None,
+            started: Instant::now(),
+            published: Instant::now(),
+            depth: 0,
+            searching_depth: depth,
+        }
+        .negamax(p, depth, ply, -INF, INF)
+    }
+
+    #[test]
+    fn pondered_reply_is_available_even_without_a_move_budget() {
+        let p = Position::default();
+        let mut cache = SearchCache::default();
+        let (_, human_move) = at_depth(&mut cache, &p, &[p.repetition_key()], 3, 0);
+        let child = p.play(human_move.unwrap());
+        let keys = [p.repetition_key(), child.repetition_key()];
+        let cached = cache.search(&child, &keys, Duration::ZERO, Arc::default());
+        let expected = at_depth(&mut SearchCache::default(), &child, &keys, 2, 0);
+        assert_eq!(cached.depth, 2);
+        assert_eq!(cached.score, expected.0);
+        assert!(child.legal_moves().contains(&cached.best.unwrap()));
+        assert_eq!(cached.hits, 1);
+        assert_eq!(cached.nodes, 0);
+
+        // The cache must not transfer scores into a different repetition context
+        // or fifty-move clock, even though the board is identical.
+        let mut different_clock = child.clone();
+        different_clock.halfmove += 1;
+        let result = cache.search(&different_clock, &keys, Duration::ZERO, Arc::default());
+        assert_eq!(result.depth, 0);
+        assert_eq!(result.hits, 0);
+        // A pawn move resets the history window; use a reversible child instead.
+        let knight = p.play(
+            p.legal_moves()
+                .into_iter()
+                .find(|m| m.to_string() == "g1f3")
+                .unwrap(),
+        );
+        let knight_keys = [p.repetition_key(), knight.repetition_key()];
+        at_depth(&mut cache, &knight, &knight_keys, 2, 0);
+        let result = cache.search(
+            &knight,
+            &[123, knight.repetition_key()],
+            Duration::ZERO,
+            Arc::default(),
+        );
+        assert_eq!(result.depth, 0);
+        assert_eq!(result.hits, 0);
+    }
+
+    #[test]
+    fn cached_mate_distance_is_relative_to_the_new_root() {
+        let mut game = Game::default();
+        for uci in ["f2f3", "e7e5", "g2g4"] {
+            let m = game
+                .position()
+                .legal_moves()
+                .into_iter()
+                .find(|m| m.to_string() == uci)
+                .unwrap();
+            game.play(m).unwrap();
+        }
+        let mut cache = SearchCache::default();
+        let (score, _) = at_depth(&mut cache, game.position(), &game.keys, 1, 3);
+        let result = cache.search(game.position(), &game.keys, Duration::ZERO, Arc::default());
+        assert_eq!(score, MATE - 4);
+        assert_eq!(result.score, MATE - 1);
+        assert_eq!(result.best.unwrap().to_string(), "d8h4");
+    }
+
+    #[test]
+    fn pondering_keeps_searching_until_cancelled() {
+        let p = Position::default();
+        let cancel = Arc::new(AtomicBool::new(false));
+        let worker_cancel = cancel.clone();
+        let (started_tx, started_rx) = mpsc::channel();
+        let (done_tx, done_rx) = mpsc::channel();
+        let worker = thread::spawn(move || {
+            started_tx.send(()).unwrap();
+            let result = SearchCache::default().ponder(&p, &[p.repetition_key()], worker_cancel);
+            done_tx.send(result).unwrap();
+        });
+        started_rx.recv_timeout(Duration::from_secs(2)).unwrap();
+        let before_cancel = done_rx.recv_timeout(Duration::from_millis(30));
+        cancel.store(true, Ordering::Relaxed);
+        let result = done_rx.recv_timeout(Duration::from_secs(2)).unwrap();
+        worker.join().unwrap();
+        assert!(matches!(
+            before_cancel,
+            Err(mpsc::RecvTimeoutError::Timeout)
+        ));
+        assert!(Position::default()
+            .legal_moves()
+            .contains(&result.best.unwrap()));
+    }
+
+    #[test]
+    fn live_progress_advances_during_pondering_and_finishes_coherently() {
+        let progress = Arc::new(Mutex::new(SearchProgress::default()));
+        let cancel = Arc::new(AtomicBool::new(false));
+        let worker_progress = progress.clone();
+        let worker_cancel = cancel.clone();
+        let worker = thread::spawn(move || {
+            let p = Position::default();
+            SearchCache::default().ponder_with_progress(
+                &p,
+                &[p.repetition_key()],
+                worker_cancel,
+                &worker_progress,
+            )
+        });
+        let deadline = Instant::now() + Duration::from_secs(3);
+        let mut snapshots = Vec::new();
+        while Instant::now() < deadline && snapshots.len() < 2 {
+            let snapshot = *progress.lock().unwrap();
+            if snapshot.nodes > snapshots.last().map_or(0, |s: &SearchProgress| s.nodes) {
+                snapshots.push(snapshot);
+            }
+            thread::sleep(Duration::from_millis(5));
+        }
+        cancel.store(true, Ordering::Relaxed);
+        let result = worker.join().unwrap();
+        assert_eq!(snapshots.len(), 2, "No live progress while pondering");
+        assert!(snapshots[1].elapsed > snapshots[0].elapsed);
+        assert!(snapshots[1].searching_depth > snapshots[1].depth);
+        let final_snapshot = *progress.lock().unwrap();
+        assert_eq!(final_snapshot.nodes, result.nodes);
+        assert_eq!(final_snapshot.hits, result.hits);
+        assert_eq!(final_snapshot.depth, result.depth);
+        assert_eq!(final_snapshot.searching_depth, 0);
     }
 }

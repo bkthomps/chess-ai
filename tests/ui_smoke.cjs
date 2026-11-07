@@ -48,16 +48,16 @@ for (const m of html.matchAll(/<[^>]*\bid="([^"]+)"[^>]*>/g)) {
 }
 elements['time-control'].value = '5';
 elements['thinking-time'].value = '3';
-let mode = 'two', color = 'white', server, requests = [], rejectNextMove = false;
+let mode = 'two', color = 'white', server, requests = [], rejectNextMove = false, pollDelay;
 const initial = [4,2,3,5,6,3,2,4,...Array(8).fill(1),...Array(32).fill(0),...Array(8).fill(-1),-4,-2,-3,-5,-6,-3,-2,-4];
 const fresh = (human = null, base = 300, increment = 0) => ({
-  board: [...initial], white: true, human, thinking_seconds: 3, revision: 1, thinking: false, check: false, result: null,
-  legal: [[12,20,0],[12,28,0]], notation: [], last: null, stats: null,
+  board: [...initial], white: true, human, thinking_seconds: 3, revision: 1, thinking: false, pondering: human === true, check: false, result: null,
+  legal: [[12,20,0],[12,28,0]], notation: [], last: null, stats: null, analysis: null,
   clocks: {enabled: true, white_ms: base * 1000, black_ms: base * 1000, running: true, active_white: true, base_seconds: base, increment_seconds: increment}
 });
 server = fresh(); server.clocks.running = false;
 const context = vm.createContext({
-  console, URLSearchParams, Set, AbortSignal, performance, clearTimeout, setTimeout: () => 0, setInterval: () => 0,
+  console, URLSearchParams, Set, AbortSignal, performance, clearTimeout, setTimeout: (fn, delay) => { pollDelay = delay; return 0; }, setInterval: () => 0,
   window: {scrollTo() {}, confirm: () => true, AudioContext: AudioContextMock, localStorage: {getItem: key => storedSounds.get(key) ?? null, setItem: (key, value) => storedSounds.set(key, value)}},
   FormData: class {get(k) {return {mode, color, 'time-control': elements['time-control'].value, minutes: elements['base-minutes'].value, increment: elements['increment-seconds'].value, 'thinking-time': elements['thinking-time'].value, 'thinking-seconds': elements['thinking-seconds'].value}[k];}},
   document: {hidden: false, body: new Element(), getElementById: id => elements[id], createElement: () => new Element(), createDocumentFragment: () => new Element(true), get activeElement() {return focused;}, querySelector: () => ({value: mode}), querySelectorAll: () => [new Element(), new Element()]},
@@ -129,13 +129,45 @@ const clickSquare = s => elements.board.listeners.click({target: elements.board.
   assert.equal(elements['game-mode'].textContent, 'You: Black · 1.5 min + 3 sec');
   assert.equal(elements.status.textContent, 'Computer thinking…'); assert(!elements['engine-info'].open);
   elements['engine-info'].open = true;
-  vm.runInContext('state={...state,thinking:false,white:false,stats:{depth:6,nodes:12345,hits:123,millis:2500,budget_millis:2600}};render()', context);
+  vm.runInContext('state={...state,thinking:false,pondering:true,white:false,stats:{depth:6,nodes:12345,hits:123,millis:2500,budget_millis:2600}};render()', context);
   assert(elements['engine-info'].open); assert(!elements['engine-stats'].hidden);
+  assert.equal(elements.status.textContent, 'Black to move.');
+  assert.equal(elements['engine-status'].textContent, 'Pondering possible replies during your turn.');
+  assert(vm.runInContext('canPlay()', context));
   assert.equal(Number(elements['engine-depth'].textContent), 6);
   assert.equal(elements['engine-nodes'].textContent, (12345).toLocaleString());
   assert.equal(elements['engine-budget'].textContent, '2.60 s'); assert.equal(elements['engine-time'].textContent, '2.50 s');
+  // Live updates arrive without a board revision, including Unlimited pondering.
+  server.thinking = false; server.pondering = true; server.white = false;
+  server.clocks.enabled = false; server.clocks.running = false;
+  server.analysis = {revision: server.revision, active: true, pondering: true, depth: 4, searching_depth: 5, nodes: 1000, hits: 12, millis: 250, budget_millis: null};
+  await vm.runInContext('poll()', context);
+  vm.runInContext('state.legal=[[52,44,0]];selected=52;renderBoard()', context);
+  const selectedButton = elements.board.children.find(e => e.dataset.square === 52);
+  const soundsBeforeLive = audioNotes.length;
+  server.analysis = {...server.analysis, nodes: 5000, hits: 40, millis: 500};
+  await vm.runInContext('poll()', context); await tick();
+  assert.equal(pollDelay, 250);
+  assert.equal(elements['engine-nodes'].textContent, (5000).toLocaleString());
+  assert.equal(elements['engine-hits'].textContent, (40).toLocaleString());
+  assert.equal(elements['engine-time'].textContent, '0.50 s');
+  assert.equal(elements['engine-budget'].textContent, 'Your turn');
+  assert.equal(Number(elements['engine-searching-depth'].textContent), 5);
+  assert.equal(vm.runInContext('selected', context), 52);
+  assert.equal(elements.board.children.find(e => e.dataset.square === 52), selectedButton);
+  assert.equal(audioNotes.length, soundsBeforeLive);
+  server.thinking = true; server.pondering = false;
+  server.analysis = {...server.analysis, pondering: false, nodes: 0, hits: 0, millis: 0, budget_millis: 2600};
+  await vm.runInContext('poll()', context);
+  server.analysis = {...server.analysis, nodes: 2000, millis: 250};
+  await vm.runInContext('poll()', context);
+  assert.equal(elements['engine-status'].textContent, 'Thinking… Live search.');
+  assert.equal(elements['engine-nodes'].textContent, (2000).toLocaleString());
+  assert.equal(elements['engine-budget'].textContent, '2.60 s');
   // Clock-only responses must resynchronize even without a board revision.
-  server.thinking = false; server.white = false; server.clocks.active_white = false; server.clocks.black_ms = 5000;
+  server.thinking = false; server.white = false; server.clocks.enabled = true; server.clocks.running = true;
+  server.clocks.active_white = false; server.clocks.black_ms = 5000;
+  server.analysis = {...server.analysis, active: false, searching_depth: 0};
   await vm.runInContext('poll()', context);
   assert.equal(elements['black-time'].textContent, '5.0'); assert(elements['clock-black'].classes.has('low-time'));
   const before = requests.length;

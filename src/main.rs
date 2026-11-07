@@ -2,7 +2,7 @@
 use chess_ai::{
     chess::{Move, Position},
     clock::Clock,
-    engine::{search_with_cancel, time_budget, SearchResult},
+    engine::{time_budget, SearchCache, SearchProgress, SearchResult},
     game::Game,
 };
 use std::{
@@ -11,6 +11,7 @@ use std::{
     net::{TcpListener, TcpStream},
     sync::{
         atomic::{AtomicBool, Ordering},
+        mpsc::{self, Sender},
         Arc, Mutex,
     },
     thread,
@@ -28,7 +29,11 @@ struct App {
     search_budget: Option<Duration>,
     revision: u64,
     thinking: bool,
+    pondering: bool,
+    worker: Option<Sender<EngineJob>>,
+    cache_epoch: u64,
     stats: Option<SearchResult>,
+    analysis: Option<Analysis>,
     adjudicated: Option<String>,
 }
 impl Default for App {
@@ -44,7 +49,11 @@ impl Default for App {
             search_budget: None,
             revision: 0,
             thinking: false,
+            pondering: false,
+            worker: None,
+            cache_epoch: 0,
             stats: None,
+            analysis: None,
             adjudicated: None,
         }
     }
@@ -53,6 +62,7 @@ impl App {
     fn cancel_search(&mut self) {
         self.cancel.store(true, Ordering::Relaxed);
         self.thinking = false;
+        self.pondering = false;
     }
     fn tick(&mut self, now: Instant) {
         if self.unlimited {
@@ -75,6 +85,7 @@ impl App {
             return Err("The game has ended.".into());
         }
         self.game.play(m)?;
+        self.cancel_search();
         // tick() already ruled out a flag at this timestamp.
         if !self.unlimited {
             self.clock
@@ -90,7 +101,32 @@ impl App {
     }
 }
 
+impl Drop for App {
+    fn drop(&mut self) {
+        self.cancel_search();
+    }
+}
+
 type Shared = Arc<Mutex<App>>;
+
+struct Analysis {
+    progress: Arc<Mutex<SearchProgress>>,
+    budget: Option<Duration>,
+    pondering: bool,
+    revision: u64,
+}
+
+struct EngineJob {
+    position: Position,
+    keys: Vec<u64>,
+    // None means pondering, which uses the human's turn rather than a budget.
+    budget: Option<Duration>,
+    started: Instant,
+    cancel: Arc<AtomicBool>,
+    revision: u64,
+    cache_epoch: u64,
+    progress: Arc<Mutex<SearchProgress>>,
+}
 
 fn main() -> std::io::Result<()> {
     let mut port = 7878u16;
@@ -141,46 +177,131 @@ fn main() -> std::io::Result<()> {
 
 fn start_engine(app: &Shared) {
     let mut a = app.lock().unwrap();
+    queue_engine(app, &mut a);
+}
+
+fn queue_engine(app: &Shared, a: &mut App) {
     let started = Instant::now();
     a.tick(started);
     if a.thinking
+        || a.pondering
         || a.adjudicated.is_some()
         || a.human.is_none()
-        || a.human == Some(a.game.position().white)
         || a.game.result().is_some()
     {
         return;
     }
     let position = a.game.position().clone();
-    let budget = if a.unlimited {
-        a.fixed_thinking
+    let pondering = a.human == Some(position.white);
+    let budget = if pondering {
+        None
+    } else if a.unlimited {
+        Some(a.fixed_thinking)
     } else {
-        time_budget(
+        Some(time_budget(
             &position,
             a.clock.remaining[usize::from(!position.white)],
             a.clock.increment,
-        )
+        ))
     };
     a.cancel = Arc::new(AtomicBool::new(false));
-    let cancel = a.cancel.clone();
-    a.thinking = true;
-    let (keys, revision) = (a.game.keys.clone(), a.revision);
-    let shared = app.clone();
-    thread::spawn(move || {
-        let available = budget.saturating_sub(started.elapsed());
-        let result = search_with_cancel(&position, &keys, available, cancel);
-        let mut a = shared.lock().unwrap();
-        let now = Instant::now();
-        a.tick(now);
-        if a.revision == revision && a.thinking {
-            if let Some(m) = result.best {
-                let _ = a.apply_move(m, now);
-            }
-            a.search_budget = Some(budget);
-            a.stats = Some(result);
-            a.thinking = false;
-        }
+    a.thinking = !pondering;
+    a.pondering = pondering;
+    let progress = Arc::new(Mutex::new(SearchProgress::default()));
+    a.analysis = Some(Analysis {
+        progress: progress.clone(),
+        budget,
+        pondering,
+        revision: a.revision,
     });
+    if a.worker.is_none() {
+        let (sender, receiver) = mpsc::channel::<EngineJob>();
+        // The worker must not keep an abandoned game (or a test) alive.
+        let weak = Arc::downgrade(app);
+        thread::spawn(move || {
+            let mut cache = SearchCache::default();
+            let mut epoch = None;
+            while let Ok(mut job) = receiver.recv() {
+                // Rapid new games/undos may enqueue several obsolete positions.
+                for newer in receiver.try_iter() {
+                    job = newer;
+                }
+                if job.cancel.load(Ordering::Relaxed) {
+                    continue;
+                }
+                if epoch != Some(job.cache_epoch) {
+                    cache = SearchCache::default();
+                    epoch = Some(job.cache_epoch);
+                }
+                let result = match job.budget {
+                    Some(budget) => cache.search_with_progress(
+                        &job.position,
+                        &job.keys,
+                        budget.saturating_sub(job.started.elapsed()),
+                        job.cancel.clone(),
+                        &job.progress,
+                    ),
+                    None => cache.ponder_with_progress(
+                        &job.position,
+                        &job.keys,
+                        job.cancel.clone(),
+                        &job.progress,
+                    ),
+                };
+                // Always leave a final snapshot, even if a reader coincided
+                // with the engine's last nonblocking publication.
+                *job.progress.lock().unwrap() = SearchProgress {
+                    depth: result.depth,
+                    searching_depth: 0,
+                    nodes: result.nodes,
+                    hits: result.hits,
+                    elapsed: result.elapsed,
+                };
+                let Some(shared) = weak.upgrade() else {
+                    break;
+                };
+                {
+                    let mut a = shared.lock().unwrap();
+                    let now = Instant::now();
+                    a.tick(now);
+                    if a.revision != job.revision
+                        || !Arc::ptr_eq(&a.cancel, &job.cancel)
+                        || job.cancel.load(Ordering::Relaxed)
+                    {
+                        continue;
+                    }
+                    a.thinking = false;
+                    a.pondering = false;
+                    if job.budget.is_none() {
+                        // A completed ponder only warms the cache, never plays.
+                        continue;
+                    }
+                    if let Some(m) = result.best {
+                        let _ = a.apply_move(m, now);
+                    }
+                    a.search_budget = job.budget;
+                    a.stats = Some(result);
+                    // Queue pondering before exposing the human's new turn.
+                    queue_engine(&shared, &mut a);
+                }
+            }
+        });
+        a.worker = Some(sender);
+    }
+    a.worker
+        .as_ref()
+        .unwrap()
+        .send(EngineJob {
+            position,
+            keys: a.game.keys.clone(),
+            budget,
+            started,
+            cancel: a.cancel.clone(),
+            revision: a.revision,
+            cache_epoch: a.cache_epoch,
+            progress,
+        })
+        .unwrap();
 }
 
 fn serve(mut stream: TcpStream, app: Shared) -> std::io::Result<()> {
@@ -332,6 +453,7 @@ fn serve_connection(
             {
                 let mut a = app.lock().unwrap();
                 a.cancel_search();
+                a.cache_epoch += 1;
                 a.game = Game::default();
                 a.unlimited = unlimited;
                 a.fixed_thinking = fixed_thinking;
@@ -354,6 +476,7 @@ fn serve_connection(
                 a.revision += 1;
                 a.thinking = false;
                 a.stats = None;
+                a.analysis = None;
                 a.adjudicated = None;
             }
             start_engine(&app);
@@ -405,6 +528,7 @@ fn serve_connection(
                     }
                     a.revision += 1;
                     a.cancel_search();
+                    a.cache_epoch += 1;
                     let snapshot = *a.clock_history.last().unwrap();
                     let white = a.game.position().white;
                     if !a.unlimited {
@@ -412,6 +536,7 @@ fn serve_connection(
                     }
                     a.search_budget = None;
                     a.stats = None;
+                    a.analysis = None;
                     a.adjudicated = None;
                 }
             }
@@ -520,8 +645,15 @@ fn state_json(a: &mut App) -> String {
     let clocks = format!("{{\"enabled\":{},\"white_ms\":{},\"black_ms\":{},\"running\":{},\"active_white\":{},\"base_seconds\":{},\"increment_seconds\":{}}}",
         !a.unlimited, a.clock.remaining[0].as_millis(), a.clock.remaining[1].as_millis(), a.clock.active.is_some(),
         a.clock.active.map_or("null", |c| if c { "true" } else { "false" }), a.clock.base.as_secs(), a.clock.increment.as_secs());
-    format!("{{\"board\":[{board}],\"white\":{},\"human\":{},\"clocks\":{clocks},\"thinking_seconds\":{},\"revision\":{},\"thinking\":{},\"check\":{},\"result\":{},\"legal\":[{moves}],\"notation\":[{notation}],\"last\":{last},\"stats\":{stats}}}",
-        p.white, a.human.map_or("null", |c| if c { "true" } else { "false" }), a.fixed_thinking.as_secs_f64(), a.revision, a.thinking, p.in_check(p.white), result.map_or("null".into(), |r| quote(&r)))
+    let analysis = a.analysis.as_ref().map_or("null".into(), |analysis| {
+        let s = *analysis.progress.lock().unwrap();
+        let active = (a.thinking || a.pondering) && analysis.revision == a.revision;
+        let budget = analysis.budget.map_or("null".into(), |b| b.as_millis().to_string());
+        format!("{{\"revision\":{},\"pondering\":{},\"active\":{},\"depth\":{},\"searching_depth\":{},\"nodes\":{},\"hits\":{},\"millis\":{},\"budget_millis\":{budget}}}",
+            analysis.revision, analysis.pondering, active, s.depth, s.searching_depth, s.nodes, s.hits, s.elapsed.as_millis())
+    });
+    format!("{{\"board\":[{board}],\"white\":{},\"human\":{},\"clocks\":{clocks},\"thinking_seconds\":{},\"revision\":{},\"thinking\":{},\"pondering\":{},\"check\":{},\"result\":{},\"legal\":[{moves}],\"notation\":[{notation}],\"last\":{last},\"stats\":{stats},\"analysis\":{analysis}}}",
+        p.white, a.human.map_or("null", |c| if c { "true" } else { "false" }), a.fixed_thinking.as_secs_f64(), a.revision, a.thinking, a.pondering, p.in_check(p.white), result.map_or("null".into(), |r| quote(&r)))
 }
 fn respond(stream: &mut impl Write, status: u16, kind: &str, body: &[u8]) -> std::io::Result<()> {
     let reason = match status {
@@ -697,6 +829,123 @@ mod tests {
             assert_eq!(a.game.moves.len(), 1);
             assert!(!a.game.position().white);
         }
+    }
+    #[test]
+    fn pondering_preserves_the_human_turn_and_computer_clock() {
+        let app = shared();
+        new_game(&app, "one", "white");
+        let (cancel, black_time, revision) = {
+            let a = app.lock().unwrap();
+            assert!(a.pondering);
+            assert!(!a.thinking);
+            (a.cancel.clone(), a.clock.remaining[1], a.revision)
+        };
+        thread::sleep(Duration::from_millis(30));
+        let body = request(&app, "GET", "/api/state", 200);
+        assert!(body.contains("\"pondering\":true"));
+        {
+            let a = app.lock().unwrap();
+            assert!(a.game.moves.is_empty());
+            assert_eq!(a.revision, revision);
+            assert_eq!(a.clock.remaining[1], black_time);
+            assert!(a.clock.remaining[0] < black_time);
+        }
+        play(&app, "e2e4");
+        assert!(cancel.load(Ordering::Relaxed));
+        wait_for_engine(&app);
+        let a = app.lock().unwrap();
+        assert_eq!(a.game.moves.len(), 2);
+        assert!(a.pondering);
+        assert!(!a.thinking);
+        assert!(a.game.position().white);
+    }
+
+    #[test]
+    fn pondering_stops_on_replacement_resignation_timeout_and_drop() {
+        let app = shared();
+        new_game(&app, "one", "white");
+        let cancel = app.lock().unwrap().cancel.clone();
+        new_game(&app, "two", "white");
+        assert!(cancel.load(Ordering::Relaxed));
+        assert!(!app.lock().unwrap().pondering);
+
+        new_game(&app, "one", "white");
+        let cancel = app.lock().unwrap().cancel.clone();
+        request(&app, "POST", "/api/resign", 200);
+        assert!(cancel.load(Ordering::Relaxed));
+        assert!(!app.lock().unwrap().pondering);
+
+        new_game(&app, "one", "white");
+        let cancel = app.lock().unwrap().cancel.clone();
+        {
+            let mut a = app.lock().unwrap();
+            a.clock.remaining[0] = Duration::ZERO;
+            a.tick(Instant::now());
+            assert!(!a.pondering);
+            assert!(a.adjudicated.is_some());
+        }
+        assert!(cancel.load(Ordering::Relaxed));
+
+        new_game(&app, "one", "white");
+        let cancel = app.lock().unwrap().cancel.clone();
+        drop(app);
+        // An in-flight completion may briefly hold the last strong reference.
+        let deadline = Instant::now() + Duration::from_secs(2);
+        while !cancel.load(Ordering::Relaxed) {
+            assert!(Instant::now() < deadline, "Dropped app kept pondering");
+            thread::sleep(Duration::from_millis(1));
+        }
+    }
+
+    #[test]
+    fn undo_cancels_pondering_and_starts_fresh_analysis() {
+        let app = shared();
+        new_game(&app, "one", "white");
+        play(&app, "e2e4");
+        wait_for_engine(&app);
+        let (cancel, epoch) = {
+            let a = app.lock().unwrap();
+            assert!(a.pondering);
+            (a.cancel.clone(), a.cache_epoch)
+        };
+        request(&app, "POST", "/api/undo", 200);
+        assert!(cancel.load(Ordering::Relaxed));
+        let a = app.lock().unwrap();
+        assert!(a.pondering);
+        assert!(!a.thinking);
+        assert!(a.game.moves.is_empty());
+        assert_eq!(a.cache_epoch, epoch + 1);
+        assert!(a.stats.is_none());
+        assert!(!a.cancel.load(Ordering::Relaxed));
+    }
+
+    #[test]
+    fn live_analysis_resets_on_a_move_and_cannot_leak_into_a_new_game() {
+        let app = shared();
+        new_game(&app, "one", "white");
+        let ponder_progress = app
+            .lock()
+            .unwrap()
+            .analysis
+            .as_ref()
+            .unwrap()
+            .progress
+            .clone();
+        play(&app, "e2e4");
+        {
+            let a = app.lock().unwrap();
+            let analysis = a.analysis.as_ref().unwrap();
+            assert!(!Arc::ptr_eq(&ponder_progress, &analysis.progress));
+            assert!(!analysis.pondering);
+            assert!(analysis.budget.is_some());
+            assert_eq!(analysis.revision, a.revision);
+        }
+        new_game(&app, "two", "white");
+        // A late publication only updates its abandoned snapshot.
+        ponder_progress.lock().unwrap().nodes = 123_456;
+        let body = request(&app, "GET", "/api/state", 200);
+        assert!(body.contains("\"analysis\":null"));
+        assert!(body.contains("\"stats\":null"));
     }
     #[test]
     fn promotion_is_validated_and_notated() {

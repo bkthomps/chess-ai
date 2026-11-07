@@ -312,14 +312,22 @@ function render() {
   }
   $('undo').disabled = busy || !state.notation.length || state.human === false && state.notation.length === 1;
   $('resign').disabled = busy || !!state.result;
-  const stats = state.human === null ? null : state.stats;
+  renderEngine();
+}
+function renderEngine() {
+  const analysis = state.human === null ? null : state.analysis;
+  const stats = state.human === null ? null : analysis || state.stats;
   $('engine-status').textContent = state.human === null ? 'The computer is off in two-player mode.'
-    : state.thinking ? (stats ? 'Thinking… Showing the previous search.' : 'Thinking…')
+    : state.thinking ? 'Thinking… Live search.'
+    : state.pondering ? 'Pondering possible replies during your turn.'
+    : state.result ? 'Game finished.'
+    : analysis?.pondering ? 'Pondering complete.'
     : stats ? 'Last computer move.' : 'Waiting for the first computer move.';
   $('engine-stats').hidden = !stats;
   if (stats) {
-    $('engine-budget').textContent = `${(stats.budget_millis / 1000).toFixed(2)} s`;
+    $('engine-budget').textContent = stats.budget_millis === null ? 'Your turn' : `${(stats.budget_millis / 1000).toFixed(2)} s`;
     $('engine-depth').textContent = stats.depth;
+    $('engine-searching-depth').textContent = analysis?.active && analysis.searching_depth ? analysis.searching_depth : '—';
     $('engine-nodes').textContent = stats.nodes.toLocaleString();
     $('engine-hits').textContent = stats.hits.toLocaleString();
     $('engine-time').textContent = `${(stats.millis / 1000).toFixed(2)} s`;
@@ -353,19 +361,21 @@ async function poll() {
     try {
       const next = await api('state');
       // Never overwrite a newer move response with an older polling response.
-      if (!busy && (next.revision > state.revision || next.revision === state.revision && next.thinking !== state.thinking)) {
+      if (!busy && (next.revision > state.revision || next.revision === state.revision && (next.thinking !== state.thinking || next.pondering !== state.pondering))) {
         if (next.revision !== state.revision) {
           selected = null;
           if ($('promotion-dialog').open) $('promotion-dialog').close();
         }
         state = next; render();
       } else if (!busy && next.revision === state.revision) {
-        state.clocks = next.clocks; state.receivedAt = next.receivedAt; renderClocks();
+        state.clocks = next.clocks; state.receivedAt = next.receivedAt;
+        state.analysis = next.analysis; state.stats = next.stats;
+        renderClocks(); renderEngine();
       }
     } catch (error) { showError(error); }
     finally { polling = false; }
   }
-  setTimeout(poll, playing && (state?.thinking || state?.clocks.running) ? 250 : 1000);
+  setTimeout(poll, playing && (state?.thinking || state?.pondering || state?.clocks.running) ? 250 : 1000);
 }
 void poll();
 // The Rust process owns the game, so a page refresh can resume it.

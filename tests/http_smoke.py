@@ -38,6 +38,18 @@ try:
                        'promotion': {'q': 5, 'r': 4, 'b': 3, 'n': 2}.get(uci[4:], 0),
                        'revision': state['revision']}, expected)
 
+    def next_analysis(state, nodes=0):
+        deadline = time.monotonic() + 4
+        while time.monotonic() < deadline:
+            updated = request('/api/state')
+            assert updated['revision'] == state['revision']
+            analysis = updated['analysis']
+            assert analysis['revision'] == updated['revision'] and analysis['active']
+            if analysis['nodes'] > nodes and analysis['millis'] > 0:
+                return updated
+            time.sleep(.025)
+        raise AssertionError('Live analysis did not advance')
+
     html = request('/')
     assert '<title>Chess</title>' in html and 'Time control' in html
     state = new()
@@ -59,14 +71,26 @@ try:
     state = request('/api/resign', {})
     assert state['result'] == 'White wins by resignation'
     state = new('one', 'white')
+    assert state['pondering'] and not state['thinking']
+    pondered = next_analysis(state)
+    pondered = next_analysis(pondered, pondered['analysis']['nodes'])
+    assert not pondered['notation'] and pondered['revision'] == state['revision']
+    assert pondered['clocks']['black_ms'] == state['clocks']['black_ms']
+    assert pondered['analysis']['budget_millis'] is None and pondered['analysis']['pondering']
+    assert pondered['analysis']['searching_depth'] > pondered['analysis']['depth']
     state = move(state, 'e2e4')
+    state = next_analysis(state)
+    assert state['thinking'] and not state['analysis']['pondering']
+    assert state['analysis']['budget_millis'] > 0
     deadline = time.monotonic() + 8
     while state['thinking'] and time.monotonic() < deadline:
         time.sleep(.05)
         state = request('/api/state')
     assert len(state['notation']) == 2 and state['white'] and state['stats']['nodes'] > 0
+    assert state['pondering'] and not state['thinking']
     state = request('/api/undo', {})
     assert not state['notation'] and state['white']
+    assert state['pondering']
     state = new('one', 'black')
     deadline = time.monotonic() + 8
     while state['thinking'] and time.monotonic() < deadline:
@@ -79,6 +103,7 @@ try:
     time.sleep(.2)
     state = request('/api/state')
     assert state['human'] is None and not state['notation'] and not state['thinking']
+    assert not state['pondering']
     state = request('/api/new', dict(mode='two', color='white', unlimited='true'))
     assert not state['clocks']['enabled'] and not state['clocks']['running']
     state = move(state, 'e2e4')
@@ -91,7 +116,11 @@ try:
         state = request('/api/state')
     assert len(state['notation']) == 1 and state['stats']['budget_millis'] == 100
     assert not state['clocks']['enabled'] and not state['clocks']['running']
-    print('HTTP integration passed: local play, illegal/stale moves, mate, undo, resignation, both AI sides, worker isolation.')
+    assert state['pondering']
+    state = request('/api/resign', {})
+    assert not state['pondering'] and not state['thinking']
+    assert not state['analysis']['active']
+    print('HTTP integration passed: local play, illegal/stale moves, mate, undo, resignation, both AI sides, pondering, worker isolation.')
 finally:
     server.terminate()
     server.wait(timeout=5)
