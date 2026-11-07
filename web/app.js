@@ -327,6 +327,7 @@ function renderEngine() {
   if (stats) {
     $('engine-budget').textContent = stats.budget_millis === null ? 'Your turn' : `${(stats.budget_millis / 1000).toFixed(2)} s`;
     $('engine-depth').textContent = stats.depth;
+    $('engine-threads').textContent = stats.threads || '—';
     $('engine-searching-depth').textContent = analysis?.active && analysis.searching_depth ? analysis.searching_depth : '—';
     $('engine-nodes').textContent = stats.nodes.toLocaleString();
     $('engine-hits').textContent = stats.hits.toLocaleString();

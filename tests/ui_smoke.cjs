@@ -129,18 +129,19 @@ const clickSquare = s => elements.board.listeners.click({target: elements.board.
   assert.equal(elements['game-mode'].textContent, 'You: Black · 1.5 min + 3 sec');
   assert.equal(elements.status.textContent, 'Computer thinking…'); assert(!elements['engine-info'].open);
   elements['engine-info'].open = true;
-  vm.runInContext('state={...state,thinking:false,pondering:true,white:false,stats:{depth:6,nodes:12345,hits:123,millis:2500,budget_millis:2600}};render()', context);
+  vm.runInContext('state={...state,thinking:false,pondering:true,white:false,stats:{depth:6,nodes:12345,hits:123,millis:2500,budget_millis:2600,threads:6}};render()', context);
   assert(elements['engine-info'].open); assert(!elements['engine-stats'].hidden);
   assert.equal(elements.status.textContent, 'Black to move.');
   assert.equal(elements['engine-status'].textContent, 'Pondering possible replies during your turn.');
   assert(vm.runInContext('canPlay()', context));
   assert.equal(Number(elements['engine-depth'].textContent), 6);
+  assert.equal(Number(elements['engine-threads'].textContent), 6);
   assert.equal(elements['engine-nodes'].textContent, (12345).toLocaleString());
   assert.equal(elements['engine-budget'].textContent, '2.60 s'); assert.equal(elements['engine-time'].textContent, '2.50 s');
   // Live updates arrive without a board revision, including Unlimited pondering.
   server.thinking = false; server.pondering = true; server.white = false;
   server.clocks.enabled = false; server.clocks.running = false;
-  server.analysis = {revision: server.revision, active: true, pondering: true, depth: 4, searching_depth: 5, nodes: 1000, hits: 12, millis: 250, budget_millis: null};
+  server.analysis = {revision: server.revision, active: true, pondering: true, depth: 4, searching_depth: 5, nodes: 1000, hits: 12, millis: 250, budget_millis: null, threads:3};
   await vm.runInContext('poll()', context);
   vm.runInContext('state.legal=[[52,44,0]];selected=52;renderBoard()', context);
   const selectedButton = elements.board.children.find(e => e.dataset.square === 52);
@@ -153,6 +154,7 @@ const clickSquare = s => elements.board.listeners.click({target: elements.board.
   assert.equal(elements['engine-time'].textContent, '0.50 s');
   assert.equal(elements['engine-budget'].textContent, 'Your turn');
   assert.equal(Number(elements['engine-searching-depth'].textContent), 5);
+  assert.equal(Number(elements['engine-threads'].textContent), 3);
   assert.equal(vm.runInContext('selected', context), 52);
   assert.equal(elements.board.children.find(e => e.dataset.square === 52), selectedButton);
   assert.equal(audioNotes.length, soundsBeforeLive);

@@ -1,10 +1,11 @@
 //! Iterative-deepening negamax (minimax), alpha-beta pruning, and a Zobrist
-//! transposition table. Search runs on a worker thread, away from the UI.
+//! transposition table. Root moves are searched in parallel, away from the UI.
 use crate::chess::{random_key, Move, MoveState, Position};
 use std::sync::{
-    atomic::{AtomicBool, Ordering},
-    Arc, Mutex,
+    atomic::{AtomicBool, AtomicI32, AtomicU64, AtomicUsize, Ordering},
+    mpsc, Arc, Mutex,
 };
+use std::thread;
 use std::time::{Duration, Instant};
 
 const MATE: i32 = 30_000;
@@ -19,6 +20,7 @@ const AGE_PENALTY: i16 = 4;
 // Retained scratch is capped independently of move count or search depth.
 const MOVE_BUFFER_LIMIT: usize = 512 * 1024;
 const BUFFER_PLIES: usize = 256 + 10;
+const TABLE_SHARDS: usize = 1024;
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 #[repr(u8)]
 enum Bound {
@@ -134,6 +136,7 @@ impl Table {
             }
         }
     }
+    #[cfg(test)]
     fn bucket_start(&self, key: u64) -> usize {
         // The production size is constant, allowing a multiply/shift reduction
         // instead of a variable integer division. Small tables support tests.
@@ -143,8 +146,12 @@ impl Table {
             key as usize % (self.keys.len() / BUCKET_SIZE) * BUCKET_SIZE
         }
     }
+    #[cfg(test)]
     fn probe(&mut self, key: u64) -> Option<Entry> {
         let start = self.bucket_start(key);
+        self.probe_at(start, key)
+    }
+    fn probe_at(&mut self, start: usize, key: u64) -> Option<Entry> {
         let keys = &self.keys[start..start + BUCKET_SIZE];
         let entries = &mut self.entries[start..start + BUCKET_SIZE];
         for (&stored, packed) in keys.iter().zip(entries) {
@@ -157,11 +164,14 @@ impl Table {
         }
         None
     }
+    #[cfg(test)]
     fn store(&mut self, key: u64, entry: Entry) {
+        self.store_at(self.bucket_start(key), key, entry);
+    }
+    fn store_at(&mut self, start: usize, key: u64, entry: Entry) {
         let Some(packed) = PackedEntry::pack(entry, self.generation) else {
             return;
         };
-        let start = self.bucket_start(key);
         let mut empty = None;
         let mut victim = start;
         let mut weakest = i16::MAX;
@@ -197,12 +207,97 @@ impl Table {
     }
 }
 
+/// Fine-grained locks keep full keys and packed entries coherent. A busy shard
+/// is skipped: cache access must never make a search wait for another search.
+/// The underlying slots retain their compact 14-byte representation.
+#[derive(Default)]
+struct SharedTable {
+    shards: Vec<Mutex<Table>>,
+    len: usize,
+}
+impl SharedTable {
+    fn resize(&mut self, len: usize) {
+        if self.len == len {
+            return;
+        }
+        assert!(len > 0 && len % BUCKET_SIZE == 0);
+        let buckets = len / BUCKET_SIZE;
+        let count = buckets.min(TABLE_SHARDS);
+        self.shards = (0..count)
+            .map(|shard| {
+                let mut table = Table::default();
+                table.resize(((buckets - 1 - shard) / count + 1) * BUCKET_SIZE);
+                Mutex::new(table)
+            })
+            .collect();
+        self.len = len;
+    }
+    fn next_generation(&mut self) {
+        for shard in &mut self.shards {
+            shard
+                .get_mut()
+                .expect("search table poisoned")
+                .next_generation();
+        }
+    }
+    fn location(&self, key: u64) -> (usize, usize) {
+        if self.len == TABLE_SIZE {
+            let bucket = key as usize % (TABLE_SIZE / BUCKET_SIZE);
+            return (bucket % TABLE_SHARDS, bucket / TABLE_SHARDS * BUCKET_SIZE);
+        }
+        let bucket = key as usize % (self.len / BUCKET_SIZE);
+        let shard = bucket % self.shards.len();
+        (shard, bucket / self.shards.len() * BUCKET_SIZE)
+    }
+    fn probe(&self, key: u64) -> Option<Entry> {
+        let (shard, start) = self.location(key);
+        self.shards[shard].try_lock().ok()?.probe_at(start, key)
+    }
+    fn store(&self, key: u64, entry: Entry) {
+        let (shard, start) = self.location(key);
+        if let Ok(mut table) = self.shards[shard].try_lock() {
+            table.store_at(start, key, entry);
+        }
+    }
+}
+
+/// Keep at least one logical CPU, and roughly a quarter on larger machines,
+/// available to the browser and other applications. No OS-specific policy.
+fn search_threads(cpus: usize) -> usize {
+    cpus.saturating_sub(cpus.saturating_add(3) / 4).max(1)
+}
+
+#[derive(Default)]
+struct WorkerStats {
+    nodes: AtomicU64,
+    hits: AtomicU64,
+}
+
+struct RootWork<'a> {
+    position: &'a Position,
+    moves: &'a [Move],
+    depth: u8,
+    next: AtomicUsize,
+    alpha: AtomicI32,
+    aborted: AtomicBool,
+    scores: Vec<Mutex<Option<i32>>>,
+}
+
 /// Owned by the search worker and retained across pondering and computer moves.
 /// Four-way buckets retain deeper, exact, and recently used results.
-#[derive(Default)]
 pub struct SearchCache {
-    table: Table,
+    table: SharedTable,
     buffers: MoveBuffers,
+    helpers: Vec<MoveBuffers>,
+    threads: usize,
+    single_cpu: bool,
+}
+impl Default for SearchCache {
+    fn default() -> Self {
+        Self::with_threads(search_threads(
+            thread::available_parallelism().map_or(1, usize::from),
+        ))
+    }
 }
 
 #[derive(Default)]
@@ -240,6 +335,7 @@ pub struct SearchResult {
     pub nodes: u64,
     pub hits: u64,
     pub elapsed: Duration,
+    pub threads: usize,
 }
 /// A coherent snapshot of one search, including an unfinished depth.
 #[derive(Clone, Copy, Debug, Default)]
@@ -249,9 +345,10 @@ pub struct SearchProgress {
     pub nodes: u64,
     pub hits: u64,
     pub elapsed: Duration,
+    pub threads: usize,
 }
 struct Search<'a> {
-    table: &'a mut Table,
+    table: &'a SharedTable,
     buffers: &'a mut MoveBuffers,
     keys: Vec<u64>,
     history_context: u64,
@@ -265,6 +362,11 @@ struct Search<'a> {
     published: Instant,
     depth: u8,
     searching_depth: u8,
+    threads: usize,
+    peers: &'a [WorkerStats],
+    reporting: Option<&'a WorkerStats>,
+    reported: (u64, u64),
+    rest_at: Option<Instant>,
 }
 
 /// Allocate roughly 1/36 of the clock in the opening, increasing toward 1/18
@@ -303,6 +405,18 @@ pub fn search_with_cancel(
 }
 
 impl SearchCache {
+    /// Choose an explicit search-thread limit (including the calling worker).
+    /// Default reserves CPU capacity automatically; one is useful for comparisons.
+    pub fn with_threads(threads: usize) -> Self {
+        Self {
+            table: SharedTable::default(),
+            buffers: MoveBuffers::default(),
+            helpers: Vec::new(),
+            threads: threads.max(1),
+            single_cpu: thread::available_parallelism().map_or(true, |n| n.get() == 1),
+        }
+    }
+
     pub fn search(
         &mut self,
         position: &Position,
@@ -354,10 +468,14 @@ impl SearchCache {
         progress: Option<&Mutex<SearchProgress>>,
     ) -> SearchResult {
         let start = Instant::now();
+        let legal = position.legal_moves();
+        let threads = self.threads.min(legal.len()).max(1);
+        self.helpers.resize_with(threads - 1, MoveBuffers::default);
+        let peers: Vec<_> = (1..threads).map(|_| WorkerStats::default()).collect();
         self.table.resize(TABLE_SIZE);
         self.table.next_generation();
         let mut s = Search {
-            table: &mut self.table,
+            table: &self.table,
             buffers: &mut self.buffers,
             keys: history.to_vec(),
             history_context: 0,
@@ -371,12 +489,16 @@ impl SearchCache {
             published: start,
             depth: 0,
             searching_depth: 0,
+            threads,
+            peers: &peers,
+            reporting: None,
+            reported: (0, 0),
+            rest_at: self.single_cpu.then(|| start + Duration::from_millis(9)),
         };
         if s.keys.last() != Some(&position.repetition_key()) {
             s.keys.push(position.repetition_key());
         }
         s.history_context = reversible_context(position, &s.keys);
-        let legal = position.legal_moves();
         let mut result = SearchResult {
             best: legal.first().copied(),
             score: 0,
@@ -384,6 +506,7 @@ impl SearchCache {
             nodes: 0,
             hits: 0,
             elapsed: Duration::ZERO,
+            threads,
         };
         if legal.is_empty() || s.is_draw(position) {
             result.best = None;
@@ -419,7 +542,11 @@ impl SearchCache {
                 break;
             }
             s.searching_depth = depth;
-            let (score, best) = s.negamax(position, depth, 0, -INF, INF);
+            let (score, best) = if threads > 1 && depth >= 4 {
+                s.parallel_root(position, depth, &legal, &mut self.helpers)
+            } else {
+                s.negamax(position, depth, 0, -INF, INF)
+            };
             if s.aborted {
                 break;
             }
@@ -436,8 +563,7 @@ impl SearchCache {
             // the deadline still controls termination at its maximum value.
             depth = depth.saturating_add(1);
         }
-        result.nodes = s.nodes;
-        result.hits = s.hits;
+        (result.nodes, result.hits) = s.totals();
         result.elapsed = start.elapsed();
         s.searching_depth = 0;
         s.publish(true);
@@ -446,18 +572,184 @@ impl SearchCache {
 }
 
 impl Search<'_> {
+    /// Search the principal move first to establish a useful alpha bound, then
+    /// let workers claim the remaining root moves. Null-window probes avoid
+    /// fully exploring moves that cannot improve the current best result.
+    fn parallel_root(
+        &mut self,
+        position: &Position,
+        depth: u8,
+        legal: &[Move],
+        helpers: &mut [MoveBuffers],
+    ) -> (i32, Option<Move>) {
+        if self.expired() {
+            return (0, None);
+        }
+        let key = self.table_key(position);
+        let mut moves = legal.to_vec();
+        order(
+            position,
+            &mut moves,
+            self.probe(key).and_then(|entry| entry.best),
+        );
+        let first = position.play(moves[0]);
+        let previous = self.push_position(&first);
+        let first_score = -self.negamax(&first, depth - 1, 1, -INF, INF).0;
+        self.pop_position(previous);
+        if self.aborted {
+            return (0, None);
+        }
+        let work = RootWork {
+            position,
+            moves: &moves,
+            depth,
+            next: AtomicUsize::new(1),
+            alpha: AtomicI32::new(first_score),
+            aborted: AtomicBool::new(false),
+            scores: (0..moves.len()).map(|_| Mutex::new(None)).collect(),
+        };
+        thread::scope(|scope| {
+            let mut handles = Vec::new();
+            let (done_tx, done_rx) = mpsc::channel();
+            for (index, (buffers, stats)) in helpers.iter_mut().zip(self.peers).enumerate() {
+                let mut worker = Search {
+                    table: self.table,
+                    buffers,
+                    keys: self.keys.clone(),
+                    history_context: self.history_context,
+                    deadline: self.deadline,
+                    nodes: 0,
+                    hits: 0,
+                    aborted: false,
+                    cancelled: self.cancelled.clone(),
+                    progress: None,
+                    started: self.started,
+                    published: self.published,
+                    depth: self.depth,
+                    searching_depth: depth,
+                    threads: self.threads,
+                    peers: &[],
+                    reporting: Some(stats),
+                    reported: (0, 0),
+                    rest_at: None,
+                };
+                let work = &work;
+                let done = done_tx.clone();
+                // If the OS cannot create a helper, the remaining workers
+                // still finish every root move through the shared work queue.
+                if let Ok(handle) = thread::Builder::new()
+                    .name(format!("chess-search-{}", index + 1))
+                    .spawn_scoped(scope, move || {
+                        worker.root_jobs(work);
+                        worker.flush_stats();
+                        let _ = done.send(());
+                    })
+                {
+                    handles.push(handle);
+                }
+            }
+            drop(done_tx);
+            self.root_jobs(&work);
+            for _ in 0..handles.len() {
+                loop {
+                    match done_rx.recv_timeout(Duration::from_millis(10)) {
+                        Ok(()) | Err(mpsc::RecvTimeoutError::Disconnected) => break,
+                        Err(mpsc::RecvTimeoutError::Timeout) => self.publish(false),
+                    }
+                }
+            }
+            for handle in handles {
+                handle.join().expect("search helper panicked");
+            }
+        });
+        if work.aborted.load(Ordering::Relaxed) {
+            self.aborted = true;
+            return (0, None);
+        }
+        let (mut score, mut best) = (first_score, moves[0]);
+        for (index, result) in work.scores.iter().enumerate().skip(1) {
+            let value = result
+                .lock()
+                .expect("root score poisoned")
+                .expect("unfinished root move");
+            if value > score {
+                score = value;
+                best = moves[index];
+            }
+        }
+        self.table.store(
+            key,
+            Entry {
+                depth,
+                score: to_table(score, 0),
+                best: Some(best),
+                bound: Bound::Exact,
+            },
+        );
+        (score, Some(best))
+    }
+
+    fn root_jobs(&mut self, work: &RootWork<'_>) {
+        while !work.aborted.load(Ordering::Relaxed) {
+            let index = work.next.fetch_add(1, Ordering::Relaxed);
+            let Some(&m) = work.moves.get(index) else {
+                break;
+            };
+            let next = work.position.play(m);
+            let previous = self.push_position(&next);
+            let alpha = work.alpha.load(Ordering::Relaxed);
+            let mut score = -self.negamax(&next, work.depth - 1, 1, -alpha - 1, -alpha).0;
+            if !self.aborted && score > alpha {
+                score = -self.negamax(&next, work.depth - 1, 1, -INF, -alpha).0;
+            }
+            self.pop_position(previous);
+            if self.aborted {
+                work.aborted.store(true, Ordering::Relaxed);
+                break;
+            }
+            work.alpha.fetch_max(score, Ordering::Relaxed);
+            // A failed null-window probe supplies only an upper bound. It
+            // must never replace a proven best move, even on an equal score.
+            *work.scores[index].lock().expect("root score poisoned") =
+                Some(if score > alpha { score } else { -INF });
+        }
+    }
+
+    fn totals(&self) -> (u64, u64) {
+        self.peers
+            .iter()
+            .fold((self.nodes, self.hits), |(nodes, hits), peer| {
+                (
+                    nodes + peer.nodes.load(Ordering::Relaxed),
+                    hits + peer.hits.load(Ordering::Relaxed),
+                )
+            })
+    }
+    fn flush_stats(&mut self) {
+        if let Some(stats) = self.reporting {
+            stats
+                .nodes
+                .fetch_add(self.nodes - self.reported.0, Ordering::Relaxed);
+            stats
+                .hits
+                .fetch_add(self.hits - self.reported.1, Ordering::Relaxed);
+            self.reported = (self.nodes, self.hits);
+        }
+    }
     fn publish(&mut self, force: bool) {
         if let Some(progress) = self.progress {
             let now = Instant::now();
             if force || now.duration_since(self.published) >= Duration::from_millis(250) {
                 // Never wait for a reader, and never take the game's mutex.
                 if let Ok(mut snapshot) = progress.try_lock() {
+                    let (nodes, hits) = self.totals();
                     *snapshot = SearchProgress {
                         depth: self.depth,
                         searching_depth: self.searching_depth,
-                        nodes: self.nodes,
-                        hits: self.hits,
+                        nodes,
+                        hits,
                         elapsed: now.duration_since(self.started),
+                        threads: self.threads,
                     };
                     self.published = now;
                 }
@@ -480,6 +772,13 @@ impl Search<'_> {
         // Only sample publication time every 1024 nodes. Most nodes perform
         // no extra clock read, synchronization, or allocation for live status.
         if self.nodes & 1023 == 0 {
+            if let Some(rest_at) = self.rest_at {
+                if Instant::now() >= rest_at && !self.aborted {
+                    thread::sleep(Duration::from_millis(1));
+                    self.rest_at = Some(Instant::now() + Duration::from_millis(9));
+                }
+            }
+            self.flush_stats();
             self.publish(false);
         }
         self.aborted
@@ -856,6 +1155,230 @@ mod tests {
     use super::*;
     use crate::game::Game;
     use std::{sync::mpsc, thread};
+
+    #[test]
+    fn automatic_thread_budget_preserves_cpu_headroom() {
+        for (cpus, threads) in [
+            (0, 1),
+            (1, 1),
+            (2, 1),
+            (3, 2),
+            (4, 3),
+            (8, 6),
+            (16, 12),
+            (64, 48),
+        ] {
+            assert_eq!(search_threads(cpus), threads);
+            if cpus > 1 {
+                assert!(threads < cpus);
+                assert!(threads * 4 <= cpus * 3);
+            }
+        }
+    }
+
+    #[test]
+    fn shared_table_keeps_compact_slots_and_coherent_concurrent_entries() {
+        let mut table = SharedTable::default();
+        table.resize(TABLE_SIZE);
+        table.next_generation();
+        let mut bytes = 0;
+        let mut slots = 0;
+        for shard in &mut table.shards {
+            let shard = shard.get_mut().unwrap();
+            slots += shard.keys.len();
+            bytes +=
+                shard.keys.len() * 8 + shard.entries.len() * std::mem::size_of::<PackedEntry>();
+        }
+        assert_eq!(slots, TABLE_SIZE);
+        assert_eq!(bytes, 28_000_000);
+        thread::scope(|scope| {
+            for worker in 0..4 {
+                let table = &table;
+                scope.spawn(move || {
+                    for step in 0..2000 {
+                        // All writers contend for one bucket. Busy accesses
+                        // may be skipped, but a returned full key must match.
+                        let key = (worker * 2000 + step) * (TABLE_SIZE / BUCKET_SIZE) as u64;
+                        let score = (key % 20_000) as i32 - 10_000;
+                        table.store(
+                            key,
+                            Entry {
+                                depth: 5,
+                                score,
+                                best: None,
+                                bound: Bound::Exact,
+                            },
+                        );
+                        if let Some(entry) = table.probe(key) {
+                            assert_eq!(entry.score, score);
+                            assert_eq!(entry.depth, 5);
+                        }
+                    }
+                });
+            }
+        });
+    }
+
+    #[test]
+    fn parallel_search_matches_serial_scores_and_returns_a_proven_best_move() {
+        for (fen, depth) in [
+            (
+                "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+                4,
+            ),
+            (
+                "r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq - 0 1",
+                3,
+            ),
+            ("8/2p5/3p4/KP5r/1R3p1k/8/4P1P1/8 w - - 0 1", 4),
+            (
+                "rnbqk2r/pp1Pbppp/2p5/8/2B5/8/PPP1NnPP/RNBQK2R w KQkq - 1 8",
+                3,
+            ),
+            (
+                "rnbqkbnr/pppp1ppp/8/4p3/6P1/5P2/PPPPP2P/RNBQKBNR b KQkq g3 0 2",
+                2,
+            ),
+        ] {
+            let p = Position::from_fen(fen).unwrap();
+            let keys = [p.repetition_key()];
+            let expected = at_depth(&mut SearchCache::with_threads(1), &p, &keys, depth, 0);
+            for _ in 0..3 {
+                let mut cache = SearchCache::with_threads(3);
+                cache.table.resize(TABLE_SIZE);
+                cache.table.next_generation();
+                let mut helpers = [MoveBuffers::default(), MoveBuffers::default()];
+                let peers = [WorkerStats::default(), WorkerStats::default()];
+                let mut search = test_search(&mut cache, &p, &keys);
+                search.peers = &peers;
+                search.threads = 3;
+                let (score, best) = search.parallel_root(&p, depth, &p.legal_moves(), &mut helpers);
+                assert!(!search.aborted);
+                assert_eq!(score, expected.0, "{fen}");
+                let child = p.play(best.unwrap());
+                let child_keys = [keys[0], child.repetition_key()];
+                let verified = -at_depth(
+                    &mut SearchCache::with_threads(1),
+                    &child,
+                    &child_keys,
+                    depth - 1,
+                    1,
+                )
+                .0;
+                assert_eq!(
+                    score, verified,
+                    "an unproven bound became the best move: {fen}"
+                );
+                if depth >= 3 {
+                    assert!(peers
+                        .iter()
+                        .any(|peer| peer.nodes.load(Ordering::Relaxed) > 0));
+                }
+                // The root score is cached only after all root moves finish.
+                let cached = search.probe(search.table_key(&p)).unwrap();
+                assert!(matches!(cached.bound, Bound::Exact));
+                assert_eq!(cached.depth, depth);
+                assert_eq!(cached.score, score);
+            }
+        }
+    }
+
+    #[test]
+    fn interrupted_parallel_iteration_keeps_the_last_completed_result() {
+        let p = Position::default();
+        let mut cache = SearchCache::with_threads(3);
+        cache.table.resize(TABLE_SIZE);
+        cache.table.next_generation();
+        let keys = [p.repetition_key()];
+        let mut helpers = [MoveBuffers::default(), MoveBuffers::default()];
+        let peers = [WorkerStats::default(), WorkerStats::default()];
+        let mut search = test_search(&mut cache, &p, &keys);
+        search.peers = &peers;
+        let completed = search.negamax(&p, 2, 0, -INF, INF);
+        let key = search.table_key(&p);
+        search.deadline = Some(Instant::now() + Duration::from_millis(20));
+        search.parallel_root(&p, 8, &p.legal_moves(), &mut helpers);
+        assert!(search.aborted);
+        let entry = search.probe(key).unwrap();
+        assert_eq!(entry.depth, 2);
+        assert_eq!(entry.best, completed.1);
+        assert_eq!(entry.score, completed.0);
+    }
+
+    #[test]
+    #[ignore = "parallel fixed-depth benchmark; run with --release --ignored --nocapture"]
+    fn benchmark_parallel_depth() {
+        let threads = SearchCache::default().threads;
+        let cases = [
+            (
+                "opening",
+                "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+                7,
+            ),
+            (
+                "middlegame",
+                "r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq - 0 1",
+                5,
+            ),
+            ("endgame", "8/2p5/3p4/KP5r/1R3p1k/8/4P1P1/8 w - - 0 1", 8),
+            (
+                "tactics",
+                "rnbqk2r/pp1Pbppp/2p5/8/2B5/8/PPP1NnPP/RNBQK2R w KQkq - 1 8",
+                6,
+            ),
+            (
+                "pawns",
+                "8/5pk1/2p3p1/1p1pP2p/1P1P1P1P/2P3K1/8/8 w - - 0 1",
+                9,
+            ),
+        ];
+        println!("case,threads,depth,score,best,median_ms,nodes");
+        for (name, fen, depth) in cases {
+            let p = Position::from_fen(fen).unwrap();
+            let keys = [p.repetition_key()];
+            let mut expected_score = None;
+            for limit in [1, threads] {
+                let mut runs = Vec::new();
+                for repetition in 0..4 {
+                    let mut cache = SearchCache::with_threads(limit);
+                    cache.table.resize(TABLE_SIZE);
+                    cache.table.next_generation();
+                    let mut helpers: Vec<_> = (1..limit).map(|_| MoveBuffers::default()).collect();
+                    let peers: Vec<_> = (1..limit).map(|_| WorkerStats::default()).collect();
+                    let mut search = test_search(&mut cache, &p, &keys);
+                    search.threads = limit;
+                    search.peers = &peers;
+                    let started = Instant::now();
+                    let mut result = (0, None);
+                    for d in 1..=depth {
+                        result = if limit > 1 && d >= 4 {
+                            search.parallel_root(&p, d, &p.legal_moves(), &mut helpers)
+                        } else {
+                            search.negamax(&p, d, 0, -INF, INF)
+                        };
+                    }
+                    if let Some(score) = expected_score {
+                        assert_eq!(result.0, score, "{name}");
+                    }
+                    expected_score = Some(result.0);
+                    if repetition > 0 {
+                        runs.push((
+                            started.elapsed(),
+                            result.0,
+                            result.1.unwrap(),
+                            search.totals().0,
+                        ));
+                    }
+                }
+                runs.sort_by_key(|r| r.0);
+                let (elapsed, score, best, nodes) = runs[1];
+                println!(
+                    "{name},{limit},{depth},{score},{best},{:.3},{nodes}",
+                    elapsed.as_secs_f64() * 1000.0
+                );
+            }
+        }
+    }
 
     #[test]
     fn move_buffer_pool_reuses_storage_and_respects_its_memory_cap() {
@@ -1300,7 +1823,7 @@ mod tests {
 
     fn test_search<'a>(cache: &'a mut SearchCache, p: &Position, keys: &[u64]) -> Search<'a> {
         Search {
-            table: &mut cache.table,
+            table: &cache.table,
             buffers: &mut cache.buffers,
             keys: keys.to_vec(),
             history_context: reversible_context(p, keys),
@@ -1314,6 +1837,11 @@ mod tests {
             published: Instant::now(),
             depth: 0,
             searching_depth: 0,
+            threads: 1,
+            peers: &[],
+            reporting: None,
+            reported: (0, 0),
+            rest_at: None,
         }
     }
 

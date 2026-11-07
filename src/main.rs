@@ -276,6 +276,7 @@ fn queue_engine(app: &Shared, a: &mut App) {
                     nodes: result.nodes,
                     hits: result.hits,
                     elapsed: result.elapsed,
+                    threads: result.threads,
                 };
                 let Some(shared) = weak.upgrade() else {
                     break;
@@ -657,11 +658,12 @@ fn state_json(a: &mut App) -> String {
         .map_or("null".into(), |m| format!("[{},{}]", m.from, m.to));
     let stats = a.stats.as_ref().map_or("null".into(), |s| {
         format!(
-            "{{\"depth\":{},\"nodes\":{},\"hits\":{},\"millis\":{},\"budget_millis\":{}}}",
+            "{{\"depth\":{},\"nodes\":{},\"hits\":{},\"millis\":{},\"threads\":{},\"budget_millis\":{}}}",
             s.depth,
             s.nodes,
             s.hits,
             s.elapsed.as_millis(),
+            s.threads,
             a.search_budget.unwrap_or_default().as_millis()
         )
     });
@@ -672,8 +674,8 @@ fn state_json(a: &mut App) -> String {
         let s = *analysis.progress.lock().unwrap();
         let active = (a.thinking || a.pondering) && analysis.revision == a.revision;
         let budget = analysis.budget.map_or("null".into(), |b| b.as_millis().to_string());
-        format!("{{\"revision\":{},\"pondering\":{},\"active\":{},\"depth\":{},\"searching_depth\":{},\"nodes\":{},\"hits\":{},\"millis\":{},\"budget_millis\":{budget}}}",
-            analysis.revision, analysis.pondering, active, s.depth, s.searching_depth, s.nodes, s.hits, s.elapsed.as_millis())
+        format!("{{\"revision\":{},\"pondering\":{},\"active\":{},\"depth\":{},\"searching_depth\":{},\"nodes\":{},\"hits\":{},\"millis\":{},\"threads\":{},\"budget_millis\":{budget}}}",
+            analysis.revision, analysis.pondering, active, s.depth, s.searching_depth, s.nodes, s.hits, s.elapsed.as_millis(), s.threads)
     });
     format!("{{\"board\":[{board}],\"white\":{},\"human\":{},\"clocks\":{clocks},\"thinking_seconds\":{},\"revision\":{},\"thinking\":{},\"pondering\":{},\"check\":{},\"result\":{},\"legal\":[{moves}],\"notation\":[{notation}],\"last\":{last},\"stats\":{stats},\"analysis\":{analysis}}}",
         p.white, a.human.map_or("null", |c| if c { "true" } else { "false" }), a.fixed_thinking.as_secs_f64(), a.revision, a.thinking, a.pondering, p.in_check(p.white), result.map_or("null".into(), |r| quote(&r)))
