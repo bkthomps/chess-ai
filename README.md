@@ -43,6 +43,10 @@ The table has 2,000,000 slots in 500,000 four-entry buckets, using 14 bytes per 
 
 Material checks scan the board without collecting pieces, and stable move ordering uses no heap scratch. Its small stack buffer has a fallback for larger move lists, so it does not impose a move-count limit. Equal-priority moves retain their original order.
 
+Attack geometry, Zobrist features, and positional evaluation scores are computed at compile time in small immutable tables. Legal move generation computes check and absolute pins once per position, accepting unpinned non-king moves directly when safe. King moves, pinned moves, check evasions, and en passant still simulate the resulting board and check for attacks. These temporary legality checks skip hash updates. Quiescence generates captures and promotions directly outside check, while verifying that a legal move exists to distinguish quiet positions from stalemate; in check, it generates every legal evasion.
+
+Search reuses move-list allocations by ply, retaining at most 512 KiB of move storage plus a small vector of buffer headers. Larger move lists and deeper searches remain supported without increasing the retained pool limit. Reversible-history context is updated incrementally as search enters and leaves positions. A usable cached score returns before move generation, with the same full history-aware key checks. These optimizations preserve evaluation, move ordering, and search rules, and use the same Rust implementation on every platform.
+
 Colliding positions can coexist within a bucket. Empty slots are used first. For the same position, deeper results are retained; at equal depth, exact scores take priority, and bounds are updated when tighter. Full buckets rank entries by depth plus a two-point exact-score bonus, minus four points per unused search generation. An incoming result replaces the weakest resident only if its rank is at least as high. Successful lookups refresh age. Each thinking or pondering search advances the six-bit generation, and a rotating sweep retires long-unused entries before the counter wraps. This keeps old deep entries from blocking the table forever without adding bytes per entry.
 
 Search runs on a single persistent worker thread and keeps the last completed depth under a time budget. In one-player mode, the same worker also ponders during the human's turn, exploring possible human moves and computer replies without making a move or spending the computer's clock. Once the human moves, pondering is cancelled and the worker searches the actual position using the retained cache. Previously explored branches supply cached moves, bounds, and exact scores; an exact cached root resumes at the next depth. An unexpected move can benefit less because its branch may have received less search. Pondering uses one CPU thread while the human considers a move, including in Unlimited games and while the menu is open.
@@ -63,8 +67,16 @@ python3 tests/http_smoke.py
 node tests/ui_smoke.cjs
 ```
 
-The Rust tests include 152 regression fixture cases: recursive move counts with promotion, castling, and en passant counts; smoke positions; material draws; and terminal positions. They also check incremental hashes, pins, repetition, undo, forced-mate search, and the HTTP handler for both modes. Clock tests cover increments, exact-zero flags, late moves, timeout draws, stopped clocks, undo, search allocation, and cancellation. The handler tests use an in-memory connection and require no socket permissions.
+To measure search throughput independently of a move's time allowance:
+
+```sh
+cargo test --release --offline engine::tests::benchmark_fixed_depth -- --ignored --nocapture
+```
+
+This benchmark searches five fixed positions with a fresh cache for each run, excludes cache initialization from timing, and reports the median of seven runs after a warmup. It prints depth, nodes, cache hits, score, best move, elapsed milliseconds, and retained move-buffer bytes. Nodes, scores, and moves must remain consistent between repetitions. Run it without competing CPU-intensive work for useful timing comparisons.
+
+The Rust tests include 152 regression fixture cases: recursive move counts with promotion, castling, and en passant counts; smoke positions; material draws; and terminal positions. They also compare fast and tactical generation with full legality checks over playouts, compare lookup-based evaluation and incremental history with recomputation, and check buffer reuse, incremental hashes, pins, repetition, undo, forced-mate search, and the HTTP handler for both modes. Clock tests cover increments, exact-zero flags, late moves, timeout draws, stopped clocks, undo, search allocation, and cancellation. The handler tests use an in-memory connection and require no socket permissions.
 
 The UI harness checks timed and Unlimited presets, custom controls and thinking times, live clock rendering and resynchronization, move highlighting and requests, board flipping, promotion choice, solo play as Black, and engine diagnostics. Audio checks cover move, check, game-end, timeout, mute, duplicate suppression, silent undo/resume, and unavailable audio support. It uses a simulated DOM and audio context and does not replace visual or audible browser testing. The HTTP test needs permission to bind a local socket; restricted sandboxes may block it.
 
-Source: `src/chess.rs` (rules/hashing), `src/clock.rs` (clocks), `src/engine.rs` (AI/time allocation), `src/game.rs` (history/results), `src/main.rs` (local HTTP server), and `web/` (bundled UI).
+Source: `src/chess.rs` (rules/hashing), `src/tables.rs` (board geometry), `src/clock.rs` (clocks), `src/engine.rs` (AI/time allocation), `src/game.rs` (history/results), `src/main.rs` (local HTTP server), and `web/` (bundled UI).

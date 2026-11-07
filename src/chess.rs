@@ -1,4 +1,5 @@
 //! Legal chess and incremental Zobrist hashing. a1 = 0, h8 = 63.
+use crate::tables::{KING_TARGETS, KNIGHT_TARGETS, PAWN_ATTACKERS, RAYS};
 use std::fmt;
 pub const PAWN: i8 = 1;
 pub const KNIGHT: i8 = 2;
@@ -11,6 +12,11 @@ pub struct Move {
     pub from: usize,
     pub to: usize,
     pub promotion: i8,
+}
+#[derive(Clone, Copy)]
+pub(crate) struct MoveState {
+    pub in_check: bool,
+    pub has_legal: bool,
 }
 impl fmt::Display for Move {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
@@ -33,14 +39,41 @@ pub fn square_name(s: usize) -> String {
     format!("{}{}", (b'a' + (s % 8) as u8) as char, s / 8 + 1)
 }
 /// SplitMix64 provides deterministic independent pseudorandom Zobrist features.
-pub fn random_key(mut n: u64) -> u64 {
+pub const fn random_key(mut n: u64) -> u64 {
     n = n.wrapping_add(0x9e3779b97f4a7c15);
     n = (n ^ (n >> 30)).wrapping_mul(0xbf58476d1ce4e5b9);
     n = (n ^ (n >> 27)).wrapping_mul(0x94d049bb133111eb);
     n ^ (n >> 31)
 }
+const fn piece_keys() -> [[u64; 64]; 13] {
+    let mut keys = [[0; 64]; 13];
+    let mut piece = 0;
+    while piece < 13 {
+        let mut square = 0;
+        while square < 64 {
+            keys[piece][square] = random_key(0x4348455353 + piece as u64 * 64 + square as u64);
+            square += 1;
+        }
+        piece += 1;
+    }
+    keys
+}
+const fn metadata_keys<const N: usize>(base: u64) -> [u64; N] {
+    let mut keys = [0; N];
+    let mut index = 0;
+    while index < N {
+        keys[index] = random_key(base + index as u64);
+        index += 1;
+    }
+    keys
+}
+static PIECE_KEYS: [[u64; 64]; 13] = piece_keys();
+static CASTLING_KEYS: [u64; 16] = metadata_keys(10000);
+static EP_KEYS: [u64; 64] = metadata_keys(12000);
+const BLACK_TO_MOVE_KEY: u64 = random_key(11000);
+
 fn piece_key(p: i8, s: usize) -> u64 {
-    random_key(0x4348455353 + (p + 6) as u64 * 64 + s as u64)
+    PIECE_KEYS[(p + 6) as usize][s]
 }
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct Position {
@@ -134,9 +167,9 @@ impl Position {
         Ok(p)
     }
     fn metadata_key(&self) -> u64 {
-        random_key(10000 + self.castling as u64)
-            ^ if self.white { 0 } else { random_key(11000) }
-            ^ self.ep.map_or(0, |s| random_key(12000 + s as u64))
+        CASTLING_KEYS[self.castling as usize]
+            ^ if self.white { 0 } else { BLACK_TO_MOVE_KEY }
+            ^ self.ep.map_or(0, |s| EP_KEYS[s])
     }
     pub fn compute_hash(&self) -> u64 {
         self.squares
@@ -145,12 +178,12 @@ impl Position {
             .filter(|(_, p)| **p != 0)
             .fold(self.metadata_key(), |h, (s, &p)| h ^ piece_key(p, s))
     }
-    fn set(&mut self, s: usize, p: i8) {
-        if self.squares[s] != 0 {
+    fn set<const HASH: bool>(&mut self, s: usize, p: i8) {
+        if HASH && self.squares[s] != 0 {
             self.hash ^= piece_key(self.squares[s], s);
         }
         self.squares[s] = p;
-        if p != 0 {
+        if HASH && p != 0 {
             self.hash ^= piece_key(p, s);
         }
     }
@@ -160,19 +193,21 @@ impl Position {
     }
     /// Apply a move already validated by legal_moves.
     pub fn play(&self, m: Move) -> Self {
+        self.play_internal::<true>(m)
+    }
+    fn play_internal<const HASH: bool>(&self, m: Move) -> Self {
         let mut p = self.clone();
-        p.hash ^= p.metadata_key();
         let piece = p.squares[m.from];
         let capture = self.is_capture(m);
-        p.set(m.from, 0);
+        p.set::<HASH>(m.from, 0);
         if piece.abs() == 1
             && self.ep == Some(m.to)
             && self.squares[m.to] == 0
             && m.from % 8 != m.to % 8
         {
-            p.set(if self.white { m.to - 8 } else { m.to + 8 }, 0);
+            p.set::<HASH>(if self.white { m.to - 8 } else { m.to + 8 }, 0);
         }
-        p.set(
+        p.set::<HASH>(
             m.to,
             if m.promotion != 0 {
                 m.promotion * piece.signum()
@@ -189,8 +224,8 @@ impl Position {
                     (m.from - 4, m.from - 1)
                 };
                 let rook = p.squares[a];
-                p.set(a, 0);
-                p.set(b, rook);
+                p.set::<HASH>(a, 0);
+                p.set::<HASH>(b, rook);
             }
         }
         for s in [m.from, m.to].iter() {
@@ -216,67 +251,88 @@ impl Position {
             p.fullmove = p.fullmove.saturating_add(1);
         }
         p.white = !self.white;
-        p.hash ^= p.metadata_key();
+        if HASH {
+            p.hash ^= BLACK_TO_MOVE_KEY;
+            if self.castling != p.castling {
+                p.hash ^=
+                    CASTLING_KEYS[self.castling as usize] ^ CASTLING_KEYS[p.castling as usize];
+            }
+            if let Some(ep) = self.ep {
+                p.hash ^= EP_KEYS[ep];
+            }
+            if let Some(ep) = p.ep {
+                p.hash ^= EP_KEYS[ep];
+            }
+        }
         p
     }
-    pub fn attacked(&self, s: usize, white: bool) -> bool {
+    fn leaper_attacked(&self, square: usize, white: bool) -> bool {
         let sign = if white { 1 } else { -1 };
-        let (x, y) = ((s % 8) as i32, (s / 8) as i32);
-        for dx in [-1, 1].iter() {
-            if let Some(t) = at(x + dx, y - if white { 1 } else { -1 }) {
-                if self.squares[t] == sign {
-                    return true;
-                }
-            }
+        PAWN_ATTACKERS[usize::from(white)][square]
+            .iter()
+            .any(|s| self.squares[s] == sign)
+            || KNIGHT_TARGETS[square]
+                .iter()
+                .any(|s| self.squares[s] == sign * KNIGHT)
+            || KING_TARGETS[square]
+                .iter()
+                .any(|s| self.squares[s] == sign * KING)
+    }
+    pub fn attacked(&self, square: usize, white: bool) -> bool {
+        if self.leaper_attacked(square, white) {
+            return true;
         }
-        for (dx, dy) in [
-            (1, 2),
-            (2, 1),
-            (-1, 2),
-            (-2, 1),
-            (1, -2),
-            (2, -1),
-            (-1, -2),
-            (-2, -1),
-        ]
-        .iter()
-        {
-            if let Some(t) = at(x + dx, y + dy) {
-                if self.squares[t] == sign * 2 {
-                    return true;
-                }
-            }
-        }
-        for (dx, dy) in [
-            (1, 0),
-            (-1, 0),
-            (0, 1),
-            (0, -1),
-            (1, 1),
-            (-1, 1),
-            (1, -1),
-            (-1, -1),
-        ]
-        .iter()
-        {
-            let mut step = 1;
-            while let Some(t) = at(x + dx * step, y + dy * step) {
-                let pc = self.squares[t];
-                if pc != 0 {
-                    if pc.signum() == sign
-                        && (pc.abs() == 5
-                            || (step == 1 && pc.abs() == 6)
-                            || (pc.abs() == 4 && (*dx == 0 || *dy == 0))
-                            || (pc.abs() == 3 && *dx != 0 && *dy != 0))
+        let sign = if white { 1 } else { -1 };
+        for (direction, ray) in RAYS[square].iter().enumerate() {
+            for target in ray.iter() {
+                let piece = self.squares[target];
+                if piece != 0 {
+                    if piece.signum() == sign
+                        && (piece.abs() == QUEEN
+                            || piece.abs() == ROOK && direction < 4
+                            || piece.abs() == BISHOP && direction >= 4)
                     {
                         return true;
                     }
                     break;
                 }
-                step += 1;
             }
         }
         false
+    }
+    /// Check status and absolute pins, computed once for the current king.
+    fn king_safety(&self, king: usize) -> (bool, u64) {
+        let sign = if self.white { 1 } else { -1 };
+        let mut check = self.leaper_attacked(king, !self.white);
+        let mut pinned = 0;
+        for (direction, ray) in RAYS[king].iter().enumerate() {
+            let mut blocker = None;
+            for target in ray.iter() {
+                let piece = self.squares[target];
+                if piece == 0 {
+                    continue;
+                }
+                if piece.signum() == sign {
+                    if blocker.is_some() {
+                        break;
+                    }
+                    blocker = Some(target);
+                } else {
+                    if piece.abs() == QUEEN
+                        || piece.abs() == ROOK && direction < 4
+                        || piece.abs() == BISHOP && direction >= 4
+                    {
+                        if let Some(square) = blocker {
+                            pinned |= 1u64 << square;
+                        } else {
+                            check = true;
+                        }
+                    }
+                    break;
+                }
+            }
+        }
+        (check, pinned)
     }
     pub fn in_check(&self, white: bool) -> bool {
         self.squares
@@ -286,6 +342,39 @@ impl Position {
     }
     pub fn legal_moves(&self) -> Vec<Move> {
         let mut moves = Vec::with_capacity(48);
+        self.legal_moves_into(&mut moves);
+        moves
+    }
+    pub(crate) fn legal_moves_into(&self, moves: &mut Vec<Move>) -> MoveState {
+        self.generate_moves::<false, true>(moves)
+    }
+    pub(crate) fn tactical_moves_into(&self, moves: &mut Vec<Move>) -> MoveState {
+        self.generate_moves::<true, true>(moves)
+    }
+    fn generate_moves<const TACTICAL: bool, const FAST: bool>(
+        &self,
+        moves: &mut Vec<Move>,
+    ) -> MoveState {
+        moves.clear();
+        if moves.capacity() < 48 {
+            moves.reserve(48);
+        }
+        let Some(king) = self
+            .squares
+            .iter()
+            .position(|&p| p == if self.white { KING } else { -KING })
+        else {
+            return MoveState {
+                in_check: true,
+                has_legal: false,
+            };
+        };
+        let (check, pinned) = if FAST {
+            self.king_safety(king)
+        } else {
+            (self.in_check(self.white), 0)
+        };
+        let mut has_legal = false;
         let sign = if self.white { 1 } else { -1 };
         for from in 0..64 {
             let pc = self.squares[from];
@@ -293,32 +382,59 @@ impl Position {
                 continue;
             }
             let (x, y) = ((from % 8) as i32, (from / 8) as i32);
+            let mut legal_seen = has_legal;
             let mut add = |to: usize| {
-                if pc.abs() == 1 && (to / 8 == 0 || to / 8 == 7) {
-                    for promotion in [5, 4, 3, 2].iter() {
-                        moves.push(Move {
-                            from,
-                            to,
-                            promotion: *promotion,
-                        });
-                    }
-                } else {
-                    moves.push(Move {
-                        from,
-                        to,
-                        promotion: 0,
-                    });
+                let promotion = pc.abs() == PAWN && (to / 8 == 0 || to / 8 == 7);
+                let en_passant = pc.abs() == PAWN
+                    && self.ep == Some(to)
+                    && self.squares[to] == 0
+                    && from % 8 != to % 8;
+                let capture = self.squares[to] != 0 || en_passant;
+                let collect = !TACTICAL || check || promotion || capture;
+                if !collect && has_legal {
+                    return has_legal;
                 }
+                let m = Move {
+                    from,
+                    to,
+                    promotion: if promotion { QUEEN } else { 0 },
+                };
+                let legal = if FAST {
+                    // Unpinned non-king moves cannot expose our king, except
+                    // en passant, which removes a second blocking pawn.
+                    !check && from != king && pinned & (1u64 << from) == 0 && !en_passant
+                        || !self
+                            .play_internal::<false>(m)
+                            .attacked(if from == king { to } else { king }, !self.white)
+                } else {
+                    !self.play(m).in_check(self.white)
+                };
+                if !legal {
+                    return has_legal;
+                }
+                has_legal = true;
+                if collect {
+                    if promotion {
+                        for promotion in [QUEEN, ROOK, BISHOP, KNIGHT] {
+                            moves.push(Move { promotion, ..m });
+                        }
+                    } else {
+                        moves.push(m);
+                    }
+                }
+                has_legal
             };
             match pc.abs() {
                 1 => {
                     let dy = sign as i32;
                     if let Some(to) = at(x, y + dy) {
                         if self.squares[to] == 0 {
-                            add(to);
+                            if !TACTICAL || check || !legal_seen || to / 8 == 0 || to / 8 == 7 {
+                                legal_seen = add(to);
+                            }
                             if y == if self.white { 1 } else { 6 } {
                                 let t = at(x, y + dy * 2).unwrap();
-                                if self.squares[t] == 0 {
+                                if self.squares[t] == 0 && (!TACTICAL || check || !legal_seen) {
                                     add(t);
                                 }
                             }
@@ -337,58 +453,40 @@ impl Position {
                     }
                 }
                 2 => {
-                    for (dx, dy) in [
-                        (1, 2),
-                        (2, 1),
-                        (-1, 2),
-                        (-2, 1),
-                        (1, -2),
-                        (2, -1),
-                        (-1, -2),
-                        (-2, -1),
-                    ]
-                    .iter()
-                    {
-                        if let Some(to) = at(x + dx, y + dy) {
-                            if self.squares[to].signum() != sign && self.squares[to].abs() != 6 {
-                                add(to);
-                            }
+                    for to in KNIGHT_TARGETS[from].iter() {
+                        if self.squares[to].signum() != sign
+                            && self.squares[to].abs() != 6
+                            && (!TACTICAL || check || !legal_seen || self.squares[to] != 0)
+                        {
+                            legal_seen = add(to);
                         }
                     }
                 }
                 _ => {
-                    for (dx, dy) in [
-                        (1, 0),
-                        (-1, 0),
-                        (0, 1),
-                        (0, -1),
-                        (1, 1),
-                        (-1, 1),
-                        (1, -1),
-                        (-1, -1),
-                    ]
-                    .iter()
-                    {
-                        if pc.abs() == 3 && (*dx == 0 || *dy == 0) {
-                            continue;
-                        }
-                        if pc.abs() == 4 && *dx != 0 && *dy != 0 {
-                            continue;
-                        }
-                        let mut step = 1;
-                        while let Some(to) = at(x + dx * step, y + dy * step) {
+                    let directions = match pc.abs() {
+                        BISHOP => 4..8,
+                        ROOK => 0..4,
+                        _ => 0..8,
+                    };
+                    for direction in directions {
+                        for to in RAYS[from][direction].iter() {
                             let t = self.squares[to];
                             if t.signum() == sign || t.abs() == 6 {
                                 break;
                             }
-                            add(to);
+                            if TACTICAL && !check && legal_seen && t == 0 {
+                                if pc.abs() == KING {
+                                    break;
+                                }
+                                continue;
+                            }
+                            legal_seen = add(to);
                             if t != 0 || pc.abs() == 6 {
                                 break;
                             }
-                            step += 1;
                         }
                     }
-                    if pc.abs() == 6 && !self.in_check(self.white) {
+                    if pc.abs() == 6 && !check && (!TACTICAL || !legal_seen) {
                         let b = if self.white { 0 } else { 56 };
                         let rights = if self.white {
                             self.castling
@@ -416,21 +514,41 @@ impl Position {
                 }
             }
         }
-        moves
-            .into_iter()
-            .filter(|&m| !self.play(m).in_check(self.white))
-            .collect()
+        MoveState {
+            in_check: check,
+            has_legal,
+        }
     }
     /// En-passant availability matters for repetition only if a legal capture exists.
     pub fn repetition_key(&self) -> u64 {
         if let Some(ep) = self.ep {
-            if !self
-                .legal_moves()
-                .iter()
-                .any(|m| m.to == ep && self.squares[m.from].abs() == 1 && m.from % 8 != ep % 8)
+            let sign = if self.white { 1 } else { -1 };
+            let target = self.squares[ep];
+            let captured = if self.white { ep - 8 } else { ep + 8 };
+            let capture_possible = target.signum() == -sign && target.abs() != KING
+                || target == 0 && self.squares[captured] == -sign;
+            if capture_possible
+                && PAWN_ATTACKERS[usize::from(self.white)][ep]
+                    .iter()
+                    .any(|from| self.squares[from] == sign)
             {
-                return self.hash ^ random_key(12000 + ep as u64);
+                if let Some(king) = self.squares.iter().position(|&p| p == sign * KING) {
+                    for from in PAWN_ATTACKERS[usize::from(self.white)][ep].iter() {
+                        if self.squares[from] == sign
+                            && !self
+                                .play_internal::<false>(Move {
+                                    from,
+                                    to: ep,
+                                    promotion: 0,
+                                })
+                                .attacked(king, !self.white)
+                        {
+                            return self.hash;
+                        }
+                    }
+                }
             }
+            return self.hash ^ EP_KEYS[ep];
         }
         self.hash
     }
@@ -549,5 +667,88 @@ fn at(x: i32, y: i32) -> Option<usize> {
         Some((y * 8 + x) as usize)
     } else {
         None
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn compiled_hash_keys_match_the_original_splitmix_features() {
+        for piece in -6..=6 {
+            for square in 0..64 {
+                assert_eq!(
+                    piece_key(piece, square),
+                    random_key(0x4348455353 + (piece + 6) as u64 * 64 + square as u64)
+                );
+            }
+        }
+        for (index, &key) in CASTLING_KEYS.iter().enumerate() {
+            assert_eq!(key, random_key(10000 + index as u64));
+        }
+        for (index, &key) in EP_KEYS.iter().enumerate() {
+            assert_eq!(key, random_key(12000 + index as u64));
+        }
+    }
+
+    #[test]
+    fn fast_and_tactical_generation_match_full_legality_over_playouts() {
+        let seeds = [
+            "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+            "r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq - 0 1",
+            "8/2p5/3p4/KP5r/1R3p1k/8/4P1P1/8 w - - 0 1",
+            "r3k2r/P6P/8/3pP3/8/8/p6p/R3K2R w KQkq d6 0 1",
+            "k3r3/8/8/3pP3/8/8/8/4K3 w - d6 0 1",
+            "8/8/8/r4pPK/8/8/8/7k w - f6 0 1",
+            "4k3/8/8/8/8/8/4r3/4K3 w - - 0 1",
+            "7k/5Q2/6K1/8/8/8/8/8 b - - 0 1",
+            "7k/6Q1/6K1/8/8/8/8/8 b - - 0 1",
+            "k7/8/8/8/1Q1Q1Q1Q/Q1Q1Q1Q1/8/7K w - - 0 1",
+        ];
+        let mut random = 0x51a7u64;
+        for seed in seeds {
+            for _ in 0..3 {
+                let mut p = Position::from_fen(seed).unwrap();
+                for _ in 0..200 {
+                    let mut reference = Vec::new();
+                    let slow = p.generate_moves::<false, false>(&mut reference);
+                    let mut actual = Vec::new();
+                    let state = p.legal_moves_into(&mut actual);
+                    assert_eq!(actual, reference);
+                    assert_eq!(state.in_check, p.in_check(p.white));
+                    assert_eq!(state.has_legal, !reference.is_empty());
+                    assert_eq!(state.in_check, slow.in_check);
+                    let mut tactical = Vec::new();
+                    let tactical_state = p.tactical_moves_into(&mut tactical);
+                    let expected: Vec<_> = reference
+                        .iter()
+                        .copied()
+                        .filter(|&m| state.in_check || p.is_capture(m) || m.promotion != 0)
+                        .collect();
+                    assert_eq!(tactical, expected);
+                    assert_eq!(tactical_state.has_legal, state.has_legal);
+                    assert_eq!(tactical_state.in_check, state.in_check);
+                    let ep_matters = p.ep.is_some_and(|ep| {
+                        reference.iter().any(|m| {
+                            m.to == ep && p.squares[m.from].abs() == PAWN && m.from % 8 != ep % 8
+                        })
+                    });
+                    assert_eq!(
+                        p.repetition_key(),
+                        p.hash
+                            ^ p.ep
+                                .filter(|_| !ep_matters)
+                                .map_or(0, |ep| random_key(12000 + ep as u64))
+                    );
+                    assert_eq!(p.hash, p.compute_hash());
+                    if reference.is_empty() {
+                        break;
+                    }
+                    random = random_key(random);
+                    p = p.play(reference[random as usize % reference.len()]);
+                }
+            }
+        }
     }
 }

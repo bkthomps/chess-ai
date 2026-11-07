@@ -1,6 +1,6 @@
 //! Iterative-deepening negamax (minimax), alpha-beta pruning, and a Zobrist
 //! transposition table. Search runs on a worker thread, away from the UI.
-use crate::chess::{random_key, Move, Position};
+use crate::chess::{random_key, Move, MoveState, Position};
 use std::sync::{
     atomic::{AtomicBool, Ordering},
     Arc, Mutex,
@@ -16,6 +16,9 @@ const STALE_AGE: u8 = 32;
 const SWEEP_PARTS: usize = 16;
 const EXACT_BONUS: i16 = 2;
 const AGE_PENALTY: i16 = 4;
+// Retained scratch is capped independently of move count or search depth.
+const MOVE_BUFFER_LIMIT: usize = 512 * 1024;
+const BUFFER_PLIES: usize = 256 + 10;
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 #[repr(u8)]
 enum Bound {
@@ -132,14 +135,22 @@ impl Table {
         }
     }
     fn bucket_start(&self, key: u64) -> usize {
-        key as usize % (self.keys.len() / BUCKET_SIZE) * BUCKET_SIZE
+        // The production size is constant, allowing a multiply/shift reduction
+        // instead of a variable integer division. Small tables support tests.
+        if self.keys.len() == TABLE_SIZE {
+            key as usize % (TABLE_SIZE / BUCKET_SIZE) * BUCKET_SIZE
+        } else {
+            key as usize % (self.keys.len() / BUCKET_SIZE) * BUCKET_SIZE
+        }
     }
     fn probe(&mut self, key: u64) -> Option<Entry> {
         let start = self.bucket_start(key);
-        for index in start..start + BUCKET_SIZE {
-            if self.keys[index] == key {
-                if let Some(entry) = self.entries[index].unpack() {
-                    self.entries[index].refresh(self.generation);
+        let keys = &self.keys[start..start + BUCKET_SIZE];
+        let entries = &mut self.entries[start..start + BUCKET_SIZE];
+        for (&stored, packed) in keys.iter().zip(entries) {
+            if stored == key {
+                if let Some(entry) = packed.unpack() {
+                    packed.refresh(self.generation);
                     return Some(entry);
                 }
             }
@@ -154,17 +165,19 @@ impl Table {
         let mut empty = None;
         let mut victim = start;
         let mut weakest = i16::MAX;
-        for index in start..start + BUCKET_SIZE {
-            let old = self.entries[index];
+        let keys = &self.keys[start..start + BUCKET_SIZE];
+        let entries = &mut self.entries[start..start + BUCKET_SIZE];
+        for (offset, (&stored, old)) in keys.iter().zip(entries).enumerate() {
+            let index = start + offset;
             if old.is_empty() {
                 empty.get_or_insert(index);
-            } else if self.keys[index] == key {
+            } else if stored == key {
                 // Keep deeper results for this exact position, and prefer an
                 // exact score (or a tighter bound) when depth is equal.
-                if packed.improves(old) {
-                    self.entries[index] = packed;
+                if packed.improves(*old) {
+                    *old = packed;
                 }
-                self.entries[index].refresh(self.generation);
+                old.refresh(self.generation);
                 return;
             } else {
                 let retention = old.retention(self.generation);
@@ -189,6 +202,35 @@ impl Table {
 #[derive(Default)]
 pub struct SearchCache {
     table: Table,
+    buffers: MoveBuffers,
+}
+
+#[derive(Default)]
+struct MoveBuffers {
+    slots: Vec<Vec<Move>>,
+    retained_bytes: usize,
+}
+impl MoveBuffers {
+    fn take(&mut self, ply: usize) -> Vec<Move> {
+        if ply >= BUFFER_PLIES {
+            return Vec::new();
+        }
+        if self.slots.len() <= ply {
+            self.slots.resize_with(ply + 1, Vec::new);
+        }
+        let mut moves = std::mem::take(&mut self.slots[ply]);
+        self.retained_bytes -= moves.capacity() * std::mem::size_of::<Move>();
+        moves.clear();
+        moves
+    }
+    fn put(&mut self, ply: usize, mut moves: Vec<Move>) {
+        moves.clear();
+        let bytes = moves.capacity() * std::mem::size_of::<Move>();
+        if ply < self.slots.len() && self.retained_bytes + bytes <= MOVE_BUFFER_LIMIT {
+            self.retained_bytes += bytes;
+            self.slots[ply] = moves;
+        }
+    }
 }
 #[derive(Clone, Debug)]
 pub struct SearchResult {
@@ -210,7 +252,9 @@ pub struct SearchProgress {
 }
 struct Search<'a> {
     table: &'a mut Table,
+    buffers: &'a mut MoveBuffers,
     keys: Vec<u64>,
+    history_context: u64,
     deadline: Option<Instant>,
     nodes: u64,
     hits: u64,
@@ -314,7 +358,9 @@ impl SearchCache {
         self.table.next_generation();
         let mut s = Search {
             table: &mut self.table,
+            buffers: &mut self.buffers,
             keys: history.to_vec(),
+            history_context: 0,
             deadline: budget.map(|budget| start + budget),
             nodes: 0,
             hits: 0,
@@ -329,6 +375,7 @@ impl SearchCache {
         if s.keys.last() != Some(&position.repetition_key()) {
             s.keys.push(position.repetition_key());
         }
+        s.history_context = reversible_context(position, &s.keys);
         let legal = position.legal_moves();
         let mut result = SearchResult {
             best: legal.first().copied(),
@@ -439,7 +486,7 @@ impl Search<'_> {
     }
     fn is_draw(&self, p: &Position) -> bool {
         p.halfmove >= 100 || p.insufficient_material() || {
-            let key = p.repetition_key();
+            let key = *self.keys.last().expect("current position key");
             self.keys
                 .iter()
                 .rev()
@@ -452,56 +499,106 @@ impl Search<'_> {
     // Include the reversible history and clock: identical boards with different
     // repetition/fifty-move contexts must not share cached scores.
     fn table_key(&self, p: &Position) -> u64 {
-        let mut context = 0u64;
-        for key in self.keys.iter().rev().take(p.halfmove as usize + 1) {
-            context = context.wrapping_add(random_key(*key));
-        }
-        p.hash ^ context.rotate_left(17) ^ random_key(20_000 + p.halfmove as u64)
+        p.hash ^ self.history_context.rotate_left(17) ^ random_key(20_000 + p.halfmove as u64)
+    }
+    fn push_position(&mut self, p: &Position) -> u64 {
+        let previous = self.history_context;
+        let key = p.repetition_key();
+        let context = random_key(key);
+        self.history_context = if p.halfmove == 0 {
+            context
+        } else {
+            previous.wrapping_add(context)
+        };
+        self.keys.push(key);
+        previous
+    }
+    fn pop_position(&mut self, previous: u64) {
+        self.keys.pop();
+        self.history_context = previous;
     }
     fn negamax(
         &mut self,
         p: &Position,
         depth: u8,
         ply: i32,
-        mut alpha: i32,
+        alpha: i32,
         beta: i32,
     ) -> (i32, Option<Move>) {
         if self.expired() {
             return (0, None);
         }
-        let mut moves = p.legal_moves();
-        if moves.is_empty() {
-            return (if p.in_check(p.white) { -MATE + ply } else { 0 }, None);
+        // Cache keys include draw history and the halfmove clock, and entries
+        // are stored only for nonterminal positions. Check proven results
+        // before spending time generating the same moves again.
+        let (key, entry) = if depth > 0 {
+            let key = self.table_key(p);
+            let entry = self.probe(key);
+            if let Some(e) = entry {
+                if e.depth >= depth {
+                    let score = from_table(e.score, ply);
+                    if matches!(e.bound, Bound::Exact)
+                        || matches!(e.bound, Bound::Lower) && score >= beta
+                        || matches!(e.bound, Bound::Upper) && score <= alpha
+                    {
+                        self.hits += 1;
+                        return (score, e.best);
+                    }
+                }
+            }
+            (key, entry)
+        } else {
+            (0, None)
+        };
+        let mut moves = self.buffers.take(ply as usize);
+        let state = if depth == 0 {
+            p.tactical_moves_into(&mut moves)
+        } else {
+            p.legal_moves_into(&mut moves)
+        };
+        let result = self.negamax_moves(
+            p,
+            depth,
+            ply,
+            (alpha, beta),
+            &mut moves,
+            (key, entry, state),
+        );
+        self.buffers.put(ply as usize, moves);
+        result
+    }
+    fn negamax_moves(
+        &mut self,
+        p: &Position,
+        depth: u8,
+        ply: i32,
+        window: (i32, i32),
+        moves: &mut [Move],
+        cached: (u64, Option<Entry>, MoveState),
+    ) -> (i32, Option<Move>) {
+        let (mut alpha, beta) = window;
+        let (key, entry, state) = cached;
+        if !state.has_legal {
+            return (if state.in_check { -MATE + ply } else { 0 }, None);
         }
         if self.is_draw(p) {
             return (0, None);
         }
         if depth == 0 {
-            return (self.quiescence(p, moves, ply, 0, alpha, beta), None);
+            return (
+                self.quiescence_moves(p, moves, state, ply, 0, (alpha, beta)),
+                None,
+            );
         }
-        let key = self.table_key(p);
         let original_alpha = alpha;
-        let entry = self.probe(key);
-        if let Some(e) = entry {
-            if e.depth >= depth {
-                let score = from_table(e.score, ply);
-                if matches!(e.bound, Bound::Exact)
-                    || matches!(e.bound, Bound::Lower) && score >= beta
-                    || matches!(e.bound, Bound::Upper) && score <= alpha
-                {
-                    self.hits += 1;
-                    return (score, e.best);
-                }
-            }
-        }
-        order(p, &mut moves, entry.and_then(|e| e.best));
+        order(p, moves, entry.and_then(|e| e.best));
         let mut best = None;
         let mut value = -INF;
-        for m in moves {
+        for &m in moves.iter() {
             let next = p.play(m);
-            self.keys.push(next.repetition_key());
+            let previous = self.push_position(&next);
             let score = -self.negamax(&next, depth - 1, ply + 1, -beta, -alpha).0;
-            self.keys.pop();
+            self.pop_position(previous);
             if self.aborted {
                 return (0, None);
             }
@@ -531,43 +628,49 @@ impl Search<'_> {
         );
         (value, best)
     }
-    fn quiescence(
+    fn quiescence(&mut self, p: &Position, ply: i32, qply: u8, alpha: i32, beta: i32) -> i32 {
+        let mut moves = self.buffers.take(ply as usize);
+        let state = p.tactical_moves_into(&mut moves);
+        let result = self.quiescence_moves(p, &mut moves, state, ply, qply, (alpha, beta));
+        self.buffers.put(ply as usize, moves);
+        result
+    }
+    fn quiescence_moves(
         &mut self,
         p: &Position,
-        mut moves: Vec<Move>,
+        moves: &mut [Move],
+        state: MoveState,
         ply: i32,
         qply: u8,
-        mut alpha: i32,
-        beta: i32,
+        window: (i32, i32),
     ) -> i32 {
+        let (mut alpha, beta) = window;
         if self.expired() {
             return 0;
         }
-        if moves.is_empty() {
-            return if p.in_check(p.white) { -MATE + ply } else { 0 };
+        if !state.has_legal {
+            return if state.in_check { -MATE + ply } else { 0 };
         }
-        if self.is_draw(p) {
+        // At qply zero negamax has already checked this exact position.
+        if qply != 0 && self.is_draw(p) {
             return 0;
         }
-        let check = p.in_check(p.white);
         if qply >= 10 {
             return evaluate(p);
         }
-        if !check {
+        if !state.in_check {
             let stand = evaluate(p);
             if stand >= beta {
                 return stand;
             }
             alpha = alpha.max(stand);
-            moves.retain(|&m| p.is_capture(m) || m.promotion != 0);
         }
-        order(p, &mut moves, None);
-        for m in moves {
+        order(p, moves, None);
+        for &m in moves.iter() {
             let next = p.play(m);
-            self.keys.push(next.repetition_key());
-            let score =
-                -self.quiescence(&next, next.legal_moves(), ply + 1, qply + 1, -beta, -alpha);
-            self.keys.pop();
+            let previous = self.push_position(&next);
+            let score = -self.quiescence(&next, ply + 1, qply + 1, -beta, -alpha);
+            self.pop_position(previous);
             if self.aborted {
                 return 0;
             }
@@ -578,6 +681,12 @@ impl Search<'_> {
         }
         alpha
     }
+}
+fn reversible_context(p: &Position, keys: &[u64]) -> u64 {
+    keys.iter()
+        .rev()
+        .take(p.halfmove as usize + 1)
+        .fold(0u64, |context, &key| context.wrapping_add(random_key(key)))
 }
 fn to_table(s: i32, ply: i32) -> i32 {
     if s > MATE - 256 {
@@ -597,7 +706,7 @@ fn from_table(s: i32, ply: i32) -> i32 {
         s
     }
 }
-fn value(piece: i8) -> i32 {
+const fn value(piece: i8) -> i32 {
     match piece.abs() {
         1 => 100,
         2 => 320,
@@ -650,47 +759,84 @@ fn order(p: &Position, moves: &mut [Move], best: Option<Move>) {
         moves[target] = m;
     }
 }
+const fn square_score(pc: i8, s: usize, endgame: bool) -> i16 {
+    if pc == 0 {
+        return 0;
+    }
+    let x = (s % 8) as i32;
+    let y = if pc > 0 { s / 8 } else { 7 - s / 8 } as i32;
+    let center = 6 - (2 * x - 7).abs() - (2 * y - 7).abs();
+    let positional = match pc.abs() {
+        1 => y * 8 + center * 2,
+        2 => center * 10,
+        3 => center * 5,
+        4 => {
+            if y == 6 {
+                20
+            } else {
+                0
+            }
+        }
+        5 => center * 2,
+        6 => {
+            if endgame {
+                center * 8
+            } else {
+                -center * 5 + if y == 0 && (x == 6 || x == 2) { 35 } else { 0 }
+            }
+        }
+        _ => 0,
+    };
+    ((if pc > 0 { 1 } else { -1 }) * (value(pc) + positional)) as i16
+}
+const fn evaluation_table() -> [[i16; 64]; 13] {
+    let mut scores = [[0; 64]; 13];
+    let mut piece = 0;
+    while piece < 13 {
+        let mut square = 0;
+        while square < 64 {
+            scores[piece][square] = square_score(piece as i8 - 6, square, false);
+            square += 1;
+        }
+        piece += 1;
+    }
+    scores
+}
+const fn king_deltas() -> [[i16; 64]; 2] {
+    let mut scores = [[0; 64]; 2];
+    let mut color = 0;
+    while color < 2 {
+        let piece = if color == 1 { 6 } else { -6 };
+        let mut square = 0;
+        while square < 64 {
+            scores[color][square] =
+                square_score(piece, square, true) - square_score(piece, square, false);
+            square += 1;
+        }
+        color += 1;
+    }
+    scores
+}
+static SQUARE_SCORES: [[i16; 64]; 13] = evaluation_table();
+static KING_ENDGAME_DELTAS: [[i16; 64]; 2] = king_deltas();
+
 fn evaluate(p: &Position) -> i32 {
-    let endgame = p
-        .squares
-        .iter()
-        .filter(|&&pc| [4, 5].contains(&pc.abs()))
-        .count()
-        <= 2;
-    let mut score = 0;
+    let (mut score, mut endgame_delta, mut majors) = (0, 0, 0);
     let mut bishops = [0, 0];
-    for (s, &pc) in p.squares.iter().enumerate() {
-        if pc == 0 {
+    for (square, &piece) in p.squares.iter().enumerate() {
+        if piece == 0 {
             continue;
         }
-        let x = (s % 8) as i32;
-        let y = if pc > 0 { s / 8 } else { 7 - s / 8 } as i32;
-        let center = 6 - (2 * x - 7).abs() - (2 * y - 7).abs();
-        let positional = match pc.abs() {
-            1 => y * 8 + center * 2,
-            2 => center * 10,
-            3 => {
-                bishops[usize::from(pc < 0)] += 1;
-                center * 5
-            }
-            4 => {
-                if y == 6 {
-                    20
-                } else {
-                    0
-                }
-            }
-            5 => center * 2,
-            6 => {
-                if endgame {
-                    center * 8
-                } else {
-                    -center * 5 + if y == 0 && (x == 6 || x == 2) { 35 } else { 0 }
-                }
-            }
-            _ => 0,
-        };
-        score += pc.signum() as i32 * (value(pc) + positional);
+        score += i32::from(SQUARE_SCORES[(piece + 6) as usize][square]);
+        match piece.abs() {
+            3 => bishops[usize::from(piece < 0)] += 1,
+            4 | 5 => majors += 1,
+            6 => endgame_delta += i32::from(KING_ENDGAME_DELTAS[usize::from(piece > 0)][square]),
+            _ => {}
+        }
+    }
+    if majors <= 2 {
+        score += endgame_delta;
     }
     if bishops[0] >= 2 {
         score += 30;
@@ -710,6 +856,134 @@ mod tests {
     use super::*;
     use crate::game::Game;
     use std::{sync::mpsc, thread};
+
+    #[test]
+    fn move_buffer_pool_reuses_storage_and_respects_its_memory_cap() {
+        let mut buffers = MoveBuffers::default();
+        let mut moves = buffers.take(0);
+        moves.reserve(48);
+        let original = moves.as_ptr();
+        buffers.put(0, moves);
+        let moves = buffers.take(0);
+        assert_eq!(moves.as_ptr(), original);
+        assert_eq!(buffers.retained_bytes, 0);
+        buffers.put(0, moves);
+        let mut oversized = buffers.take(1);
+        oversized.reserve(MOVE_BUFFER_LIMIT / std::mem::size_of::<Move>() + 1);
+        buffers.put(1, oversized);
+        assert_eq!(buffers.slots[1].capacity(), 0);
+        assert!(buffers.retained_bytes <= MOVE_BUFFER_LIMIT);
+        assert_eq!(
+            buffers.retained_bytes,
+            buffers
+                .slots
+                .iter()
+                .map(|v| v.capacity() * std::mem::size_of::<Move>())
+                .sum()
+        );
+        let beyond_pool = buffers.take(BUFFER_PLIES);
+        buffers.put(BUFFER_PLIES, beyond_pool);
+        assert!(buffers.slots.len() <= BUFFER_PLIES);
+    }
+
+    #[test]
+    fn incremental_history_and_cached_evaluation_match_recomputation() {
+        for seed in [
+            "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+            "r3k2r/P6P/8/3pP3/8/8/p6p/R3K2R w KQkq d6 0 1",
+            "8/2p5/3p4/KP5r/1R3p1k/8/4P1P1/8 w - - 0 1",
+        ] {
+            let mut p = Position::from_fen(seed).unwrap();
+            let mut cache = SearchCache::default();
+            let mut search = test_search(&mut cache, &p, &[p.repetition_key()]);
+            let mut random = 17;
+            for _ in 0..500 {
+                assert_eq!(evaluate(&p), reference_evaluate(&p));
+                assert_eq!(search.history_context, reversible_context(&p, &search.keys));
+                assert_eq!(
+                    search.table_key(&p),
+                    p.hash
+                        ^ reversible_context(&p, &search.keys).rotate_left(17)
+                        ^ random_key(20_000 + p.halfmove as u64)
+                );
+                let legal = p.legal_moves();
+                if legal.is_empty() {
+                    break;
+                }
+                random = random_key(random);
+                let next = p.play(legal[random as usize % legal.len()]);
+                let previous = search.push_position(&next);
+                assert_eq!(
+                    search.history_context,
+                    reversible_context(&next, &search.keys)
+                );
+                search.pop_position(previous);
+                assert_eq!(search.history_context, reversible_context(&p, &search.keys));
+                search.push_position(&next);
+                p = next;
+            }
+        }
+    }
+
+    #[test]
+    #[ignore = "fixed-work runtime benchmark; run with --release --ignored --nocapture"]
+    fn benchmark_fixed_depth() {
+        let cases = [
+            (
+                "opening",
+                "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+                5,
+            ),
+            (
+                "middlegame",
+                "r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq - 0 1",
+                4,
+            ),
+            ("endgame", "8/2p5/3p4/KP5r/1R3p1k/8/4P1P1/8 w - - 0 1", 6),
+            (
+                "tactics",
+                "rnbqk2r/pp1Pbppp/2p5/8/2B5/8/PPP1NnPP/RNBQK2R w KQkq - 1 8",
+                4,
+            ),
+            (
+                "pawns",
+                "8/5pk1/2p3p1/1p1pP2p/1P1P1P1P/2P3K1/8/8 w - - 0 1",
+                6,
+            ),
+        ];
+        println!("case,depth,nodes,hits,score,best,median_ms,scratch_bytes");
+        for (name, fen, depth) in cases {
+            let p = Position::from_fen(fen).unwrap();
+            let mut times = Vec::new();
+            let mut expected = None;
+            let mut scratch = 0;
+            for repetition in 0..8 {
+                let mut cache = SearchCache::default();
+                cache.table.resize(TABLE_SIZE);
+                cache.table.next_generation();
+                let mut search = test_search(&mut cache, &p, &[p.repetition_key()]);
+                let start = Instant::now();
+                let (score, best) = search.negamax(&p, depth, 0, -INF, INF);
+                let elapsed = start.elapsed();
+                let result = (search.nodes, search.hits, score, best);
+                if let Some(expected) = expected {
+                    assert_eq!(result, expected);
+                }
+                expected = Some(result);
+                if repetition != 0 {
+                    times.push(elapsed);
+                }
+                scratch = cache.buffers.retained_bytes;
+            }
+            times.sort();
+            let (nodes, hits, score, best) = expected.unwrap();
+            println!(
+                "{name},{depth},{nodes},{hits},{score},{},{:.3},{scratch}",
+                best.unwrap(),
+                times[times.len() / 2].as_secs_f64() * 1000.0
+            );
+        }
+    }
 
     #[test]
     fn move_order_keeps_cache_capture_promotion_priority_and_quiet_ties() {
@@ -953,6 +1227,62 @@ mod tests {
         assert_eq!(table.generation, 0);
     }
 
+    // Original arithmetic evaluator, independent of the compiled score tables.
+    fn reference_evaluate(p: &Position) -> i32 {
+        let endgame = p
+            .squares
+            .iter()
+            .filter(|&&pc| [4, 5].contains(&pc.abs()))
+            .count()
+            <= 2;
+        let mut score = 0;
+        let mut bishops = [0, 0];
+        for (s, &pc) in p.squares.iter().enumerate() {
+            if pc == 0 {
+                continue;
+            }
+            let x = (s % 8) as i32;
+            let y = if pc > 0 { s / 8 } else { 7 - s / 8 } as i32;
+            let center = 6 - (2 * x - 7).abs() - (2 * y - 7).abs();
+            let positional = match pc.abs() {
+                1 => y * 8 + center * 2,
+                2 => center * 10,
+                3 => {
+                    bishops[usize::from(pc < 0)] += 1;
+                    center * 5
+                }
+                4 => {
+                    if y == 6 {
+                        20
+                    } else {
+                        0
+                    }
+                }
+                5 => center * 2,
+                6 => {
+                    if endgame {
+                        center * 8
+                    } else {
+                        -center * 5 + if y == 0 && (x == 6 || x == 2) { 35 } else { 0 }
+                    }
+                }
+                _ => 0,
+            };
+            score += pc.signum() as i32 * (value(pc) + positional);
+        }
+        if bishops[0] >= 2 {
+            score += 30;
+        }
+        if bishops[1] >= 2 {
+            score -= 30;
+        }
+        if p.white {
+            score
+        } else {
+            -score
+        }
+    }
+
     // Complete a known depth deterministically, using the same search as ponder.
     fn at_depth(
         cache: &mut SearchCache,
@@ -963,9 +1293,17 @@ mod tests {
     ) -> (i32, Option<Move>) {
         cache.table.resize(TABLE_SIZE);
         cache.table.next_generation();
+        let mut search = test_search(cache, p, keys);
+        search.searching_depth = depth;
+        search.negamax(p, depth, ply, -INF, INF)
+    }
+
+    fn test_search<'a>(cache: &'a mut SearchCache, p: &Position, keys: &[u64]) -> Search<'a> {
         Search {
             table: &mut cache.table,
+            buffers: &mut cache.buffers,
             keys: keys.to_vec(),
+            history_context: reversible_context(p, keys),
             deadline: None,
             nodes: 0,
             hits: 0,
@@ -975,9 +1313,8 @@ mod tests {
             started: Instant::now(),
             published: Instant::now(),
             depth: 0,
-            searching_depth: depth,
+            searching_depth: 0,
         }
-        .negamax(p, depth, ply, -INF, INF)
     }
 
     #[test]
