@@ -134,12 +134,19 @@ const drop = (to, overrides = {}) => {
 const moveRequests = () => requests.filter(r => r.url.startsWith('/api/move?'));
 (async () => {
   await tick(); assert(!elements.menu.hidden); assert(elements.game.hidden);
+  assert.equal(audioNotes.length, 31); // The longer menu theme begins once audio is available.
+  assert.equal(vm.runInContext('musicTheme', context), 'menu');
+  assert.equal(vm.runInContext('musicActive', context), true);
   offline = true; await vm.runInContext('poll()', context);
   assert(documentBody.classes.has('disconnected')); assert(!elements.disconnected.hidden);
+  await tick(); assert.equal(vm.runInContext('musicTheme', context), 'disconnected');
+  assert.equal(vm.runInContext('musicActive', context), true);
   assert(elements['disconnected-king'].innerHTML.includes('stroke="#b33a3a"'));
   offline = false; await vm.runInContext('poll()', context);
   assert(!documentBody.classes.has('disconnected')); assert(elements.disconnected.hidden);
-  await submit(); offline = true; await vm.runInContext('poll()', context);
+  await tick(); assert.equal(vm.runInContext('musicTheme', context), 'menu');
+  await submit(); assert.equal(vm.runInContext('musicActive', context), false); offline = true; await vm.runInContext('poll()', context); await tick();
+  assert.equal(vm.runInContext('musicActive', context), true);
   assert(documentBody.classes.has('disconnected')); assert(!elements.disconnected.hidden);
   offline = false; await vm.runInContext('poll()', context);
   assert(!documentBody.classes.has('disconnected')); assert(elements.game.hidden);
@@ -274,19 +281,15 @@ const moveRequests = () => requests.filter(r => r.url.startsWith('/api/move?'));
   audioNotes.length = 0;
   await vm.runInContext('poll()', context); await elements.undo.onclick(); await tick();
   assert.equal(audioNotes.length, 0); // No replay on duplicate responses or undo.
-  elements['sound-toggle'].onclick(); assert.equal(elements['sound-toggle'].attrs['aria-pressed'], 'false');
-  assert.equal(storedSounds.get('chess.sounds'), 'off');
-  await elements['confirm-resign'].onclick(); await tick(); assert.equal(audioNotes.length, 0);
-  elements['sound-toggle'].onclick(); await tick(); assert.equal(audioNotes.length, 0);
-  assert.equal(elements['sound-toggle'].attrs['aria-pressed'], 'true');
-  await vm.runInContext('poll()', context); await tick(); assert.equal(audioNotes.length, 0);
   elements['menu-button'].onclick(); await submit();
   audioNotes.length = 0; rejectNextMove = true;
   clickSquare(12); clickSquare(28); await tick(); assert.equal(audioNotes.length, 0);
   assert(!elements.error.hidden); elements['dismiss-error'].onclick();
   clickSquare(12); clickSquare(28); await tick(); assert.equal(audioNotes.length, 1);
   audioNotes.length = 0;
-  elements['menu-button'].onclick(); await elements.resume.onclick(); await tick(); assert.equal(audioNotes.length, 0);
+  elements['menu-button'].onclick(); await tick(); assert.equal(audioNotes.length, 31);
+  await elements.resume.onclick(); await tick(); assert.equal(vm.runInContext('musicActive', context), false);
+  audioNotes.length = 0;
   // Timeout has no new move, but still gets the game-end sound once.
   server.result = 'Black wins on time'; server.revision++; server.clocks.running = false;
   await vm.runInContext('poll()', context); await tick(); assert.equal(audioNotes.length, 3);

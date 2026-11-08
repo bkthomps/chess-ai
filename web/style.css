@@ -132,8 +132,6 @@ legend { margin-bottom: 10px; }
 .premove-queue { display: flex; flex-wrap: wrap; gap: 4px 18px; margin: 8px 0 0; padding: 0; list-style-position: inside; color: #685181; font-size: 12px; }
 .premove-queue li { padding: 3px 6px; background: #7664b614; border-radius: 3px; }
 .game-tools button { padding: 7px 12px; }
-#sound-toggle[aria-pressed="true"] { background: var(--soft); border-color: #8caa85; }
-#sound-toggle[aria-pressed="false"] { color: var(--muted); }
 #resign { margin-left: auto; }
 .game-sidebar { grid-column: 2; grid-row: 2; display: flex; flex-direction: column; gap: 16px; min-width: 0; }
 .side-panel { padding: 16px; border: 1px solid var(--line); border-radius: 7px; background: var(--surface); font-size: 12px; }

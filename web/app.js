@@ -46,11 +46,6 @@ let premoves = [], premoveContext = null;
 let soundEnabled = true, audioContext = null, soundEpoch = 0, soundSnapshot = null;
 const voices = new Set();
 try { soundEnabled = window.localStorage.getItem('chess.sounds') !== 'off'; } catch { /* Storage is optional. */ }
-function updateSoundButton() {
-  $('sound-toggle').textContent = soundEnabled ? 'Sound' : 'Muted';
-  $('sound-toggle').setAttribute('aria-pressed', String(soundEnabled));
-  $('sound-toggle').title = soundEnabled ? 'Mute game sounds' : 'Enable game sounds';
-}
 function stopVoices() {
   for (const voice of voices) {
     try { voice.oscillator.stop(); } catch { /* It may already have ended. */ }
@@ -115,12 +110,74 @@ function announceGameChanges() {
   }
   soundSnapshot = {notation: state.notation.slice(), result: state.result};
 }
-updateSoundButton();
-$('sound-toggle').onclick = () => {
-  soundEnabled = !soundEnabled; cancelSounds(); updateSoundButton();
-  try { window.localStorage.setItem('chess.sounds', soundEnabled ? 'on' : 'off'); } catch { /* Storage is optional. */ }
-  if (soundEnabled) void unlockAudio();
+// Schedule bounded phrases so screen changes can stop all scheduled notes.
+const musicVoices = new Set();
+let musicTimer = null, musicEpoch = 0, musicActive = false, musicTheme = null;
+const themes = {
+  menu: {step: 0.32, notes: [
+    261.63, 329.63, 392, 523.25, 493.88, 392, 440, 493.88,
+    523.25, 392, 329.63, 392, 440, 349.23, 392, 0,
+    329.63, 392, 523.25, 587.33, 659.25, 587.33, 523.25, 493.88,
+    440, 523.25, 392, 440, 349.23, 392, 329.63, 261.63
+  ]},
+  disconnected: {step: 0.72, notes: [
+    329.63, 293.66, 261.63, 246.94, 220, 0, 261.63, 246.94,
+    220, 196, 220, 246.94, 261.63, 246.94, 220, 0
+  ]}
 };
+function stopMusic() {
+  musicEpoch++; musicActive = false; musicTheme = null;
+  if (musicTimer !== null) clearTimeout(musicTimer);
+  musicTimer = null;
+  for (const voice of musicVoices) {
+    try { voice.oscillator.stop(); } catch { /* It may already have ended. */ }
+    voice.oscillator.disconnect(); voice.gain.disconnect();
+  }
+  musicVoices.clear();
+}
+function musicWanted() {
+  return soundEnabled && !document.hidden && (!playing || document.body.classList.contains('disconnected'));
+}
+async function startMusic() {
+  if (!musicWanted() || musicActive) return;
+  const epoch = musicEpoch;
+  if (!await unlockAudio() || epoch !== musicEpoch || !musicWanted() || musicActive) return;
+  musicActive = true;
+  musicTheme = document.body.classList.contains('disconnected') ? 'disconnected' : 'menu';
+  const theme = themes[musicTheme];
+  function phrase() {
+    if (epoch !== musicEpoch || !musicWanted()) { stopMusic(); return; }
+    try {
+      const start = audioContext.currentTime + 0.03;
+      theme.notes.forEach((frequency, i) => {
+        if (!frequency) return;
+        const time = start + i * theme.step;
+        const oscillator = audioContext.createOscillator(), gain = audioContext.createGain();
+        const voice = {oscillator, gain};
+        oscillator.type = 'sine';
+        oscillator.frequency.setValueAtTime(frequency, time);
+        gain.gain.setValueAtTime(0.0001, time);
+        gain.gain.exponentialRampToValueAtTime(0.025, time + 0.04);
+        gain.gain.exponentialRampToValueAtTime(0.0001, time + theme.step * 0.9);
+        oscillator.connect(gain); gain.connect(audioContext.destination);
+        musicVoices.add(voice);
+        oscillator.onended = () => { oscillator.disconnect(); gain.disconnect(); musicVoices.delete(voice); };
+        oscillator.start(time); oscillator.stop(time + theme.step * 0.9 + 0.01);
+      });
+      musicTimer = setTimeout(phrase, theme.notes.length * theme.step * 1000);
+    } catch { stopMusic(); }
+  }
+  phrase();
+}
+function syncMusic() {
+  const nextTheme = document.body.classList.contains('disconnected') ? 'disconnected' : 'menu';
+  if (!musicWanted() || (musicActive && musicTheme !== nextTheme)) stopMusic();
+  if (musicWanted()) void startMusic();
+}
+// Autoplay policies may require a gesture before an AudioContext can run.
+window.addEventListener('pointerdown', syncMusic);
+window.addEventListener('keydown', syncMusic);
+syncMusic();
 function showError(error) {
   if (error.message === 'Cannot reach the chess server.') return;
   $('error-text').textContent = error.message || String(error); $('error').hidden = false;
@@ -137,6 +194,7 @@ async function api(path, params) {
       $('disconnected-king').innerHTML = piece(white ? 6 : -6).replace('</svg>', '<path d="M45 48l10 10m0-10L45 58" fill="none" stroke="#b33a3a" stroke-width="4"/></svg>');
     }
     document.body.classList.add('disconnected'); $('disconnected').hidden = false;
+    cancelSounds(); syncMusic();
     for (const id of ['promotion-dialog', 'resign-dialog']) if ($(id).open) $(id).close();
     throw new Error('Cannot reach the chess server.');
   }
@@ -192,7 +250,7 @@ $('setup-form').addEventListener('submit', async e => {
   finally { busy = false; $('start').disabled = false; }
 });
 function enterGame({fresh = false} = {}) {
-  playing = true; $('menu').hidden = true; $('game').hidden = false;
+  playing = true; $('menu').hidden = true; $('game').hidden = false; syncMusic();
   resetSoundSnapshot(fresh ? {notation: [], result: null} : state);
   document.body.classList.add('in-game'); render();
   $('board').querySelector(`[data-square="${flipped ? 52 : 12}"]`)?.focus({preventScroll:true});
@@ -201,7 +259,7 @@ function enterGame({fresh = false} = {}) {
 $('menu-button').onclick = () => {
   clearBoardInput();
   playing = false; selected = null; $('menu').hidden = false; $('game').hidden = true;
-  $('resume').hidden = false; document.body.classList.remove('in-game'); $('start').focus({preventScroll:true});
+  $('resume').hidden = false; document.body.classList.remove('in-game'); syncMusic(); $('start').focus({preventScroll:true});
   window.scrollTo({top:0, behavior:'instant'});
 };
 $('resume').onclick = async () => {
@@ -456,7 +514,7 @@ $('board').addEventListener('lostpointercapture', e => {
 });
 $('board').addEventListener('dragstart', e => e.preventDefault());
 window.addEventListener('blur', cancelDrag);
-document.addEventListener('visibilitychange', () => { if (document.hidden) cancelDrag(); });
+document.addEventListener('visibilitychange', () => { if (document.hidden) cancelDrag(); syncMusic(); });
 $('board').addEventListener('click', e => {
   // A completed or cancelled drag may still produce a compatibility click.
   // Keyboard activation (detail 0) must always keep working.
@@ -618,7 +676,7 @@ async function poll() {
         $('menu').hidden = false; $('game').hidden = true; $('resume').hidden = true;
         $('error').hidden = true; $('engine-info').open = false;
         document.body.classList.remove('in-game');
-        document.body.classList.remove('disconnected'); $('disconnected').hidden = true;
+        document.body.classList.remove('disconnected'); $('disconnected').hidden = true; syncMusic();
         $('start').focus({preventScroll:true});
       } else if (!playing || !state) { state = next; }
       // Never overwrite a newer move response with an older polling response.
