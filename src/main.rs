@@ -142,9 +142,11 @@ struct EngineJob {
 
 fn main() -> std::io::Result<()> {
     let mut port = 7878u16;
+    let mut open_browser = false;
     let mut args = std::env::args().skip(1);
     while let Some(arg) = args.next() {
         match arg.as_str() {
+            "--open" => open_browser = true,
             "--port" => {
                 port = args.next().and_then(|p| p.parse().ok()).unwrap_or_else(|| {
                     eprintln!("--port needs a number from 0 to 65535");
@@ -152,7 +154,7 @@ fn main() -> std::io::Result<()> {
                 });
             }
             "--help" | "-h" => {
-                println!("Chess AI\n\nUsage: cargo run --release -- [--port 7878]\n\nOpen the printed address in your browser. No internet or dependencies required.\nOne local game is shared by tabs; Ctrl+C stops the server.");
+                println!("Chess AI\n\nUsage: cargo run --release -- [--port 7878] [--open]\n\n--open opens the local address in your default browser.\nOne local game is shared by tabs; Ctrl+C stops the server.");
                 return Ok(());
             }
             _ => {
@@ -162,6 +164,22 @@ fn main() -> std::io::Result<()> {
         }
     }
     let listener = TcpListener::bind(("127.0.0.1", port))?;
+    if open_browser {
+        let url = format!("http://{}", listener.local_addr()?);
+        thread::spawn(move || {
+            #[cfg(target_os = "windows")]
+            let result = std::process::Command::new("cmd")
+                .args(["/c", "start", "", &url])
+                .status();
+            #[cfg(target_os = "macos")]
+            let result = std::process::Command::new("open").arg(&url).status();
+            #[cfg(not(any(target_os = "windows", target_os = "macos")))]
+            let result = std::process::Command::new("xdg-open").arg(&url).status();
+            if !matches!(result, Ok(status) if status.success()) {
+                eprintln!("Could not open the browser automatically. Open {url} manually.");
+            }
+        });
+    }
     println!(
         "\n  Chess AI is ready.\n  Open http://{} in your browser.\n  Press Ctrl+C to quit.\n",
         listener.local_addr()?

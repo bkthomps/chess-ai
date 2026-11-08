@@ -4,17 +4,41 @@ A dependency-free Rust chess program with a local browser interface. Choose one-
 
 ## Run
 
-Install Rust 1.70 or newer, then from this directory:
+Download the repository ZIP from GitHub and **extract it first**. Open the extracted folder:
+
+- **macOS:** double-click **mac_launcher.command**. If macOS blocks it as an internet download, use the system's Open/Privacy & Security controls to allow the launcher you downloaded.
+- **Windows:** double-click **windows_launcher.cmd**. Keep the entire extracted folder together.
+- **Linux:** run `sh linux_launcher.sh` in the extracted folder. You can also run **linux_launcher.sh** as a program in file managers that support shell scripts; you may need to mark it executable first.
+
+If Make is already available, simply run:
 
 ```sh
-cargo run --release
+make
 ```
 
-Open **http://127.0.0.1:7878** in your browser. To choose another port:
+`make it` also works. Make is optional and is not required by the double-click launchers. The launchers work from folders containing spaces.
+
+First launch installs missing Rust and native compiler tools, builds the optimized application, starts the local server, and opens your default browser. JavaScript runs in the browser; Node.js, npm, Python, and Git are not needed to play. Installation requires internet access and may ask for an administrator password or system approval. Windows C++ tools can take several minutes and several GB of disk space. If an installer requests a restart, restart and run the launcher again. On macOS, complete Apple's Command Line Tools dialog and rerun the launcher. Later launches reuse the tools and build; the application itself works offline.
+
+Automatic setup supports macOS, Windows desktop with PowerShell 5.1 or newer, and Linux with apt, dnf, pacman, zypper, or apk. Other Linux distributions need a C compiler/linker, curl, CA certificates, and xdg-utils installed through their own package manager. A desktop browser must already be installed. Managed devices may require your administrator to allow tool installation. ZIP extraction may lose executable permissions; on macOS you can run `sh scripts/launch.sh` from Terminal if the double-click launcher cannot execute.
+
+Keep the terminal open while playing; Ctrl+C stops the server. If browser opening fails, open the address printed in the terminal (normally **http://127.0.0.1:7878**). If that port is busy, use:
 
 ```sh
-cargo run --release -- --port 8080
+# macOS / Linux
+sh scripts/launch.sh --port 8080
 ```
+
+On Windows, run `powershell -NoProfile -ExecutionPolicy Bypass -File scripts/launch.ps1 --port 8080` from the extracted folder.
+
+For manual builds with Rust 1.70 or newer and native build tools already installed:
+
+```sh
+cargo run --release --offline -- --open
+cargo run --release --offline -- --open --port 8080
+```
+
+The installers use [official Rust downloads](https://rust-lang.org/tools/install/) and [Microsoft C++ Build Tools](https://learn.microsoft.com/en-us/windows/dev-environment/rust/setup). Existing compatible Rust toolchains are reused. Older rustup-managed toolchains use a current stable toolchain for the launch; other older Rust installations need a manual update.
 
 There are no crate dependencies, external assets, accounts, or network services. The server binds only to the local machine. Keep the terminal running while playing; Ctrl+C stops it. Tabs share one game. Refreshing returns to the setup menu; starting a game replaces the current game. Restarting the server resets it.
 
