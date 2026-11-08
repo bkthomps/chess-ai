@@ -612,7 +612,7 @@ async function poll() {
     } catch (error) { showError(error); }
     finally { polling = false; }
   }
-  setTimeout(poll, playing && (state?.thinking || state?.pondering || state?.clocks.running) ? 250 : 1000);
+  setTimeout(poll, playing && (state?.thinking || state?.pondering) ? 150 : playing && state?.clocks.running ? 250 : 1000);
 }
 void poll();
 // The Rust process owns the game, so a page refresh can resume it.

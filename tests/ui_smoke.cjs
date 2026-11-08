@@ -187,7 +187,7 @@ const moveRequests = () => requests.filter(r => r.url.startsWith('/api/move?'));
   const soundsBeforeLive = audioNotes.length;
   server.analysis = {...server.analysis, nodes: 5000, hits: 40, millis: 500};
   await vm.runInContext('poll()', context); await tick();
-  assert.equal(pollDelay, 250);
+  assert.equal(pollDelay, 150);
   assert.equal(elements['engine-nodes'].textContent, (5000).toLocaleString());
   assert.equal(elements['engine-hits'].textContent, (40).toLocaleString());
   assert.equal(elements['engine-time'].textContent, '0.50 s');

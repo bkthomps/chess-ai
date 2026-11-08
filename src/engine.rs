@@ -702,7 +702,7 @@ impl Search<'_> {
     fn publish(&mut self, force: bool) {
         if let Some(progress) = self.progress {
             let now = Instant::now();
-            if force || now.duration_since(self.published) >= Duration::from_millis(250) {
+            if force || now.duration_since(self.published) >= Duration::from_millis(150) {
                 // Never wait for a reader, and never take the game's mutex.
                 if let Ok(mut snapshot) = progress.try_lock() {
                     let (nodes, hits) = self.totals();
