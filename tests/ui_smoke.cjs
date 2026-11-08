@@ -141,7 +141,7 @@ const clickSquare = s => elements.board.listeners.click({target: elements.board.
   // Live updates arrive without a board revision, including Unlimited pondering.
   server.thinking = false; server.pondering = true; server.white = false;
   server.clocks.enabled = false; server.clocks.running = false;
-  server.analysis = {revision: server.revision, active: true, pondering: true, depth: 4, searching_depth: 5, nodes: 1000, hits: 12, millis: 250, budget_millis: null, threads:3};
+  server.analysis = {revision: server.revision, active: true, pondering: true, depth: 4, searching_depth: 5, nodes: 1000, hits: 12, millis: 250, budget_millis: null, threads:3, cache_bytes:65463040, cache_limit:65494144};
   await vm.runInContext('poll()', context);
   vm.runInContext('state.legal=[[52,44,0]];selected=52;renderBoard()', context);
   const selectedButton = elements.board.children.find(e => e.dataset.square === 52);
@@ -155,6 +155,7 @@ const clickSquare = s => elements.board.listeners.click({target: elements.board.
   assert.equal(elements['engine-budget'].textContent, 'Your turn');
   assert.equal(Number(elements['engine-searching-depth'].textContent), 5);
   assert.equal(Number(elements['engine-threads'].textContent), 3);
+  assert.equal(elements['engine-cache'].textContent, '65.5 / 65.5 MB');
   assert.equal(vm.runInContext('selected', context), 52);
   assert.equal(elements.board.children.find(e => e.dataset.square === 52), selectedButton);
   assert.equal(audioNotes.length, soundsBeforeLive);

@@ -78,6 +78,7 @@ try:
     assert pondered['clocks']['black_ms'] == state['clocks']['black_ms']
     assert pondered['analysis']['budget_millis'] is None and pondered['analysis']['pondering']
     assert pondered['analysis']['threads'] >= 1
+    assert 0 < pondered['analysis']['cache_bytes'] <= pondered['analysis']['cache_limit'] < 100_000_000
     assert pondered['analysis']['searching_depth'] > pondered['analysis']['depth']
     state = move(state, 'e2e4')
     state = next_analysis(state)
@@ -89,6 +90,7 @@ try:
         state = request('/api/state')
     assert len(state['notation']) == 2 and state['white'] and state['stats']['nodes'] > 0
     assert state['stats']['threads'] >= 1
+    assert 0 < state['stats']['cache_bytes'] <= state['stats']['cache_limit'] < 100_000_000
     assert state['pondering'] and not state['thinking']
     state = request('/api/undo', {})
     assert not state['notation'] and state['white']

@@ -10,17 +10,19 @@ use std::time::{Duration, Instant};
 
 const MATE: i32 = 30_000;
 const INF: i32 = 32_000;
+#[cfg(test)]
 const TABLE_SIZE: usize = 2_000_000;
+pub const DEFAULT_MEMORY_LIMIT: usize = 100_000_000;
+pub const MAX_MEMORY_LIMIT: usize = 1_000_000_000;
+const MAX_SEARCH_THREADS: usize = 64;
 const BUCKET_SIZE: usize = 4;
 const GENERATION_MASK: u8 = 63;
 const STALE_AGE: u8 = 32;
-const SWEEP_PARTS: usize = 16;
 const EXACT_BONUS: i16 = 2;
 const AGE_PENALTY: i16 = 4;
 // Retained scratch is capped independently of move count or search depth.
 const MOVE_BUFFER_LIMIT: usize = 512 * 1024;
 const BUFFER_PLIES: usize = 256 + 10;
-const TABLE_SHARDS: usize = 1024;
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 #[repr(u8)]
 enum Bound {
@@ -109,162 +111,17 @@ impl PackedEntry {
     }
 }
 
-/// Parallel arrays avoid padding each six-byte entry to an eight-byte key's
-/// alignment. Each logical slot uses 8 + 6 bytes with aligned key accesses.
-#[derive(Default)]
-struct Table {
-    keys: Vec<u64>,
-    entries: Vec<PackedEntry>,
-    generation: u8,
-}
-impl Table {
-    fn resize(&mut self, len: usize) {
-        assert!(len > 0 && len % BUCKET_SIZE == 0);
-        self.keys.resize(len, 0);
-        self.entries.resize(len, PackedEntry::default());
-    }
-    fn next_generation(&mut self) {
-        self.generation = self.generation.wrapping_add(1) & GENERATION_MASK;
-        // Visit every entry within 16 searches and retire unused entries at
-        // age 32. This prevents a 64-generation wrap from making them young.
-        let part = self.generation as usize % SWEEP_PARTS;
-        let start = self.entries.len() * part / SWEEP_PARTS;
-        let end = self.entries.len() * (part + 1) / SWEEP_PARTS;
-        for entry in &mut self.entries[start..end] {
-            if !entry.is_empty() && entry.age(self.generation) >= STALE_AGE {
-                *entry = PackedEntry::default();
-            }
-        }
-    }
-    #[cfg(test)]
-    fn bucket_start(&self, key: u64) -> usize {
-        // The production size is constant, allowing a multiply/shift reduction
-        // instead of a variable integer division. Small tables support tests.
-        if self.keys.len() == TABLE_SIZE {
-            key as usize % (TABLE_SIZE / BUCKET_SIZE) * BUCKET_SIZE
-        } else {
-            key as usize % (self.keys.len() / BUCKET_SIZE) * BUCKET_SIZE
-        }
-    }
-    #[cfg(test)]
-    fn probe(&mut self, key: u64) -> Option<Entry> {
-        let start = self.bucket_start(key);
-        self.probe_at(start, key)
-    }
-    fn probe_at(&mut self, start: usize, key: u64) -> Option<Entry> {
-        let keys = &self.keys[start..start + BUCKET_SIZE];
-        let entries = &mut self.entries[start..start + BUCKET_SIZE];
-        for (&stored, packed) in keys.iter().zip(entries) {
-            if stored == key {
-                if let Some(entry) = packed.unpack() {
-                    packed.refresh(self.generation);
-                    return Some(entry);
-                }
-            }
-        }
-        None
-    }
-    #[cfg(test)]
-    fn store(&mut self, key: u64, entry: Entry) {
-        self.store_at(self.bucket_start(key), key, entry);
-    }
-    fn store_at(&mut self, start: usize, key: u64, entry: Entry) {
-        let Some(packed) = PackedEntry::pack(entry, self.generation) else {
-            return;
-        };
-        let mut empty = None;
-        let mut victim = start;
-        let mut weakest = i16::MAX;
-        let keys = &self.keys[start..start + BUCKET_SIZE];
-        let entries = &mut self.entries[start..start + BUCKET_SIZE];
-        for (offset, (&stored, old)) in keys.iter().zip(entries).enumerate() {
-            let index = start + offset;
-            if old.is_empty() {
-                empty.get_or_insert(index);
-            } else if stored == key {
-                // Keep deeper results for this exact position, and prefer an
-                // exact score (or a tighter bound) when depth is equal.
-                if packed.improves(*old) {
-                    *old = packed;
-                }
-                old.refresh(self.generation);
-                return;
-            } else {
-                let retention = old.retention(self.generation);
-                if retention < weakest {
-                    victim = index;
-                    weakest = retention;
-                }
-            }
-        }
-        let index = match empty {
-            Some(index) => index,
-            None if packed.retention(self.generation) >= weakest => victim,
-            None => return,
-        };
-        self.keys[index] = key;
-        self.entries[index] = packed;
-    }
-}
-
-/// Fine-grained locks keep full keys and packed entries coherent. A busy shard
-/// is skipped: cache access must never make a search wait for another search.
-/// The underlying slots retain their compact 14-byte representation.
-#[derive(Default)]
-struct SharedTable {
-    shards: Vec<Mutex<Table>>,
-    len: usize,
-}
-impl SharedTable {
-    fn resize(&mut self, len: usize) {
-        if self.len == len {
-            return;
-        }
-        assert!(len > 0 && len % BUCKET_SIZE == 0);
-        let buckets = len / BUCKET_SIZE;
-        let count = buckets.min(TABLE_SHARDS);
-        self.shards = (0..count)
-            .map(|shard| {
-                let mut table = Table::default();
-                table.resize(((buckets - 1 - shard) / count + 1) * BUCKET_SIZE);
-                Mutex::new(table)
-            })
-            .collect();
-        self.len = len;
-    }
-    fn next_generation(&mut self) {
-        for shard in &mut self.shards {
-            shard
-                .get_mut()
-                .expect("search table poisoned")
-                .next_generation();
-        }
-    }
-    fn location(&self, key: u64) -> (usize, usize) {
-        if self.len == TABLE_SIZE {
-            let bucket = key as usize % (TABLE_SIZE / BUCKET_SIZE);
-            return (bucket % TABLE_SHARDS, bucket / TABLE_SHARDS * BUCKET_SIZE);
-        }
-        let bucket = key as usize % (self.len / BUCKET_SIZE);
-        let shard = bucket % self.shards.len();
-        (shard, bucket / self.shards.len() * BUCKET_SIZE)
-    }
-    fn probe(&self, key: u64) -> Option<Entry> {
-        let (shard, start) = self.location(key);
-        self.shards[shard].try_lock().ok()?.probe_at(start, key)
-    }
-    fn store(&self, key: u64, entry: Entry) {
-        let (shard, start) = self.location(key);
-        if let Ok(mut table) = self.shards[shard].try_lock() {
-            table.store_at(start, key, entry);
-        }
-    }
-}
+#[path = "cache.rs"]
+mod cache;
+use cache::SharedTable;
+#[cfg(test)]
+use cache::TestTable as Table;
 
 /// Keep at least one logical CPU, and roughly a quarter on larger machines,
 /// available to the browser and other applications. No OS-specific policy.
 fn search_threads(cpus: usize) -> usize {
-    cpus.saturating_sub(cpus.saturating_add(3) / 4).max(1)
+    cpus.saturating_sub(cpus.saturating_add(3) / 4)
+        .clamp(1, MAX_SEARCH_THREADS)
 }
 
 #[derive(Default)]
@@ -336,6 +193,8 @@ pub struct SearchResult {
     pub hits: u64,
     pub elapsed: Duration,
     pub threads: usize,
+    pub cache_bytes: usize,
+    pub cache_limit: usize,
 }
 /// A coherent snapshot of one search, including an unfinished depth.
 #[derive(Clone, Copy, Debug, Default)]
@@ -346,6 +205,8 @@ pub struct SearchProgress {
     pub hits: u64,
     pub elapsed: Duration,
     pub threads: usize,
+    pub cache_bytes: usize,
+    pub cache_limit: usize,
 }
 struct Search<'a> {
     table: &'a SharedTable,
@@ -406,10 +267,32 @@ pub fn search_with_cancel(
 
 impl SearchCache {
     /// Choose an explicit search-thread limit (including the calling worker).
-    /// Default reserves CPU capacity automatically; one is useful for comparisons.
+    /// Default reserves CPU capacity automatically; the RAM budget can lower
+    /// the limit further to preserve at least 32 MiB for the cache.
     pub fn with_threads(threads: usize) -> Self {
+        let thread_budget = (DEFAULT_MEMORY_LIMIT
+            - 16 * 1024 * 1024
+            - DEFAULT_MEMORY_LIMIT / 50
+            - 32 * 1024 * 1024)
+            / (2 * 1024 * 1024 + MOVE_BUFFER_LIMIT);
+        Self::with_threads_and_memory(threads.min(thread_budget.max(1)), DEFAULT_MEMORY_LIMIT)
+    }
+
+    /// Bound the engine's total RAM budget, including conservative allowance for
+    /// thread stacks, scratch, server state, and allocator overhead. Bytes are decimal.
+    pub fn with_threads_and_memory(threads: usize, memory_bytes: usize) -> Self {
+        let threads = threads.clamp(1, MAX_SEARCH_THREADS);
+        let memory_bytes = memory_bytes.min(MAX_MEMORY_LIMIT);
+        let reserve = 16 * 1024 * 1024 + threads * (2 * 1024 * 1024 + MOVE_BUFFER_LIMIT);
+        // Freed pages can remain resident across new games and undos. Grow
+        // allocator headroom smoothly for large budgets, reaching ~17% at 1 GB.
+        let allocator_reserve =
+            (memory_bytes / 50).max(memory_bytes.saturating_sub(500_000_000) / 3);
+        let cache_limit = memory_bytes
+            .saturating_sub(reserve)
+            .saturating_sub(allocator_reserve);
         Self {
-            table: SharedTable::default(),
+            table: SharedTable::with_limit(cache_limit),
             buffers: MoveBuffers::default(),
             helpers: Vec::new(),
             threads: threads.max(1),
@@ -472,7 +355,7 @@ impl SearchCache {
         let threads = self.threads.min(legal.len()).max(1);
         self.helpers.resize_with(threads - 1, MoveBuffers::default);
         let peers: Vec<_> = (1..threads).map(|_| WorkerStats::default()).collect();
-        self.table.resize(TABLE_SIZE);
+        self.table.initialize();
         self.table.next_generation();
         let mut s = Search {
             table: &self.table,
@@ -507,6 +390,8 @@ impl SearchCache {
             hits: 0,
             elapsed: Duration::ZERO,
             threads,
+            cache_bytes: s.table.bytes(),
+            cache_limit: s.table.limit(),
         };
         if legal.is_empty() || s.is_draw(position) {
             result.best = None;
@@ -565,6 +450,7 @@ impl SearchCache {
         }
         (result.nodes, result.hits) = s.totals();
         result.elapsed = start.elapsed();
+        result.cache_bytes = s.table.bytes();
         s.searching_depth = 0;
         s.publish(true);
         result
@@ -750,6 +636,8 @@ impl Search<'_> {
                         hits,
                         elapsed: now.duration_since(self.started),
                         threads: self.threads,
+                        cache_bytes: self.table.bytes(),
+                        cache_limit: self.table.limit(),
                     };
                     self.published = now;
                 }
@@ -1167,6 +1055,7 @@ mod tests {
             (8, 6),
             (16, 12),
             (64, 48),
+            (128, 64),
         ] {
             assert_eq!(search_threads(cpus), threads);
             if cpus > 1 {
@@ -1177,20 +1066,59 @@ mod tests {
     }
 
     #[test]
+    fn memory_budgets_reserve_thread_and_server_headroom() {
+        for threads in [1, 6, 64] {
+            let mut previous = 0;
+            for bytes in [
+                100_000_000,
+                250_000_000,
+                500_000_000,
+                MAX_MEMORY_LIMIT,
+                usize::MAX,
+            ] {
+                let cache = SearchCache::with_threads_and_memory(threads, bytes);
+                let reserve = 16 * 1024 * 1024 + threads * (2 * 1024 * 1024 + MOVE_BUFFER_LIMIT);
+                let capped = bytes.min(MAX_MEMORY_LIMIT);
+                assert!(cache.table.limit() <= capped.saturating_sub(reserve));
+                assert!(cache.table.limit() >= previous);
+                previous = cache.table.limit();
+                if capped == MAX_MEMORY_LIMIT {
+                    assert!(cache.table.limit() <= capped.saturating_sub(reserve + capped / 6));
+                }
+                assert_eq!(cache.table.bytes(), 0);
+            }
+        }
+        let mut cache = SearchCache::with_threads_and_memory(1, 0);
+        let p = Position::default();
+        let result = cache.search(
+            &p,
+            &[p.repetition_key()],
+            Duration::from_millis(10),
+            Arc::default(),
+        );
+        assert_eq!(result.cache_bytes, 0);
+        assert!(p.legal_moves().contains(&result.best.unwrap()));
+    }
+
+    #[test]
+    fn default_memory_budget_is_100_mb_and_keeps_cache_space_on_many_cpus() {
+        assert_eq!(DEFAULT_MEMORY_LIMIT, 100_000_000);
+        let cache = SearchCache::with_threads(6);
+        assert_eq!(cache.threads, 6);
+        assert_eq!(cache.table.limit(), 65_494_144);
+        let many = SearchCache::with_threads(64);
+        assert_eq!(many.threads, 18);
+        assert!(many.table.limit() >= 32 * 1024 * 1024);
+        assert!(many.table.limit() < DEFAULT_MEMORY_LIMIT);
+    }
+
+    #[test]
     fn shared_table_keeps_compact_slots_and_coherent_concurrent_entries() {
         let mut table = SharedTable::default();
         table.resize(TABLE_SIZE);
         table.next_generation();
-        let mut bytes = 0;
-        let mut slots = 0;
-        for shard in &mut table.shards {
-            let shard = shard.get_mut().unwrap();
-            slots += shard.keys.len();
-            bytes +=
-                shard.keys.len() * 8 + shard.entries.len() * std::mem::size_of::<PackedEntry>();
-        }
-        assert_eq!(slots, TABLE_SIZE);
-        assert_eq!(bytes, 28_000_000);
+        assert!(table.bytes() <= table.limit());
+        assert_eq!(std::mem::size_of::<cache::Bucket>(), 64);
         thread::scope(|scope| {
             for worker in 0..4 {
                 let table = &table;
@@ -1198,7 +1126,7 @@ mod tests {
                     for step in 0..2000 {
                         // All writers contend for one bucket. Busy accesses
                         // may be skipped, but a returned full key must match.
-                        let key = (worker * 2000 + step) * (TABLE_SIZE / BUCKET_SIZE) as u64;
+                        let key = (worker * 2000 + step) << 24;
                         let score = (key % 20_000) as i32 - 10_000;
                         table.store(
                             key,
@@ -1546,11 +1474,12 @@ mod tests {
         assert_eq!(size_of::<PackedEntry>(), 6);
         let mut table = Table::default();
         table.resize(TABLE_SIZE);
-        let bytes = table.keys.capacity() * size_of::<u64>()
-            + table.entries.capacity() * size_of::<PackedEntry>();
+        let bytes = table.buckets.capacity() * size_of::<cache::Bucket>();
         assert_eq!(TABLE_SIZE, 2_000_000);
-        assert_eq!(bytes, 28_000_000);
-        println!("Cache: 14 bytes per slot, {bytes} allocated bytes for {TABLE_SIZE} slots");
+        assert_eq!(bytes, 32_000_000);
+        println!(
+            "Cache: 16 bytes per slot including shared epoch, {bytes} bytes for {TABLE_SIZE} slots"
+        );
     }
 
     #[test]
@@ -1708,12 +1637,14 @@ mod tests {
         table.store(1, Entry { score: 16, ..upper });
         assert_eq!(table.probe(1).unwrap().score, 16);
         // A hole before an existing position must not create duplicate entries.
-        table.entries[0] = PackedEntry::default();
+        table.buckets[0].entries[0] = PackedEntry::default();
         table.store(1, cache_entry(10, Bound::Exact));
         assert_eq!(table.probe(1), Some(cache_entry(10, Bound::Exact)));
         assert_eq!(
             (0..BUCKET_SIZE)
-                .filter(|&i| table.keys[i] == 1 && !table.entries[i].is_empty())
+                .filter(
+                    |&i| table.buckets[0].keys[i] == 1 && !table.buckets[0].entries[i].is_empty()
+                )
                 .count(),
             1
         );
@@ -1747,7 +1678,7 @@ mod tests {
             assert_eq!(table.probe(1), Some(cache_entry(9, Bound::Exact)));
         }
         assert_eq!(table.probe(0), None);
-        assert_eq!(table.generation, 0);
+        assert_eq!(table.generation, 128);
     }
 
     // Original arithmetic evaluator, independent of the compiled score tables.
