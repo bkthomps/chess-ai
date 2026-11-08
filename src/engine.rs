@@ -1109,27 +1109,31 @@ const fn king_deltas() -> [[i16; 64]; 2] {
     }
     scores
 }
+// Phase totals 24 in the starting position. Pawns and kings carry no phase.
+const FULL_PHASE: i32 = 24;
+const PHASE_WEIGHTS: [i32; 7] = [0, 0, 1, 1, 2, 4, 0];
+
 static SQUARE_SCORES: [[i16; 64]; 13] = evaluation_table();
 static KING_ENDGAME_DELTAS: [[i16; 64]; 2] = king_deltas();
 
 fn evaluate(p: &Position) -> i32 {
-    let (mut score, mut endgame_delta, mut majors) = (0, 0, 0);
+    let (mut score, mut endgame_delta, mut phase) = (0, 0, 0);
     let mut bishops = [0, 0];
     for (square, &piece) in p.squares.iter().enumerate() {
         if piece == 0 {
             continue;
         }
         score += i32::from(SQUARE_SCORES[(piece + 6) as usize][square]);
+        phase += PHASE_WEIGHTS[piece.unsigned_abs() as usize];
         match piece.abs() {
             3 => bishops[usize::from(piece < 0)] += 1,
-            4 | 5 => majors += 1,
             6 => endgame_delta += i32::from(KING_ENDGAME_DELTAS[usize::from(piece > 0)][square]),
             _ => {}
         }
     }
-    if majors <= 2 {
-        score += endgame_delta;
-    }
+    // Promotions can exceed the initial material; clamp before blending.
+    // Blend the signed total once to preserve color symmetry when rounding.
+    score += endgame_delta * (FULL_PHASE - phase.min(FULL_PHASE)) / FULL_PHASE;
     if bishops[0] >= 2 {
         score += 30;
     }
@@ -1148,6 +1152,24 @@ mod tests {
     use super::*;
     use crate::game::Game;
     use std::{sync::mpsc, thread};
+
+    #[test]
+    fn evaluation_blends_king_activity_through_material_exchanges() {
+        // All non-king material cancels by color. White's central king versus
+        // Black's back-rank king scores -30 in the middlegame and +48 at phase 0.
+        for (fen, expected) in [
+            ("4k3/8/8/8/4K3/8/8/8 w - - 0 1", 48),
+            ("r2qk3/8/8/8/4K3/8/8/R2Q4 w - - 0 1", 9),
+            ("rnbqkbnr/8/8/8/4K3/8/8/RNBQ1BNR w - - 0 1", -30),
+            // Promoted material must never extrapolate beyond the middlegame.
+            ("rqbqkbqr/8/8/8/4K3/8/8/RQBQ1BQR w - - 0 1", -30),
+        ] {
+            let mut p = Position::from_fen(fen).unwrap();
+            assert_eq!(evaluate(&p), expected, "{fen}");
+            p.white = false;
+            assert_eq!(evaluate(&p), -expected);
+        }
+    }
 
     #[test]
     fn automatic_thread_budget_preserves_cpu_headroom() {
@@ -1902,14 +1924,10 @@ mod tests {
         assert_eq!(table.generation, 128);
     }
 
-    // Original arithmetic evaluator, independent of the compiled score tables.
+    // Arithmetic reference independent of the compiled score tables.
     fn reference_evaluate(p: &Position) -> i32 {
-        let endgame = p
-            .squares
-            .iter()
-            .filter(|&&pc| [4, 5].contains(&pc.abs()))
-            .count()
-            <= 2;
+        let mut phase = 0;
+        let mut king_delta = 0;
         let mut score = 0;
         let mut bishops = [0, 0];
         for (s, &pc) in p.squares.iter().enumerate() {
@@ -1935,16 +1953,21 @@ mod tests {
                 }
                 5 => center * 2,
                 6 => {
-                    if endgame {
-                        center * 8
-                    } else {
-                        -center * 5 + if y == 0 && (x == 6 || x == 2) { 35 } else { 0 }
-                    }
+                    let middle = -center * 5 + if y == 0 && (x == 6 || x == 2) { 35 } else { 0 };
+                    king_delta += i32::from(pc.signum()) * (center * 8 - middle);
+                    middle
                 }
+                _ => 0,
+            };
+            phase += match pc.abs() {
+                2 | 3 => 1,
+                4 => 2,
+                5 => 4,
                 _ => 0,
             };
             score += pc.signum() as i32 * (value(pc) + positional);
         }
+        score += king_delta * (24 - phase.min(24)) / 24;
         if bishops[0] >= 2 {
             score += 30;
         }
