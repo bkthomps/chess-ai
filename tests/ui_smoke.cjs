@@ -217,7 +217,7 @@ const moveRequests = () => requests.filter(r => r.url.startsWith('/api/move?'));
   assert.equal(Number(elements['engine-depth'].textContent), 6);
   assert.equal(Number(elements['engine-threads'].textContent), 6);
   assert.equal(elements['engine-nodes'].textContent, (12345).toLocaleString());
-  assert.equal(elements['engine-budget'].textContent, '2.60 s'); assert.equal(elements['engine-time'].textContent, '2.50 s');
+  assert.equal(elements['engine-time'].textContent, '2.50 s / 2.60 s');
   // Live updates arrive without a board revision, including Unlimited pondering.
   server.thinking = false; server.pondering = true; server.white = false;
   server.clocks.enabled = false; server.clocks.running = false;
@@ -231,9 +231,7 @@ const moveRequests = () => requests.filter(r => r.url.startsWith('/api/move?'));
   assert.equal(pollDelay, 150);
   assert.equal(elements['engine-nodes'].textContent, (5000).toLocaleString());
   assert.equal(elements['engine-hits'].textContent, (40).toLocaleString());
-  assert.equal(elements['engine-time'].textContent, '0.50 s');
-  assert.equal(elements['engine-budget'].textContent, 'Your turn');
-  assert.equal(Number(elements['engine-searching-depth'].textContent), 5);
+  assert.equal(elements['engine-time'].textContent, '0.50 s / Your turn');
   assert.equal(Number(elements['engine-threads'].textContent), 3);
   assert.equal(elements['engine-cache'].textContent, '65.5 / 65.5 MB');
   assert.equal(vm.runInContext('selected', context), 52);
@@ -246,7 +244,7 @@ const moveRequests = () => requests.filter(r => r.url.startsWith('/api/move?'));
   await vm.runInContext('poll()', context);
   assert.equal(elements['engine-status'].textContent, 'Thinking… Live search.');
   assert.equal(elements['engine-nodes'].textContent, (2000).toLocaleString());
-  assert.equal(elements['engine-budget'].textContent, '2.60 s');
+  assert.equal(elements['engine-time'].textContent, '0.25 s / 2.60 s');
   // Clock-only responses must resynchronize even without a board revision.
   server.thinking = false; server.white = false; server.clocks.enabled = true; server.clocks.running = true;
   server.clocks.active_white = false; server.clocks.black_ms = 5000;

@@ -642,16 +642,15 @@ function renderEngine() {
     : stats ? 'Last computer move.' : 'Waiting for the first computer move.';
   $('engine-stats').hidden = !stats;
   if (stats) {
-    $('engine-budget').textContent = stats.budget_millis === null ? 'Your turn' : `${(stats.budget_millis / 1000).toFixed(2)} s`;
+    const timeLimit = stats.budget_millis === null ? 'Your turn' : `${(stats.budget_millis / 1000).toFixed(2)} s`;
     const evaluation = stats.evaluation;
     $('engine-evaluation').textContent = evaluation == null ? '—' : Math.abs(evaluation) > 29744 ? (evaluation > 0 ? '+Mate' : '−Mate') : `${evaluation > 0 ? '+' : ''}${(evaluation / 100).toFixed(2)}`;
     $('engine-depth').textContent = stats.depth;
     $('engine-threads').textContent = stats.threads || '—';
     $('engine-cache').textContent = stats.cache_limit ? `${(stats.cache_bytes / 1000000).toFixed(1)} / ${(stats.cache_limit / 1000000).toFixed(1)} MB` : '—';
-    $('engine-searching-depth').textContent = analysis?.active && analysis.searching_depth ? analysis.searching_depth : '—';
     $('engine-nodes').textContent = stats.nodes.toLocaleString();
     $('engine-hits').textContent = stats.hits.toLocaleString();
-    $('engine-time').textContent = `${(stats.millis / 1000).toFixed(2)} s`;
+    $('engine-time').textContent = `${(stats.millis / 1000).toFixed(2)} s / ${timeLimit}`;
   }
 }
 $('flip').onclick = () => { flipped = !flipped; render(); };
