@@ -499,6 +499,12 @@ function renderBoard(keepDrag = false) {
     fragment.append(el);
   }
   $('board').replaceChildren(fragment);
+  if (keepDrag && drag?.active) {
+    const source = $('board').querySelector(`[data-square="${drag.from}"]`);
+    source?.classList.add('drag-source');
+    drag.over = squareAtPointer({clientX:drag.x, clientY:drag.y});
+    if (drag.over?.classList.contains('target')) drag.over.classList.add('drag-over');
+  }
   if (focusWasBoard) $('board').querySelector(`[data-square="${focusSquare}"]`)?.focus({preventScroll:true});
   renderPremove();
 }
@@ -536,7 +542,8 @@ $('board').addEventListener('pointerdown', e => {
   if (!button || !canInput()) return;
   const from = Number(button.dataset.square), source = inputSource(from);
   if (!source) return;
-  drag = {id:e.pointerId, from, ...source, revision:state.revision, x:e.clientX, y:e.clientY, active:false};
+  drag = {id:e.pointerId, from, ...source, revision:state.revision,
+    startX:e.clientX, startY:e.clientY, x:e.clientX, y:e.clientY, active:false};
 });
 document.addEventListener('pointermove', e => {
   if (!drag || e.pointerId !== drag.id) return;
@@ -558,6 +565,7 @@ document.addEventListener('pointermove', e => {
     void unlockAudio();
   }
   e.preventDefault();
+  drag.x = e.clientX; drag.y = e.clientY;
   drag.ghost.style.left = `${e.clientX}px`; drag.ghost.style.top = `${e.clientY}px`;
   drag.over?.classList.remove('drag-over');
   drag.over = squareAtPointer(e);
@@ -565,7 +573,13 @@ document.addEventListener('pointermove', e => {
 }, {passive:false});
 document.addEventListener('pointerup', e => {
   if (!drag || e.pointerId !== drag.id) return;
-  const previous = drag, target = previous.active ? squareAtPointer(e) : null;
+  const previous = drag;
+  // A fast gesture can reach pointerup before the browser dispatches a
+  // pointermove. Treat clear down-to-up movement as a drag on release too.
+  if (!previous.active && Math.hypot(e.clientX - previous.startX, e.clientY - previous.startY) >= 6) {
+    previous.active = true;
+  }
+  const target = previous.active ? squareAtPointer(e) : null;
   cancelDrag();
   if (!previous.active) return;
   e.preventDefault();
@@ -659,7 +673,7 @@ function render() {
   if (!playing || !state) return;
   announceGameChanges();
   const readyPremove = takeReadyPremove();
-  renderBoard();
+  renderBoard(!!drag?.active && state.revision === drag.revision && canInput());
   renderClocks();
   const signature = [state.white, state.thinking, state.result, state.check, state.human, state.ai_vs_ai, controlLabel(state.clocks), state.thinking_seconds].join('|');
   if (signature !== lastStatus) {
