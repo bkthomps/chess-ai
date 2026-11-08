@@ -81,6 +81,7 @@ legend { margin-bottom: 10px; }
 .options label:has(input:checked) { background: var(--soft); border-color: #8caa85; }
 .options input { margin: 0; }
 .time-control-row { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-bottom: 28px; }
+.time-control-row select { width: calc((100% - 8px) / 2); min-width: 0; }
 .primary { background: var(--green); border-color: var(--green); color: #fffdf7; }
 .primary:hover:not(:disabled) { background: #244633; }
 .custom-time { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: -12px 0 24px; }
