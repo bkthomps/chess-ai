@@ -39,6 +39,8 @@ for (let i = 0; i < 24; i++) {
 $('menu-background').append(fallingPieces);
 function squareName(s) { return String.fromCharCode(97 + s % 8) + (Math.floor(s / 8) + 1); }
 let state = null, selected = null, flipped = false, playing = false, busy = false;
+let confirmingNewGame = false;
+let newGameConfirmationTimer = null;
 let lastHistoryLength = -1, lastStatus = '', polling = false;
 let focusSquare = 12;
 let drag = null, suppressDragClick = false;
@@ -226,7 +228,6 @@ $('thinking-time').addEventListener('change', changeTimeControl);
 changeMode();
 $('setup-form').addEventListener('submit', async e => {
   e.preventDefault(); if (busy) return;
-  if (state && !state.result && state.notation.length && !window.confirm('Start a new game and replace the current one?')) return;
   clearBoardInput();
   void unlockAudio();
   busy = true; $('start').disabled = true; $('error').hidden = true;
@@ -245,26 +246,38 @@ $('setup-form').addEventListener('submit', async e => {
     const next = await api('new', params);
     flipped = next.human === false; selected = null; lastHistoryLength = -1; lastStatus = '';
     $('engine-info').open = false;
-    state = next; enterGame({fresh: true});
+    state = next; enterGame();
   } catch (error) { showError(error); }
   finally { busy = false; $('start').disabled = false; }
 });
-function enterGame({fresh = false} = {}) {
+function resetNewGameConfirmation() {
+  if (newGameConfirmationTimer !== null) clearTimeout(newGameConfirmationTimer);
+  newGameConfirmationTimer = null;
+  confirmingNewGame = false; $('menu-button').textContent = 'New game'; $('menu-button').classList.remove('confirm');
+}
+document.addEventListener('click', e => {
+  if (confirmingNewGame && !$('menu-button').contains(e.target)) resetNewGameConfirmation();
+});
+function enterGame() {
+  resetNewGameConfirmation();
   playing = true; $('menu').hidden = true; $('game').hidden = false; syncMusic();
-  resetSoundSnapshot(fresh ? {notation: [], result: null} : state);
+  resetSoundSnapshot({notation: [], result: null});
   document.body.classList.add('in-game'); render();
   $('board').querySelector(`[data-square="${flipped ? 52 : 12}"]`)?.focus({preventScroll:true});
   window.scrollTo({top:0, behavior:'instant'});
 }
 $('menu-button').onclick = () => {
   clearBoardInput();
+  if (state && !state.result && !confirmingNewGame) {
+    confirmingNewGame = true; $('menu-button').textContent = 'Confirm'; $('menu-button').classList.add('confirm');
+    newGameConfirmationTimer = setTimeout(resetNewGameConfirmation, 5000);
+    renderBoard();
+    return;
+  }
+  resetNewGameConfirmation();
   playing = false; selected = null; $('menu').hidden = false; $('game').hidden = true;
-  $('resume').hidden = false; document.body.classList.remove('in-game'); syncMusic(); $('start').focus({preventScroll:true});
+  document.body.classList.remove('in-game'); syncMusic(); $('start').focus({preventScroll:true});
   window.scrollTo({top:0, behavior:'instant'});
-};
-$('resume').onclick = async () => {
-  void unlockAudio();
-  try { state = await api('state'); enterGame(); } catch (error) { showError(error); }
 };
 function clockRemaining(white, now = performance.now()) {
   const clocks = state.clocks;
@@ -614,6 +627,7 @@ function render() {
   }
   $('undo').disabled = busy || !state.notation.length || state.human === false && state.notation.length === 1;
   $('resign').disabled = busy || !!state.result;
+  if (state.result && confirmingNewGame) resetNewGameConfirmation();
   renderEngine();
   if (readyPremove) void makeMove(readyPremove, true);
 }
@@ -673,7 +687,7 @@ async function poll() {
         state = null; playing = false; flipped = false; focusSquare = 12;
         lastHistoryLength = -1; lastStatus = '';
         $('board').replaceChildren(); $('history').replaceChildren();
-        $('menu').hidden = false; $('game').hidden = true; $('resume').hidden = true;
+        $('menu').hidden = false; $('game').hidden = true; resetNewGameConfirmation();
         $('error').hidden = true; $('engine-info').open = false;
         document.body.classList.remove('in-game');
         document.body.classList.remove('disconnected'); $('disconnected').hidden = true; syncMusic();
@@ -697,12 +711,3 @@ async function poll() {
   setTimeout(poll, playing && (state?.thinking || state?.pondering) ? 150 : playing && state?.clocks.running ? 250 : 1000);
 }
 void poll();
-// The Rust process owns the game, so a page refresh can resume it.
-void (async () => {
-  try {
-    const existing = await api('state');
-    if (!playing && !busy && (existing.notation.length || existing.thinking || existing.clocks.running || !existing.clocks.enabled || existing.result)) {
-      state = existing; flipped = existing.human === false; $('resume').hidden = false;
-    }
-  } catch (error) { showError(error); }
-})();

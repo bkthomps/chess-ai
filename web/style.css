@@ -92,13 +92,13 @@ legend { margin-bottom: 10px; }
 #start { width: 100%; padding: 11px 16px; }
 .text-button { border: 0; padding: 8px 0; background: transparent; }
 .text-button:hover:not(:disabled) { background: transparent; text-decoration: underline; }
-#resume { display: block; margin: 12px auto 0; color: var(--muted); }
 .game-layout { display: grid; grid-template-columns: minmax(0, 1fr) 248px; column-gap: 24px; row-gap: 16px; align-items: start; }
 .game-heading { grid-column: 1; display: flex; align-items: flex-start; justify-content: space-between; gap: 20px; }
 .play-area { grid-column: 1; min-width: 0; }
 #status { font-size: 15px; line-height: 1.5; font-weight: 500; color: var(--green); }
 .game-meta { margin: 4px 0 0; font-size: 12px; color: var(--muted); }
 #menu-button { flex-shrink: 0; padding-top: 2px; }
+#menu-button.confirm, #menu-button.confirm:hover:not(:disabled) { background: #a33d35; color: white; padding: 8px 12px; text-decoration: none; }
 .board { display: grid; grid-template-columns: repeat(8, minmax(0, 1fr)); aspect-ratio: 1; user-select: none; -webkit-user-select: none; touch-action: none; overflow: hidden; border-radius: 3px; }
 .square { display: grid; place-items: center; position: relative; aspect-ratio: 1; min-width: 0; padding: 0; border: 0; border-radius: 0; isolation: isolate; }
 .square.light, .square.light:hover { background: #eee9d8; }

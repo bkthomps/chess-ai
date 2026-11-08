@@ -58,6 +58,7 @@ for (const m of html.matchAll(/<[^>]*\bid="([^"]+)"[^>]*>/g)) {
 elements['time-control'].value = '5';
 elements['thinking-time'].value = '3';
 let mode = 'two', color = 'white', server, requests = [], rejectNextMove = false, afterNextMove = null, pollDelay, offline = false;
+let confirmationTimeout = null;
 const initial = [4,2,3,5,6,3,2,4,...Array(8).fill(1),...Array(32).fill(0),...Array(8).fill(-1),-4,-2,-3,-5,-6,-3,-2,-4];
 const fresh = (human = null, base = 300, increment = 0) => ({
   board: [...initial], white: true, human, thinking_seconds: 3, revision: 1, thinking: false, pondering: human === true, check: false, result: null,
@@ -66,8 +67,10 @@ const fresh = (human = null, base = 300, increment = 0) => ({
 });
 server = fresh(); server.clocks.running = false;
 const context = vm.createContext({
-  console, URLSearchParams, Set, AbortSignal, performance, clearTimeout, setTimeout: (fn, delay) => { pollDelay = delay; return 0; }, setInterval: () => 0,
-  window: {scrollTo() {}, addEventListener: (name, fn) => { windowListeners[name] = fn; }, confirm: () => true, AudioContext: AudioContextMock, localStorage: {getItem: key => storedSounds.get(key) ?? null, setItem: (key, value) => storedSounds.set(key, value)}},
+  console, URLSearchParams, Set, AbortSignal, performance,
+  clearTimeout: id => { if (id === 5000) confirmationTimeout = null; },
+  setTimeout: (fn, delay) => { if (delay === 5000) { confirmationTimeout = fn; return 5000; } pollDelay = delay; return 0; }, setInterval: () => 0,
+  window: {scrollTo() {}, addEventListener: (name, fn) => { windowListeners[name] = fn; }, AudioContext: AudioContextMock, localStorage: {getItem: key => storedSounds.get(key) ?? null, setItem: (key, value) => storedSounds.set(key, value)}},
   FormData: class {get(k) {return {mode, color, 'time-control': elements['time-control'].value, minutes: elements['base-minutes'].value, increment: elements['increment-seconds'].value, 'thinking-time': elements['thinking-time'].value, 'thinking-seconds': elements['thinking-seconds'].value}[k];}},
   document: {hidden: false, body: documentBody, addEventListener: (name, fn) => { documentListeners[name] = fn; }, elementFromPoint: (x, y) => x < 0 || y < 0 || x >= 640 || y >= 640 ? null : elements.board.children[Math.floor(y / 80) * 8 + Math.floor(x / 80)], getElementById: id => elements[id], createElement: () => new Element(), createDocumentFragment: () => new Element(true), get activeElement() {return focused;}, querySelector: () => ({value: mode}), querySelectorAll: () => [new Element(), new Element()]},
   fetch: async (url, options = {}) => {
@@ -131,6 +134,7 @@ const drop = (to, overrides = {}) => {
   documentListeners.pointerup(pointer(to, overrides));
   if (to !== null) clickSquare(to); // Browser compatibility click must not move twice or change selection.
 };
+const openMenu = () => { elements['menu-button'].onclick(); if (elements.menu.hidden) elements['menu-button'].onclick(); };
 const moveRequests = () => requests.filter(r => r.url.startsWith('/api/move?'));
 (async () => {
   await tick(); assert(!elements.menu.hidden); assert(elements.game.hidden);
@@ -150,7 +154,7 @@ const moveRequests = () => requests.filter(r => r.url.startsWith('/api/move?'));
   assert(documentBody.classes.has('disconnected')); assert(!elements.disconnected.hidden);
   offline = false; await vm.runInContext('poll()', context);
   assert(!documentBody.classes.has('disconnected')); assert(elements.game.hidden);
-  assert(!elements.menu.hidden); assert(elements.resume.hidden); assert.equal(elements.board.children.length, 0);
+  assert(!elements.menu.hidden); assert.equal(elements.board.children.length, 0);
   assert.equal(vm.runInContext('state', context), null);
   for (const [human, white, fill] of [[true, false, '#fffaf0'], [false, true, '#263e33'], [null, true, '#fffaf0'], [null, false, '#263e33']]) {
     await submit(); vm.runInContext(`state.human=${human};state.white=${white}`, context);
@@ -166,9 +170,21 @@ const moveRequests = () => requests.filter(r => r.url.startsWith('/api/move?'));
     await submit(); const params = new URL(requests.at(-1).url, 'http://localhost').searchParams;
     assert.equal(Number(params.get('base_seconds')), base); assert.equal(Number(params.get('increment_seconds')), increment);
     assert.equal(elements.board.children.length, 64);
-    elements['menu-button'].onclick();
+    openMenu();
   }
   elements['time-control'].value = '2+1'; await submit();
+  elements['menu-button'].onclick();
+  assert(!elements.game.hidden); assert.equal(elements['menu-button'].textContent, 'Confirm');
+  assert(elements['menu-button'].classes.has('confirm'));
+  documentListeners.click({target: elements.board});
+  assert.equal(elements['menu-button'].textContent, 'New game'); assert.equal(confirmationTimeout, null);
+  elements['menu-button'].onclick(); assert(confirmationTimeout);
+  confirmationTimeout(); assert.equal(elements['menu-button'].textContent, 'New game');
+  assert(!elements['menu-button'].classes.has('confirm'));
+  elements['menu-button'].onclick();
+  elements['menu-button'].onclick(); assert(!elements.menu.hidden);
+  await submit(); assert.equal(elements['menu-button'].textContent, 'New game');
+  assert(!elements['menu-button'].classes.has('confirm'));
   assert.equal(elements.status.textContent, 'White to move.'); assert(elements['clock-white'].classes.has('active'));
   assert.equal(elements['white-time'].textContent, '2:00'); assert.equal(elements['black-time'].textContent, '2:00');
   assert(elements['history-table'].hidden); assert(elements['engine-stats'].hidden);
@@ -185,7 +201,7 @@ const moveRequests = () => requests.filter(r => r.url.startsWith('/api/move?'));
   assert(elements['promotion-dialog'].open); elements['promotion-choices'].children[3].onclick(); await tick();
   assert(requests.at(-1).url.includes('promotion=2'));
   // Custom controls remain available in both modes, including fractional minutes.
-  elements['menu-button'].onclick(); mode = 'one'; color = 'black'; elements['time-control'].value = 'custom';
+  openMenu(); mode = 'one'; color = 'black'; elements['time-control'].value = 'custom';
   elements['time-control'].listeners.change(); assert(!elements['custom-time'].hidden); assert(!elements['base-minutes'].disabled);
   elements['base-minutes'].value = '1.5'; elements['increment-seconds'].value = '3'; await submit();
   assert(requests.at(-1).url.includes('base_seconds=90&increment_seconds=3'));
@@ -241,7 +257,7 @@ const moveRequests = () => requests.filter(r => r.url.startsWith('/api/move?'));
   vm.runInContext('state.clocks.black_ms=0;state.legal=[[52,44,0]];render()', context);
   clickSquare(52); clickSquare(44); await tick(); assert.equal(requests.length, before);
   // Unlimited disables game clocks and offers all five thinking presets.
-  elements['menu-button'].onclick(); mode = 'one'; color = 'white';
+  openMenu(); mode = 'one'; color = 'white';
   elements['time-control'].value = 'unlimited'; elements['time-control'].listeners.change();
   assert(!elements['unlimited-thinking'].hidden); assert(!elements['thinking-time'].disabled);
   for (const seconds of ['1','2','3','4','5']) {
@@ -250,7 +266,7 @@ const moveRequests = () => requests.filter(r => r.url.startsWith('/api/move?'));
     await submit(); const params = new URL(requests.at(-1).url, 'http://localhost').searchParams;
     assert.equal(params.get('thinking_seconds'), seconds); assert.equal(params.get('unlimited'), 'true');
     assert(elements['game-clocks'].hidden); assert(elements['game-mode'].textContent.includes(seconds + 's per move'));
-    elements['menu-button'].onclick();
+    openMenu();
   }
   elements['thinking-time'].value = 'custom'; elements['thinking-time'].listeners.change();
   assert(!elements['custom-thinking'].hidden); assert(!elements['thinking-seconds'].disabled);
@@ -258,11 +274,11 @@ const moveRequests = () => requests.filter(r => r.url.startsWith('/api/move?'));
   assert(requests.at(-1).url.includes('thinking_seconds=13.75')); assert(elements['game-clocks'].hidden);
   clickSquare(12); clickSquare(28); await tick();
   assert(requests.at(-1).url.includes('/api/move?')); // Zero-valued disabled clocks must not block play.
-  elements['menu-button'].onclick(); mode = 'two'; vm.runInContext('changeMode()', context);
+  openMenu(); mode = 'two'; vm.runInContext('changeMode()', context);
   assert(elements['unlimited-thinking'].hidden); assert(elements['thinking-seconds'].disabled);
   await submit(); assert.equal(elements['game-mode'].textContent, 'Two players · Unlimited');
   assert(elements['game-clocks'].hidden);
-  elements['menu-button'].onclick(); elements['time-control'].value = '5'; elements['time-control'].listeners.change();
+  openMenu(); elements['time-control'].value = '5'; elements['time-control'].listeners.change();
   assert(elements['unlimited-thinking'].hidden); await submit(); assert(!elements['game-clocks'].hidden);
   // Sound follows accepted game events, including computer moves from polling.
   audioNotes.length = 0;
@@ -276,19 +292,22 @@ const moveRequests = () => requests.filter(r => r.url.startsWith('/api/move?'));
   assert.deepEqual(audioNotes.map(n => n.frequency), [660, 880]);
   audioNotes.length = 0;
   server.notation.push('Qh4#'); server.revision++; server.result = 'Black wins by checkmate'; server.clocks.running = false;
+  elements['menu-button'].onclick(); assert.equal(elements['menu-button'].textContent, 'Confirm');
   await vm.runInContext('poll()', context); await tick();
   assert.deepEqual(audioNotes.map(n => n.frequency), [660, 523.25, 392]); // End cue takes priority over check and move.
+  assert.equal(elements['menu-button'].textContent, 'New game');
+  elements['menu-button'].onclick(); assert(!elements.menu.hidden); await submit();
   audioNotes.length = 0;
   await vm.runInContext('poll()', context); await elements.undo.onclick(); await tick();
   assert.equal(audioNotes.length, 0); // No replay on duplicate responses or undo.
-  elements['menu-button'].onclick(); await submit();
+  openMenu(); await submit();
   audioNotes.length = 0; rejectNextMove = true;
   clickSquare(12); clickSquare(28); await tick(); assert.equal(audioNotes.length, 0);
   assert(!elements.error.hidden); elements['dismiss-error'].onclick();
   clickSquare(12); clickSquare(28); await tick(); assert.equal(audioNotes.length, 1);
   audioNotes.length = 0;
-  elements['menu-button'].onclick(); await tick(); assert.equal(audioNotes.length, 31);
-  await elements.resume.onclick(); await tick(); assert.equal(vm.runInContext('musicActive', context), false);
+  openMenu(); await tick(); assert.equal(audioNotes.length, 31);
+  await submit(); await tick(); assert.equal(vm.runInContext('musicActive', context), false);
   audioNotes.length = 0;
   // Timeout has no new move, but still gets the game-end sound once.
   server.result = 'Black wins on time'; server.revision++; server.clocks.running = false;
@@ -296,11 +315,11 @@ const moveRequests = () => requests.filter(r => r.url.startsWith('/api/move?'));
   // Browsers without audio support must keep the game playable.
   audioNotes.length = 0;
   vm.runInContext('cancelSounds();audioContext=null;window.AudioContext=undefined', context);
-  elements['menu-button'].onclick(); await submit(); clickSquare(12); clickSquare(28); await tick();
+  openMenu(); await submit(); clickSquare(12); clickSquare(28); await tick();
   assert.equal(elements.status.textContent, 'Black to move.'); assert.equal(audioNotes.length, 0);
   // Pointer gestures share click-to-move's legality and promotion flow.
   mode = 'two'; elements['time-control'].value = 'unlimited';
-  const resetBoard = async () => { elements['menu-button'].onclick(); await submit(); };
+  const resetBoard = async () => { openMenu(); await submit(); };
   await resetBoard();
   const movesBeforeDrag = moveRequests().length;
   startDrag(12, 28);
@@ -347,12 +366,12 @@ const moveRequests = () => requests.filter(r => r.url.startsWith('/api/move?'));
     () => documentListeners.keydown({key:'Escape'}),
     () => elements.flip.onclick(),
     () => vm.runInContext('state.revision++;selected=null;render()', context),
-    () => elements['menu-button'].onclick()
+    () => openMenu()
   ]) {
     startDrag(12, 28); assert.equal(documentBody.children.length, 1);
     cancel(); drop(28); await tick();
     assert.equal(documentBody.children.length, 0); assert.equal(moveRequests().length, beforeCancel);
-    if (elements.game.hidden) await elements.resume.onclick();
+    if (elements.game.hidden) await submit();
   }
   // Opponent pieces, non-primary pointers, and unavailable turns never start a drag.
   startDrag(52, 36); assert.equal(documentBody.children.length, 0); drop(36);
@@ -463,8 +482,7 @@ const moveRequests = () => requests.filter(r => r.url.startsWith('/api/move?'));
     () => elements['cancel-premove'].onclick(),
     async () => { await elements.undo.onclick(); },
     () => { elements.resign.onclick(); elements['resign-dialog'].close(); },
-    async () => { elements['menu-button'].onclick(); await elements.resume.onclick(); },
-    async () => { elements['menu-button'].onclick(); await submit(); }
+    async () => { openMenu(); await submit(); }
   ]) {
     await waitForComputer(); const before = moveRequests().length;
     clickSquare(6); clickSquare(21); clickSquare(21); clickSquare(38); await cancel(); await computerReply([[6,21,0]]);
