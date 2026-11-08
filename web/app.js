@@ -121,14 +121,25 @@ $('sound-toggle').onclick = () => {
   try { window.localStorage.setItem('chess.sounds', soundEnabled ? 'on' : 'off'); } catch { /* Storage is optional. */ }
   if (soundEnabled) void unlockAudio();
 };
-function showError(error) { $('error-text').textContent = error.message || String(error); $('error').hidden = false; }
+function showError(error) {
+  if (error.message === 'Cannot reach the chess server.') return;
+  $('error-text').textContent = error.message || String(error); $('error').hidden = false;
+}
 $('dismiss-error').onclick = () => { $('error').hidden = true; };
 async function api(path, params) {
   const options = { cache: 'no-store', signal: AbortSignal.timeout(10000) };
   if (params) { options.method = 'POST'; options.headers = { 'X-Chess-Request': '1' }; }
   let response;
   try { response = await fetch('/api/' + path + (params ? '?' + new URLSearchParams(params) : ''), options); }
-  catch { throw new Error('Cannot reach the chess server. Check that cargo run is still running, then try again.'); }
+  catch {
+    if (!document.body.classList.contains('disconnected')) {
+      const white = state ? (state.human === null ? state.white : state.human) : true;
+      $('disconnected-king').innerHTML = piece(white ? 6 : -6).replace('</svg>', '<path d="M45 48l10 10m0-10L45 58" fill="none" stroke="#b33a3a" stroke-width="4"/></svg>');
+    }
+    document.body.classList.add('disconnected'); $('disconnected').hidden = false;
+    for (const id of ['promotion-dialog', 'resign-dialog']) if ($(id).open) $(id).close();
+    throw new Error('Cannot reach the chess server.');
+  }
   const data = await response.json();
   if (!response.ok) throw new Error(data.error || 'Something went wrong. Please try again.');
   data.receivedAt = performance.now();
@@ -502,7 +513,9 @@ async function makeMove(move, fromQueue = false) {
   }
   catch (error) {
     clearPremoves(); showError(error);
-    try { state = await api('state'); } catch { /* Keep the current board available. */ }
+    if (!document.body.classList.contains('disconnected')) {
+      try { state = await api('state'); } catch { /* Keep the current board available. */ }
+    }
   }
   finally { busy = false; render(); }
 }
@@ -593,12 +606,23 @@ $('confirm-resign').onclick = async () => {
   finally { busy = false; render(); }
 };
 async function poll() {
-  if (playing && !busy && !polling && !document.hidden) {
+  if (!busy && !polling && !document.hidden) {
     polling = true;
     try {
       const next = await api('state');
+      if (document.body.classList.contains('disconnected')) {
+        clearBoardInput(); cancelSounds(); soundSnapshot = null;
+        state = null; playing = false; flipped = false; focusSquare = 12;
+        lastHistoryLength = -1; lastStatus = '';
+        $('board').replaceChildren(); $('history').replaceChildren();
+        $('menu').hidden = false; $('game').hidden = true; $('resume').hidden = true;
+        $('error').hidden = true; $('engine-info').open = false;
+        document.body.classList.remove('in-game');
+        document.body.classList.remove('disconnected'); $('disconnected').hidden = true;
+        $('start').focus({preventScroll:true});
+      } else if (!playing || !state) { state = next; }
       // Never overwrite a newer move response with an older polling response.
-      if (!busy && (next.revision > state.revision || next.revision === state.revision && (next.thinking !== state.thinking || next.pondering !== state.pondering))) {
+      else if (!busy && (next.revision > state.revision || next.revision === state.revision && (next.thinking !== state.thinking || next.pondering !== state.pondering))) {
         if (next.revision !== state.revision) {
           selected = null;
           if ($('promotion-dialog').open) $('promotion-dialog').close();

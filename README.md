@@ -18,6 +18,8 @@ cargo run --release -- --port 8080
 
 There are no crate dependencies, external assets, accounts, or network services. The server binds only to the local machine. Keep the terminal running while playing; Ctrl+C stops it. Tabs share one game. Refreshing preserves the game while the server runs; restarting the server resets it.
 
+If the browser cannot reach the server, it shows a connection message over the falling-piece background and checks for reconnection automatically. When the server responds, the browser clears its game state and returns to the main menu.
+
 ## Play
 
 - Select one or two players, and choose your color in one-player mode.

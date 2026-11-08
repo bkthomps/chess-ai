@@ -57,7 +57,7 @@ for (const m of html.matchAll(/<[^>]*\bid="([^"]+)"[^>]*>/g)) {
 }
 elements['time-control'].value = '5';
 elements['thinking-time'].value = '3';
-let mode = 'two', color = 'white', server, requests = [], rejectNextMove = false, afterNextMove = null, pollDelay;
+let mode = 'two', color = 'white', server, requests = [], rejectNextMove = false, afterNextMove = null, pollDelay, offline = false;
 const initial = [4,2,3,5,6,3,2,4,...Array(8).fill(1),...Array(32).fill(0),...Array(8).fill(-1),-4,-2,-3,-5,-6,-3,-2,-4];
 const fresh = (human = null, base = 300, increment = 0) => ({
   board: [...initial], white: true, human, thinking_seconds: 3, revision: 1, thinking: false, pondering: human === true, check: false, result: null,
@@ -72,6 +72,7 @@ const context = vm.createContext({
   document: {hidden: false, body: documentBody, addEventListener: (name, fn) => { documentListeners[name] = fn; }, elementFromPoint: (x, y) => x < 0 || y < 0 || x >= 640 || y >= 640 ? null : elements.board.children[Math.floor(y / 80) * 8 + Math.floor(x / 80)], getElementById: id => elements[id], createElement: () => new Element(), createDocumentFragment: () => new Element(true), get activeElement() {return focused;}, querySelector: () => ({value: mode}), querySelectorAll: () => [new Element(), new Element()]},
   fetch: async (url, options = {}) => {
     requests.push({url, options}); const u = new URL(url, 'http://localhost');
+    if (offline) throw new Error('Network error');
     if (u.pathname === '/api/move' && rejectNextMove) {
       rejectNextMove = false; return {ok: false, json: async () => ({error: 'That move is not legal.'})};
     }
@@ -133,6 +134,23 @@ const drop = (to, overrides = {}) => {
 const moveRequests = () => requests.filter(r => r.url.startsWith('/api/move?'));
 (async () => {
   await tick(); assert(!elements.menu.hidden); assert(elements.game.hidden);
+  offline = true; await vm.runInContext('poll()', context);
+  assert(documentBody.classes.has('disconnected')); assert(!elements.disconnected.hidden);
+  assert(elements['disconnected-king'].innerHTML.includes('stroke="#b33a3a"'));
+  offline = false; await vm.runInContext('poll()', context);
+  assert(!documentBody.classes.has('disconnected')); assert(elements.disconnected.hidden);
+  await submit(); offline = true; await vm.runInContext('poll()', context);
+  assert(documentBody.classes.has('disconnected')); assert(!elements.disconnected.hidden);
+  offline = false; await vm.runInContext('poll()', context);
+  assert(!documentBody.classes.has('disconnected')); assert(elements.game.hidden);
+  assert(!elements.menu.hidden); assert(elements.resume.hidden); assert.equal(elements.board.children.length, 0);
+  assert.equal(vm.runInContext('state', context), null);
+  for (const [human, white, fill] of [[true, false, '#fffaf0'], [false, true, '#263e33'], [null, true, '#fffaf0'], [null, false, '#263e33']]) {
+    await submit(); vm.runInContext(`state.human=${human};state.white=${white}`, context);
+    offline = true; await vm.runInContext('poll()', context);
+    assert(elements['disconnected-king'].innerHTML.includes(`fill="${fill}"`));
+    offline = false; await vm.runInContext('poll()', context);
+  }
   vm.runInContext('changeMode()', context); assert(elements['solo-options'].hidden);
   // Every preset must reach the server in seconds, including both increments.
   for (const [preset, base, increment] of [['1',60,0], ['2+1',120,1], ['5',300,0], ['10+5',600,5]]) {
