@@ -672,6 +672,15 @@ function choosePromotion(moves, submitMove = makeMove, white = state.white) {
 function render() {
   if (!playing || !state) return;
   announceGameChanges();
+  // A new opponent position invalidates the old move targets, but it should
+  // not interrupt an in-progress drag when its source piece is still there.
+  // Keep the pointer and ghost alive, then render the new legal destinations.
+  if (drag && drag.revision !== state.revision) {
+    if (drag.active && state.board[drag.from] === drag.pc && canInput()) {
+      drag.revision = state.revision;
+      selected = drag.from;
+    } else cancelDrag();
+  }
   const readyPremove = takeReadyPremove();
   renderBoard(!!drag?.active && state.revision === drag.revision && canInput());
   renderClocks();
