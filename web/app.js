@@ -709,6 +709,37 @@ function renderEngine() {
   }
 }
 $('flip').onclick = () => { flipped = !flipped; render(); };
+let copyPgnTimer;
+function gamePgn(game) {
+  const result = !game.result ? '*' : game.result.startsWith('White wins') ? '1-0'
+    : game.result.startsWith('Black wins') ? '0-1' : '1/2-1/2';
+  const player = white => game.ai_vs_ai ? 'Computer' : game.human === null ? 'Player' : game.human === white ? 'Player' : 'Computer';
+  const thinking = !game.clocks.enabled && (game.human !== null || game.ai_vs_ai)
+    ? `, ${game.thinking_seconds} sec computer thinking time per move` : '';
+  const tags = [`[Event "${controlLabel(game.clocks)}${thinking}"]`, '[Site "github.com/bkthomps/chess-ai"]'];
+  if (game.started_at != null) {
+    const date = new Date(game.started_at * 1000);
+    if (!Number.isNaN(date.getTime())) tags.push(`[Date "${date.getFullYear()}.${String(date.getMonth() + 1).padStart(2, '0')}.${String(date.getDate()).padStart(2, '0')}"]`);
+  }
+  tags.push(`[White "${player(true)}"]`, `[Black "${player(false)}"]`, `[Result "${result}"]`);
+  const moves = [];
+  for (let i = 0; i < game.notation.length; i += 2) {
+    moves.push(`${i / 2 + 1}. ${game.notation[i]}${game.notation[i + 1] ? ` ${game.notation[i + 1]}` : ''}`);
+  }
+  return `${tags.join('\n')}\n\n${[...moves, result].join(' ')}\n`;
+}
+$('copy-pgn').onclick = async () => {
+  if (!state) return;
+  clearTimeout(copyPgnTimer);
+  $('copy-pgn').classList.remove('copied');
+  try {
+    await navigator.clipboard.writeText(gamePgn(state));
+    $('copy-pgn').classList.add('copied');
+    copyPgnTimer = setTimeout(() => $('copy-pgn').classList.remove('copied'), 1500);
+  } catch {
+    showError(new Error('Could not copy PGN. Check clipboard permissions.'));
+  }
+};
 $('undo').onclick = async () => {
   if (busy) return; busy = true; $('undo').disabled = true; selected = null;
   clearBoardInput();

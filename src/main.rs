@@ -15,11 +15,12 @@ use std::{
         Arc, Mutex,
     },
     thread,
-    time::{Duration, Instant},
+    time::{Duration, Instant, SystemTime, UNIX_EPOCH},
 };
 
 struct App {
     game: Game,
+    started_at: Option<u64>,
     human: Option<bool>,
     ai_vs_ai: bool,
     unlimited: bool,
@@ -41,6 +42,7 @@ impl Default for App {
     fn default() -> Self {
         Self {
             game: Game::default(),
+            started_at: game_start_time(),
             human: Some(true),
             ai_vs_ai: false,
             unlimited: false,
@@ -59,6 +61,12 @@ impl Default for App {
             adjudicated: None,
         }
     }
+}
+fn game_start_time() -> Option<u64> {
+    SystemTime::now()
+        .duration_since(UNIX_EPOCH)
+        .ok()
+        .map(|d| d.as_secs())
 }
 impl App {
     fn cancel_search(&mut self) {
@@ -510,6 +518,7 @@ fn serve_connection(
                 a.cancel_search();
                 a.cache_epoch += 1;
                 a.game = Game::default();
+                a.started_at = game_start_time();
                 a.unlimited = unlimited;
                 a.fixed_thinking = fixed_thinking;
                 a.ai_vs_ai = ai_vs_ai;
@@ -724,8 +733,8 @@ fn state_json(a: &mut App) -> String {
         format!("{{\"revision\":{},\"pondering\":{},\"active\":{},\"depth\":{},\"searching_depth\":{},\"evaluation\":{evaluation},\"nodes\":{},\"hits\":{},\"millis\":{},\"threads\":{},\"cache_bytes\":{},\"cache_limit\":{},\"budget_millis\":{budget}}}",
             analysis.revision, analysis.pondering, active, s.depth, s.searching_depth, s.nodes, s.hits, s.elapsed.as_millis(), s.threads, s.cache_bytes, s.cache_limit)
     });
-    format!("{{\"board\":[{board}],\"white\":{},\"human\":{},\"ai_vs_ai\":{},\"clocks\":{clocks},\"thinking_seconds\":{},\"revision\":{},\"thinking\":{},\"pondering\":{},\"check\":{},\"result\":{},\"legal\":[{moves}],\"notation\":[{notation}],\"last\":{last},\"stats\":{stats},\"analysis\":{analysis}}}",
-        p.white, a.human.map_or("null", |c| if c { "true" } else { "false" }), a.ai_vs_ai, a.fixed_thinking.as_secs_f64(), a.revision, a.thinking, a.pondering, p.in_check(p.white), result.map_or("null".into(), |r| quote(&r)))
+    format!("{{\"board\":[{board}],\"started_at\":{},\"white\":{},\"human\":{},\"ai_vs_ai\":{},\"clocks\":{clocks},\"thinking_seconds\":{},\"revision\":{},\"thinking\":{},\"pondering\":{},\"check\":{},\"result\":{},\"legal\":[{moves}],\"notation\":[{notation}],\"last\":{last},\"stats\":{stats},\"analysis\":{analysis}}}",
+        a.started_at.map_or("null".to_string(), |t| t.to_string()), p.white, a.human.map_or("null", |c| if c { "true" } else { "false" }), a.ai_vs_ai, a.fixed_thinking.as_secs_f64(), a.revision, a.thinking, a.pondering, p.in_check(p.white), result.map_or("null".into(), |r| quote(&r)))
 }
 fn respond(stream: &mut impl Write, status: u16, kind: &str, body: &[u8]) -> std::io::Result<()> {
     let reason = match status {
@@ -953,6 +962,18 @@ mod tests {
         }
         request(&app, "POST", "/api/undo", 200);
         assert!(app.lock().unwrap().game.moves.is_empty());
+    }
+    #[test]
+    fn game_start_time_is_shared_and_survives_moves_and_undo() {
+        let app = shared();
+        new_game(&app, "two", "white");
+        app.lock().unwrap().started_at = Some(1_700_000_000);
+        let expected = "\"started_at\":1700000000";
+        assert!(request(&app, "GET", "/api/state", 200).contains(expected));
+        assert!(play(&app, "e2e4").contains(expected));
+        assert!(request(&app, "POST", "/api/undo", 200).contains(expected));
+        new_game(&app, "two", "white");
+        assert_ne!(app.lock().unwrap().started_at, Some(1_700_000_000));
     }
     #[test]
     fn mate_and_resignation_stop_moves() {

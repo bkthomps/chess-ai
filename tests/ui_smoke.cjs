@@ -59,16 +59,17 @@ elements['time-control'].value = '5';
 elements['thinking-time'].value = '3';
 elements['two-player-mode'].value = 'same';
 let mode = 'two', color = 'white', server, requests = [], rejectNextMove = false, afterNextMove = null, pollDelay, offline = false;
-let confirmationTimeout = null;
+let confirmationTimeout = null, copiedFen = null, clipboardFails = false;
 const initial = [4,2,3,5,6,3,2,4,...Array(8).fill(1),...Array(32).fill(0),...Array(8).fill(-1),-4,-2,-3,-5,-6,-3,-2,-4];
 const fresh = (human = null, base = 300, increment = 0) => ({
-  board: [...initial], white: true, human, thinking_seconds: 3, revision: 1, thinking: false, pondering: human === true, check: false, result: null,
+  board: [...initial], started_at: new Date(2026, 10, 8, 12).getTime() / 1000, white: true, human, thinking_seconds: 3, revision: 1, thinking: false, pondering: human === true, check: false, result: null,
   legal: [[12,20,0],[12,28,0]], notation: [], last: null, stats: null, analysis: null,
   clocks: {enabled: true, white_ms: base * 1000, black_ms: base * 1000, running: true, active_white: true, base_seconds: base, increment_seconds: increment}
 });
 server = fresh(); server.clocks.running = false;
 const context = vm.createContext({
   console, URLSearchParams, Set, AbortSignal, performance,
+  navigator: {clipboard: {writeText: async text => { if (clipboardFails) throw new Error('denied'); copiedFen = text; }}},
   clearTimeout: id => { if (id === 5000) confirmationTimeout = null; },
   setTimeout: (fn, delay) => { if (delay === 5000) { confirmationTimeout = fn; return 5000; } pollDelay = delay; return 0; }, setInterval: () => 0,
   window: {scrollTo() {}, addEventListener: (name, fn) => { windowListeners[name] = fn; }, AudioContext: AudioContextMock, localStorage: {getItem: key => storedSounds.get(key) ?? null, setItem: (key, value) => storedSounds.set(key, value)}},
@@ -141,6 +142,19 @@ const openMenu = () => { elements['menu-button'].onclick(); if (elements.menu.hi
 const moveRequests = () => requests.filter(r => r.url.startsWith('/api/move?'));
 (async () => {
   await tick(); assert(!elements.menu.hidden); assert(elements.game.hidden);
+  await elements['copy-pgn'].onclick(); assert.match(copiedFen, /\[Result "\*"\]\n\n\*\n$/);
+  assert.equal(copiedFen, '[Event "5 min"]\n[Site "github.com/bkthomps/chess-ai"]\n[Date "2026.11.08"]\n[White "Player"]\n[Black "Player"]\n[Result "*"]\n\n*\n');
+  assert(elements['copy-pgn'].classes.has('copied'));
+  assert.match(vm.runInContext("gamePgn({...state,human:false,ai_vs_ai:false})", context), /\[White "Computer"\]\n\[Black "Player"\]/);
+  assert.match(vm.runInContext("gamePgn({...state,human:null,ai_vs_ai:true,thinking_seconds:2.5,clocks:{enabled:false}})", context), /\[Event "Unlimited, 2\.5 sec computer thinking time per move"\][\s\S]*\[White "Computer"\]\n\[Black "Computer"\]/);
+  assert.match(vm.runInContext("gamePgn({...state,human:true,thinking_seconds:1,clocks:{enabled:false}})", context), /\[Event "Unlimited, 1 sec computer thinking time per move"\]/);
+  assert.match(vm.runInContext("gamePgn({...state,human:null,ai_vs_ai:false,clocks:{enabled:false}})", context), /\[Event "Unlimited"\]/);
+  assert.match(vm.runInContext("gamePgn({...state,clocks:{enabled:true,base_seconds:180,increment_seconds:2},notation:['e4','e5','Nf3'],result:'Black wins by resignation'})", context), /\[Event "3 min \+ 2 sec"\][\s\S]*\[Result "0-1"\]\n\n1\. e4 e5 2\. Nf3 0-1\n$/);
+  assert.match(vm.runInContext("gamePgn({...state,notation:['d4'],result:'Draw by stalemate'})", context), /1\. d4 1\/2-1\/2\n$/);
+  clipboardFails = true; await elements['copy-pgn'].onclick();
+  assert(!elements['copy-pgn'].classes.has('copied'));
+  assert.match(elements['error-text'].textContent, /Could not copy/); clipboardFails = false;
+  elements['dismiss-error'].onclick();
   assert.equal(audioNotes.length, 31); // The longer menu theme begins once audio is available.
   assert.equal(vm.runInContext('musicTheme', context), 'menu');
   assert.equal(vm.runInContext('musicActive', context), true);

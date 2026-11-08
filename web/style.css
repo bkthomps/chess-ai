@@ -142,6 +142,13 @@ legend { margin-bottom: 10px; }
 .game-sidebar { grid-column: 2; grid-row: 2; display: flex; flex-direction: column; gap: 16px; min-width: 0; }
 .side-panel { padding: 16px; border: 1px solid var(--line); border-radius: 7px; background: var(--surface); font-size: 12px; }
 h2 { margin: 0; font-size: 14px; font-weight: 500; }
+.history-heading { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+#copy-pgn { display: inline-flex; padding: 5px; }
+#copy-pgn svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
+#copy-pgn:active { transform: scale(.92); }
+#copy-pgn .copy-check, #copy-pgn.copied .copy-icon { display: none; }
+#copy-pgn.copied .copy-check { display: block; }
+#copy-pgn.copied { background: var(--soft); color: var(--green); }
 summary { cursor: pointer; color: var(--green); font-size: 13px; font-weight: 500; }
 .empty-state { color: var(--muted); font-size: 12px; line-height: 1.6; margin: 16px 0 0; }
 #history-scroll { max-height: 320px; overflow-y: auto; scrollbar-width: thin; }
