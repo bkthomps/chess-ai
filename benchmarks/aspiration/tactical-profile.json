@@ -1,0 +1,525 @@
+{
+  "baseline": "98d2f0d",
+  "fen": "rnbqk2r/pp1Pbppp/2p5/8/2B5/8/PPP1NnPP/RNBQK2R w KQkq - 1 8",
+  "kind": "profile",
+  "machine": "macOS-26.5.1-arm64-arm-64bit",
+  "rust": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+  "memory_budget": 100000000,
+  "initial_margin_cp": 64,
+  "source_sha256": {
+    "baseline": "fb5accbb58a7eb82bf72e48e208e6d0da56f90c1750f8e7d95dc6d07de095329",
+    "aspiration": "90e70cf25b1cadd9dc71ef8da5030d1d1ed99f5402fd1034ee972d7ad25dc358",
+    "margin32": "66f826dff0dc4e6d09306debff63fc8f03f529dfa55fbe21aea4a7cccf5e860d"
+  },
+  "stages": [
+    {
+      "name": "serial-depth8",
+      "mode": "depth",
+      "depth": 8,
+      "threads_requested": 1,
+      "repetitions": 1,
+      "profile_counter_names": [
+        "negamax_calls",
+        "quiescence_calls",
+        "pvs_probes",
+        "pvs_full_researches",
+        "depth_zero_negamax_calls",
+        "null_window_negamax_calls",
+        "positive_depth_null_window_calls",
+        "null_window_quiescence_calls"
+      ]
+    }
+  ],
+  "warmups": [],
+  "runs": [
+    {
+      "profile_counts": [
+        2887462,
+        4589686,
+        1657,
+        18,
+        1777060,
+        2887390,
+        1110356,
+        4589474
+      ],
+      "trace": [
+        {
+          "depth": 1,
+          "score": 559,
+          "nodes": 593,
+          "hits": 0,
+          "profile": [
+            45,
+            548,
+            43,
+            0,
+            44,
+            43,
+            0,
+            523
+          ]
+        },
+        {
+          "depth": 2,
+          "score": 559,
+          "nodes": 1259,
+          "hits": 0,
+          "profile": [
+            167,
+            1092,
+            117,
+            0,
+            121,
+            162,
+            43,
+            1046
+          ]
+        },
+        {
+          "depth": 3,
+          "score": 559,
+          "nodes": 5660,
+          "hits": 0,
+          "profile": [
+            2168,
+            3492,
+            233,
+            0,
+            2002,
+            2159,
+            160,
+            3440
+          ]
+        },
+        {
+          "depth": 4,
+          "score": 503,
+          "nodes": 21474,
+          "hits": 21,
+          "profile": [
+            6272,
+            15202,
+            423,
+            2,
+            4054,
+            6254,
+            2206,
+            15134
+          ]
+        },
+        {
+          "depth": 5,
+          "score": 539,
+          "nodes": 120468,
+          "hits": 587,
+          "profile": [
+            55034,
+            65434,
+            662,
+            5,
+            48916,
+            55006,
+            6100,
+            65359
+          ]
+        },
+        {
+          "depth": 6,
+          "score": 479,
+          "nodes": 416889,
+          "hits": 1979,
+          "profile": [
+            149421,
+            267468,
+            890,
+            9,
+            94732,
+            149382,
+            54665,
+            267341
+          ]
+        },
+        {
+          "depth": 7,
+          "score": 539,
+          "nodes": 2195726,
+          "hits": 23139,
+          "profile": [
+            1040835,
+            1154891,
+            1159,
+            11,
+            891791,
+            1040786,
+            149013,
+            1154758
+          ]
+        },
+        {
+          "depth": 8,
+          "score": 485,
+          "nodes": 7477148,
+          "hits": 67069,
+          "profile": [
+            2887462,
+            4589686,
+            1657,
+            18,
+            1777060,
+            2887390,
+            1110356,
+            4589474
+          ]
+        }
+      ],
+      "narrow_attempts": 5,
+      "fail_low": 0,
+      "fail_high": 0,
+      "depth": 8,
+      "score": 485,
+      "best": "d7c8q",
+      "nodes": 7477148,
+      "hits": 67069,
+      "elapsed_ms": 3624.133625,
+      "threads": 1,
+      "cache_bytes": 33685504,
+      "process_wall_ms": 3952.327292005066,
+      "cpu_ms": 3599.148,
+      "involuntary_switches": 3077,
+      "voluntary_switches": 3,
+      "peak_rss_bytes": 35602432,
+      "stage": "serial-depth8",
+      "mode": "depth",
+      "variant": "aspiration",
+      "repetition": 0,
+      "ordinal": 0
+    },
+    {
+      "profile_counts": [
+        4649524,
+        7908444,
+        2230,
+        15,
+        2602360,
+        4649420,
+        2047088,
+        7908237
+      ],
+      "trace": [
+        {
+          "depth": 1,
+          "score": 559,
+          "nodes": 593,
+          "hits": 0,
+          "profile": [
+            45,
+            548,
+            43,
+            0,
+            44,
+            43,
+            0,
+            523
+          ]
+        },
+        {
+          "depth": 2,
+          "score": 559,
+          "nodes": 1259,
+          "hits": 0,
+          "profile": [
+            167,
+            1092,
+            117,
+            0,
+            121,
+            162,
+            43,
+            1046
+          ]
+        },
+        {
+          "depth": 3,
+          "score": 559,
+          "nodes": 5660,
+          "hits": 0,
+          "profile": [
+            2168,
+            3492,
+            233,
+            0,
+            2002,
+            2159,
+            160,
+            3440
+          ]
+        },
+        {
+          "depth": 4,
+          "score": 503,
+          "nodes": 36007,
+          "hits": 43,
+          "profile": [
+            9982,
+            26025,
+            524,
+            2,
+            5862,
+            9959,
+            4104,
+            25949
+          ]
+        },
+        {
+          "depth": 5,
+          "score": 539,
+          "nodes": 135248,
+          "hits": 635,
+          "profile": [
+            59090,
+            76158,
+            828,
+            5,
+            50864,
+            59051,
+            8199,
+            76074
+          ]
+        },
+        {
+          "depth": 6,
+          "score": 479,
+          "nodes": 719820,
+          "hits": 3416,
+          "profile": [
+            245406,
+            474414,
+            1187,
+            6,
+            140382,
+            245352,
+            104985,
+            474301
+          ]
+        },
+        {
+          "depth": 7,
+          "score": 539,
+          "nodes": 2511051,
+          "hits": 24690,
+          "profile": [
+            1142628,
+            1368423,
+            1557,
+            9,
+            940960,
+            1142555,
+            201615,
+            1368302
+          ]
+        },
+        {
+          "depth": 8,
+          "score": 485,
+          "nodes": 12557968,
+          "hits": 109642,
+          "profile": [
+            4649524,
+            7908444,
+            2230,
+            15,
+            2602360,
+            4649420,
+            2047088,
+            7908237
+          ]
+        }
+      ],
+      "narrow_attempts": 10,
+      "fail_low": 3,
+      "fail_high": 2,
+      "depth": 8,
+      "score": 485,
+      "best": "d7c8q",
+      "nodes": 12557968,
+      "hits": 109642,
+      "elapsed_ms": 6436.72575,
+      "threads": 1,
+      "cache_bytes": 46580736,
+      "process_wall_ms": 6442.7046249911655,
+      "cpu_ms": 6431.507,
+      "involuntary_switches": 965,
+      "voluntary_switches": 3,
+      "peak_rss_bytes": 48562176,
+      "stage": "serial-depth8",
+      "mode": "depth",
+      "variant": "margin32",
+      "repetition": 0,
+      "ordinal": 1
+    },
+    {
+      "profile_counts": [
+        2887466,
+        4589737,
+        1657,
+        22,
+        1777064,
+        2887390,
+        1110356,
+        4589473
+      ],
+      "trace": [
+        {
+          "depth": 1,
+          "score": 559,
+          "nodes": 593,
+          "hits": 0,
+          "profile": [
+            45,
+            548,
+            43,
+            0,
+            44,
+            43,
+            0,
+            523
+          ]
+        },
+        {
+          "depth": 2,
+          "score": 559,
+          "nodes": 1259,
+          "hits": 0,
+          "profile": [
+            167,
+            1092,
+            117,
+            0,
+            121,
+            162,
+            43,
+            1046
+          ]
+        },
+        {
+          "depth": 3,
+          "score": 559,
+          "nodes": 5660,
+          "hits": 0,
+          "profile": [
+            2168,
+            3492,
+            233,
+            0,
+            2002,
+            2159,
+            160,
+            3440
+          ]
+        },
+        {
+          "depth": 4,
+          "score": 503,
+          "nodes": 21474,
+          "hits": 21,
+          "profile": [
+            6272,
+            15202,
+            423,
+            2,
+            4054,
+            6254,
+            2206,
+            15134
+          ]
+        },
+        {
+          "depth": 5,
+          "score": 539,
+          "nodes": 120488,
+          "hits": 587,
+          "profile": [
+            55037,
+            65451,
+            662,
+            8,
+            48919,
+            55006,
+            6100,
+            65360
+          ]
+        },
+        {
+          "depth": 6,
+          "score": 479,
+          "nodes": 416941,
+          "hits": 1979,
+          "profile": [
+            149424,
+            267517,
+            890,
+            12,
+            94735,
+            149382,
+            54665,
+            267342
+          ]
+        },
+        {
+          "depth": 7,
+          "score": 539,
+          "nodes": 2195781,
+          "hits": 23139,
+          "profile": [
+            1040839,
+            1154942,
+            1159,
+            15,
+            891795,
+            1040786,
+            149013,
+            1154757
+          ]
+        },
+        {
+          "depth": 8,
+          "score": 485,
+          "nodes": 7477203,
+          "hits": 67069,
+          "profile": [
+            2887466,
+            4589737,
+            1657,
+            22,
+            1777064,
+            2887390,
+            1110356,
+            4589473
+          ]
+        }
+      ],
+      "narrow_attempts": 0,
+      "fail_low": 0,
+      "fail_high": 0,
+      "depth": 8,
+      "score": 485,
+      "best": "d7c8q",
+      "nodes": 7477203,
+      "hits": 67069,
+      "elapsed_ms": 3500.617708,
+      "threads": 1,
+      "cache_bytes": 33685504,
+      "process_wall_ms": 3505.8395829983056,
+      "cpu_ms": 3498.975,
+      "involuntary_switches": 471,
+      "voluntary_switches": 0,
+      "peak_rss_bytes": 35569664,
+      "stage": "serial-depth8",
+      "mode": "depth",
+      "variant": "baseline",
+      "repetition": 0,
+      "ordinal": 2
+    }
+  ]
+}
