@@ -72,8 +72,8 @@ fn main() {
 
 def report(data):
     med = statistics.median
-    lines = ["# Quiet-move ordering measurements", "",
-             f"Baseline `{BASELINE}`. {len(data['cases'])} positions, {data['repetitions']} fresh-process repetitions, 100 MB total RAM budget. Fixed-depth times include initialization; time/ponder times report the measured computer search. Memory is peak RSS, excluding the browser.", "",
+    lines = [f"# {data.get('title', 'Quiet-move ordering measurements')}", "",
+             f"Baseline `{data['baseline']}`. {len(data['cases'])} positions, {data['repetitions']} fresh-process repetitions, 100 MB total RAM budget. Fixed-depth times include initialization; time/ponder times report the measured computer search. Memory is peak RSS, excluding the browser.", "",
              "| Position | Mode | Variant | Depth | Time ms, median | Time range ms | Nodes, median | Cache MB | Peak RSS MB |",
              "|---|---|---|---:|---:|---:|---:|---:|---:|"]
     for name, _, _ in data["cases"]:

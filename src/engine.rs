@@ -793,7 +793,23 @@ impl Search<'_> {
         for (index, &m) in moves.iter().enumerate() {
             let next = p.play(m);
             let previous = self.push_position(&next);
-            let score = -self.negamax(&next, depth - 1, ply + 1, -beta, -alpha).0;
+            // The first move establishes a score with the full window. Later
+            // moves first need only prove whether they can improve alpha.
+            // A probe between alpha and beta needs full-window verification;
+            // a fail-high already proves a cutoff. Null-window nodes already
+            // have the narrowest useful window, so do not probe twice there.
+            let score = if index == 0 || beta - alpha == 1 {
+                -self.negamax(&next, depth - 1, ply + 1, -beta, -alpha).0
+            } else {
+                let probe = -self
+                    .negamax(&next, depth - 1, ply + 1, -alpha - 1, -alpha)
+                    .0;
+                if !self.aborted && probe > alpha && probe < beta {
+                    -self.negamax(&next, depth - 1, ply + 1, -beta, -alpha).0
+                } else {
+                    probe
+                }
+            };
             self.pop_position(previous);
             if self.aborted {
                 return (0, None);
@@ -1163,6 +1179,72 @@ mod tests {
                 });
             }
         });
+    }
+
+    #[test]
+    fn principal_variation_search_verifies_later_improvements_and_preserves_bounds() {
+        for fen in [
+            "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+            "8/2p5/3p4/KP5r/1R3p1k/8/4P1P1/8 w - - 0 1",
+        ] {
+            let p = Position::from_fen(fen).unwrap();
+            let keys = [p.repetition_key()];
+            // Independently resolve every root alternative with a full window.
+            // Deliberately search the worst one first to force PV replacement.
+            let scores: Vec<_> = p
+                .legal_moves()
+                .into_iter()
+                .map(|m| {
+                    let child = p.play(m);
+                    let child_keys = [keys[0], child.repetition_key()];
+                    let score =
+                        -at_depth(&mut SearchCache::with_threads(1), &child, &child_keys, 2, 1).0;
+                    (m, score)
+                })
+                .collect();
+            let &(worst, low) = scores.iter().min_by_key(|(_, score)| score).unwrap();
+            let expected = scores.iter().map(|(_, score)| *score).max().unwrap();
+            assert!(low < expected);
+            for (alpha, beta, bound) in [
+                (-INF, INF, Bound::Exact),
+                (expected, expected + 1, Bound::Upper),
+                (low - 2, low - 1, Bound::Lower),
+                (low - 1, expected, Bound::Lower),
+            ] {
+                let mut cache = SearchCache::with_threads(1);
+                cache.table.initialize();
+                let mut search = test_search(&mut cache, &p, &keys);
+                let key = search.table_key(&p);
+                search.table.store(
+                    key,
+                    Entry {
+                        depth: 0,
+                        score: 0,
+                        best: Some(worst),
+                        bound: Bound::Upper,
+                    },
+                );
+                let (score, best) = search.negamax(&p, 3, 0, alpha, beta);
+                assert!(!search.aborted);
+                let entry = search.probe(key).unwrap();
+                assert_eq!(entry.bound, bound, "{fen} / {alpha}..{beta}");
+                match bound {
+                    Bound::Exact => {
+                        assert_eq!(score, expected);
+                        assert_ne!(best, Some(worst));
+                        assert!(scores.contains(&(best.unwrap(), expected)));
+                    }
+                    Bound::Upper => assert!(expected <= score && score <= alpha),
+                    Bound::Lower => assert!(beta <= score && score <= expected),
+                }
+                // A cached probe/cutoff bound must not masquerade as an exact
+                // result when the same position gets a wider search window.
+                let (score, best) = search.negamax(&p, 3, 0, -INF, INF);
+                assert_eq!(score, expected);
+                assert!(scores.contains(&(best.unwrap(), expected)));
+                assert_eq!(search.probe(key).unwrap().bound, Bound::Exact);
+            }
+        }
     }
 
     #[test]

@@ -1,0 +1,132 @@
+{
+  "title": "Principal Variation Search measurements",
+  "baseline": "6765813",
+  "machine": "macOS-26.5.1-arm64-arm-64bit",
+  "threads_requested": 0,
+  "rust": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+  "memory_budget": 100000000,
+  "seconds": 3,
+  "repetitions": 3,
+  "cases": [
+    [
+      "opening",
+      "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+      9
+    ]
+  ],
+  "variants": [
+    "baseline",
+    "pvs"
+  ],
+  "modes": [
+    "ponder"
+  ],
+  "runs": [
+    {
+      "ponder_depth": 9,
+      "human_move": "e2e4",
+      "depth": 8,
+      "score": -24,
+      "best": "b8c6",
+      "nodes": 6483958,
+      "hits": 91958,
+      "elapsed_ms": 2000.0029170000003,
+      "threads": 6,
+      "cache_bytes": 58028544,
+      "peak_rss_bytes": 60424192,
+      "case": "opening",
+      "mode": "ponder",
+      "variant": "baseline",
+      "repetition": 0
+    },
+    {
+      "ponder_depth": 9,
+      "human_move": "e2e4",
+      "depth": 8,
+      "score": -24,
+      "best": "b8c6",
+      "nodes": 6497224,
+      "hits": 107190,
+      "elapsed_ms": 2000.0069580000002,
+      "threads": 6,
+      "cache_bytes": 51186176,
+      "peak_rss_bytes": 53559296,
+      "case": "opening",
+      "mode": "ponder",
+      "variant": "pvs",
+      "repetition": 0
+    },
+    {
+      "ponder_depth": 9,
+      "human_move": "e2e4",
+      "depth": 8,
+      "score": -24,
+      "best": "b8c6",
+      "nodes": 6594049,
+      "hits": 99119,
+      "elapsed_ms": 2000.0072910000001,
+      "threads": 6,
+      "cache_bytes": 53159936,
+      "peak_rss_bytes": 55541760,
+      "case": "opening",
+      "mode": "ponder",
+      "variant": "baseline",
+      "repetition": 1
+    },
+    {
+      "ponder_depth": 9,
+      "human_move": "e2e4",
+      "depth": 8,
+      "score": -24,
+      "best": "b8c6",
+      "nodes": 5218421,
+      "hits": 95901,
+      "elapsed_ms": 2000.0179999999998,
+      "threads": 6,
+      "cache_bytes": 46185984,
+      "peak_rss_bytes": 48578560,
+      "case": "opening",
+      "mode": "ponder",
+      "variant": "pvs",
+      "repetition": 1
+    },
+    {
+      "ponder_depth": 9,
+      "human_move": "e2e4",
+      "depth": 8,
+      "score": -24,
+      "best": "b8c6",
+      "nodes": 6427669,
+      "hits": 102162,
+      "elapsed_ms": 2000.0104159999999,
+      "threads": 6,
+      "cache_bytes": 42567424,
+      "peak_rss_bytes": 44957696,
+      "case": "opening",
+      "mode": "ponder",
+      "variant": "pvs",
+      "repetition": 2
+    },
+    {
+      "ponder_depth": 9,
+      "human_move": "e2e4",
+      "depth": 8,
+      "score": -24,
+      "best": "b8c6",
+      "nodes": 5728523,
+      "hits": 90272,
+      "elapsed_ms": 2000.01975,
+      "threads": 6,
+      "cache_bytes": 50528256,
+      "peak_rss_bytes": 52887552,
+      "case": "opening",
+      "mode": "ponder",
+      "variant": "baseline",
+      "repetition": 2
+    }
+  ],
+  "source_sha256": {
+    "baseline": "5e83c81290df52510b96b61ed6c2f4224c34cbb4c8f618b5fda08e5009207617",
+    "pvs": "fb5accbb58a7eb82bf72e48e208e6d0da56f90c1750f8e7d95dc6d07de095329"
+  }
+}
