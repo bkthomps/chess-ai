@@ -271,6 +271,11 @@ fn queue_engine(app: &Shared, a: &mut App) {
                 // Always leave a final snapshot, even if a reader coincided
                 // with the engine's last nonblocking publication.
                 *job.progress.lock().unwrap() = SearchProgress {
+                    evaluation: (result.depth > 0).then_some(if job.position.white {
+                        result.score
+                    } else {
+                        -result.score
+                    }),
                     depth: result.depth,
                     searching_depth: 0,
                     nodes: result.nodes,
@@ -677,8 +682,9 @@ fn state_json(a: &mut App) -> String {
     let analysis = a.analysis.as_ref().map_or("null".into(), |analysis| {
         let s = *analysis.progress.lock().unwrap();
         let active = (a.thinking || a.pondering) && analysis.revision == a.revision;
+        let evaluation = s.evaluation.map_or("null".into(), |score| score.to_string());
         let budget = analysis.budget.map_or("null".into(), |b| b.as_millis().to_string());
-        format!("{{\"revision\":{},\"pondering\":{},\"active\":{},\"depth\":{},\"searching_depth\":{},\"nodes\":{},\"hits\":{},\"millis\":{},\"threads\":{},\"cache_bytes\":{},\"cache_limit\":{},\"budget_millis\":{budget}}}",
+        format!("{{\"revision\":{},\"pondering\":{},\"active\":{},\"depth\":{},\"searching_depth\":{},\"evaluation\":{evaluation},\"nodes\":{},\"hits\":{},\"millis\":{},\"threads\":{},\"cache_bytes\":{},\"cache_limit\":{},\"budget_millis\":{budget}}}",
             analysis.revision, analysis.pondering, active, s.depth, s.searching_depth, s.nodes, s.hits, s.elapsed.as_millis(), s.threads, s.cache_bytes, s.cache_limit)
     });
     format!("{{\"board\":[{board}],\"white\":{},\"human\":{},\"clocks\":{clocks},\"thinking_seconds\":{},\"revision\":{},\"thinking\":{},\"pondering\":{},\"check\":{},\"result\":{},\"legal\":[{moves}],\"notation\":[{notation}],\"last\":{last},\"stats\":{stats},\"analysis\":{analysis}}}",

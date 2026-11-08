@@ -206,6 +206,7 @@ pub struct SearchResult {
 /// A coherent snapshot of one search, including an unfinished depth.
 #[derive(Clone, Copy, Debug, Default)]
 pub struct SearchProgress {
+    pub evaluation: Option<i32>,
     pub depth: u8,
     pub searching_depth: u8,
     pub nodes: u64,
@@ -230,6 +231,7 @@ struct Search<'a> {
     published: Instant,
     depth: u8,
     searching_depth: u8,
+    evaluation: Option<i32>,
     threads: usize,
     peers: &'a [WorkerStats],
     reporting: Option<&'a WorkerStats>,
@@ -383,6 +385,7 @@ impl SearchCache {
             published: start,
             depth: 0,
             searching_depth: 0,
+            evaluation: None,
             threads,
             peers: &peers,
             reporting: None,
@@ -427,6 +430,11 @@ impl SearchCache {
             }
         }
         s.depth = result.depth;
+        s.evaluation = (result.depth > 0).then_some(if position.white {
+            result.score
+        } else {
+            -result.score
+        });
         s.searching_depth = result.depth.saturating_add(1);
         s.publish(true);
         let mut depth = result.depth.saturating_add(1);
@@ -450,6 +458,7 @@ impl SearchCache {
             result.score = score;
             result.depth = depth;
             s.depth = depth;
+            s.evaluation = Some(if position.white { score } else { -score });
             s.searching_depth = depth.saturating_add(1);
             s.publish(false);
             if score.abs() > MATE - 256 {
@@ -576,6 +585,7 @@ impl Search<'_> {
                     published: self.published,
                     depth: self.depth,
                     searching_depth: depth,
+                    evaluation: None,
                     threads: self.threads,
                     peers: &[],
                     reporting: Some(stats),
@@ -697,6 +707,7 @@ impl Search<'_> {
                 if let Ok(mut snapshot) = progress.try_lock() {
                     let (nodes, hits) = self.totals();
                     *snapshot = SearchProgress {
+                        evaluation: self.evaluation,
                         depth: self.depth,
                         searching_depth: self.searching_depth,
                         nodes,
@@ -1978,6 +1989,7 @@ mod tests {
             published: Instant::now(),
             depth: 0,
             searching_depth: 0,
+            evaluation: None,
             threads: 1,
             peers: &[],
             reporting: None,
