@@ -1,0 +1,73 @@
+--- a/engine.rs
++++ b/engine.rs
+@@ -78,6 +78,7 @@
+     }
+ 
+     impl Mobility {
++        #[cfg(test)]
+         pub(super) fn new(p: &Position) -> Self {
+             let mut occupied = [0; 2];
+             let mut pawns = [0; 2];
+@@ -94,6 +95,15 @@
+                     kings[color] = s;
+                 }
+             }
++            Self::from_masks(p, occupied, pawns, kings)
++        }
++
++        pub(super) fn from_masks(
++            p: &Position,
++            occupied: [u64; 2],
++            pawns: [u64; 2],
++            kings: [usize; 2],
++        ) -> Self {
+             let pawn_attacks = [
+                 ((pawns[0] & !FILE_A) >> 9) | ((pawns[0] & !FILE_H) >> 7),
+                 ((pawns[1] & !FILE_A) << 7) | ((pawns[1] & !FILE_H) << 9),
+@@ -1450,23 +1460,37 @@
+ fn evaluate(p: &Position) -> i32 {
+     let (mut score, mut endgame_delta, mut phase) = (0, 0, 0);
+     let mut bishops = [0, 0];
+-    let mut mobility = None;
++    let mut occupied = [0; 2];
++    let mut pawns = [0; 2];
++    let mut kings = [0; 2];
+     for (square, &piece) in p.squares.iter().enumerate() {
+         if piece == 0 {
+             continue;
+         }
+         score += i32::from(SQUARE_SCORES[(piece + 6) as usize][square]);
+         phase += PHASE_WEIGHTS[piece.unsigned_abs() as usize];
+-        if (2..=5).contains(&piece.abs()) {
+-            let mobility = mobility.get_or_insert_with(|| mobility::Mobility::new(p));
+-            let (mg, eg) = mobility.bonus(p, square, piece);
++        let color = usize::from(piece > 0);
++        occupied[color] |= 1u64 << square;
++        match piece.abs() {
++            1 => pawns[color] |= 1u64 << square,
++            3 => bishops[usize::from(piece < 0)] += 1,
++            6 => {
++                kings[color] = square;
++                endgame_delta += i32::from(KING_ENDGAME_DELTAS[color][square]);
++            }
++            _ => {}
++        }
++    }
++    if phase != 0 {
++        let mobility = mobility::Mobility::from_masks(p, occupied, pawns, kings);
++        let mut active = (occupied[0] | occupied[1])
++            & !(pawns[0] | pawns[1] | (1u64 << kings[0]) | (1u64 << kings[1]));
++        while active != 0 {
++            let square = active.trailing_zeros() as usize;
++            active &= active - 1;
++            let (mg, eg) = mobility.bonus(p, square, p.squares[square]);
+             score += mg;
+             endgame_delta += eg - mg;
+-        }
+-        match piece.abs() {
+-            3 => bishops[usize::from(piece < 0)] += 1,
+-            6 => endgame_delta += i32::from(KING_ENDGAME_DELTAS[usize::from(piece > 0)][square]),
+-            _ => {}
+         }
+     }
+     // Promotions can exceed the initial material; clamp before blending.

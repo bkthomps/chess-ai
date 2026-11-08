@@ -8,6 +8,414 @@ use std::sync::{
 use std::thread;
 use std::time::{Duration, Instant};
 
+mod mobility {
+    //! Pawn-safe pseudo-mobility, without move generation or heap scratch.
+    use crate::chess::Position;
+    use crate::tables::DIRECTIONS;
+
+    // Centipawns per destination, indexed by piece type: (middlegame, endgame).
+    const WEIGHTS: [(i32, i32); 7] = [(0, 0), (0, 0), (4, 4), (5, 5), (2, 4), (1, 2), (0, 0)];
+    const FILE_A: u64 = 0x0101_0101_0101_0101;
+    const FILE_H: u64 = FILE_A << 7;
+
+    struct Geometry {
+        rays: [[u64; 8]; 64],
+        knights: [u64; 64],
+        lines: [[u64; 4]; 64],
+    }
+    const fn geometry() -> Geometry {
+        let mut result = Geometry {
+            rays: [[0; 8]; 64],
+            knights: [0; 64],
+            lines: [[0; 4]; 64],
+        };
+        let steps: [(i32, i32); 8] = [
+            (1, 2),
+            (2, 1),
+            (-1, 2),
+            (-2, 1),
+            (1, -2),
+            (2, -1),
+            (-1, -2),
+            (-2, -1),
+        ];
+        let mut square = 0;
+        while square < 64 {
+            let (x, y) = (square as i32 % 8, square as i32 / 8);
+            let mut d = 0;
+            while d < 8 {
+                let (dx, dy) = DIRECTIONS[d];
+                let (mut nx, mut ny) = (x + dx, y + dy);
+                while nx >= 0 && nx < 8 && ny >= 0 && ny < 8 {
+                    result.rays[square][d] |= 1u64 << (ny * 8 + nx);
+                    nx += dx;
+                    ny += dy;
+                }
+                let (nx, ny) = (x + steps[d].0, y + steps[d].1);
+                if nx >= 0 && nx < 8 && ny >= 0 && ny < 8 {
+                    result.knights[square] |= 1u64 << (ny * 8 + nx);
+                }
+                d += 1;
+            }
+            let pairs = [(0, 1), (2, 3), (4, 7), (5, 6)];
+            let mut line = 0;
+            while line < 4 {
+                let (a, b) = pairs[line];
+                result.lines[square][line] =
+                    result.rays[square][a] | result.rays[square][b] | (1u64 << square);
+                line += 1;
+            }
+            square += 1;
+        }
+        result
+    }
+    static GEOMETRY: Geometry = geometry();
+
+    fn nearest(bits: u64, direction: usize) -> usize {
+        debug_assert_ne!(bits, 0);
+        if matches!(direction, 0 | 2 | 4 | 5) {
+            bits.trailing_zeros() as usize
+        } else {
+            63 - bits.leading_zeros() as usize
+        }
+    }
+
+    // Subtraction borrows up to the first blocker in each direction. Reversing
+    // the bits applies the same operation to the opposite half of the line.
+    fn line_attacks(occupied: u64, from: usize, line: usize) -> u64 {
+        let mask = GEOMETRY.lines[from][line];
+        let blockers = occupied & mask;
+        let piece = 1u64 << from;
+        let forward = blockers.wrapping_sub(piece.wrapping_mul(2));
+        let backward = blockers
+            .reverse_bits()
+            .wrapping_sub(piece.reverse_bits().wrapping_mul(2));
+        (forward ^ backward.reverse_bits()) & mask
+    }
+
+    pub(super) struct Mobility {
+        occupied: u64,
+        eligible: [u64; 2],
+        pinned: [u64; 2],
+        kings: [usize; 2],
+    }
+
+    impl Mobility {
+        #[cfg(test)]
+        pub(super) fn new(p: &Position) -> Self {
+            let mut occupied = [0; 2];
+            let mut pawns = [0; 2];
+            let mut kings = [0; 2];
+            let mut diagonal = [0; 2];
+            let mut straight = [0; 2];
+            for (s, &pc) in p.squares.iter().enumerate() {
+                if pc == 0 {
+                    continue;
+                }
+                let color = usize::from(pc > 0);
+                occupied[color] |= 1u64 << s;
+                match pc.abs() {
+                    1 => pawns[color] |= 1u64 << s,
+                    3 => diagonal[color] |= 1u64 << s,
+                    4 => straight[color] |= 1u64 << s,
+                    5 => {
+                        diagonal[color] |= 1u64 << s;
+                        straight[color] |= 1u64 << s;
+                    }
+                    6 => kings[color] = s,
+                    _ => {}
+                }
+            }
+            Self::from_masks(occupied, pawns, kings, diagonal, straight)
+        }
+
+        pub(super) fn from_masks(
+            occupied: [u64; 2],
+            pawns: [u64; 2],
+            kings: [usize; 2],
+            diagonal: [u64; 2],
+            straight: [u64; 2],
+        ) -> Self {
+            let pawn_attacks = [
+                ((pawns[0] & !FILE_A) >> 9) | ((pawns[0] & !FILE_H) >> 7),
+                ((pawns[1] & !FILE_A) << 7) | ((pawns[1] & !FILE_H) << 9),
+            ];
+            let mut result = Self {
+                occupied: occupied[0] | occupied[1],
+                eligible: [
+                    !(occupied[0] | pawn_attacks[1] | (1u64 << kings[1])),
+                    !(occupied[1] | pawn_attacks[0] | (1u64 << kings[0])),
+                ],
+                pinned: [0; 2],
+                kings,
+            };
+            for color in 0..2 {
+                let active = occupied[color] & !(pawns[color] | (1u64 << kings[color]));
+                if active == 0 {
+                    continue;
+                }
+                for d in 0..8 {
+                    let ray = GEOMETRY.rays[kings[color]][d];
+                    let pinners = if d < 4 {
+                        straight[1 - color]
+                    } else {
+                        diagonal[1 - color]
+                    };
+                    if ray & pinners == 0 {
+                        continue;
+                    }
+                    let mut blockers = ray & result.occupied;
+                    // The aligned enemy slider guarantees at least one blocker.
+                    let first = nearest(blockers, d);
+                    let first_bit = 1u64 << first;
+                    if active & first_bit == 0 {
+                        continue;
+                    }
+                    blockers &= !first_bit;
+                    if blockers == 0 {
+                        continue;
+                    }
+                    let second = nearest(blockers, d);
+                    if pinners & (1u64 << second) != 0 {
+                        result.pinned[color] |= first_bit;
+                    }
+                }
+            }
+            result
+        }
+
+        pub(super) fn count(&self, _p: &Position, from: usize, pc: i8) -> i32 {
+            let kind = pc.unsigned_abs() as usize;
+            if !(2..=5).contains(&kind) {
+                return 0;
+            }
+            let color = usize::from(pc > 0);
+            let pinned = self.pinned[color] & (1u64 << from) != 0;
+            if kind == 2 {
+                return if pinned {
+                    0
+                } else {
+                    (GEOMETRY.knights[from] & self.eligible[color]).count_ones() as i32
+                };
+            }
+            let lines = match kind {
+                3 => 2..4,
+                4 => 0..2,
+                _ => 0..4,
+            };
+            let mut attacks = 0;
+            for line in lines {
+                attacks |= line_attacks(self.occupied, from, line);
+            }
+            if pinned {
+                let king = self.kings[color];
+                let dx = from as i32 % 8 - king as i32 % 8;
+                let dy = from as i32 / 8 - king as i32 / 8;
+                let (a, b) = if dx == 0 {
+                    (2, 3)
+                } else if dy == 0 {
+                    (0, 1)
+                } else if dx.signum() == dy.signum() {
+                    (4, 7)
+                } else {
+                    (5, 6)
+                };
+                attacks &= GEOMETRY.rays[king][a] | GEOMETRY.rays[king][b];
+            }
+            (attacks & self.eligible[color]).count_ones() as i32
+        }
+
+        pub(super) fn bonus(&self, p: &Position, from: usize, pc: i8) -> (i32, i32) {
+            let count = self.count(p, from, pc) * i32::from(pc.signum());
+            let (mg, eg) = WEIGHTS[pc.unsigned_abs() as usize];
+            (count * mg, count * eg)
+        }
+    }
+
+    #[cfg(test)]
+    pub(super) mod tests {
+        use super::*;
+
+        #[test]
+        fn line_attacks_match_ray_walks_for_every_line_occupancy() {
+            let pairs = [(0, 1), (2, 3), (4, 7), (5, 6)];
+            for from in 0..64 {
+                for (line, &(a, b)) in pairs.iter().enumerate() {
+                    let squares: Vec<_> = crate::tables::RAYS[from][a]
+                        .iter()
+                        .chain(crate::tables::RAYS[from][b].iter())
+                        .collect();
+                    for subset in 0..(1usize << squares.len()) {
+                        let mut occupied = 1u64 << from;
+                        for (i, &square) in squares.iter().enumerate() {
+                            if subset & (1 << i) != 0 {
+                                occupied |= 1u64 << square;
+                            }
+                        }
+                        let mut expected = 0;
+                        for d in [a, b] {
+                            for square in crate::tables::RAYS[from][d].iter() {
+                                expected |= 1u64 << square;
+                                if occupied & (1u64 << square) != 0 {
+                                    break;
+                                }
+                            }
+                        }
+                        assert_eq!(
+                            line_attacks(occupied, from, line),
+                            expected,
+                            "square {from}, line {line}, occupancy {occupied:#x}"
+                        );
+                    }
+                }
+            }
+        }
+
+        // Scalar oracle: enumerate all destination squares and walk paths with
+        // coordinates, independently of the production attack tables and bit masks.
+        pub(crate) fn reference_count(p: &Position, from: usize) -> i32 {
+            let pc = p.squares[from];
+            let kind = pc.abs();
+            if !(2..=5).contains(&kind) {
+                return 0;
+            }
+            let xy = |s: usize| (s as i32 % 8, s as i32 / 8);
+            let (fx, fy) = xy(from);
+            let king = p
+                .squares
+                .iter()
+                .position(|&v| v == pc.signum() * 6)
+                .unwrap();
+            let (kx, ky) = xy(king);
+            let mut pinned = false;
+            for (s, &enemy) in p.squares.iter().enumerate() {
+                let (x, y) = xy(s);
+                let (dx, dy) = (x - kx, y - ky);
+                let diagonal = dx.abs() == dy.abs();
+                let straight = dx == 0 || dy == 0;
+                if enemy.signum() != -pc.signum()
+                    || !(enemy.abs() == 5 && (diagonal || straight)
+                        || enemy.abs() == 3 && diagonal
+                        || enemy.abs() == 4 && straight)
+                    || (fx - kx) * dy != (fy - ky) * dx
+                {
+                    continue;
+                }
+                let (mut x, mut y) = (kx + dx.signum(), ky + dy.signum());
+                let mut blockers = Vec::new();
+                while (x, y) != xy(s) {
+                    let at = (y * 8 + x) as usize;
+                    if p.squares[at] != 0 {
+                        blockers.push(at);
+                    }
+                    x += dx.signum();
+                    y += dy.signum();
+                }
+                pinned |= blockers == [from];
+            }
+            let mut count = 0;
+            for to in 0..64 {
+                let (tx, ty) = xy(to);
+                let (dx, dy) = (tx - fx, ty - fy);
+                if to == from || p.squares[to].signum() == pc.signum() || p.squares[to].abs() == 6 {
+                    continue;
+                }
+                let geometry = match kind {
+                    2 => dx.abs() * dy.abs() == 2,
+                    3 => dx.abs() == dy.abs(),
+                    4 => dx == 0 || dy == 0,
+                    5 => dx == 0 || dy == 0 || dx.abs() == dy.abs(),
+                    _ => false,
+                };
+                if !geometry
+                    || pinned && (kind == 2 || (tx - kx) * (fy - ky) != (ty - ky) * (fx - kx))
+                {
+                    continue;
+                }
+                if p.squares.iter().enumerate().any(|(s, &enemy)| {
+                    let (x, y) = xy(s);
+                    enemy == -pc.signum() && (x - tx).abs() == 1 && y - i32::from(pc.signum()) == ty
+                }) {
+                    continue;
+                }
+                if kind != 2 {
+                    let (mut x, mut y) = (fx + dx.signum(), fy + dy.signum());
+                    let mut blocked = false;
+                    while (x, y) != (tx, ty) {
+                        blocked |= p.squares[(y * 8 + x) as usize] != 0;
+                        x += dx.signum();
+                        y += dy.signum();
+                    }
+                    if blocked {
+                        continue;
+                    }
+                }
+                count += 1;
+            }
+            count
+        }
+
+        pub(crate) fn reference_scores(p: &Position) -> (i32, i32) {
+            let mut result = (0, 0);
+            for (from, &pc) in p.squares.iter().enumerate() {
+                let (mg, eg) = match pc.abs() {
+                    2 => (4, 4),
+                    3 => (5, 5),
+                    4 => (2, 4),
+                    5 => (1, 2),
+                    _ => continue,
+                };
+                let n = reference_count(p, from) * i32::from(pc.signum());
+                result.0 += n * mg;
+                result.1 += n * eg;
+            }
+            result
+        }
+
+        #[test]
+        fn pawn_pushes_free_bishops_and_queens_before_they_move() {
+            let p = Position::default();
+            let before = Mobility::new(&p);
+            let e4 = p.play(
+                p.legal_moves()
+                    .into_iter()
+                    .find(|m| m.to_string() == "e2e4")
+                    .unwrap(),
+            );
+            let after = Mobility::new(&e4);
+            assert_eq!(before.count(&p, 5, 3), 0);
+            assert_eq!(after.count(&e4, 5, 3), 4);
+            assert_eq!(before.count(&p, 3, 5), 0);
+            assert_eq!(after.count(&e4, 3, 5), 4);
+            let d4 = p.play(
+                p.legal_moves()
+                    .into_iter()
+                    .find(|m| m.to_string() == "d2d4")
+                    .unwrap(),
+            );
+            assert_eq!(Mobility::new(&d4).count(&d4, 2, 3), 4);
+        }
+
+        #[test]
+        fn mobility_respects_pins_pawn_attacks_and_ray_blockers() {
+            for (fen, from, expected) in [
+                ("4r1k1/8/8/8/8/8/4N3/4K3 w - - 0 1", 12, 0),
+                ("4r1k1/8/8/8/8/8/4R3/4K3 w - - 0 1", 12, 6),
+                ("7k/8/7b/8/8/4B3/8/2K5 w - - 0 1", 20, 4),
+                // d5 is defended; its pawn also excludes c4/e4. No ray passes d5.
+                ("7k/8/4p3/3p4/3R4/8/8/K7 w - - 0 1", 27, 8),
+            ] {
+                let p = Position::from_fen(fen).unwrap();
+                let m = Mobility::new(&p);
+                assert_eq!(m.count(&p, from, p.squares[from]), expected, "{fen}");
+                for (s, &pc) in p.squares.iter().enumerate() {
+                    assert_eq!(m.count(&p, s, pc), reference_count(&p, s), "{fen} / {s}");
+                }
+            }
+        }
+    }
+}
+
 const MATE: i32 = 30_000;
 const INF: i32 = 32_000;
 #[cfg(test)]
@@ -1119,20 +1527,51 @@ static KING_ENDGAME_DELTAS: [[i16; 64]; 2] = king_deltas();
 fn evaluate(p: &Position) -> i32 {
     let (mut score, mut endgame_delta, mut phase) = (0, 0, 0);
     let mut bishops = [0, 0];
+    let mut occupied = [0; 2];
+    let mut pawns = [0; 2];
+    let mut kings = [0; 2];
+    let mut diagonal = [0; 2];
+    let mut straight = [0; 2];
     for (square, &piece) in p.squares.iter().enumerate() {
         if piece == 0 {
             continue;
         }
         score += i32::from(SQUARE_SCORES[(piece + 6) as usize][square]);
         phase += PHASE_WEIGHTS[piece.unsigned_abs() as usize];
+        let color = usize::from(piece > 0);
+        occupied[color] |= 1u64 << square;
         match piece.abs() {
-            3 => bishops[usize::from(piece < 0)] += 1,
-            6 => endgame_delta += i32::from(KING_ENDGAME_DELTAS[usize::from(piece > 0)][square]),
+            1 => pawns[color] |= 1u64 << square,
+            3 => {
+                bishops[usize::from(piece < 0)] += 1;
+                diagonal[color] |= 1u64 << square;
+            }
+            4 => straight[color] |= 1u64 << square,
+            5 => {
+                diagonal[color] |= 1u64 << square;
+                straight[color] |= 1u64 << square;
+            }
+            6 => {
+                kings[color] = square;
+                endgame_delta += i32::from(KING_ENDGAME_DELTAS[color][square]);
+            }
             _ => {}
         }
     }
+    if phase != 0 {
+        let mobility = mobility::Mobility::from_masks(occupied, pawns, kings, diagonal, straight);
+        let mut active = (occupied[0] | occupied[1])
+            & !(pawns[0] | pawns[1] | (1u64 << kings[0]) | (1u64 << kings[1]));
+        while active != 0 {
+            let square = active.trailing_zeros() as usize;
+            active &= active - 1;
+            let (mg, eg) = mobility.bonus(p, square, p.squares[square]);
+            score += mg;
+            endgame_delta += eg - mg;
+        }
+    }
     // Promotions can exceed the initial material; clamp before blending.
-    // Blend the signed total once to preserve color symmetry when rounding.
+    // Blend the signed king/mobility correction once to preserve color symmetry.
     score += endgame_delta * (FULL_PHASE - phase.min(FULL_PHASE)) / FULL_PHASE;
     if bishops[0] >= 2 {
         score += 30;
@@ -1157,17 +1596,19 @@ mod tests {
     fn evaluation_blends_king_activity_through_material_exchanges() {
         // All non-king material cancels by color. White's central king versus
         // Black's back-rank king scores -30 in the middlegame and +48 at phase 0.
-        for (fen, expected) in [
-            ("4k3/8/8/8/4K3/8/8/8 w - - 0 1", 48),
-            ("r2qk3/8/8/8/4K3/8/8/R2Q4 w - - 0 1", 9),
-            ("rnbqkbnr/8/8/8/4K3/8/8/RNBQ1BNR w - - 0 1", -30),
+        for (fen, phase, expected) in [
+            ("4k3/8/8/8/4K3/8/8/8 w - - 0 1", 0, 48),
+            ("r2qk3/8/8/8/4K3/8/8/R2Q4 w - - 0 1", 12, 9),
+            ("rnbqkbnr/8/8/8/4K3/8/8/RNBQ1BNR w - - 0 1", 24, -30),
             // Promoted material must never extrapolate beyond the middlegame.
-            ("rqbqkbqr/8/8/8/4K3/8/8/RQBQ1BQR w - - 0 1", -30),
+            ("rqbqkbqr/8/8/8/4K3/8/8/RQBQ1BQR w - - 0 1", 24, -30),
         ] {
             let mut p = Position::from_fen(fen).unwrap();
-            assert_eq!(evaluate(&p), expected, "{fen}");
+            let (mg, eg) = mobility::tests::reference_scores(&p);
+            let mobility_score = (mg * phase + eg * (24 - phase)) / 24;
+            assert_eq!(evaluate(&p) - mobility_score, expected, "{fen}");
             p.white = false;
-            assert_eq!(evaluate(&p), -expected);
+            assert_eq!(evaluate(&p) + mobility_score, -expected);
         }
     }
 
@@ -1593,6 +2034,19 @@ mod tests {
             let mut random = 17;
             for _ in 0..500 {
                 assert_eq!(evaluate(&p), reference_evaluate(&p));
+                let mut mirrored = p.clone();
+                for (s, &pc) in p.squares.iter().enumerate() {
+                    mirrored.squares[s ^ 56] = -pc;
+                }
+                // Evaluation ignores the stale hash/rights in this mirrored copy.
+                assert_eq!(evaluate(&mirrored), -evaluate(&p));
+                let mobility = mobility::Mobility::new(&p);
+                for (s, &pc) in p.squares.iter().enumerate() {
+                    assert_eq!(
+                        mobility.count(&p, s, pc),
+                        mobility::tests::reference_count(&p, s)
+                    );
+                }
                 assert_eq!(search.history_context, reversible_context(&p, &search.keys));
                 assert_eq!(
                     search.table_key(&p),
@@ -1967,7 +2421,9 @@ mod tests {
             };
             score += pc.signum() as i32 * (value(pc) + positional);
         }
-        score += king_delta * (24 - phase.min(24)) / 24;
+        let (mg, eg) = mobility::tests::reference_scores(p);
+        score += mg;
+        score += (king_delta + eg - mg) * (24 - phase.min(24)) / 24;
         if bishops[0] >= 2 {
             score += 30;
         }

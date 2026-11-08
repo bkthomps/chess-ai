@@ -1,0 +1,19 @@
+--- a/engine.rs
++++ b/engine.rs
+@@ -1387,7 +1387,7 @@
+ fn evaluate(p: &Position) -> i32 {
+     let (mut score, mut endgame_delta, mut phase) = (0, 0, 0);
+     let mut bishops = [0, 0];
+-    let mobility = mobility::Mobility::new(p);
++    let mut mobility = None;
+     for (square, &piece) in p.squares.iter().enumerate() {
+         if piece == 0 {
+             continue;
+@@ -1395,6 +1395,7 @@
+         score += i32::from(SQUARE_SCORES[(piece + 6) as usize][square]);
+         phase += PHASE_WEIGHTS[piece.unsigned_abs() as usize];
+         if (2..=5).contains(&piece.abs()) {
++            let mobility = mobility.get_or_insert_with(|| mobility::Mobility::new(p));
+             let (mg, eg) = mobility.bonus(p, square, piece);
+             score += mg;
+             endgame_delta += eg - mg;

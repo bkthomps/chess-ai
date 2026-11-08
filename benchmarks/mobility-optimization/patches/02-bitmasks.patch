@@ -1,0 +1,250 @@
+--- a/engine.rs
++++ b/engine.rs
+@@ -11,113 +11,176 @@
+ mod mobility {
+     //! Pawn-safe pseudo-mobility, without move generation or heap scratch.
+     use crate::chess::Position;
+-    use crate::tables::{DIRECTIONS, KNIGHT_TARGETS, PAWN_ATTACKERS, RAYS};
++    use crate::tables::DIRECTIONS;
+ 
+     // Centipawns per destination, indexed by piece type: (middlegame, endgame).
+-    // Deliberately modest initial weights; these are not tuned Elo claims.
+     const WEIGHTS: [(i32, i32); 7] = [(0, 0), (0, 0), (4, 4), (5, 5), (2, 4), (1, 2), (0, 0)];
++    const FILE_A: u64 = 0x0101_0101_0101_0101;
++    const FILE_H: u64 = FILE_A << 7;
++
++    struct Geometry {
++        rays: [[u64; 8]; 64],
++        knights: [u64; 64],
++    }
++    const fn geometry() -> Geometry {
++        let mut result = Geometry {
++            rays: [[0; 8]; 64],
++            knights: [0; 64],
++        };
++        let steps: [(i32, i32); 8] = [
++            (1, 2),
++            (2, 1),
++            (-1, 2),
++            (-2, 1),
++            (1, -2),
++            (2, -1),
++            (-1, -2),
++            (-2, -1),
++        ];
++        let mut square = 0;
++        while square < 64 {
++            let (x, y) = (square as i32 % 8, square as i32 / 8);
++            let mut d = 0;
++            while d < 8 {
++                let (dx, dy) = DIRECTIONS[d];
++                let (mut nx, mut ny) = (x + dx, y + dy);
++                while nx >= 0 && nx < 8 && ny >= 0 && ny < 8 {
++                    result.rays[square][d] |= 1u64 << (ny * 8 + nx);
++                    nx += dx;
++                    ny += dy;
++                }
++                let (nx, ny) = (x + steps[d].0, y + steps[d].1);
++                if nx >= 0 && nx < 8 && ny >= 0 && ny < 8 {
++                    result.knights[square] |= 1u64 << (ny * 8 + nx);
++                }
++                d += 1;
++            }
++            square += 1;
++        }
++        result
++    }
++    static GEOMETRY: Geometry = geometry();
++
++    fn nearest(bits: u64, direction: usize) -> usize {
++        debug_assert_ne!(bits, 0);
++        if matches!(direction, 0 | 2 | 4 | 5) {
++            bits.trailing_zeros() as usize
++        } else {
++            63 - bits.leading_zeros() as usize
++        }
++    }
+ 
+     pub(super) struct Mobility {
+-        occupied: [u64; 2],
+-        pawn_attacks: [u64; 2],
++        occupied: u64,
++        eligible: [u64; 2],
+         pinned: [u64; 2],
+         kings: [usize; 2],
+     }
+ 
+     impl Mobility {
+         pub(super) fn new(p: &Position) -> Self {
+-            let mut result = Self {
+-                occupied: [0; 2],
+-                pawn_attacks: [0; 2],
+-                pinned: [0; 2],
+-                kings: [0; 2],
+-            };
++            let mut occupied = [0; 2];
++            let mut pawns = [0; 2];
++            let mut kings = [0; 2];
+             for (s, &pc) in p.squares.iter().enumerate() {
+                 if pc == 0 {
+                     continue;
+                 }
+                 let color = usize::from(pc > 0);
+-                result.occupied[color] |= 1u64 << s;
++                occupied[color] |= 1u64 << s;
+                 if pc.abs() == 1 {
+-                    // Reversing the attacker lookup gives this pawn's destinations.
+-                    for to in PAWN_ATTACKERS[1 - color][s].iter() {
+-                        result.pawn_attacks[color] |= 1u64 << to;
++                    pawns[color] |= 1u64 << s;
++                } else if pc.abs() == 6 {
++                    kings[color] = s;
++                }
++            }
++            let pawn_attacks = [
++                ((pawns[0] & !FILE_A) >> 9) | ((pawns[0] & !FILE_H) >> 7),
++                ((pawns[1] & !FILE_A) << 7) | ((pawns[1] & !FILE_H) << 9),
++            ];
++            let mut result = Self {
++                occupied: occupied[0] | occupied[1],
++                eligible: [
++                    !(occupied[0] | pawn_attacks[1] | (1u64 << kings[1])),
++                    !(occupied[1] | pawn_attacks[0] | (1u64 << kings[0])),
++                ],
++                pinned: [0; 2],
++                kings,
++            };
++            for color in 0..2 {
++                for d in 0..8 {
++                    let mut blockers = GEOMETRY.rays[kings[color]][d] & result.occupied;
++                    if blockers == 0 {
++                        continue;
+                     }
+-                } else if pc.abs() == 6 {
+-                    result.kings[color] = s;
+-                }
+-            }
+-            for color in 0..2 {
+-                for (direction, ray) in RAYS[result.kings[color]].iter().enumerate() {
+-                    let mut blocker = None;
+-                    for to in ray.iter() {
+-                        let pc = p.squares[to];
+-                        if pc == 0 {
+-                            continue;
+-                        }
+-                        if usize::from(pc > 0) == color && blocker.is_none() {
+-                            blocker = Some(to);
+-                            continue;
+-                        }
+-                        if usize::from(pc > 0) != color
+-                            && (pc.abs() == 5 || pc.abs() == if direction < 4 { 4 } else { 3 })
+-                        {
+-                            if let Some(s) = blocker {
+-                                result.pinned[color] |= 1u64 << s;
+-                            }
+-                        }
+-                        break;
++                    let first = nearest(blockers, d);
++                    let first_bit = 1u64 << first;
++                    if occupied[color] & first_bit == 0
++                        || !(2..=5).contains(&p.squares[first].abs())
++                    {
++                        continue;
+                     }
++                    blockers &= !first_bit;
++                    if blockers == 0 {
++                        continue;
++                    }
++                    let second = nearest(blockers, d);
++                    let pc = p.squares[second];
++                    if occupied[1 - color] & (1u64 << second) != 0
++                        && (pc.abs() == 5 || pc.abs() == if d < 4 { 4 } else { 3 })
++                    {
++                        result.pinned[color] |= first_bit;
++                    }
+                 }
+             }
+             result
+         }
+ 
+-        pub(super) fn count(&self, p: &Position, from: usize, pc: i8) -> i32 {
++        pub(super) fn count(&self, _p: &Position, from: usize, pc: i8) -> i32 {
+             let kind = pc.unsigned_abs() as usize;
+             if !(2..=5).contains(&kind) {
+                 return 0;
+             }
+             let color = usize::from(pc > 0);
+-            let excluded = self.occupied[color]
+-                | self.pawn_attacks[1 - color]
+-                | (1u64 << self.kings[1 - color]);
+             let pinned = self.pinned[color] & (1u64 << from) != 0;
+             if kind == 2 {
+                 return if pinned {
+                     0
+                 } else {
+-                    KNIGHT_TARGETS[from]
+-                        .iter()
+-                        .filter(|&to| excluded & (1u64 << to) == 0)
+-                        .count() as i32
++                    (GEOMETRY.knights[from] & self.eligible[color]).count_ones() as i32
+                 };
+             }
+-            let king = self.kings[color];
+-            let (kx, ky) = (
+-                from as i32 % 8 - king as i32 % 8,
+-                from as i32 / 8 - king as i32 / 8,
+-            );
+-            let mut count = 0;
+-            for (direction, ray) in RAYS[from].iter().enumerate() {
+-                if (kind == 3 && direction < 4) || (kind == 4 && direction >= 4) {
+-                    continue;
+-                }
+-                let (dx, dy) = DIRECTIONS[direction];
+-                if pinned && kx * dy != ky * dx {
+-                    continue;
+-                }
+-                for to in ray.iter() {
+-                    if excluded & (1u64 << to) == 0 {
+-                        count += 1;
+-                    }
+-                    // Even an excluded square blocks a ray when occupied.
+-                    if p.squares[to] != 0 {
+-                        break;
+-                    }
+-                }
+-            }
+-            count
++            let directions = match kind {
++                3 => 4..8,
++                4 => 0..4,
++                _ => 0..8,
++            };
++            let mut attacks = 0;
++            for d in directions {
++                let ray = GEOMETRY.rays[from][d];
++                let blockers = ray & self.occupied;
++                attacks |= if blockers == 0 {
++                    ray
++                } else {
++                    ray ^ GEOMETRY.rays[nearest(blockers, d)][d]
++                };
++            }
++            if pinned {
++                let king = self.kings[color];
++                let dx = from as i32 % 8 - king as i32 % 8;
++                let dy = from as i32 / 8 - king as i32 / 8;
++                let (a, b) = if dx == 0 {
++                    (2, 3)
++                } else if dy == 0 {
++                    (0, 1)
++                } else if dx.signum() == dy.signum() {
++                    (4, 7)
++                } else {
++                    (5, 6)
++                };
++                attacks &= GEOMETRY.rays[king][a] | GEOMETRY.rays[king][b];
++            }
++            (attacks & self.eligible[color]).count_ones() as i32
+         }
+ 
+         pub(super) fn bonus(&self, p: &Position, from: usize, pc: i8) -> (i32, i32) {

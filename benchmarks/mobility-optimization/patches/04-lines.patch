@@ -1,0 +1,120 @@
+--- a/engine.rs
++++ b/engine.rs
+@@ -21,11 +21,13 @@
+     struct Geometry {
+         rays: [[u64; 8]; 64],
+         knights: [u64; 64],
++        lines: [[u64; 4]; 64],
+     }
+     const fn geometry() -> Geometry {
+         let mut result = Geometry {
+             rays: [[0; 8]; 64],
+             knights: [0; 64],
++            lines: [[0; 4]; 64],
+         };
+         let steps: [(i32, i32); 8] = [
+             (1, 2),
+@@ -55,6 +57,14 @@
+                 }
+                 d += 1;
+             }
++            let pairs = [(0, 1), (2, 3), (4, 7), (5, 6)];
++            let mut line = 0;
++            while line < 4 {
++                let (a, b) = pairs[line];
++                result.lines[square][line] =
++                    result.rays[square][a] | result.rays[square][b] | (1u64 << square);
++                line += 1;
++            }
+             square += 1;
+         }
+         result
+@@ -68,6 +78,19 @@
+         } else {
+             63 - bits.leading_zeros() as usize
+         }
++    }
++
++    // Subtraction borrows up to the first blocker in each direction. Reversing
++    // the bits applies the same operation to the opposite half of the line.
++    fn line_attacks(occupied: u64, from: usize, line: usize) -> u64 {
++        let mask = GEOMETRY.lines[from][line];
++        let blockers = occupied & mask;
++        let piece = 1u64 << from;
++        let forward = blockers.wrapping_sub(piece.wrapping_mul(2));
++        let backward = blockers
++            .reverse_bits()
++            .wrapping_sub(piece.reverse_bits().wrapping_mul(2));
++        (forward ^ backward.reverse_bits()) & mask
+     }
+ 
+     pub(super) struct Mobility {
+@@ -160,20 +183,14 @@
+                     (GEOMETRY.knights[from] & self.eligible[color]).count_ones() as i32
+                 };
+             }
+-            let directions = match kind {
+-                3 => 4..8,
+-                4 => 0..4,
+-                _ => 0..8,
++            let lines = match kind {
++                3 => 2..4,
++                4 => 0..2,
++                _ => 0..4,
+             };
+             let mut attacks = 0;
+-            for d in directions {
+-                let ray = GEOMETRY.rays[from][d];
+-                let blockers = ray & self.occupied;
+-                attacks |= if blockers == 0 {
+-                    ray
+-                } else {
+-                    ray ^ GEOMETRY.rays[nearest(blockers, d)][d]
+-                };
++            for line in lines {
++                attacks |= line_attacks(self.occupied, from, line);
+             }
+             if pinned {
+                 let king = self.kings[color];
+@@ -203,6 +220,41 @@
+     #[cfg(test)]
+     pub(super) mod tests {
+         use super::*;
++
++        #[test]
++        fn line_attacks_match_ray_walks_for_every_line_occupancy() {
++            let pairs = [(0, 1), (2, 3), (4, 7), (5, 6)];
++            for from in 0..64 {
++                for (line, &(a, b)) in pairs.iter().enumerate() {
++                    let squares: Vec<_> = crate::tables::RAYS[from][a]
++                        .iter()
++                        .chain(crate::tables::RAYS[from][b].iter())
++                        .collect();
++                    for subset in 0..(1usize << squares.len()) {
++                        let mut occupied = 1u64 << from;
++                        for (i, &square) in squares.iter().enumerate() {
++                            if subset & (1 << i) != 0 {
++                                occupied |= 1u64 << square;
++                            }
++                        }
++                        let mut expected = 0;
++                        for d in [a, b] {
++                            for square in crate::tables::RAYS[from][d].iter() {
++                                expected |= 1u64 << square;
++                                if occupied & (1u64 << square) != 0 {
++                                    break;
++                                }
++                            }
++                        }
++                        assert_eq!(
++                            line_attacks(occupied, from, line),
++                            expected,
++                            "square {from}, line {line}, occupancy {occupied:#x}"
++                        );
++                    }
++                }
++            }
++        }
+ 
+         // Scalar oracle: enumerate all destination squares and walk paths with
+         // coordinates, independently of the production attack tables and bit masks.

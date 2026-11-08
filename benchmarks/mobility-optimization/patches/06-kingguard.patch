@@ -1,0 +1,15 @@
+--- a/engine.rs
++++ b/engine.rs
+@@ -152,6 +152,12 @@
+             for color in 0..2 {
+                 let active = occupied[color] & !(pawns[color] | (1u64 << kings[color]));
+                 if active == 0 {
++                    continue;
++                }
++                let lines = &GEOMETRY.lines[kings[color]];
++                let possible = ((lines[0] | lines[1]) & straight[1 - color])
++                    | ((lines[2] | lines[3]) & diagonal[1 - color]);
++                if possible == 0 {
+                     continue;
+                 }
+                 for d in 0..8 {

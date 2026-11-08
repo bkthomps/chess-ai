@@ -12,6 +12,7 @@ import tempfile
 
 ROOT = pathlib.Path(__file__).resolve().parents[2]
 BASELINE = '5c531c93ca74740b91a918f597bc482aef7ca65f'
+BLENDED = '80abdf6954393e0a4caffe85b602db40deedd317'
 COMMON = runpy.run_path(str(ROOT / 'benchmarks/memory/compare.py'))
 CASES = [
     ('opening', 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1', 8),
@@ -44,7 +45,8 @@ def compile_benchmark(folder):
     for variant in ['baseline', 'blended']:
         dest = folder / variant
         dest.mkdir()
-        source = subprocess.check_output(['git', 'show', f'{BASELINE}:src/engine.rs'], cwd=ROOT) if variant == 'baseline' else (ROOT / 'src/engine.rs').read_bytes()
+        revision = BASELINE if variant == 'baseline' else BLENDED
+        source = subprocess.check_output(['git', 'show', f'{revision}:src/engine.rs'], cwd=ROOT)
         hashes[variant] = hashlib.sha256(source).hexdigest()
         (dest / 'engine.rs').write_bytes(source + driver.encode())
         for name, contents in shared.items():
