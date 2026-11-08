@@ -1,0 +1,131 @@
+{
+  "baseline": "5f76829",
+  "machine": "macOS-26.5.1-arm64-arm-64bit",
+  "threads_requested": 0,
+  "rust": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+  "memory_budget": 100000000,
+  "seconds": 3,
+  "repetitions": 3,
+  "cases": [
+    [
+      "opening",
+      "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+      9
+    ]
+  ],
+  "variants": [
+    "baseline",
+    "both"
+  ],
+  "modes": [
+    "ponder"
+  ],
+  "runs": [
+    {
+      "ponder_depth": 8,
+      "human_move": "e2e4",
+      "depth": 7,
+      "score": 0,
+      "best": "b8c6",
+      "nodes": 8851764,
+      "hits": 70743,
+      "elapsed_ms": 2000.0426249999998,
+      "threads": 6,
+      "cache_bytes": 58554880,
+      "peak_rss_bytes": 60850176,
+      "case": "opening",
+      "mode": "ponder",
+      "variant": "baseline",
+      "repetition": 0
+    },
+    {
+      "ponder_depth": 9,
+      "human_move": "e2e4",
+      "depth": 8,
+      "score": -24,
+      "best": "b8c6",
+      "nodes": 6624773,
+      "hits": 101351,
+      "elapsed_ms": 2000.0132499999997,
+      "threads": 6,
+      "cache_bytes": 56778496,
+      "peak_rss_bytes": 59097088,
+      "case": "opening",
+      "mode": "ponder",
+      "variant": "both",
+      "repetition": 0
+    },
+    {
+      "ponder_depth": 9,
+      "human_move": "e2e4",
+      "depth": 8,
+      "score": -24,
+      "best": "b8c6",
+      "nodes": 6451526,
+      "hits": 84273,
+      "elapsed_ms": 2000.013875,
+      "threads": 6,
+      "cache_bytes": 57436416,
+      "peak_rss_bytes": 59768832,
+      "case": "opening",
+      "mode": "ponder",
+      "variant": "both",
+      "repetition": 1
+    },
+    {
+      "ponder_depth": 8,
+      "human_move": "e2e4",
+      "depth": 7,
+      "score": 0,
+      "best": "b8c6",
+      "nodes": 8821252,
+      "hits": 70873,
+      "elapsed_ms": 2000.055584,
+      "threads": 6,
+      "cache_bytes": 58949632,
+      "peak_rss_bytes": 61259776,
+      "case": "opening",
+      "mode": "ponder",
+      "variant": "baseline",
+      "repetition": 1
+    },
+    {
+      "ponder_depth": 8,
+      "human_move": "e2e4",
+      "depth": 7,
+      "score": 0,
+      "best": "b8c6",
+      "nodes": 8892683,
+      "hits": 71314,
+      "elapsed_ms": 2000.050083,
+      "threads": 6,
+      "cache_bytes": 58752256,
+      "peak_rss_bytes": 61030400,
+      "case": "opening",
+      "mode": "ponder",
+      "variant": "baseline",
+      "repetition": 2
+    },
+    {
+      "ponder_depth": 9,
+      "human_move": "e2e4",
+      "depth": 8,
+      "score": -24,
+      "best": "b8c6",
+      "nodes": 6693510,
+      "hits": 92688,
+      "elapsed_ms": 2000.0117089999999,
+      "threads": 6,
+      "cache_bytes": 54738944,
+      "peak_rss_bytes": 57065472,
+      "case": "opening",
+      "mode": "ponder",
+      "variant": "both",
+      "repetition": 2
+    }
+  ],
+  "source_sha256": {
+    "baseline": "b20cfd5aff0d7d8cee9567984dfc5dee20cd9f6f8a78b3671aa1cfbea8afb4d9",
+    "both": "59cffc23e0e2419fff9ea94e4d53e0bc6dbbaa7728ff5e209a8789f4de3e142a"
+  }
+}

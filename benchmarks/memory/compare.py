@@ -123,6 +123,9 @@ impl SharedTable {
 }
 '''
     (directory / "cache.rs").write_text((ROOT / "src/cache.rs").read_text() + touch)
+    ordering = ROOT / "src/ordering.rs"
+    if ordering.exists():
+        (directory / "ordering.rs").write_text(ordering.read_text())
     modules = [("tables", ROOT / "src/tables.rs"), ("chess", ROOT / "src/chess.rs"),
                ("baseline", directory / "baseline.rs"), ("optimized", directory / "optimized.rs")]
     rust = "#![allow(dead_code, unused_variables)]\n" + "\n".join(

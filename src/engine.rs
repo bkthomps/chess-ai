@@ -116,6 +116,9 @@ mod cache;
 use cache::SharedTable;
 #[cfg(test)]
 use cache::TestTable as Table;
+#[path = "ordering.rs"]
+mod ordering;
+use ordering::{MoveOrdering, ORDERING_BYTES};
 
 /// Keep at least one logical CPU, and roughly a quarter on larger machines,
 /// available to the browser and other applications. No OS-specific policy.
@@ -161,6 +164,7 @@ impl Default for SearchCache {
 struct MoveBuffers {
     slots: Vec<Vec<Move>>,
     retained_bytes: usize,
+    ordering: MoveOrdering,
 }
 impl MoveBuffers {
     fn take(&mut self, ply: usize) -> Vec<Move> {
@@ -178,7 +182,9 @@ impl MoveBuffers {
     fn put(&mut self, ply: usize, mut moves: Vec<Move>) {
         moves.clear();
         let bytes = moves.capacity() * std::mem::size_of::<Move>();
-        if ply < self.slots.len() && self.retained_bytes + bytes <= MOVE_BUFFER_LIMIT {
+        if ply < self.slots.len()
+            && self.retained_bytes + bytes <= MOVE_BUFFER_LIMIT - ORDERING_BYTES
+        {
             self.retained_bytes += bytes;
             self.slots[ply] = moves;
         }
@@ -357,6 +363,10 @@ impl SearchCache {
         let peers: Vec<_> = (1..threads).map(|_| WorkerStats::default()).collect();
         self.table.initialize();
         self.table.next_generation();
+        self.buffers.ordering.begin_search();
+        for helper in &mut self.helpers {
+            helper.ordering.begin_search();
+        }
         let mut s = Search {
             table: &self.table,
             buffers: &mut self.buffers,
@@ -473,11 +483,8 @@ impl Search<'_> {
         }
         let key = self.table_key(position);
         let mut moves = legal.to_vec();
-        order(
-            position,
-            &mut moves,
-            self.probe(key).and_then(|entry| entry.best),
-        );
+        let cached = self.probe(key).and_then(|entry| entry.best);
+        self.buffers.ordering.order(position, &mut moves, cached, 0);
         let first = position.play(moves[0]);
         let previous = self.push_position(&first);
         let first_score = -self.negamax(&first, depth - 1, 1, -INF, INF).0;
@@ -778,10 +785,12 @@ impl Search<'_> {
             );
         }
         let original_alpha = alpha;
-        order(p, moves, entry.and_then(|e| e.best));
+        self.buffers
+            .ordering
+            .order(p, moves, entry.and_then(|e| e.best), ply as usize);
         let mut best = None;
         let mut value = -INF;
-        for &m in moves.iter() {
+        for (index, &m) in moves.iter().enumerate() {
             let next = p.play(m);
             let previous = self.push_position(&next);
             let score = -self.negamax(&next, depth - 1, ply + 1, -beta, -alpha).0;
@@ -795,6 +804,9 @@ impl Search<'_> {
             }
             alpha = alpha.max(score);
             if alpha >= beta {
+                self.buffers
+                    .ordering
+                    .cutoff(p, m, ply as usize, depth, &moves[..index]);
                 break;
             }
         }
@@ -852,7 +864,11 @@ impl Search<'_> {
             }
             alpha = alpha.max(stand);
         }
-        order(p, moves, None);
+        if state.in_check {
+            self.buffers.ordering.order(p, moves, None, ply as usize);
+        } else {
+            order(p, moves, None);
+        }
         for &m in moves.iter() {
             let next = p.play(m);
             let previous = self.push_position(&next);
@@ -913,8 +929,10 @@ fn order(p: &Position, moves: &mut [Move], best: Option<Move>) {
             }
             + value(m.promotion))
     };
-    // Most moves share the quiet-move priority. Stable insertion keeps their
-    // existing order without allocating cached keys or a sorting buffer.
+    sort_moves(moves, priority);
+}
+fn sort_moves(moves: &mut [Move], priority: impl Fn(Move) -> i32) {
+    // Equal priorities retain their generated order without heap scratch.
     let mut priorities = [0; 64];
     if moves.len() <= priorities.len() {
         for (score, &m) in priorities.iter_mut().zip(moves.iter()) {
@@ -1149,6 +1167,7 @@ mod tests {
 
     #[test]
     fn parallel_search_matches_serial_scores_and_returns_a_proven_best_move() {
+        let mut helper_nodes = 0;
         for (fen, depth) in [
             (
                 "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
@@ -1197,11 +1216,10 @@ mod tests {
                     score, verified,
                     "an unproven bound became the best move: {fen}"
                 );
-                if depth >= 3 {
-                    assert!(peers
-                        .iter()
-                        .any(|peer| peer.nodes.load(Ordering::Relaxed) > 0));
-                }
+                helper_nodes += peers
+                    .iter()
+                    .map(|peer| peer.nodes.load(Ordering::Relaxed))
+                    .sum::<u64>();
                 // The root score is cached only after all root moves finish.
                 let cached = search.probe(search.table_key(&p)).unwrap();
                 assert!(matches!(cached.bound, Bound::Exact));
@@ -1209,6 +1227,9 @@ mod tests {
                 assert_eq!(cached.score, score);
             }
         }
+        // A small tree can finish before a helper is scheduled. Require helper
+        // work across the corpus, rather than on every fast cutoff position.
+        assert!(helper_nodes > 0);
     }
 
     #[test]
@@ -1323,7 +1344,7 @@ mod tests {
         oversized.reserve(MOVE_BUFFER_LIMIT / std::mem::size_of::<Move>() + 1);
         buffers.put(1, oversized);
         assert_eq!(buffers.slots[1].capacity(), 0);
-        assert!(buffers.retained_bytes <= MOVE_BUFFER_LIMIT);
+        assert!(buffers.retained_bytes + ORDERING_BYTES <= MOVE_BUFFER_LIMIT);
         assert_eq!(
             buffers.retained_bytes,
             buffers
