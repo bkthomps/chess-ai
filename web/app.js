@@ -435,7 +435,10 @@ function canPremove() {
   return state && !state.ai_vs_ai && playing && !busy && !state.result && state.human !== null && state.human !== state.white
     && clockRemaining(state.white) > 0 && clockRemaining(state.human) > 0;
 }
-function canInput() { return canPlay() || canPremove(); }
+function canInput() {
+  return playing && !$('game').hidden && !document.body.classList.contains('disconnected')
+    && !$('promotion-dialog').open && !$('resign-dialog').open && (canPlay() || canPremove());
+}
 function inputColor() { return state.human === null ? state.white : state.human; }
 // Preview only our queued moves. Opponent replies remain unknown until Rust
 // publishes them; previewing a move never establishes that it is legal.
@@ -544,10 +547,14 @@ function renderBoard(keepDrag = false) {
   const board = premoveBoard();
   const targets = new Set(selected === null ? [] : inputMoves(selected, board).map(m => m[1]));
   const queuedSquares = new Set(premoves.flatMap(({move}) => move.slice(0, 2)));
+  // Preserve pressed square elements during polling and turn handoffs. Removing
+  // them can release a touch pointer's implicit capture before dragging starts.
+  const keepSquares = keepDrag && $('board').children.length === 64;
   const fragment = document.createDocumentFragment();
   for (let r = 0; r < 8; r++) for (let c = 0; c < 8; c++) {
     const row = flipped ? r : 7 - r, col = flipped ? 7 - c : c, s = row * 8 + col, pc = board[s];
-    const el = document.createElement('button');
+    const el = keepSquares ? $('board').children[r * 8 + c] : document.createElement('button');
+    el.innerHTML = '';
     el.type = 'button'; el.className = `square ${(row + col) % 2 ? 'light' : 'dark'}`;
     el.dataset.square = s; el.tabIndex = s === focusSquare ? 0 : -1;
     if (state.last?.includes(s)) el.classList.add('last');
@@ -569,9 +576,9 @@ function renderBoard(keepDrag = false) {
     if (pc) el.innerHTML = piece(pc);
     if (c === 0) { const coord = document.createElement('span'); coord.className = 'coord rank'; coord.textContent = row + 1; coord.setAttribute('aria-hidden','true'); el.append(coord); }
     if (r === 7) { const coord = document.createElement('span'); coord.className = 'coord file'; coord.textContent = String.fromCharCode(97 + col); coord.setAttribute('aria-hidden','true'); el.append(coord); }
-    fragment.append(el);
+    if (!keepSquares) fragment.append(el);
   }
-  $('board').replaceChildren(fragment);
+  if (!keepSquares) $('board').replaceChildren(fragment);
   if (keepDrag && drag?.active) {
     const source = $('board').querySelector(`[data-square="${drag.from}"]`);
     source?.classList.add('drag-source');
@@ -594,8 +601,12 @@ function cancelDrag() {
   if ($('board').hasPointerCapture(previous.id)) $('board').releasePointerCapture(previous.id);
 }
 function squareAtPointer(e) {
-  const square = document.elementFromPoint(e.clientX, e.clientY)?.closest('[data-square]');
-  return square && $('board').contains(square) ? square : null;
+  const board = $('board'), rect = board.getBoundingClientRect();
+  const x = e.clientX - rect.left, y = e.clientY - rect.top;
+  if (rect.width <= 0 || rect.height <= 0 || x < 0 || y < 0 || x >= rect.width || y >= rect.height) return null;
+  // Use the visible grid and release coordinates, regardless of pointer capture,
+  // the floating piece, SVG hit testing, scroll position, or board orientation.
+  return board.children[Math.floor(y * 8 / rect.height) * 8 + Math.floor(x * 8 / rect.width)] || null;
 }
 function tryMove(from, to) {
   const matching = inputMoves(from).filter(m => m[1] === to);
@@ -616,6 +627,7 @@ $('board').addEventListener('pointerdown', e => {
   const from = Number(button.dataset.square), source = inputSource(from);
   if (!source) return;
   drag = {id:e.pointerId, from, ...source, revision:state.revision,
+    human:state.human, white:state.white, startedAt:state.started_at, notation:state.notation.slice(),
     startX:e.clientX, startY:e.clientY, x:e.clientX, y:e.clientY, active:false};
 });
 document.addEventListener('pointermove', e => {
@@ -650,6 +662,7 @@ document.addEventListener('pointerup', e => {
   // A fast gesture can reach pointerup before the browser dispatches a
   // pointermove. Treat clear down-to-up movement as a drag on release too.
   if (!previous.active && Math.hypot(e.clientX - previous.startX, e.clientY - previous.startY) >= 6) {
+    if (previous.restart) clearPremoves();
     previous.active = true;
   }
   const target = previous.active ? squareAtPointer(e) : null;
@@ -745,17 +758,21 @@ function choosePromotion(moves, submitMove = makeMove, white = state.white) {
 function render() {
   if (!playing || !state) return;
   announceGameChanges();
-  // A new opponent position invalidates the old move targets, but it should
-  // not interrupt an in-progress drag when its source piece is still there.
-  // Keep the pointer and ghost alive, then render the new legal destinations.
+  // A drag can cross exactly one opponent reply in the same game. Other
+  // position changes (undo, replacement, captured source) invalidate the gesture.
   if (drag && drag.revision !== state.revision) {
-    if (drag.active && state.board[drag.from] === drag.pc && canInput()) {
+    const reply = drag.human !== null && drag.white !== drag.human
+      && state.human === drag.human && state.white === drag.human
+      && state.started_at === drag.startedAt && state.revision === drag.revision + 1
+      && state.notation.length === drag.notation.length + 1
+      && drag.notation.every((move, i) => state.notation[i] === move);
+    if (reply && state.board[drag.from] === drag.pc && canPlay()) {
       drag.revision = state.revision;
-      selected = drag.from;
+      if (drag.active) selected = drag.from;
     } else cancelDrag();
   }
   const readyPremove = takeReadyPremove();
-  renderBoard(!!drag?.active && state.revision === drag.revision && canInput());
+  renderBoard(!!drag && state.revision === drag.revision && canInput());
   renderClocks();
   const signature = [state.white, state.thinking, state.result, state.check, state.human, state.ai_vs_ai, controlLabel(state.clocks), state.thinking_seconds].join('|');
   if (signature !== lastStatus) {
@@ -805,7 +822,7 @@ function renderEngine() {
     $('engine-time').textContent = `${(stats.millis / 1000).toFixed(2)} s / ${timeLimit}`;
   }
 }
-$('flip').onclick = () => { flipped = !flipped; render(); };
+$('flip').onclick = () => { cancelDrag(); flipped = !flipped; render(); };
 let copyPgnTimer;
 function gamePgn(game) {
   const result = !game.result ? '*' : game.result.startsWith('White wins') ? '1-0'

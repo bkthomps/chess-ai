@@ -2,6 +2,7 @@
 const fs = require('node:fs'), vm = require('node:vm'), assert = require('node:assert/strict'), path = require('node:path');
 const html = fs.readFileSync(path.join(__dirname, '../web/index.html'), 'utf8');
 let focused;
+let boardRect = {left:0, top:0, width:640, height:640};
 const audioNotes = [], storedSounds = new Map();
 class AudioContextMock {
   constructor() { this.state = 'suspended'; this.currentTime = 0; this.destination = {}; }
@@ -39,8 +40,11 @@ class Element {
   querySelector(s) { const m = s.match(/data-square="(\d+)"/); return m ? this.children.find(e => String(e.dataset.square) === m[1]) : null; }
   addEventListener(name, fn) { this.listeners[name] = fn; }
   getBoundingClientRect() {
+    if (this === elements.board) return {...boardRect};
     const index = elements.board.children.indexOf(this);
-    return {left: index % 8 * 80, top: Math.floor(index / 8) * 80, width: 80, height: 80};
+    return {left: boardRect.left + index % 8 * boardRect.width / 8,
+      top: boardRect.top + Math.floor(index / 8) * boardRect.height / 8,
+      width: boardRect.width / 8, height: boardRect.height / 8};
   }
   setPointerCapture(id) { this.capturedPointer = id; }
   hasPointerCapture(id) { return this.capturedPointer === id; }
@@ -74,7 +78,7 @@ const context = vm.createContext({
   setTimeout: (fn, delay) => { if (delay === 5000) { confirmationTimeout = fn; return 5000; } pollDelay = delay; return 0; }, setInterval: () => 0,
   window: {scrollTo() {}, addEventListener: (name, fn) => { windowListeners[name] = fn; }, AudioContext: AudioContextMock, localStorage: {getItem: key => storedSounds.get(key) ?? null, setItem: (key, value) => storedSounds.set(key, value)}},
   FormData: class {get(k) {return {mode, color, 'two-player-mode': elements['two-player-mode'].value, 'time-control': elements['time-control'].value, minutes: elements['base-minutes'].value, increment: elements['increment-seconds'].value, 'thinking-time': elements['thinking-time'].value, 'thinking-seconds': elements['thinking-seconds'].value}[k];}},
-  document: {hidden: false, body: documentBody, addEventListener: (name, fn) => { documentListeners[name] = fn; }, elementFromPoint: (x, y) => x < 0 || y < 0 || x >= 640 || y >= 640 ? null : elements.board.children[Math.floor(y / 80) * 8 + Math.floor(x / 80)], getElementById: id => elements[id], createElement: () => new Element(), createDocumentFragment: () => new Element(true), get activeElement() {return focused;}, querySelector: () => ({value: mode}), querySelectorAll: () => [new Element(), new Element()]},
+  document: {hidden: false, body: documentBody, addEventListener: (name, fn) => { documentListeners[name] = fn; }, elementFromPoint: (x, y) => x < boardRect.left || y < boardRect.top || x >= boardRect.left + boardRect.width || y >= boardRect.top + boardRect.height ? null : elements.board.children[Math.floor((y - boardRect.top) * 8 / boardRect.height) * 8 + Math.floor((x - boardRect.left) * 8 / boardRect.width)], getElementById: id => elements[id], createElement: () => new Element(), createDocumentFragment: () => new Element(true), get activeElement() {return focused;}, querySelector: () => ({value: mode}), querySelectorAll: () => [new Element(), new Element()]},
   fetch: async (url, options = {}) => {
     requests.push({url, options}); const u = new URL(url, 'http://localhost');
     if (offline) throw new Error('Network error');
@@ -128,7 +132,7 @@ const clickSquare = (s, detail = 1) => elements.board.listeners.click({target: s
 const pointer = (s, overrides = {}) => {
   const target = square(s), rect = target?.getBoundingClientRect();
   return {target, pointerId: 1, pointerType: 'mouse', isPrimary: true, button: 0,
-    clientX: rect ? rect.left + 40 : -20, clientY: rect ? rect.top + 40 : -20, preventDefault() {}, ...overrides};
+    clientX: rect ? rect.left + rect.width / 2 : -20, clientY: rect ? rect.top + rect.height / 2 : -20, preventDefault() {}, ...overrides};
 };
 const startDrag = (from, to, overrides = {}) => {
   elements.board.listeners.pointerdown(pointer(from, overrides));
@@ -370,6 +374,52 @@ const moveRequests = () => requests.filter(r => r.url.startsWith('/api/move?'));
   assert.equal(moveRequests().length, movesBeforeDrag + 1);
   assert(moveRequests().at(-1).url.includes('from=12&to=28&promotion=0'));
   assert.equal(documentBody.children.length, 0); assert(!elements.board.hasPointerCapture(1));
+  // Fast releases and the final pointer coordinates decide the actual destination.
+  for (const fast of [false, true]) {
+    await resetBoard(); const before = moveRequests().length;
+    elements.board.listeners.pointerdown(pointer(12));
+    if (!fast) documentListeners.pointermove(pointer(20));
+    drop(28); await tick();
+    assert.equal(moveRequests().length, before + 1);
+    assert(moveRequests().at(-1).url.includes('from=12&to=28&promotion=0'));
+  }
+  // Fractional sizing, page offsets, scrolling, and orientation keep drops aligned.
+  for (const flip of [false, true]) {
+    await resetBoard();
+    vm.runInContext(`flipped=${flip};renderBoard()`, context);
+    boardRect = {left:137.25, top:82.5, width:371.5, height:371.5};
+    const before = moveRequests().length;
+    startDrag(12, 28, {pointerType:'touch'}); drop(28, {pointerType:'touch'}); await tick();
+    assert.equal(moveRequests().length, before + 1);
+    assert(moveRequests().at(-1).url.includes('from=12&to=28&promotion=0'));
+    await resetBoard(); const invalid = moveRequests().length;
+    startDrag(12, 28);
+    drop(28, {clientX:boardRect.left + boardRect.width}); await tick();
+    assert.equal(moveRequests().length, invalid); // Right edge is outside, never clamped.
+    boardRect = {left:137.25, top:-82.5, width:371.5, height:371.5};
+    vm.runInContext('flipped=false;renderBoard()', context);
+    startDrag(12,28); drop(28); await tick();
+    assert.equal(moveRequests().length, invalid + 1);
+    boardRect = {left:0, top:0, width:640, height:640};
+  }
+  // Metadata refreshes preserve the pressed element before and after drag activation.
+  for (const active of [false, true]) {
+    await resetBoard(); const before = moveRequests().length;
+    elements.board.listeners.pointerdown(pointer(12, {pointerType:'touch'}));
+    if (active) documentListeners.pointermove(pointer(20, {pointerType:'touch'}));
+    const pressed = square(12);
+    server.pondering = !server.pondering; await vm.runInContext('poll()', context);
+    assert.equal(square(12), pressed);
+    assert(vm.runInContext('drag !== null', context));
+    documentListeners.pointermove(pointer(28, {pointerType:'touch'}));
+    drop(28, {pointerType:'touch'}); await tick();
+    assert.equal(moveRequests().length, before + 1);
+  }
+  // A disconnected overlay must block a drop even when its coordinates are on the board.
+  await resetBoard(); const beforeDisconnectedDrop = moveRequests().length;
+  startDrag(12,28); documentBody.classList.add('disconnected'); drop(28); await tick();
+  assert.equal(moveRequests().length, beforeDisconnectedDrop);
+  documentBody.classList.remove('disconnected');
   // Short presses, including minor pointer movement, still select and click to move.
   await resetBoard();
   elements.board.listeners.pointerdown(pointer(12));
@@ -400,18 +450,18 @@ const moveRequests = () => requests.filter(r => r.url.startsWith('/api/move?'));
   // Cancellation and board changes remove the floating piece without sending a move.
   await resetBoard();
   const beforeCancel = moveRequests().length;
-  for (const cancel of [
-    () => documentListeners.pointercancel(pointer(28)),
-    () => elements.board.listeners.lostpointercapture(pointer(28, {target:elements.board})),
-    () => windowListeners.blur(),
-    () => documentListeners.keydown({key:'Escape'}),
-    () => elements.flip.onclick(),
-    () => vm.runInContext('state.revision++;selected=null;render()', context),
-    () => openMenu()
+  for (const [reason, cancel] of [
+    ['pointer cancellation', () => documentListeners.pointercancel(pointer(28))],
+    ['lost capture', () => elements.board.listeners.lostpointercapture(pointer(28, {target:elements.board}))],
+    ['window blur', () => windowListeners.blur()],
+    ['Escape', () => documentListeners.keydown({key:'Escape'})],
+    ['board flip', () => elements.flip.onclick()],
+    ['unrelated revision', () => vm.runInContext('state.revision++;selected=null;render()', context)],
+    ['menu', () => openMenu()]
   ]) {
     startDrag(12, 28); assert.equal(documentBody.children.length, 1);
     cancel(); drop(28); await tick();
-    assert.equal(documentBody.children.length, 0); assert.equal(moveRequests().length, beforeCancel);
+    assert.equal(documentBody.children.length, 0, reason); assert.equal(moveRequests().length, beforeCancel, reason);
     if (elements.game.hidden) await submit();
   }
   // Opponent pieces, non-primary pointers, and unavailable turns never start a drag.
@@ -529,13 +579,40 @@ const moveRequests = () => requests.filter(r => r.url.startsWith('/api/move?'));
     clickSquare(6); clickSquare(21); clickSquare(21); clickSquare(38); await cancel(); await computerReply([[6,21,0]]);
     assert.equal(moveRequests().length, before); assert(elements['cancel-premove'].hidden);
   }
-  // Flipping preserves an intentional queue; an opponent reply during a drag cannot queue it late.
+  // Flipping preserves a queue; an uninterrupted drag can finish on our turn.
   await waitForComputer(); clickSquare(6); clickSquare(21); elements.flip.onclick();
   assert(square(21).classes.has('premoved')); const beforeFlip = moveRequests().length;
   await computerReply([[6,21,0]]); assert.equal(moveRequests().length, beforeFlip + 1);
   await waitForComputer(); startDrag(6, 21); const beforeInterruptedDrag = moveRequests().length;
   await computerReply([[6,21,0]]); drop(21); await tick();
-  assert.equal(documentBody.children.length, 0); assert.equal(moveRequests().length, beforeInterruptedDrag);
+  assert.equal(documentBody.children.length, 0); assert.equal(moveRequests().length, beforeInterruptedDrag + 1);
+  assert(moveRequests().at(-1).url.includes('from=6&to=21&promotion=0'));
+  // The same handoff also works before the first pointermove, including fast release.
+  for (const fast of [false, true]) {
+    await waitForComputer(); const before = moveRequests().length;
+    const pressed = square(6);
+    elements.board.listeners.pointerdown(pointer(6, {pointerType:'touch'}));
+    await computerReply([[6,21,0]]);
+    assert.equal(square(6), pressed);
+    if (!fast) documentListeners.pointermove(pointer(21, {pointerType:'touch'}));
+    drop(21, {pointerType:'touch'}); await tick();
+    assert.equal(moveRequests().length, before + 1);
+    assert(moveRequests().at(-1).url.includes('from=6&to=21&promotion=0'));
+  }
+  // Unrelated positions, lost sources, and fresh illegality never submit a stale drag.
+  for (const edit of [
+    s => { s.board[6]=-4; },
+    s => { s.legal=[]; },
+    s => { s.revision++; },
+    s => { s.notation=['unrelated']; },
+    s => { s.started_at++; },
+    s => { s.result='Black wins by checkmate'; }
+  ]) {
+    await waitForComputer(); const before = moveRequests().length;
+    startDrag(6,21); await computerReply([[6,21,0]], edit); drop(21); await tick();
+    assert.equal(moveRequests().length, before);
+    assert.equal(documentBody.children.length, 0);
+  }
   // Choose the human's promotion piece while waiting, including an underpromotion.
   await waitForComputer(true, s => { s.board[48]=1; s.board[56]=0; });
   const beforeQueuedPromotion = moveRequests().length;
@@ -606,6 +683,14 @@ const moveRequests = () => requests.filter(r => r.url.startsWith('/api/move?'));
     assert.equal(moveRequests().length, before + 1); assert(moveRequests().at(-1).url.includes('from=11&to=19&promotion=0'));
     assert(elements['premove-queue'].hidden);
   }
+  await waitForComputer(); const beforeFastRestart = moveRequests().length;
+  startDrag(11,27); drop(27); startDrag(27,35); drop(35);
+  elements.board.listeners.pointerdown(pointer(11)); drop(19);
+  assert.equal(elements['premove-queue'].children.length, 1);
+  assert.equal(elements['premove-queue'].children[0].textContent, 'd2 → d3');
+  await computerReply([[11,19,0],[11,27,0]]);
+  assert.equal(moveRequests().length, beforeFastRestart + 1);
+  assert(moveRequests().at(-1).url.includes('from=11&to=19&promotion=0'));
   // New premoves append after the remaining line, including after one move executes.
   await waitForComputer(); const beforeAppend = moveRequests().length;
   startDrag(11,27); drop(27); startDrag(6,21); drop(21);
