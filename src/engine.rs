@@ -137,6 +137,7 @@ struct RootWork<'a> {
     position: &'a Position,
     moves: &'a [Move],
     depth: u8,
+    ply: i32,
     next: AtomicUsize,
     alpha: AtomicI32,
     aborted: AtomicBool,
@@ -481,13 +482,62 @@ impl Search<'_> {
         if self.expired() {
             return (0, None);
         }
+        self.parallel_moves(position, depth, 0, legal, helpers)
+    }
+
+    /// Use the same workers while the leading root branch is being resolved.
+    /// Phases finish before their parent starts workers, so splitting never
+    /// multiplies the configured thread count or retained thread buffers.
+    fn parallel_first(
+        &mut self,
+        position: &Position,
+        depth: u8,
+        ply: i32,
+        helpers: &mut [MoveBuffers],
+    ) -> (i32, Option<Move>) {
+        if self.expired() {
+            return (0, None);
+        }
+        if let Some(entry) = self.probe(self.table_key(position)) {
+            if entry.depth >= depth && matches!(entry.bound, Bound::Exact) {
+                self.hits += 1;
+                return (from_table(entry.score, ply), entry.best);
+            }
+        }
+        let mut moves = self.buffers.take(ply as usize);
+        let state = position.legal_moves_into(&mut moves);
+        let result = if !state.has_legal {
+            (if state.in_check { -MATE + ply } else { 0 }, None)
+        } else if self.is_draw(position) {
+            (0, None)
+        } else {
+            self.parallel_moves(position, depth, ply, &moves, helpers)
+        };
+        self.buffers.put(ply as usize, moves);
+        result
+    }
+
+    fn parallel_moves(
+        &mut self,
+        position: &Position,
+        depth: u8,
+        ply: i32,
+        legal: &[Move],
+        helpers: &mut [MoveBuffers],
+    ) -> (i32, Option<Move>) {
         let key = self.table_key(position);
         let mut moves = legal.to_vec();
         let cached = self.probe(key).and_then(|entry| entry.best);
-        self.buffers.ordering.order(position, &mut moves, cached, 0);
+        self.buffers
+            .ordering
+            .order(position, &mut moves, cached, ply as usize);
         let first = position.play(moves[0]);
         let previous = self.push_position(&first);
-        let first_score = -self.negamax(&first, depth - 1, 1, -INF, INF).0;
+        let first_score = if ply < 2 && depth >= 6 && !helpers.is_empty() {
+            -self.parallel_first(&first, depth - 1, ply + 1, helpers).0
+        } else {
+            -self.negamax(&first, depth - 1, ply + 1, -INF, INF).0
+        };
         self.pop_position(previous);
         if self.aborted {
             return (0, None);
@@ -496,6 +546,7 @@ impl Search<'_> {
             position,
             moves: &moves,
             depth,
+            ply,
             next: AtomicUsize::new(1),
             alpha: AtomicI32::new(first_score),
             aborted: AtomicBool::new(false),
@@ -504,7 +555,12 @@ impl Search<'_> {
         thread::scope(|scope| {
             let mut handles = Vec::new();
             let (done_tx, done_rx) = mpsc::channel();
-            for (index, (buffers, stats)) in helpers.iter_mut().zip(self.peers).enumerate() {
+            for (index, (buffers, stats)) in helpers
+                .iter_mut()
+                .zip(self.peers)
+                .take(moves.len().saturating_sub(1))
+                .enumerate()
+            {
                 let mut worker = Search {
                     table: self.table,
                     buffers,
@@ -574,7 +630,7 @@ impl Search<'_> {
             key,
             Entry {
                 depth,
-                score: to_table(score, 0),
+                score: to_table(score, ply),
                 best: Some(best),
                 bound: Bound::Exact,
             },
@@ -591,9 +647,13 @@ impl Search<'_> {
             let next = work.position.play(m);
             let previous = self.push_position(&next);
             let alpha = work.alpha.load(Ordering::Relaxed);
-            let mut score = -self.negamax(&next, work.depth - 1, 1, -alpha - 1, -alpha).0;
+            let mut score = -self
+                .negamax(&next, work.depth - 1, work.ply + 1, -alpha - 1, -alpha)
+                .0;
             if !self.aborted && score > alpha {
-                score = -self.negamax(&next, work.depth - 1, 1, -INF, -alpha).0;
+                score = -self
+                    .negamax(&next, work.depth - 1, work.ply + 1, -INF, -alpha)
+                    .0;
             }
             self.pop_position(previous);
             if self.aborted {
@@ -1244,6 +1304,53 @@ mod tests {
                 assert!(scores.contains(&(best.unwrap(), expected)));
                 assert_eq!(search.probe(key).unwrap().bound, Bound::Exact);
             }
+        }
+    }
+
+    #[test]
+    fn leading_branch_splits_preserve_scores_mates_draws_and_history() {
+        for (fen, depth) in [
+            (
+                "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+                6,
+            ),
+            ("8/5pk1/2p3p1/1p1pP2p/1P1P1P1P/2P3K1/8/8 w - - 0 1", 7),
+            (
+                "rnbqkbnr/pppp1ppp/8/4p3/6P1/5P2/PPPPP2P/RNBQKBNR b KQkq g3 0 2",
+                6,
+            ),
+            ("4k3/8/8/8/8/8/4R3/4K3 w - - 99 1", 6),
+            ("7k/5K2/8/6Q1/8/8/8/8 b - - 0 1", 6),
+        ] {
+            let p = Position::from_fen(fen).unwrap();
+            let keys = [p.repetition_key()];
+            let expected = at_depth(&mut SearchCache::with_threads(1), &p, &keys, depth, 0).0;
+            let mut cache = SearchCache::with_threads(3);
+            cache.table.initialize();
+            let mut helpers = [MoveBuffers::default(), MoveBuffers::default()];
+            let peers = [WorkerStats::default(), WorkerStats::default()];
+            let mut search = test_search(&mut cache, &p, &keys);
+            search.threads = 3;
+            search.peers = &peers;
+            let (score, best) = search.parallel_root(&p, depth, &p.legal_moves(), &mut helpers);
+            assert!(!search.aborted);
+            assert_eq!(score, expected, "{fen}");
+            assert_eq!(search.keys, keys);
+            assert_eq!(search.history_context, reversible_context(&p, &keys));
+            let child = p.play(best.unwrap());
+            let verified = -at_depth(
+                &mut SearchCache::with_threads(1),
+                &child,
+                &[keys[0], child.repetition_key()],
+                depth - 1,
+                1,
+            )
+            .0;
+            assert_eq!(score, verified, "unproven best move after splitting: {fen}");
+            let entry = search.probe(search.table_key(&p)).unwrap();
+            assert_eq!(entry.bound, Bound::Exact);
+            assert_eq!(entry.score, score);
+            assert_eq!(entry.depth, depth);
         }
     }
 

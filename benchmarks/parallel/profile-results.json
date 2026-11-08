@@ -1,0 +1,2863 @@
+{
+  "baseline": "ac1d2b3",
+  "machine": "macOS-26.5.1-arm64-arm-64bit",
+  "memory_budget": 100000000,
+  "repetitions": 3,
+  "cases": [
+    [
+      "opening",
+      "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+      9
+    ],
+    [
+      "middlegame",
+      "r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq - 0 1",
+      7
+    ],
+    [
+      "endgame",
+      "8/2p5/3p4/KP5r/1R3p1k/8/4P1P1/8 w - - 0 1",
+      12
+    ],
+    [
+      "tactics",
+      "rnbqk2r/pp1Pbppp/2p5/8/2B5/8/PPP1NnPP/RNBQK2R w KQkq - 1 8",
+      7
+    ],
+    [
+      "pawns",
+      "8/5pk1/2p3p1/1p1pP2p/1P1P1P1P/2P3K1/8/8 w - - 0 1",
+      12
+    ]
+  ],
+  "rust": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+  "runs": [
+    {
+      "diagnostics": {
+        "max_helpers": 5,
+        "helper_lifetime_ns": 3399924871,
+        "first_serial_ns": 53559126,
+        "phases": [
+          {
+            "ply": 0,
+            "depth": 4,
+            "moves": 20,
+            "first_ns": 214875,
+            "total_ns": 559917
+          },
+          {
+            "ply": 0,
+            "depth": 5,
+            "moves": 20,
+            "first_ns": 1008417,
+            "total_ns": 2204167
+          },
+          {
+            "ply": 1,
+            "depth": 5,
+            "moves": 20,
+            "first_ns": 1211459,
+            "total_ns": 2090084
+          },
+          {
+            "ply": 0,
+            "depth": 6,
+            "moves": 20,
+            "first_ns": 2091791,
+            "total_ns": 6555500
+          },
+          {
+            "ply": 2,
+            "depth": 5,
+            "moves": 22,
+            "first_ns": 1951000,
+            "total_ns": 3066375
+          },
+          {
+            "ply": 1,
+            "depth": 6,
+            "moves": 20,
+            "first_ns": 3068291,
+            "total_ns": 7334041
+          },
+          {
+            "ply": 0,
+            "depth": 7,
+            "moves": 20,
+            "first_ns": 7336625,
+            "total_ns": 29114708
+          },
+          {
+            "ply": 2,
+            "depth": 6,
+            "moves": 22,
+            "first_ns": 7638833,
+            "total_ns": 15898791
+          },
+          {
+            "ply": 1,
+            "depth": 7,
+            "moves": 20,
+            "first_ns": 15900375,
+            "total_ns": 31240166
+          },
+          {
+            "ply": 0,
+            "depth": 8,
+            "moves": 20,
+            "first_ns": 31242084,
+            "total_ns": 133021250
+          },
+          {
+            "ply": 2,
+            "depth": 7,
+            "moves": 22,
+            "first_ns": 41534542,
+            "total_ns": 137879125
+          },
+          {
+            "ply": 1,
+            "depth": 8,
+            "moves": 20,
+            "first_ns": 137881542,
+            "total_ns": 386518834
+          },
+          {
+            "ply": 0,
+            "depth": 9,
+            "moves": 20,
+            "first_ns": 386524292,
+            "total_ns": 903316208
+          }
+        ]
+      },
+      "depth": 9,
+      "score": 30,
+      "best": "b1c3",
+      "nodes": 10133420,
+      "hits": 138618,
+      "elapsed_ms": 1075.379459,
+      "threads": 6,
+      "cache_bytes": 22961408,
+      "cpu_ms": 4226.291,
+      "peak_rss_bytes": 25378816,
+      "case": "opening",
+      "variant": "balanced",
+      "repetition": 0
+    },
+    {
+      "diagnostics": {
+        "max_helpers": 5,
+        "helper_lifetime_ns": 2013298499,
+        "first_serial_ns": 1040298123,
+        "phases": [
+          {
+            "ply": 0,
+            "depth": 4,
+            "moves": 20,
+            "first_ns": 282583,
+            "total_ns": 680958
+          },
+          {
+            "ply": 0,
+            "depth": 5,
+            "moves": 20,
+            "first_ns": 1232208,
+            "total_ns": 2444208
+          },
+          {
+            "ply": 0,
+            "depth": 6,
+            "moves": 20,
+            "first_ns": 5708208,
+            "total_ns": 10327083
+          },
+          {
+            "ply": 0,
+            "depth": 7,
+            "moves": 20,
+            "first_ns": 28994750,
+            "total_ns": 51753125
+          },
+          {
+            "ply": 0,
+            "depth": 8,
+            "moves": 20,
+            "first_ns": 115461166,
+            "total_ns": 224786083
+          },
+          {
+            "ply": 0,
+            "depth": 9,
+            "moves": 20,
+            "first_ns": 888619208,
+            "total_ns": 1267217041
+          }
+        ]
+      },
+      "depth": 9,
+      "score": 30,
+      "best": "b1c3",
+      "nodes": 9493262,
+      "hits": 152896,
+      "elapsed_ms": 1557.9515000000001,
+      "threads": 6,
+      "cache_bytes": 21053440,
+      "cpu_ms": 3443.609,
+      "peak_rss_bytes": 23396352,
+      "case": "opening",
+      "variant": "baseline",
+      "repetition": 0
+    },
+    {
+      "diagnostics": {
+        "max_helpers": 5,
+        "helper_lifetime_ns": 3827966709,
+        "first_serial_ns": 72293832,
+        "phases": [
+          {
+            "ply": 0,
+            "depth": 4,
+            "moves": 20,
+            "first_ns": 282208,
+            "total_ns": 622958
+          },
+          {
+            "ply": 0,
+            "depth": 5,
+            "moves": 20,
+            "first_ns": 1213458,
+            "total_ns": 2442000
+          },
+          {
+            "ply": 1,
+            "depth": 5,
+            "moves": 20,
+            "first_ns": 1359500,
+            "total_ns": 2459916
+          },
+          {
+            "ply": 0,
+            "depth": 6,
+            "moves": 20,
+            "first_ns": 2461750,
+            "total_ns": 7057958
+          },
+          {
+            "ply": 2,
+            "depth": 5,
+            "moves": 22,
+            "first_ns": 2277625,
+            "total_ns": 3627250
+          },
+          {
+            "ply": 1,
+            "depth": 6,
+            "moves": 20,
+            "first_ns": 3629583,
+            "total_ns": 8305875
+          },
+          {
+            "ply": 0,
+            "depth": 7,
+            "moves": 20,
+            "first_ns": 8307792,
+            "total_ns": 35951542
+          },
+          {
+            "ply": 2,
+            "depth": 6,
+            "moves": 22,
+            "first_ns": 10308875,
+            "total_ns": 19423125
+          },
+          {
+            "ply": 1,
+            "depth": 7,
+            "moves": 20,
+            "first_ns": 19425041,
+            "total_ns": 39700166
+          },
+          {
+            "ply": 0,
+            "depth": 8,
+            "moves": 20,
+            "first_ns": 39706042,
+            "total_ns": 184642667
+          },
+          {
+            "ply": 2,
+            "depth": 7,
+            "moves": 22,
+            "first_ns": 56852166,
+            "total_ns": 184204625
+          },
+          {
+            "ply": 1,
+            "depth": 8,
+            "moves": 20,
+            "first_ns": 184207792,
+            "total_ns": 404953542
+          },
+          {
+            "ply": 0,
+            "depth": 9,
+            "moves": 20,
+            "first_ns": 404958666,
+            "total_ns": 898155208
+          }
+        ]
+      },
+      "depth": 9,
+      "score": 30,
+      "best": "b1c3",
+      "nodes": 9275224,
+      "hits": 157089,
+      "elapsed_ms": 1129.6549579999999,
+      "threads": 6,
+      "cache_bytes": 21053440,
+      "cpu_ms": 4487.862000000001,
+      "peak_rss_bytes": 23478272,
+      "case": "opening",
+      "variant": "balanced",
+      "repetition": 1
+    },
+    {
+      "diagnostics": {
+        "max_helpers": 5,
+        "helper_lifetime_ns": 2443627337,
+        "first_serial_ns": 990588334,
+        "phases": [
+          {
+            "ply": 0,
+            "depth": 4,
+            "moves": 20,
+            "first_ns": 352209,
+            "total_ns": 772709
+          },
+          {
+            "ply": 0,
+            "depth": 5,
+            "moves": 20,
+            "first_ns": 1480958,
+            "total_ns": 2803917
+          },
+          {
+            "ply": 0,
+            "depth": 6,
+            "moves": 20,
+            "first_ns": 6199167,
+            "total_ns": 10938208
+          },
+          {
+            "ply": 0,
+            "depth": 7,
+            "moves": 20,
+            "first_ns": 31697042,
+            "total_ns": 65108875
+          },
+          {
+            "ply": 0,
+            "depth": 8,
+            "moves": 20,
+            "first_ns": 124211333,
+            "total_ns": 263241125
+          },
+          {
+            "ply": 0,
+            "depth": 9,
+            "moves": 20,
+            "first_ns": 826647625,
+            "total_ns": 1319768041
+          }
+        ]
+      },
+      "depth": 9,
+      "score": 30,
+      "best": "b1c3",
+      "nodes": 10264463,
+      "hits": 141724,
+      "elapsed_ms": 1663.520375,
+      "threads": 6,
+      "cache_bytes": 21908736,
+      "cpu_ms": 3832.1969999999997,
+      "peak_rss_bytes": 24248320,
+      "case": "opening",
+      "variant": "baseline",
+      "repetition": 1
+    },
+    {
+      "diagnostics": {
+        "max_helpers": 5,
+        "helper_lifetime_ns": 2419061291,
+        "first_serial_ns": 996005333,
+        "phases": [
+          {
+            "ply": 0,
+            "depth": 4,
+            "moves": 20,
+            "first_ns": 260167,
+            "total_ns": 587208
+          },
+          {
+            "ply": 0,
+            "depth": 5,
+            "moves": 20,
+            "first_ns": 1111583,
+            "total_ns": 2364125
+          },
+          {
+            "ply": 0,
+            "depth": 6,
+            "moves": 20,
+            "first_ns": 5068792,
+            "total_ns": 9356625
+          },
+          {
+            "ply": 0,
+            "depth": 7,
+            "moves": 20,
+            "first_ns": 27176125,
+            "total_ns": 55889958
+          },
+          {
+            "ply": 0,
+            "depth": 8,
+            "moves": 20,
+            "first_ns": 114259125,
+            "total_ns": 225697792
+          },
+          {
+            "ply": 0,
+            "depth": 9,
+            "moves": 20,
+            "first_ns": 848129541,
+            "total_ns": 1233493000
+          }
+        ]
+      },
+      "depth": 9,
+      "score": 30,
+      "best": "b1c3",
+      "nodes": 9909579,
+      "hits": 149128,
+      "elapsed_ms": 1528.122292,
+      "threads": 6,
+      "cache_bytes": 21053440,
+      "cpu_ms": 3815.279,
+      "peak_rss_bytes": 23412736,
+      "case": "opening",
+      "variant": "baseline",
+      "repetition": 2
+    },
+    {
+      "diagnostics": {
+        "max_helpers": 5,
+        "helper_lifetime_ns": 4197191913,
+        "first_serial_ns": 83837333,
+        "phases": [
+          {
+            "ply": 0,
+            "depth": 4,
+            "moves": 20,
+            "first_ns": 348125,
+            "total_ns": 777417
+          },
+          {
+            "ply": 0,
+            "depth": 5,
+            "moves": 20,
+            "first_ns": 1605417,
+            "total_ns": 3063042
+          },
+          {
+            "ply": 1,
+            "depth": 5,
+            "moves": 20,
+            "first_ns": 1828292,
+            "total_ns": 3061209
+          },
+          {
+            "ply": 0,
+            "depth": 6,
+            "moves": 20,
+            "first_ns": 3063584,
+            "total_ns": 8841250
+          },
+          {
+            "ply": 2,
+            "depth": 5,
+            "moves": 22,
+            "first_ns": 2794083,
+            "total_ns": 4643250
+          },
+          {
+            "ply": 1,
+            "depth": 6,
+            "moves": 20,
+            "first_ns": 4646583,
+            "total_ns": 10798208
+          },
+          {
+            "ply": 0,
+            "depth": 7,
+            "moves": 20,
+            "first_ns": 10801000,
+            "total_ns": 39520375
+          },
+          {
+            "ply": 2,
+            "depth": 6,
+            "moves": 22,
+            "first_ns": 13726458,
+            "total_ns": 25095250
+          },
+          {
+            "ply": 1,
+            "depth": 7,
+            "moves": 20,
+            "first_ns": 25098375,
+            "total_ns": 50249875
+          },
+          {
+            "ply": 0,
+            "depth": 8,
+            "moves": 20,
+            "first_ns": 50254625,
+            "total_ns": 200498917
+          },
+          {
+            "ply": 2,
+            "depth": 7,
+            "moves": 22,
+            "first_ns": 63534958,
+            "total_ns": 199104416
+          },
+          {
+            "ply": 1,
+            "depth": 8,
+            "moves": 20,
+            "first_ns": 199107709,
+            "total_ns": 382768000
+          },
+          {
+            "ply": 0,
+            "depth": 9,
+            "moves": 20,
+            "first_ns": 382776167,
+            "total_ns": 871492917
+          }
+        ]
+      },
+      "depth": 9,
+      "score": 30,
+      "best": "b1c3",
+      "nodes": 9489639,
+      "hits": 146823,
+      "elapsed_ms": 1125.1650829999999,
+      "threads": 6,
+      "cache_bytes": 21448192,
+      "cpu_ms": 4942.391,
+      "peak_rss_bytes": 23871488,
+      "case": "opening",
+      "variant": "balanced",
+      "repetition": 2
+    },
+    {
+      "diagnostics": {
+        "max_helpers": 5,
+        "helper_lifetime_ns": 1649769168,
+        "first_serial_ns": 107190708,
+        "phases": [
+          {
+            "ply": 0,
+            "depth": 4,
+            "moves": 48,
+            "first_ns": 4708459,
+            "total_ns": 9663959
+          },
+          {
+            "ply": 0,
+            "depth": 5,
+            "moves": 48,
+            "first_ns": 47067541,
+            "total_ns": 165426041
+          },
+          {
+            "ply": 1,
+            "depth": 5,
+            "moves": 46,
+            "first_ns": 14738250,
+            "total_ns": 61591334
+          },
+          {
+            "ply": 0,
+            "depth": 6,
+            "moves": 48,
+            "first_ns": 61596166,
+            "total_ns": 120986333
+          },
+          {
+            "ply": 2,
+            "depth": 5,
+            "moves": 42,
+            "first_ns": 40676458,
+            "total_ns": 50309667
+          },
+          {
+            "ply": 1,
+            "depth": 6,
+            "moves": 46,
+            "first_ns": 50314500,
+            "total_ns": 155543875
+          },
+          {
+            "ply": 0,
+            "depth": 7,
+            "moves": 48,
+            "first_ns": 155549417,
+            "total_ns": 289299000
+          }
+        ]
+      },
+      "depth": 7,
+      "score": -30,
+      "best": "d5e6",
+      "nodes": 3254415,
+      "hits": 22063,
+      "elapsed_ms": 604.425416,
+      "threads": 6,
+      "cache_bytes": 4210688,
+      "cpu_ms": 2149.734,
+      "peak_rss_bytes": 6586368,
+      "case": "middlegame",
+      "variant": "balanced",
+      "repetition": 0
+    },
+    {
+      "diagnostics": {
+        "max_helpers": 5,
+        "helper_lifetime_ns": 851203001,
+        "first_serial_ns": 609458792,
+        "phases": [
+          {
+            "ply": 0,
+            "depth": 4,
+            "moves": 48,
+            "first_ns": 5282333,
+            "total_ns": 10900625
+          },
+          {
+            "ply": 0,
+            "depth": 5,
+            "moves": 48,
+            "first_ns": 50865125,
+            "total_ns": 176366250
+          },
+          {
+            "ply": 0,
+            "depth": 6,
+            "moves": 48,
+            "first_ns": 103619792,
+            "total_ns": 167472459
+          },
+          {
+            "ply": 0,
+            "depth": 7,
+            "moves": 48,
+            "first_ns": 449691542,
+            "total_ns": 546562292
+          }
+        ]
+      },
+      "depth": 7,
+      "score": -30,
+      "best": "d5e6",
+      "nodes": 3248643,
+      "hits": 21829,
+      "elapsed_ms": 922.8605829999999,
+      "threads": 6,
+      "cache_bytes": 4210688,
+      "cpu_ms": 1755.0239999999997,
+      "peak_rss_bytes": 6504448,
+      "case": "middlegame",
+      "variant": "baseline",
+      "repetition": 0
+    },
+    {
+      "diagnostics": {
+        "max_helpers": 5,
+        "helper_lifetime_ns": 1760308875,
+        "first_serial_ns": 102122417,
+        "phases": [
+          {
+            "ply": 0,
+            "depth": 4,
+            "moves": 48,
+            "first_ns": 3971708,
+            "total_ns": 8897791
+          },
+          {
+            "ply": 0,
+            "depth": 5,
+            "moves": 48,
+            "first_ns": 41885875,
+            "total_ns": 159291625
+          },
+          {
+            "ply": 1,
+            "depth": 5,
+            "moves": 46,
+            "first_ns": 14583875,
+            "total_ns": 60648625
+          },
+          {
+            "ply": 0,
+            "depth": 6,
+            "moves": 48,
+            "first_ns": 60654458,
+            "total_ns": 124530792
+          },
+          {
+            "ply": 2,
+            "depth": 5,
+            "moves": 42,
+            "first_ns": 41680959,
+            "total_ns": 49947209
+          },
+          {
+            "ply": 1,
+            "depth": 6,
+            "moves": 46,
+            "first_ns": 49956292,
+            "total_ns": 152058958
+          },
+          {
+            "ply": 0,
+            "depth": 7,
+            "moves": 48,
+            "first_ns": 152063792,
+            "total_ns": 299109500
+          }
+        ]
+      },
+      "depth": 7,
+      "score": -30,
+      "best": "d5e6",
+      "nodes": 3251902,
+      "hits": 22170,
+      "elapsed_ms": 607.991708,
+      "threads": 6,
+      "cache_bytes": 4210688,
+      "cpu_ms": 2153.986,
+      "peak_rss_bytes": 6586368,
+      "case": "middlegame",
+      "variant": "balanced",
+      "repetition": 1
+    },
+    {
+      "diagnostics": {
+        "max_helpers": 5,
+        "helper_lifetime_ns": 1046970000,
+        "first_serial_ns": 709010208,
+        "phases": [
+          {
+            "ply": 0,
+            "depth": 4,
+            "moves": 48,
+            "first_ns": 5338000,
+            "total_ns": 10889334
+          },
+          {
+            "ply": 0,
+            "depth": 5,
+            "moves": 48,
+            "first_ns": 54313958,
+            "total_ns": 184179083
+          },
+          {
+            "ply": 0,
+            "depth": 6,
+            "moves": 48,
+            "first_ns": 104651000,
+            "total_ns": 179535834
+          },
+          {
+            "ply": 0,
+            "depth": 7,
+            "moves": 48,
+            "first_ns": 544707250,
+            "total_ns": 654348500
+          }
+        ]
+      },
+      "depth": 7,
+      "score": -30,
+      "best": "d5e6",
+      "nodes": 3246013,
+      "hits": 21929,
+      "elapsed_ms": 1050.374041,
+      "threads": 6,
+      "cache_bytes": 4210688,
+      "cpu_ms": 1925.194,
+      "peak_rss_bytes": 6537216,
+      "case": "middlegame",
+      "variant": "baseline",
+      "repetition": 1
+    },
+    {
+      "diagnostics": {
+        "max_helpers": 5,
+        "helper_lifetime_ns": 826211790,
+        "first_serial_ns": 599471666,
+        "phases": [
+          {
+            "ply": 0,
+            "depth": 4,
+            "moves": 48,
+            "first_ns": 4444167,
+            "total_ns": 9458375
+          },
+          {
+            "ply": 0,
+            "depth": 5,
+            "moves": 48,
+            "first_ns": 46043541,
+            "total_ns": 165650916
+          },
+          {
+            "ply": 0,
+            "depth": 6,
+            "moves": 48,
+            "first_ns": 99577833,
+            "total_ns": 157677500
+          },
+          {
+            "ply": 0,
+            "depth": 7,
+            "moves": 48,
+            "first_ns": 449406125,
+            "total_ns": 550541084
+          }
+        ]
+      },
+      "depth": 7,
+      "score": -30,
+      "best": "d5e6",
+      "nodes": 3243233,
+      "hits": 21935,
+      "elapsed_ms": 900.809583,
+      "threads": 6,
+      "cache_bytes": 4210688,
+      "cpu_ms": 1720.72,
+      "peak_rss_bytes": 6504448,
+      "case": "middlegame",
+      "variant": "baseline",
+      "repetition": 2
+    },
+    {
+      "diagnostics": {
+        "max_helpers": 5,
+        "helper_lifetime_ns": 1730636625,
+        "first_serial_ns": 103844291,
+        "phases": [
+          {
+            "ply": 0,
+            "depth": 4,
+            "moves": 48,
+            "first_ns": 4310625,
+            "total_ns": 8730041
+          },
+          {
+            "ply": 0,
+            "depth": 5,
+            "moves": 48,
+            "first_ns": 42182583,
+            "total_ns": 156931458
+          },
+          {
+            "ply": 1,
+            "depth": 5,
+            "moves": 46,
+            "first_ns": 14568708,
+            "total_ns": 63170917
+          },
+          {
+            "ply": 0,
+            "depth": 6,
+            "moves": 48,
+            "first_ns": 63178375,
+            "total_ns": 126535958
+          },
+          {
+            "ply": 2,
+            "depth": 5,
+            "moves": 42,
+            "first_ns": 42782375,
+            "total_ns": 51367667
+          },
+          {
+            "ply": 1,
+            "depth": 6,
+            "moves": 46,
+            "first_ns": 51372334,
+            "total_ns": 152403459
+          },
+          {
+            "ply": 0,
+            "depth": 7,
+            "moves": 48,
+            "first_ns": 152408500,
+            "total_ns": 287883958
+          }
+        ]
+      },
+      "depth": 7,
+      "score": -30,
+      "best": "d5e6",
+      "nodes": 3246748,
+      "hits": 22134,
+      "elapsed_ms": 597.752041,
+      "threads": 6,
+      "cache_bytes": 4210688,
+      "cpu_ms": 2147.343,
+      "peak_rss_bytes": 6619136,
+      "case": "middlegame",
+      "variant": "balanced",
+      "repetition": 2
+    },
+    {
+      "diagnostics": {
+        "max_helpers": 5,
+        "helper_lifetime_ns": 6596629125,
+        "first_serial_ns": 651413877,
+        "phases": [
+          {
+            "ply": 0,
+            "depth": 4,
+            "moves": 14,
+            "first_ns": 99500,
+            "total_ns": 408834
+          },
+          {
+            "ply": 0,
+            "depth": 5,
+            "moves": 14,
+            "first_ns": 1198834,
+            "total_ns": 1666875
+          },
+          {
+            "ply": 1,
+            "depth": 5,
+            "moves": 2,
+            "first_ns": 1061625,
+            "total_ns": 1248167
+          },
+          {
+            "ply": 0,
+            "depth": 6,
+            "moves": 14,
+            "first_ns": 1251041,
+            "total_ns": 2887000
+          },
+          {
+            "ply": 2,
+            "depth": 5,
+            "moves": 19,
+            "first_ns": 1781417,
+            "total_ns": 7046875
+          },
+          {
+            "ply": 1,
+            "depth": 6,
+            "moves": 2,
+            "first_ns": 7049458,
+            "total_ns": 7720875
+          },
+          {
+            "ply": 0,
+            "depth": 7,
+            "moves": 14,
+            "first_ns": 7723583,
+            "total_ns": 11569625
+          },
+          {
+            "ply": 2,
+            "depth": 6,
+            "moves": 19,
+            "first_ns": 1604750,
+            "total_ns": 4054542
+          },
+          {
+            "ply": 1,
+            "depth": 7,
+            "moves": 2,
+            "first_ns": 4056583,
+            "total_ns": 6194458
+          },
+          {
+            "ply": 0,
+            "depth": 8,
+            "moves": 14,
+            "first_ns": 6197958,
+            "total_ns": 19520208
+          },
+          {
+            "ply": 2,
+            "depth": 7,
+            "moves": 19,
+            "first_ns": 6029792,
+            "total_ns": 35894250
+          },
+          {
+            "ply": 1,
+            "depth": 8,
+            "moves": 2,
+            "first_ns": 35897083,
+            "total_ns": 45684041
+          },
+          {
+            "ply": 0,
+            "depth": 9,
+            "moves": 14,
+            "first_ns": 45687542,
+            "total_ns": 88847958
+          },
+          {
+            "ply": 2,
+            "depth": 8,
+            "moves": 19,
+            "first_ns": 44123417,
+            "total_ns": 56407417
+          },
+          {
+            "ply": 1,
+            "depth": 9,
+            "moves": 2,
+            "first_ns": 56410292,
+            "total_ns": 76993750
+          },
+          {
+            "ply": 0,
+            "depth": 10,
+            "moves": 14,
+            "first_ns": 76998625,
+            "total_ns": 218764083
+          },
+          {
+            "ply": 2,
+            "depth": 9,
+            "moves": 19,
+            "first_ns": 236337042,
+            "total_ns": 268835542
+          },
+          {
+            "ply": 1,
+            "depth": 10,
+            "moves": 2,
+            "first_ns": 268840583,
+            "total_ns": 326021208
+          },
+          {
+            "ply": 0,
+            "depth": 11,
+            "moves": 14,
+            "first_ns": 326027959,
+            "total_ns": 580114292
+          },
+          {
+            "ply": 2,
+            "depth": 10,
+            "moves": 19,
+            "first_ns": 359177500,
+            "total_ns": 440339333
+          },
+          {
+            "ply": 1,
+            "depth": 11,
+            "moves": 2,
+            "first_ns": 440346500,
+            "total_ns": 563049125
+          },
+          {
+            "ply": 0,
+            "depth": 12,
+            "moves": 14,
+            "first_ns": 563053125,
+            "total_ns": 1519545250
+          }
+        ]
+      },
+      "depth": 12,
+      "score": 40,
+      "best": "b4f4",
+      "nodes": 15588357,
+      "hits": 450241,
+      "elapsed_ms": 2444.192875,
+      "threads": 6,
+      "cache_bytes": 65463040,
+      "cpu_ms": 8787.598,
+      "peak_rss_bytes": 67895296,
+      "case": "endgame",
+      "variant": "balanced",
+      "repetition": 0
+    },
+    {
+      "diagnostics": {
+        "max_helpers": 5,
+        "helper_lifetime_ns": 5802769332,
+        "first_serial_ns": 1286474959,
+        "phases": [
+          {
+            "ply": 0,
+            "depth": 4,
+            "moves": 14,
+            "first_ns": 90792,
+            "total_ns": 383292
+          },
+          {
+            "ply": 0,
+            "depth": 5,
+            "moves": 14,
+            "first_ns": 1053708,
+            "total_ns": 1501708
+          },
+          {
+            "ply": 0,
+            "depth": 6,
+            "moves": 14,
+            "first_ns": 1071583,
+            "total_ns": 2524083
+          },
+          {
+            "ply": 0,
+            "depth": 7,
+            "moves": 14,
+            "first_ns": 7486583,
+            "total_ns": 10709958
+          },
+          {
+            "ply": 0,
+            "depth": 8,
+            "moves": 14,
+            "first_ns": 10392250,
+            "total_ns": 21657334
+          },
+          {
+            "ply": 0,
+            "depth": 9,
+            "moves": 14,
+            "first_ns": 48853459,
+            "total_ns": 76177334
+          },
+          {
+            "ply": 0,
+            "depth": 10,
+            "moves": 14,
+            "first_ns": 85216625,
+            "total_ns": 182811667
+          },
+          {
+            "ply": 0,
+            "depth": 11,
+            "moves": 14,
+            "first_ns": 382073084,
+            "total_ns": 700169917
+          },
+          {
+            "ply": 0,
+            "depth": 12,
+            "moves": 14,
+            "first_ns": 750236875,
+            "total_ns": 1865942625
+          }
+        ]
+      },
+      "depth": 12,
+      "score": 40,
+      "best": "b4f4",
+      "nodes": 16275285,
+      "hits": 438813,
+      "elapsed_ms": 2862.6495840000002,
+      "threads": 6,
+      "cache_bytes": 65463040,
+      "cpu_ms": 8462.515,
+      "peak_rss_bytes": 67911680,
+      "case": "endgame",
+      "variant": "baseline",
+      "repetition": 0
+    },
+    {
+      "diagnostics": {
+        "max_helpers": 5,
+        "helper_lifetime_ns": 6502781163,
+        "first_serial_ns": 550801917,
+        "phases": [
+          {
+            "ply": 0,
+            "depth": 4,
+            "moves": 14,
+            "first_ns": 75750,
+            "total_ns": 335459
+          },
+          {
+            "ply": 0,
+            "depth": 5,
+            "moves": 14,
+            "first_ns": 895625,
+            "total_ns": 1283375
+          },
+          {
+            "ply": 1,
+            "depth": 5,
+            "moves": 2,
+            "first_ns": 786667,
+            "total_ns": 929292
+          },
+          {
+            "ply": 0,
+            "depth": 6,
+            "moves": 14,
+            "first_ns": 931625,
+            "total_ns": 2219000
+          },
+          {
+            "ply": 2,
+            "depth": 5,
+            "moves": 19,
+            "first_ns": 1305334,
+            "total_ns": 5812417
+          },
+          {
+            "ply": 1,
+            "depth": 6,
+            "moves": 2,
+            "first_ns": 5814333,
+            "total_ns": 6231042
+          },
+          {
+            "ply": 0,
+            "depth": 7,
+            "moves": 14,
+            "first_ns": 6233333,
+            "total_ns": 8873125
+          },
+          {
+            "ply": 2,
+            "depth": 6,
+            "moves": 19,
+            "first_ns": 1157875,
+            "total_ns": 3596292
+          },
+          {
+            "ply": 1,
+            "depth": 7,
+            "moves": 2,
+            "first_ns": 3597708,
+            "total_ns": 5133042
+          },
+          {
+            "ply": 0,
+            "depth": 8,
+            "moves": 14,
+            "first_ns": 5135750,
+            "total_ns": 16638334
+          },
+          {
+            "ply": 2,
+            "depth": 7,
+            "moves": 19,
+            "first_ns": 4606791,
+            "total_ns": 26017958
+          },
+          {
+            "ply": 1,
+            "depth": 8,
+            "moves": 2,
+            "first_ns": 26019792,
+            "total_ns": 33052709
+          },
+          {
+            "ply": 0,
+            "depth": 9,
+            "moves": 14,
+            "first_ns": 33055042,
+            "total_ns": 62851959
+          },
+          {
+            "ply": 2,
+            "depth": 8,
+            "moves": 19,
+            "first_ns": 30887000,
+            "total_ns": 38976250
+          },
+          {
+            "ply": 1,
+            "depth": 9,
+            "moves": 2,
+            "first_ns": 38977875,
+            "total_ns": 54352500
+          },
+          {
+            "ply": 0,
+            "depth": 10,
+            "moves": 14,
+            "first_ns": 54354583,
+            "total_ns": 164951875
+          },
+          {
+            "ply": 2,
+            "depth": 9,
+            "moves": 19,
+            "first_ns": 181390417,
+            "total_ns": 206978917
+          },
+          {
+            "ply": 1,
+            "depth": 10,
+            "moves": 2,
+            "first_ns": 206981625,
+            "total_ns": 260480041
+          },
+          {
+            "ply": 0,
+            "depth": 11,
+            "moves": 14,
+            "first_ns": 260483750,
+            "total_ns": 535786959
+          },
+          {
+            "ply": 2,
+            "depth": 10,
+            "moves": 19,
+            "first_ns": 329696458,
+            "total_ns": 415931541
+          },
+          {
+            "ply": 1,
+            "depth": 11,
+            "moves": 2,
+            "first_ns": 415934417,
+            "total_ns": 535332625
+          },
+          {
+            "ply": 0,
+            "depth": 12,
+            "moves": 14,
+            "first_ns": 535337917,
+            "total_ns": 1495476917
+          }
+        ]
+      },
+      "depth": 12,
+      "score": 40,
+      "best": "b4f4",
+      "nodes": 16016717,
+      "hits": 433077,
+      "elapsed_ms": 2289.108709,
+      "threads": 6,
+      "cache_bytes": 65463040,
+      "cpu_ms": 8589.377,
+      "peak_rss_bytes": 67928064,
+      "case": "endgame",
+      "variant": "balanced",
+      "repetition": 1
+    },
+    {
+      "diagnostics": {
+        "max_helpers": 5,
+        "helper_lifetime_ns": 5606009541,
+        "first_serial_ns": 1235769833,
+        "phases": [
+          {
+            "ply": 0,
+            "depth": 4,
+            "moves": 14,
+            "first_ns": 89834,
+            "total_ns": 388625
+          },
+          {
+            "ply": 0,
+            "depth": 5,
+            "moves": 14,
+            "first_ns": 1066959,
+            "total_ns": 1516584
+          },
+          {
+            "ply": 0,
+            "depth": 6,
+            "moves": 14,
+            "first_ns": 1088334,
+            "total_ns": 2553334
+          },
+          {
+            "ply": 0,
+            "depth": 7,
+            "moves": 14,
+            "first_ns": 6846083,
+            "total_ns": 10206166
+          },
+          {
+            "ply": 0,
+            "depth": 8,
+            "moves": 14,
+            "first_ns": 11473583,
+            "total_ns": 23740333
+          },
+          {
+            "ply": 0,
+            "depth": 9,
+            "moves": 14,
+            "first_ns": 52119791,
+            "total_ns": 82284500
+          },
+          {
+            "ply": 0,
+            "depth": 10,
+            "moves": 14,
+            "first_ns": 88491625,
+            "total_ns": 182635416
+          },
+          {
+            "ply": 0,
+            "depth": 11,
+            "moves": 14,
+            "first_ns": 336883416,
+            "total_ns": 576702333
+          },
+          {
+            "ply": 0,
+            "depth": 12,
+            "moves": 14,
+            "first_ns": 737710208,
+            "total_ns": 1669986416
+          }
+        ]
+      },
+      "depth": 12,
+      "score": 40,
+      "best": "b4f4",
+      "nodes": 16185027,
+      "hits": 438873,
+      "elapsed_ms": 2550.8023749999998,
+      "threads": 6,
+      "cache_bytes": 65463040,
+      "cpu_ms": 8066.075000000002,
+      "peak_rss_bytes": 67878912,
+      "case": "endgame",
+      "variant": "baseline",
+      "repetition": 1
+    },
+    {
+      "diagnostics": {
+        "max_helpers": 5,
+        "helper_lifetime_ns": 6631591413,
+        "first_serial_ns": 585197458,
+        "phases": [
+          {
+            "ply": 0,
+            "depth": 4,
+            "moves": 14,
+            "first_ns": 107000,
+            "total_ns": 409958
+          },
+          {
+            "ply": 0,
+            "depth": 5,
+            "moves": 14,
+            "first_ns": 1218208,
+            "total_ns": 1678333
+          },
+          {
+            "ply": 1,
+            "depth": 5,
+            "moves": 2,
+            "first_ns": 1085334,
+            "total_ns": 1260417
+          },
+          {
+            "ply": 0,
+            "depth": 6,
+            "moves": 14,
+            "first_ns": 1263208,
+            "total_ns": 2720458
+          },
+          {
+            "ply": 2,
+            "depth": 5,
+            "moves": 19,
+            "first_ns": 1826750,
+            "total_ns": 6826708
+          },
+          {
+            "ply": 1,
+            "depth": 6,
+            "moves": 2,
+            "first_ns": 6829292,
+            "total_ns": 7477458
+          },
+          {
+            "ply": 0,
+            "depth": 7,
+            "moves": 14,
+            "first_ns": 7480292,
+            "total_ns": 11814417
+          },
+          {
+            "ply": 2,
+            "depth": 6,
+            "moves": 19,
+            "first_ns": 1874041,
+            "total_ns": 5051375
+          },
+          {
+            "ply": 1,
+            "depth": 7,
+            "moves": 2,
+            "first_ns": 5053625,
+            "total_ns": 7342792
+          },
+          {
+            "ply": 0,
+            "depth": 8,
+            "moves": 14,
+            "first_ns": 7346125,
+            "total_ns": 21882459
+          },
+          {
+            "ply": 2,
+            "depth": 7,
+            "moves": 19,
+            "first_ns": 5913125,
+            "total_ns": 44399167
+          },
+          {
+            "ply": 1,
+            "depth": 8,
+            "moves": 2,
+            "first_ns": 44401208,
+            "total_ns": 53446083
+          },
+          {
+            "ply": 0,
+            "depth": 9,
+            "moves": 14,
+            "first_ns": 53449334,
+            "total_ns": 81742459
+          },
+          {
+            "ply": 2,
+            "depth": 8,
+            "moves": 19,
+            "first_ns": 36815375,
+            "total_ns": 47120208
+          },
+          {
+            "ply": 1,
+            "depth": 9,
+            "moves": 2,
+            "first_ns": 47121958,
+            "total_ns": 63381250
+          },
+          {
+            "ply": 0,
+            "depth": 10,
+            "moves": 14,
+            "first_ns": 63384209,
+            "total_ns": 153904167
+          },
+          {
+            "ply": 2,
+            "depth": 9,
+            "moves": 19,
+            "first_ns": 187000250,
+            "total_ns": 220632042
+          },
+          {
+            "ply": 1,
+            "depth": 10,
+            "moves": 2,
+            "first_ns": 220634750,
+            "total_ns": 274330500
+          },
+          {
+            "ply": 0,
+            "depth": 11,
+            "moves": 14,
+            "first_ns": 274333875,
+            "total_ns": 518382417
+          },
+          {
+            "ply": 2,
+            "depth": 10,
+            "moves": 19,
+            "first_ns": 349357375,
+            "total_ns": 460344375
+          },
+          {
+            "ply": 1,
+            "depth": 11,
+            "moves": 2,
+            "first_ns": 460347458,
+            "total_ns": 578873167
+          },
+          {
+            "ply": 0,
+            "depth": 12,
+            "moves": 14,
+            "first_ns": 578878458,
+            "total_ns": 1635870375
+          }
+        ]
+      },
+      "depth": 12,
+      "score": 40,
+      "best": "b4f4",
+      "nodes": 15069325,
+      "hits": 415758,
+      "elapsed_ms": 2429.23125,
+      "threads": 6,
+      "cache_bytes": 65463040,
+      "cpu_ms": 8448.173999999999,
+      "peak_rss_bytes": 67928064,
+      "case": "endgame",
+      "variant": "balanced",
+      "repetition": 2
+    },
+    {
+      "diagnostics": {
+        "max_helpers": 5,
+        "helper_lifetime_ns": 6725108458,
+        "first_serial_ns": 1222258835,
+        "phases": [
+          {
+            "ply": 0,
+            "depth": 4,
+            "moves": 14,
+            "first_ns": 90208,
+            "total_ns": 394875
+          },
+          {
+            "ply": 0,
+            "depth": 5,
+            "moves": 14,
+            "first_ns": 1053917,
+            "total_ns": 1522167
+          },
+          {
+            "ply": 0,
+            "depth": 6,
+            "moves": 14,
+            "first_ns": 1093209,
+            "total_ns": 2629792
+          },
+          {
+            "ply": 0,
+            "depth": 7,
+            "moves": 14,
+            "first_ns": 7615834,
+            "total_ns": 11390167
+          },
+          {
+            "ply": 0,
+            "depth": 8,
+            "moves": 14,
+            "first_ns": 11329584,
+            "total_ns": 23701875
+          },
+          {
+            "ply": 0,
+            "depth": 9,
+            "moves": 14,
+            "first_ns": 48907208,
+            "total_ns": 80640875
+          },
+          {
+            "ply": 0,
+            "depth": 10,
+            "moves": 14,
+            "first_ns": 83887708,
+            "total_ns": 189705042
+          },
+          {
+            "ply": 0,
+            "depth": 11,
+            "moves": 14,
+            "first_ns": 324738084,
+            "total_ns": 621062875
+          },
+          {
+            "ply": 0,
+            "depth": 12,
+            "moves": 14,
+            "first_ns": 743543083,
+            "total_ns": 1997761708
+          }
+        ]
+      },
+      "depth": 12,
+      "score": 40,
+      "best": "b4f4",
+      "nodes": 17473763,
+      "hits": 458061,
+      "elapsed_ms": 2929.59575,
+      "threads": 6,
+      "cache_bytes": 65463040,
+      "cpu_ms": 9261.83,
+      "peak_rss_bytes": 67878912,
+      "case": "endgame",
+      "variant": "baseline",
+      "repetition": 2
+    },
+    {
+      "diagnostics": {
+        "max_helpers": 5,
+        "helper_lifetime_ns": 871467460,
+        "first_serial_ns": 24995125,
+        "phases": [
+          {
+            "ply": 0,
+            "depth": 4,
+            "moves": 44,
+            "first_ns": 1000083,
+            "total_ns": 3343083
+          },
+          {
+            "ply": 0,
+            "depth": 5,
+            "moves": 44,
+            "first_ns": 1716709,
+            "total_ns": 8121875
+          },
+          {
+            "ply": 1,
+            "depth": 5,
+            "moves": 32,
+            "first_ns": 7892916,
+            "total_ns": 8409375
+          },
+          {
+            "ply": 0,
+            "depth": 6,
+            "moves": 44,
+            "first_ns": 8413542,
+            "total_ns": 51378375
+          },
+          {
+            "ply": 2,
+            "depth": 5,
+            "moves": 42,
+            "first_ns": 14385417,
+            "total_ns": 19980750
+          },
+          {
+            "ply": 1,
+            "depth": 6,
+            "moves": 32,
+            "first_ns": 19984708,
+            "total_ns": 21287916
+          },
+          {
+            "ply": 0,
+            "depth": 7,
+            "moves": 44,
+            "first_ns": 21292792,
+            "total_ns": 151161292
+          }
+        ]
+      },
+      "depth": 7,
+      "score": 539,
+      "best": "d7c8q",
+      "nodes": 2268000,
+      "hits": 22892,
+      "elapsed_ms": 216.910292,
+      "threads": 6,
+      "cache_bytes": 4210688,
+      "cpu_ms": 1082.0020000000002,
+      "peak_rss_bytes": 6537216,
+      "case": "tactics",
+      "variant": "balanced",
+      "repetition": 0
+    },
+    {
+      "diagnostics": {
+        "max_helpers": 5,
+        "helper_lifetime_ns": 988505080,
+        "first_serial_ns": 63571000,
+        "phases": [
+          {
+            "ply": 0,
+            "depth": 4,
+            "moves": 44,
+            "first_ns": 1176625,
+            "total_ns": 3714208
+          },
+          {
+            "ply": 0,
+            "depth": 5,
+            "moves": 44,
+            "first_ns": 2063250,
+            "total_ns": 10438750
+          },
+          {
+            "ply": 0,
+            "depth": 6,
+            "moves": 44,
+            "first_ns": 10661792,
+            "total_ns": 61503250
+          },
+          {
+            "ply": 0,
+            "depth": 7,
+            "moves": 44,
+            "first_ns": 49669333,
+            "total_ns": 203373166
+          }
+        ]
+      },
+      "depth": 7,
+      "score": 539,
+      "best": "d7c8q",
+      "nodes": 2268264,
+      "hits": 22748,
+      "elapsed_ms": 282.490792,
+      "threads": 6,
+      "cache_bytes": 4210688,
+      "cpu_ms": 1232.844,
+      "peak_rss_bytes": 6488064,
+      "case": "tactics",
+      "variant": "baseline",
+      "repetition": 0
+    },
+    {
+      "diagnostics": {
+        "max_helpers": 5,
+        "helper_lifetime_ns": 1056649541,
+        "first_serial_ns": 32862542,
+        "phases": [
+          {
+            "ply": 0,
+            "depth": 4,
+            "moves": 44,
+            "first_ns": 1335042,
+            "total_ns": 4275000
+          },
+          {
+            "ply": 0,
+            "depth": 5,
+            "moves": 44,
+            "first_ns": 2331834,
+            "total_ns": 10497334
+          },
+          {
+            "ply": 1,
+            "depth": 5,
+            "moves": 32,
+            "first_ns": 11161916,
+            "total_ns": 11747875
+          },
+          {
+            "ply": 0,
+            "depth": 6,
+            "moves": 44,
+            "first_ns": 11753541,
+            "total_ns": 63716916
+          },
+          {
+            "ply": 2,
+            "depth": 5,
+            "moves": 42,
+            "first_ns": 18033750,
+            "total_ns": 25139958
+          },
+          {
+            "ply": 1,
+            "depth": 6,
+            "moves": 32,
+            "first_ns": 25145584,
+            "total_ns": 26656042
+          },
+          {
+            "ply": 0,
+            "depth": 7,
+            "moves": 44,
+            "first_ns": 26662083,
+            "total_ns": 187820167
+          }
+        ]
+      },
+      "depth": 7,
+      "score": 539,
+      "best": "d7c8q",
+      "nodes": 2278229,
+      "hits": 22743,
+      "elapsed_ms": 270.158542,
+      "threads": 6,
+      "cache_bytes": 4210688,
+      "cpu_ms": 1303.6659999999997,
+      "peak_rss_bytes": 6569984,
+      "case": "tactics",
+      "variant": "balanced",
+      "repetition": 1
+    },
+    {
+      "diagnostics": {
+        "max_helpers": 5,
+        "helper_lifetime_ns": 1019233290,
+        "first_serial_ns": 67424250,
+        "phases": [
+          {
+            "ply": 0,
+            "depth": 4,
+            "moves": 44,
+            "first_ns": 1335708,
+            "total_ns": 4191250
+          },
+          {
+            "ply": 0,
+            "depth": 5,
+            "moves": 44,
+            "first_ns": 2298792,
+            "total_ns": 10745708
+          },
+          {
+            "ply": 0,
+            "depth": 6,
+            "moves": 44,
+            "first_ns": 12481917,
+            "total_ns": 65348459
+          },
+          {
+            "ply": 0,
+            "depth": 7,
+            "moves": 44,
+            "first_ns": 51307833,
+            "total_ns": 206292583
+          }
+        ]
+      },
+      "depth": 7,
+      "score": 539,
+      "best": "d7c8q",
+      "nodes": 2262564,
+      "hits": 22489,
+      "elapsed_ms": 290.424042,
+      "threads": 6,
+      "cache_bytes": 4210688,
+      "cpu_ms": 1288.1750000000002,
+      "peak_rss_bytes": 6520832,
+      "case": "tactics",
+      "variant": "baseline",
+      "repetition": 1
+    },
+    {
+      "diagnostics": {
+        "max_helpers": 5,
+        "helper_lifetime_ns": 1012855583,
+        "first_serial_ns": 33686541,
+        "phases": [
+          {
+            "ply": 0,
+            "depth": 4,
+            "moves": 44,
+            "first_ns": 1388958,
+            "total_ns": 4327000
+          },
+          {
+            "ply": 0,
+            "depth": 5,
+            "moves": 44,
+            "first_ns": 2490625,
+            "total_ns": 11127750
+          },
+          {
+            "ply": 1,
+            "depth": 5,
+            "moves": 32,
+            "first_ns": 11009125,
+            "total_ns": 11686042
+          },
+          {
+            "ply": 0,
+            "depth": 6,
+            "moves": 44,
+            "first_ns": 11692625,
+            "total_ns": 64435208
+          },
+          {
+            "ply": 2,
+            "depth": 5,
+            "moves": 42,
+            "first_ns": 18797833,
+            "total_ns": 25712375
+          },
+          {
+            "ply": 1,
+            "depth": 6,
+            "moves": 32,
+            "first_ns": 25717875,
+            "total_ns": 27295250
+          },
+          {
+            "ply": 0,
+            "depth": 7,
+            "moves": 44,
+            "first_ns": 27301292,
+            "total_ns": 178094625
+          }
+        ]
+      },
+      "depth": 7,
+      "score": 539,
+      "best": "d7c8q",
+      "nodes": 2253360,
+      "hits": 22860,
+      "elapsed_ms": 261.77520799999996,
+      "threads": 6,
+      "cache_bytes": 4210688,
+      "cpu_ms": 1248.289,
+      "peak_rss_bytes": 6553600,
+      "case": "tactics",
+      "variant": "balanced",
+      "repetition": 2
+    },
+    {
+      "diagnostics": {
+        "max_helpers": 5,
+        "helper_lifetime_ns": 1012043041,
+        "first_serial_ns": 63935458,
+        "phases": [
+          {
+            "ply": 0,
+            "depth": 4,
+            "moves": 44,
+            "first_ns": 1317958,
+            "total_ns": 4091042
+          },
+          {
+            "ply": 0,
+            "depth": 5,
+            "moves": 44,
+            "first_ns": 2246375,
+            "total_ns": 10448750
+          },
+          {
+            "ply": 0,
+            "depth": 6,
+            "moves": 44,
+            "first_ns": 12004958,
+            "total_ns": 70857625
+          },
+          {
+            "ply": 0,
+            "depth": 7,
+            "moves": 44,
+            "first_ns": 48366167,
+            "total_ns": 196183083
+          }
+        ]
+      },
+      "depth": 7,
+      "score": 539,
+      "best": "d7c8q",
+      "nodes": 2285092,
+      "hits": 22712,
+      "elapsed_ms": 285.427125,
+      "threads": 6,
+      "cache_bytes": 4210688,
+      "cpu_ms": 1273.701,
+      "peak_rss_bytes": 6504448,
+      "case": "tactics",
+      "variant": "baseline",
+      "repetition": 2
+    },
+    {
+      "diagnostics": {
+        "max_helpers": 5,
+        "helper_lifetime_ns": 267885789,
+        "first_serial_ns": 19349709,
+        "phases": [
+          {
+            "ply": 0,
+            "depth": 4,
+            "moves": 8,
+            "first_ns": 72875,
+            "total_ns": 281292
+          },
+          {
+            "ply": 0,
+            "depth": 5,
+            "moves": 8,
+            "first_ns": 216833,
+            "total_ns": 489292
+          },
+          {
+            "ply": 1,
+            "depth": 5,
+            "moves": 9,
+            "first_ns": 172167,
+            "total_ns": 365417
+          },
+          {
+            "ply": 0,
+            "depth": 6,
+            "moves": 8,
+            "first_ns": 367625,
+            "total_ns": 674417
+          },
+          {
+            "ply": 2,
+            "depth": 5,
+            "moves": 8,
+            "first_ns": 146958,
+            "total_ns": 342625
+          },
+          {
+            "ply": 1,
+            "depth": 6,
+            "moves": 9,
+            "first_ns": 345250,
+            "total_ns": 606417
+          },
+          {
+            "ply": 0,
+            "depth": 7,
+            "moves": 8,
+            "first_ns": 608708,
+            "total_ns": 1217250
+          },
+          {
+            "ply": 2,
+            "depth": 6,
+            "moves": 8,
+            "first_ns": 434292,
+            "total_ns": 714167
+          },
+          {
+            "ply": 1,
+            "depth": 7,
+            "moves": 9,
+            "first_ns": 716084,
+            "total_ns": 1159042
+          },
+          {
+            "ply": 0,
+            "depth": 8,
+            "moves": 8,
+            "first_ns": 1161708,
+            "total_ns": 2429125
+          },
+          {
+            "ply": 2,
+            "depth": 7,
+            "moves": 8,
+            "first_ns": 794667,
+            "total_ns": 1378958
+          },
+          {
+            "ply": 1,
+            "depth": 8,
+            "moves": 9,
+            "first_ns": 1380959,
+            "total_ns": 2302584
+          },
+          {
+            "ply": 0,
+            "depth": 9,
+            "moves": 8,
+            "first_ns": 2304750,
+            "total_ns": 4861375
+          },
+          {
+            "ply": 2,
+            "depth": 8,
+            "moves": 8,
+            "first_ns": 2408250,
+            "total_ns": 3612458
+          },
+          {
+            "ply": 1,
+            "depth": 9,
+            "moves": 9,
+            "first_ns": 3614541,
+            "total_ns": 5521041
+          },
+          {
+            "ply": 0,
+            "depth": 10,
+            "moves": 8,
+            "first_ns": 5528583,
+            "total_ns": 12643958
+          },
+          {
+            "ply": 2,
+            "depth": 9,
+            "moves": 8,
+            "first_ns": 4472583,
+            "total_ns": 7413833
+          },
+          {
+            "ply": 1,
+            "depth": 10,
+            "moves": 9,
+            "first_ns": 7416959,
+            "total_ns": 10786459
+          },
+          {
+            "ply": 0,
+            "depth": 11,
+            "moves": 8,
+            "first_ns": 10788959,
+            "total_ns": 27496375
+          },
+          {
+            "ply": 2,
+            "depth": 10,
+            "moves": 8,
+            "first_ns": 10631084,
+            "total_ns": 16154625
+          },
+          {
+            "ply": 1,
+            "depth": 11,
+            "moves": 9,
+            "first_ns": 16156833,
+            "total_ns": 25557625
+          },
+          {
+            "ply": 0,
+            "depth": 12,
+            "moves": 8,
+            "first_ns": 25560125,
+            "total_ns": 53616250
+          }
+        ]
+      },
+      "depth": 12,
+      "score": 28,
+      "best": "g3f3",
+      "nodes": 814239,
+      "hits": 46286,
+      "elapsed_ms": 104.383584,
+      "threads": 6,
+      "cache_bytes": 4210688,
+      "cpu_ms": 359.29499999999996,
+      "peak_rss_bytes": 6635520,
+      "case": "pawns",
+      "variant": "balanced",
+      "repetition": 0
+    },
+    {
+      "diagnostics": {
+        "max_helpers": 5,
+        "helper_lifetime_ns": 167846250,
+        "first_serial_ns": 96950667,
+        "phases": [
+          {
+            "ply": 0,
+            "depth": 4,
+            "moves": 8,
+            "first_ns": 66334,
+            "total_ns": 230042
+          },
+          {
+            "ply": 0,
+            "depth": 5,
+            "moves": 8,
+            "first_ns": 198291,
+            "total_ns": 439041
+          },
+          {
+            "ply": 0,
+            "depth": 6,
+            "moves": 8,
+            "first_ns": 421209,
+            "total_ns": 721709
+          },
+          {
+            "ply": 0,
+            "depth": 7,
+            "moves": 8,
+            "first_ns": 938000,
+            "total_ns": 1506333
+          },
+          {
+            "ply": 0,
+            "depth": 8,
+            "moves": 8,
+            "first_ns": 2273166,
+            "total_ns": 3914458
+          },
+          {
+            "ply": 0,
+            "depth": 9,
+            "moves": 8,
+            "first_ns": 4511000,
+            "total_ns": 7053125
+          },
+          {
+            "ply": 0,
+            "depth": 10,
+            "moves": 8,
+            "first_ns": 11585834,
+            "total_ns": 18030542
+          },
+          {
+            "ply": 0,
+            "depth": 11,
+            "moves": 8,
+            "first_ns": 23208291,
+            "total_ns": 37266625
+          },
+          {
+            "ply": 0,
+            "depth": 12,
+            "moves": 8,
+            "first_ns": 53748542,
+            "total_ns": 80318292
+          }
+        ]
+      },
+      "depth": 12,
+      "score": 28,
+      "best": "g3f3",
+      "nodes": 816003,
+      "hits": 46962,
+      "elapsed_ms": 150.09325,
+      "threads": 6,
+      "cache_bytes": 4210688,
+      "cpu_ms": 289.95,
+      "peak_rss_bytes": 6553600,
+      "case": "pawns",
+      "variant": "baseline",
+      "repetition": 0
+    },
+    {
+      "diagnostics": {
+        "max_helpers": 5,
+        "helper_lifetime_ns": 156674828,
+        "first_serial_ns": 89882416,
+        "phases": [
+          {
+            "ply": 0,
+            "depth": 4,
+            "moves": 8,
+            "first_ns": 56041,
+            "total_ns": 240291
+          },
+          {
+            "ply": 0,
+            "depth": 5,
+            "moves": 8,
+            "first_ns": 168667,
+            "total_ns": 401917
+          },
+          {
+            "ply": 0,
+            "depth": 6,
+            "moves": 8,
+            "first_ns": 355917,
+            "total_ns": 627834
+          },
+          {
+            "ply": 0,
+            "depth": 7,
+            "moves": 8,
+            "first_ns": 801459,
+            "total_ns": 1325500
+          },
+          {
+            "ply": 0,
+            "depth": 8,
+            "moves": 8,
+            "first_ns": 1913333,
+            "total_ns": 2982958
+          },
+          {
+            "ply": 0,
+            "depth": 9,
+            "moves": 8,
+            "first_ns": 3787833,
+            "total_ns": 5736917
+          },
+          {
+            "ply": 0,
+            "depth": 10,
+            "moves": 8,
+            "first_ns": 9704708,
+            "total_ns": 15182583
+          },
+          {
+            "ply": 0,
+            "depth": 11,
+            "moves": 8,
+            "first_ns": 21330625,
+            "total_ns": 34066875
+          },
+          {
+            "ply": 0,
+            "depth": 12,
+            "moves": 8,
+            "first_ns": 51763833,
+            "total_ns": 74782917
+          }
+        ]
+      },
+      "depth": 12,
+      "score": 28,
+      "best": "g3f3",
+      "nodes": 788447,
+      "hits": 45343,
+      "elapsed_ms": 135.90125,
+      "threads": 6,
+      "cache_bytes": 4210688,
+      "cpu_ms": 271.941,
+      "peak_rss_bytes": 6569984,
+      "case": "pawns",
+      "variant": "baseline",
+      "repetition": 1
+    },
+    {
+      "diagnostics": {
+        "max_helpers": 5,
+        "helper_lifetime_ns": 238493457,
+        "first_serial_ns": 15275168,
+        "phases": [
+          {
+            "ply": 0,
+            "depth": 4,
+            "moves": 8,
+            "first_ns": 54875,
+            "total_ns": 217833
+          },
+          {
+            "ply": 0,
+            "depth": 5,
+            "moves": 8,
+            "first_ns": 168334,
+            "total_ns": 363584
+          },
+          {
+            "ply": 1,
+            "depth": 5,
+            "moves": 9,
+            "first_ns": 129292,
+            "total_ns": 266917
+          },
+          {
+            "ply": 0,
+            "depth": 6,
+            "moves": 8,
+            "first_ns": 268416,
+            "total_ns": 511791
+          },
+          {
+            "ply": 2,
+            "depth": 5,
+            "moves": 8,
+            "first_ns": 111750,
+            "total_ns": 259208
+          },
+          {
+            "ply": 1,
+            "depth": 6,
+            "moves": 9,
+            "first_ns": 261083,
+            "total_ns": 466500
+          },
+          {
+            "ply": 0,
+            "depth": 7,
+            "moves": 8,
+            "first_ns": 467833,
+            "total_ns": 967292
+          },
+          {
+            "ply": 2,
+            "depth": 6,
+            "moves": 8,
+            "first_ns": 325541,
+            "total_ns": 551666
+          },
+          {
+            "ply": 1,
+            "depth": 7,
+            "moves": 9,
+            "first_ns": 553083,
+            "total_ns": 902000
+          },
+          {
+            "ply": 0,
+            "depth": 8,
+            "moves": 8,
+            "first_ns": 903583,
+            "total_ns": 1992875
+          },
+          {
+            "ply": 2,
+            "depth": 7,
+            "moves": 8,
+            "first_ns": 599125,
+            "total_ns": 1116708
+          },
+          {
+            "ply": 1,
+            "depth": 8,
+            "moves": 9,
+            "first_ns": 1118167,
+            "total_ns": 1684542
+          },
+          {
+            "ply": 0,
+            "depth": 9,
+            "moves": 8,
+            "first_ns": 1686209,
+            "total_ns": 3773542
+          },
+          {
+            "ply": 2,
+            "depth": 8,
+            "moves": 8,
+            "first_ns": 1645959,
+            "total_ns": 2563625
+          },
+          {
+            "ply": 1,
+            "depth": 9,
+            "moves": 9,
+            "first_ns": 2565500,
+            "total_ns": 4122291
+          },
+          {
+            "ply": 0,
+            "depth": 10,
+            "moves": 8,
+            "first_ns": 4126084,
+            "total_ns": 8928000
+          },
+          {
+            "ply": 2,
+            "depth": 9,
+            "moves": 8,
+            "first_ns": 3277792,
+            "total_ns": 5262375
+          },
+          {
+            "ply": 1,
+            "depth": 10,
+            "moves": 9,
+            "first_ns": 5264792,
+            "total_ns": 7885958
+          },
+          {
+            "ply": 0,
+            "depth": 11,
+            "moves": 8,
+            "first_ns": 7887875,
+            "total_ns": 20753084
+          },
+          {
+            "ply": 2,
+            "depth": 10,
+            "moves": 8,
+            "first_ns": 8962500,
+            "total_ns": 13391500
+          },
+          {
+            "ply": 1,
+            "depth": 11,
+            "moves": 9,
+            "first_ns": 13393292,
+            "total_ns": 20181750
+          },
+          {
+            "ply": 0,
+            "depth": 12,
+            "moves": 8,
+            "first_ns": 20183833,
+            "total_ns": 48473666
+          }
+        ]
+      },
+      "depth": 12,
+      "score": 28,
+      "best": "g3f3",
+      "nodes": 824531,
+      "hits": 47996,
+      "elapsed_ms": 86.48620799999999,
+      "threads": 6,
+      "cache_bytes": 4210688,
+      "cpu_ms": 305.79499999999996,
+      "peak_rss_bytes": 6602752,
+      "case": "pawns",
+      "variant": "balanced",
+      "repetition": 1
+    },
+    {
+      "diagnostics": {
+        "max_helpers": 5,
+        "helper_lifetime_ns": 153057081,
+        "first_serial_ns": 89813750,
+        "phases": [
+          {
+            "ply": 0,
+            "depth": 4,
+            "moves": 8,
+            "first_ns": 61000,
+            "total_ns": 240792
+          },
+          {
+            "ply": 0,
+            "depth": 5,
+            "moves": 8,
+            "first_ns": 191542,
+            "total_ns": 402917
+          },
+          {
+            "ply": 0,
+            "depth": 6,
+            "moves": 8,
+            "first_ns": 399250,
+            "total_ns": 677542
+          },
+          {
+            "ply": 0,
+            "depth": 7,
+            "moves": 8,
+            "first_ns": 852667,
+            "total_ns": 1382875
+          },
+          {
+            "ply": 0,
+            "depth": 8,
+            "moves": 8,
+            "first_ns": 2042333,
+            "total_ns": 3230833
+          },
+          {
+            "ply": 0,
+            "depth": 9,
+            "moves": 8,
+            "first_ns": 4094875,
+            "total_ns": 6573875
+          },
+          {
+            "ply": 0,
+            "depth": 10,
+            "moves": 8,
+            "first_ns": 10296791,
+            "total_ns": 14874958
+          },
+          {
+            "ply": 0,
+            "depth": 11,
+            "moves": 8,
+            "first_ns": 19399792,
+            "total_ns": 30757750
+          },
+          {
+            "ply": 0,
+            "depth": 12,
+            "moves": 8,
+            "first_ns": 52475500,
+            "total_ns": 77109625
+          }
+        ]
+      },
+      "depth": 12,
+      "score": 28,
+      "best": "g3f3",
+      "nodes": 821103,
+      "hits": 47636,
+      "elapsed_ms": 135.77479200000002,
+      "threads": 6,
+      "cache_bytes": 4210688,
+      "cpu_ms": 280.234,
+      "peak_rss_bytes": 6504448,
+      "case": "pawns",
+      "variant": "baseline",
+      "repetition": 2
+    },
+    {
+      "diagnostics": {
+        "max_helpers": 5,
+        "helper_lifetime_ns": 245935251,
+        "first_serial_ns": 16285083,
+        "phases": [
+          {
+            "ply": 0,
+            "depth": 4,
+            "moves": 8,
+            "first_ns": 55166,
+            "total_ns": 221041
+          },
+          {
+            "ply": 0,
+            "depth": 5,
+            "moves": 8,
+            "first_ns": 168209,
+            "total_ns": 404417
+          },
+          {
+            "ply": 1,
+            "depth": 5,
+            "moves": 9,
+            "first_ns": 132375,
+            "total_ns": 350208
+          },
+          {
+            "ply": 0,
+            "depth": 6,
+            "moves": 8,
+            "first_ns": 352125,
+            "total_ns": 657292
+          },
+          {
+            "ply": 2,
+            "depth": 5,
+            "moves": 8,
+            "first_ns": 114250,
+            "total_ns": 281875
+          },
+          {
+            "ply": 1,
+            "depth": 6,
+            "moves": 9,
+            "first_ns": 283792,
+            "total_ns": 564083
+          },
+          {
+            "ply": 0,
+            "depth": 7,
+            "moves": 8,
+            "first_ns": 565500,
+            "total_ns": 1058541
+          },
+          {
+            "ply": 2,
+            "depth": 6,
+            "moves": 8,
+            "first_ns": 350417,
+            "total_ns": 578792
+          },
+          {
+            "ply": 1,
+            "depth": 7,
+            "moves": 9,
+            "first_ns": 580291,
+            "total_ns": 966541
+          },
+          {
+            "ply": 0,
+            "depth": 8,
+            "moves": 8,
+            "first_ns": 968583,
+            "total_ns": 2070708
+          },
+          {
+            "ply": 2,
+            "depth": 7,
+            "moves": 8,
+            "first_ns": 632709,
+            "total_ns": 1060000
+          },
+          {
+            "ply": 1,
+            "depth": 8,
+            "moves": 9,
+            "first_ns": 1061458,
+            "total_ns": 1650792
+          },
+          {
+            "ply": 0,
+            "depth": 9,
+            "moves": 8,
+            "first_ns": 1652333,
+            "total_ns": 3773083
+          },
+          {
+            "ply": 2,
+            "depth": 8,
+            "moves": 8,
+            "first_ns": 1631166,
+            "total_ns": 2502708
+          },
+          {
+            "ply": 1,
+            "depth": 9,
+            "moves": 9,
+            "first_ns": 2504333,
+            "total_ns": 4159542
+          },
+          {
+            "ply": 0,
+            "depth": 10,
+            "moves": 8,
+            "first_ns": 4163292,
+            "total_ns": 8814875
+          },
+          {
+            "ply": 2,
+            "depth": 9,
+            "moves": 8,
+            "first_ns": 3401583,
+            "total_ns": 5336375
+          },
+          {
+            "ply": 1,
+            "depth": 10,
+            "moves": 9,
+            "first_ns": 5338833,
+            "total_ns": 8188833
+          },
+          {
+            "ply": 0,
+            "depth": 11,
+            "moves": 8,
+            "first_ns": 8191125,
+            "total_ns": 21189667
+          },
+          {
+            "ply": 2,
+            "depth": 10,
+            "moves": 8,
+            "first_ns": 9799208,
+            "total_ns": 14409291
+          },
+          {
+            "ply": 1,
+            "depth": 11,
+            "moves": 9,
+            "first_ns": 14411041,
+            "total_ns": 22983250
+          },
+          {
+            "ply": 0,
+            "depth": 12,
+            "moves": 8,
+            "first_ns": 22985625,
+            "total_ns": 48240625
+          }
+        ]
+      },
+      "depth": 12,
+      "score": 28,
+      "best": "g3f3",
+      "nodes": 819404,
+      "hits": 46899,
+      "elapsed_ms": 86.92750000000001,
+      "threads": 6,
+      "cache_bytes": 4210688,
+      "cpu_ms": 313.671,
+      "peak_rss_bytes": 6602752,
+      "case": "pawns",
+      "variant": "balanced",
+      "repetition": 2
+    }
+  ],
+  "source_sha256": {
+    "baseline": "fb5accbb58a7eb82bf72e48e208e6d0da56f90c1750f8e7d95dc6d07de095329",
+    "balanced": "71eba5b7cff6a4d06447aad9f4db994aa540f4eeb4f09b3a686af7e3b857ae9e"
+  }
+}

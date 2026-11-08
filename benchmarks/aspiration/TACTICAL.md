@@ -92,6 +92,8 @@ The ±32 window misses the score in each of depths four through eight, whereas �
 
 Over **99.99% of positive-depth search calls already have a one-point window** under PVS. Aspiration has little left to tighten in this tree. The conservative setting saves four PVS re-searches and 55 total visits, a **0.00074%** reduction through depth eight. Quiescence itself accounts for about 61.4% of the engine's counted visits; it also inherits one-point windows for nearly all calls. Much of the remaining count consists of depth-zero negamax calls and the existing narrow search.
 
+That call-window statistic alone does not bound aspiration's potential benefit: a rare wide call can be the ancestor of a large subtree, and narrowing it can prune substantial work. The measured 55-visit saving describes this position and this window policy. It does not show that PVS makes aspiration unnecessary in other engines, or after other search changes. Adaptive prediction/window policies were not exhaustively tuned in this experiment.
+
 The final depth-eight iteration visits **5,281,422 nodes in both versions**. All 55 saved visits occurred in earlier iterations. At depth seven the savings are also only 55 visits out of about 2.2 million (0.0025%). This explains the near-identical timings more directly than the initial three-sample median did.
 
 The narrow ±32 diagnostic reaches 12,557,968 visits through depth eight, with five failed windows, versus PVS's 7,477,203. That is about **68% more visits** in this diagnostic trace. Its cumulative depth-seven count agrees with the repeatable control runs above. No instrumented timing is used to estimate that cost.
