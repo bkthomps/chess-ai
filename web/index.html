@@ -12,6 +12,10 @@
 </head>
 <body>
   <div id="menu-background" class="menu-background" aria-hidden="true"></div>
+  <aside id="clicker" class="clicker" hidden aria-label="Falling pieces game">
+    <div class="clicker-score"><strong id="clicker-points">0 ELO</strong><small id="clicker-rate">0 ELO / sec</small></div>
+    <div class="clicker-shop"><div id="click-upgrades" class="clicker-row" aria-label="Click upgrades"></div><div id="auto-upgrades" class="clicker-row" aria-label="Automatic upgrades"></div></div>
+  </aside>
   <main>
     <section id="disconnected" class="menu disconnected" role="alert" hidden>
       <p>Error: Cannot reach the chess server.</p>

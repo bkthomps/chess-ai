@@ -195,3 +195,14 @@ dialog form { margin: 0; }
   body.in-game main { width: min(100%, calc(100vh + 80px)); padding-top: 20px; padding-bottom: 20px; }
   #history-scroll { max-height: 224px; }
 }
+
+.clicker { position: fixed; inset: 0; z-index: 3; pointer-events: none; }
+.clicker-score { position: absolute; top: 16px; left: 16px; background: #fffdf7eF; border-radius: 6px; padding: 8px 12px; }
+.clicker-score strong, .clicker-score small { display: block; }
+.clicker-score small { color: var(--muted); }
+.clicker-shop { position: absolute; bottom: 16px; left: 16px; max-width: calc(100vw - 32px); display: grid; gap: 8px; font-size: 12px; color: var(--muted); pointer-events: auto; }
+.clicker-row { display: flex; gap: 4px; overflow-x: auto; padding: 3px; }
+.clicker-row button { white-space: nowrap; padding: 6px; font-size: 11px; }
+body.in-game:not(.disconnected) .clicker { display: none; }
+
+.clicker-row button[aria-disabled="true"] { opacity: .5; }

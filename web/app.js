@@ -19,26 +19,95 @@ function piece(pc) {
   const white = pc > 0;
   return `<svg class="piece" viewBox="0 0 100 100" aria-hidden="true" focusable="false" fill="${white ? '#fffaf0' : '#263e33'}" stroke="${white ? '#344b3e' : '#e5e9d6'}" color="${white ? '#344b3e' : '#e5e9d6'}" stroke-width="2.3" stroke-linejoin="round" stroke-linecap="round">${shapes[Math.abs(pc)]}</svg>`;
 }
-// Recycle a fixed set of pieces through CSS animation instead of continually
-// adding nodes. Negative delays make the falling background full immediately.
+// Recycle pieces through CSS animations. Initial negative delays fill the background.
 const fallingPieces = document.createDocumentFragment();
 const backgroundParticles = [];
-for (let i = 0; i < 24; i++) {
+let backgroundSpeed = 1;
+function addBackgroundParticle(i, initial) {
   const particle = document.createElement('span');
   const angle = (i * 43) % 50 - 25;
   particle.className = 'falling-piece';
+  particle.addEventListener('animationiteration', () => {
+    particle.classList.remove('popped');
+    const duration = `${(16 + (i * 7) % 18) / backgroundSpeed}s`;
+    if (particle.style.getPropertyValue('--duration') !== duration) {
+      particle.style.animation = 'none';
+      particle.style.setProperty('--duration', duration);
+      particle.style.setProperty('--delay', '0s');
+      void particle.offsetWidth;
+      particle.style.animation = '';
+    }
+  });
   particle.innerHTML = piece((Math.floor(i / 6) % 2 ? 1 : -1) * (i % 6 + 1));
   particle.style.setProperty('--x', `${(i * 37 + 3) % 100}vw`);
   particle.style.setProperty('--size', `${24 + (i * 17) % 42}px`);
-  particle.style.setProperty('--duration', `${16 + (i * 7) % 18}s`);
-  particle.style.setProperty('--delay', `-${(i * 11) % 34}s`);
+  particle.style.setProperty('--duration', `${(16 + (i * 7) % 18) / backgroundSpeed}s`);
+  particle.style.setProperty('--delay', initial ? `-${(i * 11) % 34}s` : `${(i * 11) % 12 / backgroundSpeed}s`);
   particle.style.setProperty('--drift', `${(i * 29) % 73 - 36}px`);
   particle.style.setProperty('--start-angle', `${angle}deg`);
   particle.style.setProperty('--end-angle', `${angle + (i % 2 ? 90 : -90)}deg`);
-  fallingPieces.append(particle);
+  (initial ? fallingPieces : $('menu-background')).append(particle);
   backgroundParticles.push(particle);
 }
+for (let i = 0; i < 24; i++) addBackgroundParticle(i, true);
 $('menu-background').append(fallingPieces);
+const clickerTypes = [
+  {name: 'Fork', icon: '♞', cost: 5, gain: 1}, {name: 'Pin', icon: '♝', cost: 25, gain: 5},
+  {name: 'Skewer', icon: '♜', cost: 125, gain: 25}, {name: 'Discovered Attack', icon: '♛', cost: 600, gain: 125},
+  {name: 'Piece Sacrifice', icon: '♔', cost: 3000, gain: 625}
+];
+const autoTypes = [
+  {name: 'Chess Book', icon: '📖', cost: 15, gain: 1}, {name: 'Chess Coach', icon: '♟', cost: 100, gain: 5},
+  {name: 'Opening Database', icon: '▤', cost: 500, gain: 25}, {name: 'Chess Engine', icon: '⚙', cost: 2500, gain: 125},
+  {name: 'Supercomputer', icon: '▦', cost: 12000, gain: 625}
+];
+let clickerPoints = 0, clickerActive = false, clickCounts = Array(5).fill(0), autoCounts = Array(5).fill(0);
+function clickerTotal(types, counts) { return types.reduce((sum, item, i) => sum + item.gain * counts[i], 0); }
+function clickerCost(item, count) { return Math.ceil(item.cost * Math.pow(1.5, count)); }
+function renderClicker() {
+  $('clicker').hidden = !clickerActive;
+  $('clicker-points').textContent = `${Math.floor(clickerPoints).toLocaleString()} ELO`;
+  const rate = clickerTotal(autoTypes, autoCounts);
+  $('clicker-rate').textContent = `${rate.toLocaleString()} ELO / sec`;
+  for (const [types, counts, id] of [[clickerTypes, clickCounts, 'click-upgrades'], [autoTypes, autoCounts, 'auto-upgrades']]) {
+    const container = $(id);
+    container.replaceChildren();
+    types.forEach((item, i) => {
+      if (i > 0 && counts[i - 1] === 0) return;
+      const button = document.createElement('button');
+      const cost = clickerCost(item, counts[i]);
+      button.type = 'button';
+      button.textContent = `${item.icon} x${counts[i]} · ${cost.toLocaleString()}`;
+      button.title = `${item.name}: +${item.gain} ELO ${id === 'click-upgrades' ? 'per click' : 'per second'}`;
+      button.setAttribute('aria-label', `${item.name}, owned ${counts[i]}, costs ${cost} ELO, ${button.title}`);
+      button.setAttribute('aria-disabled', String(clickerPoints < cost));
+      button.addEventListener('click', () => {
+        if (clickerPoints < cost) return;
+        clickerPoints -= cost; counts[i]++;
+        const rate = clickerTotal(autoTypes, autoCounts);
+        backgroundSpeed = Math.min(4, 1 + Math.log10(1 + rate) / 2);
+        const target = Math.min(384, Math.floor(24 * (1 + 15 * Math.min(1, Math.log10(1 + rate) / 6))));
+        while (backgroundParticles.length < target) addBackgroundParticle(backgroundParticles.length, false);
+        renderClicker();
+      });
+      container.append(button);
+    });
+  }
+}
+function resetClicker() {
+  clickerPoints = 0; clickerActive = false; clickCounts = Array(5).fill(0); autoCounts = Array(5).fill(0);
+  backgroundSpeed = 1;
+  while (backgroundParticles.length > 24) backgroundParticles.pop().remove();
+  renderClicker();
+}
+let clickerLastTick = Date.now();
+setInterval(() => {
+  const now = Date.now(), elapsed = (now - clickerLastTick) / 1000;
+  clickerLastTick = now;
+  if (!clickerActive || (document.body.classList.contains('in-game') && !document.body.classList.contains('disconnected'))) return;
+  clickerPoints += clickerTotal(autoTypes, autoCounts) * elapsed;
+  renderClicker();
+}, 1000);
 let backgroundPointer = null, backgroundFrame = false;
 function moveBackgroundPieces() {
   backgroundFrame = false;
@@ -82,6 +151,9 @@ window.addEventListener('click', event => {
     if (event.clientX >= rect.left && event.clientX <= rect.right &&
         event.clientY >= rect.top && event.clientY <= rect.bottom) {
       particle.classList.add('popped');
+      clickerActive = true;
+      clickerPoints += 1 + clickerTotal(clickerTypes, clickCounts);
+      renderClicker();
       void unlockAudio().then(ready => { if (ready) void playSound('pop'); });
       break;
     }
@@ -317,6 +389,7 @@ function enterGame() {
   resetNewGameConfirmation();
   playing = true; $('menu').hidden = true; $('game').hidden = false; syncMusic();
   resetSoundSnapshot({notation: [], result: null});
+  resetClicker();
   document.body.classList.add('in-game'); render();
   $('board').querySelector(`[data-square="${flipped ? 52 : 12}"]`)?.focus({preventScroll:true});
   window.scrollTo({top:0, behavior:'instant'});
