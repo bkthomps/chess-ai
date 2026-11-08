@@ -120,7 +120,17 @@ const context = vm.createContext({
     return {ok: true, json: async () => structuredClone(server)};
   }
 });
+vm.runInContext(fs.readFileSync(path.join(__dirname, '../web/openings.js'), 'utf8'), context);
 vm.runInContext(fs.readFileSync(path.join(__dirname, '../web/app.js'), 'utf8'), context);
+assert.equal(vm.runInContext('openingLines.length', context), 318);
+assert.equal(vm.runInContext('openingName([])', context), 'Starting position');
+assert.equal(vm.runInContext("openingName(['e4','c5'])", context), 'Sicilian defence');
+assert.equal(vm.runInContext("openingName(['b4'])", context), 'Polish (Sokolsky) opening');
+assert.match(vm.runInContext("openingName(['e4','e5','Nf3','Nc6','Bb5','a6','Ba4','Nf6','0-0'])", context), /Ruy Lopez/);
+assert.equal(vm.runInContext("openingName(['b4','Nh6','a3'])", context), vm.runInContext("openingName(['b4','Nh6'])", context));
+assert.notEqual(vm.runInContext("openingName(['b4'])", context), vm.runInContext("openingName(['b4','Nh6'])", context));
+assert.equal(vm.runInContext("openingName(['e4+'])", context), vm.runInContext("openingName(['e4'])", context));
+assert.equal(vm.runInContext("openingName(['invalid'])", context), 'Unclassified opening');
 const tick = () => new Promise(r => setImmediate(r));
 const submit = () => elements['setup-form'].listeners.submit({preventDefault() {}, currentTarget: elements['setup-form']});
 const square = s => elements.board.children.find(e => e.dataset.square === s);

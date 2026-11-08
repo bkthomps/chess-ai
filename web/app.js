@@ -668,6 +668,7 @@ function render() {
     $('game-mode').textContent = `${state.ai_vs_ai ? 'AI vs. AI' : state.human === null ? 'Two players' : 'You: ' + (state.human ? 'White' : 'Black')} · ${controlLabel(state.clocks)}${!state.clocks.enabled && (state.human !== null || state.ai_vs_ai) ? ' · ' + state.thinking_seconds + 's per move' : ''}`;
     lastStatus = signature;
   }
+  $('moves-title').textContent = openingName(state.notation);
   if (state.notation.length !== lastHistoryLength) {
     const fragment = document.createDocumentFragment();
     for (let i = 0; i < state.notation.length; i += 2) {

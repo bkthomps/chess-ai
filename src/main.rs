@@ -456,6 +456,10 @@ fn serve_connection(
                 "text/css; charset=utf-8",
                 include_bytes!("../web/style.css"),
             )),
+            "/openings.js" => Some((
+                "text/javascript; charset=utf-8",
+                include_bytes!("../web/openings.js"),
+            )),
             "/app.js" => Some((
                 "text/javascript; charset=utf-8",
                 include_bytes!("../web/app.js"),
@@ -930,7 +934,7 @@ mod tests {
     #[test]
     fn bundled_assets_and_initial_state() {
         let app = shared();
-        for target in ["/", "/style.css", "/app.js", "/favicon.svg"] {
+        for target in ["/", "/style.css", "/openings.js", "/app.js", "/favicon.svg"] {
             assert!(!request(&app, "GET", target, 200).is_empty());
         }
         let body = request(&app, "GET", "/api/state", 200);

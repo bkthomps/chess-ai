@@ -143,7 +143,8 @@ legend { margin-bottom: 10px; }
 .side-panel { padding: 16px; border: 1px solid var(--line); border-radius: 7px; background: var(--surface); font-size: 12px; }
 h2 { margin: 0; font-size: 14px; font-weight: 500; }
 .history-heading { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
-#copy-pgn { display: inline-flex; padding: 5px; }
+#moves-title { min-width: 0; overflow-wrap: anywhere; line-height: 1.4; }
+#copy-pgn { flex-shrink: 0; display: inline-flex; padding: 5px; }
 #copy-pgn svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
 #copy-pgn:active { transform: scale(.92); }
 #copy-pgn .copy-check, #copy-pgn.copied .copy-icon { display: none; }
