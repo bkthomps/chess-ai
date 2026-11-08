@@ -22,6 +22,7 @@ function piece(pc) {
 // Recycle a fixed set of pieces through CSS animation instead of continually
 // adding nodes. Negative delays make the falling background full immediately.
 const fallingPieces = document.createDocumentFragment();
+const backgroundParticles = [];
 for (let i = 0; i < 24; i++) {
   const particle = document.createElement('span');
   const angle = (i * 43) % 50 - 25;
@@ -35,8 +36,57 @@ for (let i = 0; i < 24; i++) {
   particle.style.setProperty('--start-angle', `${angle}deg`);
   particle.style.setProperty('--end-angle', `${angle + (i % 2 ? 90 : -90)}deg`);
   fallingPieces.append(particle);
+  backgroundParticles.push(particle);
 }
 $('menu-background').append(fallingPieces);
+let backgroundPointer = null, backgroundFrame = false;
+function moveBackgroundPieces() {
+  backgroundFrame = false;
+  if (document.body.classList.contains('in-game') && !document.body.classList.contains('disconnected')) return;
+  if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  const positions = backgroundParticles.map(particle => particle.getBoundingClientRect());
+  backgroundParticles.forEach((particle, i) => {
+    const rect = positions[i];
+    const dx = backgroundPointer ? rect.left + rect.width / 2 - backgroundPointer.x : 0;
+    const dy = backgroundPointer ? rect.top + rect.height / 2 - backgroundPointer.y : 0;
+    const distance = Math.hypot(dx, dy);
+    const strength = backgroundPointer && distance < 140 ? (1 - distance / 140) * 45 : 0;
+    particle.style.setProperty('--push-x', `${distance ? dx / distance * strength : 0}px`);
+    particle.style.setProperty('--push-y', `${distance ? dy / distance * strength : 0}px`);
+  });
+}
+function scheduleBackgroundMove() {
+  if (!backgroundFrame) {
+    backgroundFrame = true;
+    window.requestAnimationFrame(moveBackgroundPieces);
+  }
+}
+window.addEventListener('pointermove', event => {
+  if (event.pointerType !== 'mouse' && event.pointerType !== 'pen') return;
+  backgroundPointer = {x: event.clientX, y: event.clientY};
+  scheduleBackgroundMove();
+});
+window.addEventListener('pointerout', event => {
+  if (event.relatedTarget) return;
+  backgroundPointer = null;
+  scheduleBackgroundMove();
+});
+window.addEventListener('click', event => {
+  if (document.body.classList.contains('in-game') && !document.body.classList.contains('disconnected')) return;
+  if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  if (event.target.closest('button, a, input, select, textarea, label')) return;
+  for (const particle of backgroundParticles) {
+    if (particle.classList.contains('popped')) continue;
+    const visual = particle.querySelector('.piece');
+    const rect = visual.getBoundingClientRect();
+    if (event.clientX >= rect.left && event.clientX <= rect.right &&
+        event.clientY >= rect.top && event.clientY <= rect.bottom) {
+      particle.classList.add('popped');
+      void unlockAudio().then(ready => { if (ready) void playSound('pop'); });
+      break;
+    }
+  }
+});
 function squareName(s) { return String.fromCharCode(97 + s % 8) + (Math.floor(s / 8) + 1); }
 let state = null, selected = null, flipped = false, playing = false, busy = false;
 let confirmingNewGame = false;
@@ -71,6 +121,7 @@ async function unlockAudio() {
   } catch { return false; }
 }
 const soundNotes = {
+  pop: [[0, 0.07, 550, 120, 0.1]],
   move: [[0, 0.075, 640, 190, 0.13]],
   check: [[0, 0.12, 660, 660, 0.08], [0.15, 0.15, 880, 880, 0.08]],
   end: [[0, 0.16, 660, 660, 0.07], [0.18, 0.16, 523.25, 523.25, 0.07], [0.36, 0.24, 392, 392, 0.07]]
