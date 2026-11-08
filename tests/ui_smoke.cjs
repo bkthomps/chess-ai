@@ -63,7 +63,7 @@ let confirmationTimeout = null, copiedFen = null, clipboardFails = false;
 const initial = [4,2,3,5,6,3,2,4,...Array(8).fill(1),...Array(32).fill(0),...Array(8).fill(-1),-4,-2,-3,-5,-6,-3,-2,-4];
 const fresh = (human = null, base = 300, increment = 0) => ({
   board: [...initial], started_at: new Date(2026, 10, 8, 12).getTime() / 1000, white: true, human, thinking_seconds: 3, revision: 1, thinking: false, pondering: human === true, check: false, result: null,
-  legal: [[12,20,0],[12,28,0]], notation: [], last: null, stats: null, analysis: null,
+  legal: [[12,20,0],[12,28,0]], notation: [], opening: 'Starting position', last: null, stats: null, analysis: null,
   clocks: {enabled: true, white_ms: base * 1000, black_ms: base * 1000, running: true, active_white: true, base_seconds: base, increment_seconds: increment}
 });
 server = fresh(); server.clocks.running = false;
@@ -120,17 +120,7 @@ const context = vm.createContext({
     return {ok: true, json: async () => structuredClone(server)};
   }
 });
-vm.runInContext(fs.readFileSync(path.join(__dirname, '../web/openings.js'), 'utf8'), context);
 vm.runInContext(fs.readFileSync(path.join(__dirname, '../web/app.js'), 'utf8'), context);
-assert.equal(vm.runInContext('openingLines.length', context), 318);
-assert.equal(vm.runInContext('openingName([])', context), 'Starting position');
-assert.equal(vm.runInContext("openingName(['e4','c5'])", context), 'Sicilian defence');
-assert.equal(vm.runInContext("openingName(['b4'])", context), 'Polish (Sokolsky) opening');
-assert.match(vm.runInContext("openingName(['e4','e5','Nf3','Nc6','Bb5','a6','Ba4','Nf6','0-0'])", context), /Ruy Lopez/);
-assert.equal(vm.runInContext("openingName(['b4','Nh6','a3'])", context), vm.runInContext("openingName(['b4','Nh6'])", context));
-assert.notEqual(vm.runInContext("openingName(['b4'])", context), vm.runInContext("openingName(['b4','Nh6'])", context));
-assert.equal(vm.runInContext("openingName(['e4+'])", context), vm.runInContext("openingName(['e4'])", context));
-assert.equal(vm.runInContext("openingName(['invalid'])", context), 'Unclassified opening');
 const tick = () => new Promise(r => setImmediate(r));
 const submit = () => elements['setup-form'].listeners.submit({preventDefault() {}, currentTarget: elements['setup-form']});
 const square = s => elements.board.children.find(e => e.dataset.square === s);
@@ -197,6 +187,10 @@ const moveRequests = () => requests.filter(r => r.url.startsWith('/api/move?'));
     await submit(); const params = new URL(requests.at(-1).url, 'http://localhost').searchParams;
     assert.equal(Number(params.get('base_seconds')), base); assert.equal(Number(params.get('increment_seconds')), increment);
     assert.equal(elements.board.children.length, 64);
+    assert.equal(elements['moves-title'].textContent, 'Starting position');
+    server.opening = 'Sicilian defence'; server.revision++;
+    await vm.runInContext('poll()', context);
+    assert.equal(elements['moves-title'].textContent, 'Sicilian defence');
     openMenu();
   }
   elements['time-control'].value = '2+1'; await submit();

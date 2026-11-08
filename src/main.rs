@@ -456,10 +456,6 @@ fn serve_connection(
                 "text/css; charset=utf-8",
                 include_bytes!("../web/style.css"),
             )),
-            "/openings.js" => Some((
-                "text/javascript; charset=utf-8",
-                include_bytes!("../web/openings.js"),
-            )),
             "/app.js" => Some((
                 "text/javascript; charset=utf-8",
                 include_bytes!("../web/app.js"),
@@ -708,6 +704,7 @@ fn state_json(a: &mut App) -> String {
         .map(|s| quote(s))
         .collect::<Vec<_>>()
         .join(",");
+    let opening = quote(a.game.opening_name());
     let last = a
         .game
         .moves
@@ -737,7 +734,7 @@ fn state_json(a: &mut App) -> String {
         format!("{{\"revision\":{},\"pondering\":{},\"active\":{},\"depth\":{},\"searching_depth\":{},\"evaluation\":{evaluation},\"nodes\":{},\"hits\":{},\"millis\":{},\"threads\":{},\"cache_bytes\":{},\"cache_limit\":{},\"budget_millis\":{budget}}}",
             analysis.revision, analysis.pondering, active, s.depth, s.searching_depth, s.nodes, s.hits, s.elapsed.as_millis(), s.threads, s.cache_bytes, s.cache_limit)
     });
-    format!("{{\"board\":[{board}],\"started_at\":{},\"white\":{},\"human\":{},\"ai_vs_ai\":{},\"clocks\":{clocks},\"thinking_seconds\":{},\"revision\":{},\"thinking\":{},\"pondering\":{},\"check\":{},\"result\":{},\"legal\":[{moves}],\"notation\":[{notation}],\"last\":{last},\"stats\":{stats},\"analysis\":{analysis}}}",
+    format!("{{\"board\":[{board}],\"started_at\":{},\"white\":{},\"human\":{},\"ai_vs_ai\":{},\"clocks\":{clocks},\"thinking_seconds\":{},\"revision\":{},\"thinking\":{},\"pondering\":{},\"check\":{},\"result\":{},\"legal\":[{moves}],\"notation\":[{notation}],\"opening\":{opening},\"last\":{last},\"stats\":{stats},\"analysis\":{analysis}}}",
         a.started_at.map_or("null".to_string(), |t| t.to_string()), p.white, a.human.map_or("null", |c| if c { "true" } else { "false" }), a.ai_vs_ai, a.fixed_thinking.as_secs_f64(), a.revision, a.thinking, a.pondering, p.in_check(p.white), result.map_or("null".into(), |r| quote(&r)))
 }
 fn respond(stream: &mut impl Write, status: u16, kind: &str, body: &[u8]) -> std::io::Result<()> {
@@ -934,13 +931,31 @@ mod tests {
     #[test]
     fn bundled_assets_and_initial_state() {
         let app = shared();
-        for target in ["/", "/style.css", "/openings.js", "/app.js", "/favicon.svg"] {
+        for target in ["/", "/style.css", "/app.js", "/favicon.svg"] {
             assert!(!request(&app, "GET", target, 200).is_empty());
         }
         let body = request(&app, "GET", "/api/state", 200);
         assert!(body.contains("\"white\":true"));
         assert!(body.contains("\"notation\":[]"));
+        assert!(body.contains("\"opening\":\"Starting position\""));
+        request(&app, "GET", "/openings.js", 404);
         request(&app, "GET", "/missing", 404);
+    }
+    #[test]
+    fn opening_name_tracks_moves_deviations_undo_and_new_game() {
+        let app = shared();
+        new_game(&app, "two", "white");
+        assert!(play(&app, "b2b4").contains("\"opening\":\"Polish (Sokolsky) opening\""));
+        let variation = "\"opening\":\"Polish, Tuebingen variation\"";
+        assert!(play(&app, "g8h6").contains(variation));
+        assert!(play(&app, "a2a3").contains(variation));
+        assert!(request(&app, "POST", "/api/undo", 200).contains(variation));
+        assert!(request(&app, "POST", "/api/undo", 200)
+            .contains("\"opening\":\"Polish (Sokolsky) opening\""));
+        new_game(&app, "two", "white");
+        assert!(
+            request(&app, "GET", "/api/state", 200).contains("\"opening\":\"Starting position\"")
+        );
     }
     #[test]
     fn local_play_validation_and_undo() {

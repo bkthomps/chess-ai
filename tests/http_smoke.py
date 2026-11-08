@@ -54,14 +54,21 @@ try:
     assert '<title>Chess</title>' in html and 'Time control' in html
     state = new()
     assert len(state['legal']) == 20 and state['human'] is None
+    assert state['opening'] == 'Starting position'
     assert state['clocks']['running'] and state['clocks']['base_seconds'] == 60
     old = state
     state = move(state, 'e2e4')
     assert state['notation'] == ['e4'] and not state['white']
     move(old, 'd2d4', 400)
     move(state, 'e7e4', 400)
+    assert state['opening'] == "King's pawn opening"
+    state = move(state, 'c7c5')
+    assert state['opening'] == 'Sicilian defence'
+    state = request('/api/undo', {})
+    assert state['opening'] == "King's pawn opening"
     state = request('/api/undo', {})
     assert not state['notation'] and state['white']
+    assert state['opening'] == 'Starting position'
     for uci in ['f2f3', 'e7e5', 'g2g4', 'd8h4']:
         state = move(state, uci)
     assert state['result'] == 'Black wins by checkmate' and not state['legal']

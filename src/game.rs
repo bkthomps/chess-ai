@@ -82,6 +82,10 @@ impl Game {
     pub fn position(&self) -> &Position {
         self.positions.last().unwrap()
     }
+    /// Deepest listed opening in the played sequence, retained after deviations.
+    pub fn opening_name(&self) -> &'static str {
+        crate::openings::opening_name(&self.notation)
+    }
     pub fn result(&self) -> Option<Outcome> {
         outcome(self.position(), &self.keys, &self.position().legal_moves())
     }
