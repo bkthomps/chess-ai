@@ -57,6 +57,7 @@ for (const m of html.matchAll(/<[^>]*\bid="([^"]+)"[^>]*>/g)) {
 }
 elements['time-control'].value = '5';
 elements['thinking-time'].value = '3';
+elements['two-player-mode'].value = 'same';
 let mode = 'two', color = 'white', server, requests = [], rejectNextMove = false, afterNextMove = null, pollDelay, offline = false;
 let confirmationTimeout = null;
 const initial = [4,2,3,5,6,3,2,4,...Array(8).fill(1),...Array(32).fill(0),...Array(8).fill(-1),-4,-2,-3,-5,-6,-3,-2,-4];
@@ -71,7 +72,7 @@ const context = vm.createContext({
   clearTimeout: id => { if (id === 5000) confirmationTimeout = null; },
   setTimeout: (fn, delay) => { if (delay === 5000) { confirmationTimeout = fn; return 5000; } pollDelay = delay; return 0; }, setInterval: () => 0,
   window: {scrollTo() {}, addEventListener: (name, fn) => { windowListeners[name] = fn; }, AudioContext: AudioContextMock, localStorage: {getItem: key => storedSounds.get(key) ?? null, setItem: (key, value) => storedSounds.set(key, value)}},
-  FormData: class {get(k) {return {mode, color, 'time-control': elements['time-control'].value, minutes: elements['base-minutes'].value, increment: elements['increment-seconds'].value, 'thinking-time': elements['thinking-time'].value, 'thinking-seconds': elements['thinking-seconds'].value}[k];}},
+  FormData: class {get(k) {return {mode, color, 'two-player-mode': elements['two-player-mode'].value, 'time-control': elements['time-control'].value, minutes: elements['base-minutes'].value, increment: elements['increment-seconds'].value, 'thinking-time': elements['thinking-time'].value, 'thinking-seconds': elements['thinking-seconds'].value}[k];}},
   document: {hidden: false, body: documentBody, addEventListener: (name, fn) => { documentListeners[name] = fn; }, elementFromPoint: (x, y) => x < 0 || y < 0 || x >= 640 || y >= 640 ? null : elements.board.children[Math.floor(y / 80) * 8 + Math.floor(x / 80)], getElementById: id => elements[id], createElement: () => new Element(), createDocumentFragment: () => new Element(true), get activeElement() {return focused;}, querySelector: () => ({value: mode}), querySelectorAll: () => [new Element(), new Element()]},
   fetch: async (url, options = {}) => {
     requests.push({url, options}); const u = new URL(url, 'http://localhost');
@@ -85,7 +86,9 @@ const context = vm.createContext({
         server.thinking_seconds = Number(u.searchParams.get('thinking_seconds') || 3);
         server.clocks.enabled = false; server.clocks.running = false; server.clocks.active_white = null;
       }
-      server.thinking = server.human === false;
+      server.ai_vs_ai = u.searchParams.get('two_player_mode') === 'ai';
+      server.thinking = server.ai_vs_ai || server.human === false;
+      if (server.ai_vs_ai) server.pondering = false;
     }
     if (u.pathname === '/api/move') {
       const from = Number(u.searchParams.get('from')), to = Number(u.searchParams.get('to'));
@@ -278,6 +281,28 @@ const moveRequests = () => requests.filter(r => r.url.startsWith('/api/move?'));
   assert(elements['game-clocks'].hidden);
   openMenu(); elements['time-control'].value = '5'; elements['time-control'].listeners.change();
   assert(elements['unlimited-thinking'].hidden); await submit(); assert(!elements['game-clocks'].hidden);
+  // AI spectators cannot move or queue premoves, including between searches.
+  openMenu(); elements['two-player-mode'].value = 'ai';
+  elements['time-control'].value = 'unlimited'; elements['two-player-mode'].listeners.change();
+  assert(!elements['two-player-options'].hidden); assert(!elements['unlimited-thinking'].hidden);
+  await submit();
+  assert.equal(new URL(requests.at(-1).url, 'http://localhost').searchParams.get('two_player_mode'), 'ai');
+  assert.equal(elements['game-mode'].textContent, 'AI vs. AI · Unlimited · 13.75s per move');
+  assert.equal(elements.status.textContent, 'White computer thinking…');
+  vm.runInContext('state.clocks.enabled=true;renderClocks()', context);
+  assert.equal(elements['white-clock-label'].textContent, 'White · Computer');
+  assert.equal(elements['black-clock-label'].textContent, 'Black · Computer');
+  assert(elements.resign.disabled);
+  vm.runInContext('state.thinking=false;render()', context);
+  assert.equal(vm.runInContext('canPlay() || canPremove()', context), false);
+  server.thinking = true;
+  server.analysis = {active:true, pondering:false, depth:2, searching_depth:3, nodes:100, hits:4, millis:10, budget_millis:13750, threads:1, cache_bytes:1024, cache_limit:2048};
+  await vm.runInContext('poll()', context);
+  assert(!elements['engine-stats'].hidden);
+  openMenu(); mode = 'one'; vm.runInContext('changeMode()', context);
+  assert(elements['two-player-options'].hidden); assert(elements['two-player-mode'].disabled);
+  mode = 'two'; elements['two-player-mode'].value = 'same'; vm.runInContext('changeMode()', context);
+  elements['time-control'].value = '5'; elements['time-control'].listeners.change(); await submit();
   // Sound follows accepted game events, including computer moves from polling.
   audioNotes.length = 0;
   clickSquare(12); await tick(); assert.equal(audioNotes.length, 0);

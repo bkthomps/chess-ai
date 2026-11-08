@@ -208,6 +208,8 @@ async function api(path, params) {
 function changeMode() {
   const solo = document.querySelector('input[name="mode"]:checked').value === 'one';
   $('solo-options').hidden = !solo;
+  $('two-player-options').hidden = solo;
+  $('two-player-mode').disabled = solo;
   changeTimeControl();
 }
 document.querySelectorAll('input[name="mode"]').forEach(el => el.addEventListener('change', changeMode));
@@ -216,7 +218,7 @@ function changeTimeControl() {
   $('custom-time').hidden = !custom;
   $('base-minutes').disabled = !custom;
   $('increment-seconds').disabled = !custom;
-  const thinking = $('time-control').value === 'unlimited' && document.querySelector('input[name="mode"]:checked').value === 'one';
+  const thinking = $('time-control').value === 'unlimited' && (document.querySelector('input[name="mode"]:checked').value === 'one' || $('two-player-mode').value === 'ai');
   $('unlimited-thinking').hidden = !thinking;
   $('thinking-time').disabled = !thinking;
   const customThinking = thinking && $('thinking-time').value === 'custom';
@@ -225,6 +227,7 @@ function changeTimeControl() {
 }
 $('time-control').addEventListener('change', changeTimeControl);
 $('thinking-time').addEventListener('change', changeTimeControl);
+$('two-player-mode').addEventListener('change', changeTimeControl);
 changeMode();
 $('setup-form').addEventListener('submit', async e => {
   e.preventDefault(); if (busy) return;
@@ -235,9 +238,10 @@ $('setup-form').addEventListener('submit', async e => {
     const form = new FormData(e.currentTarget);
     const control = form.get('time-control');
     const params = {mode: form.get('mode'), color: form.get('color')};
+    if (params.mode === 'two') params.two_player_mode = form.get('two-player-mode');
     if (control === 'unlimited') {
       params.unlimited = true;
-      if (params.mode === 'one') params.thinking_seconds = Number(form.get('thinking-time') === 'custom' ? form.get('thinking-seconds') : form.get('thinking-time'));
+      if (params.mode === 'one' || params.two_player_mode === 'ai') params.thinking_seconds = Number(form.get('thinking-time') === 'custom' ? form.get('thinking-seconds') : form.get('thinking-time'));
     } else {
       const [base, increment] = control === 'custom'
         ? [Math.round(Number(form.get('minutes')) * 60), Number(form.get('increment'))] : timeControls[control];
@@ -296,15 +300,15 @@ function renderClocks() {
     const text = remaining < 10000 ? (Math.ceil(remaining / 100) / 10).toFixed(1)
       : `${Math.floor(seconds / 60)}:${String(seconds % 60).padStart(2, '0')}`;
     $(side + '-time').textContent = text;
-    $(side + '-clock-label').textContent = `${white ? 'White' : 'Black'}${state.human === null ? '' : state.human === white ? ' · You' : ' · Computer'}`;
+    $(side + '-clock-label').textContent = `${white ? 'White' : 'Black'}${state.ai_vs_ai ? ' · Computer' : state.human === null ? '' : state.human === white ? ' · You' : ' · Computer'}`;
     $('clock-' + side).classList.toggle('active', state.clocks.running && state.clocks.active_white === white);
     $('clock-' + side).classList.toggle('low-time', remaining < 10000);
   }
 }
 setInterval(renderClocks, 100);
-function canPlay() { return state && !busy && !state.thinking && !state.result && clockRemaining(state.white) > 0 && (state.human === null || state.human === state.white); }
+function canPlay() { return state && !state.ai_vs_ai && !busy && !state.thinking && !state.result && clockRemaining(state.white) > 0 && (state.human === null || state.human === state.white); }
 function canPremove() {
-  return state && playing && !busy && !state.result && state.human !== null && state.human !== state.white
+  return state && !state.ai_vs_ai && playing && !busy && !state.result && state.human !== null && state.human !== state.white
     && clockRemaining(state.white) > 0 && clockRemaining(state.human) > 0;
 }
 function canInput() { return canPlay() || canPremove(); }
@@ -606,11 +610,11 @@ function render() {
   const readyPremove = takeReadyPremove();
   renderBoard();
   renderClocks();
-  const signature = [state.white, state.thinking, state.result, state.check, state.human, controlLabel(state.clocks), state.thinking_seconds].join('|');
+  const signature = [state.white, state.thinking, state.result, state.check, state.human, state.ai_vs_ai, controlLabel(state.clocks), state.thinking_seconds].join('|');
   if (signature !== lastStatus) {
     const side = state.white ? 'White' : 'Black';
-    $('status').textContent = state.result || (state.thinking ? 'Computer thinking…' : state.check ? `${side} is in check.` : `${side} to move.`);
-    $('game-mode').textContent = `${state.human === null ? 'Two players' : 'You: ' + (state.human ? 'White' : 'Black')} · ${controlLabel(state.clocks)}${!state.clocks.enabled && state.human !== null ? ' · ' + state.thinking_seconds + 's per move' : ''}`;
+    $('status').textContent = state.result || (state.thinking ? (state.ai_vs_ai ? `${side} computer thinking…` : 'Computer thinking…') : state.check ? `${side} is in check.` : `${side} to move.`);
+    $('game-mode').textContent = `${state.ai_vs_ai ? 'AI vs. AI' : state.human === null ? 'Two players' : 'You: ' + (state.human ? 'White' : 'Black')} · ${controlLabel(state.clocks)}${!state.clocks.enabled && (state.human !== null || state.ai_vs_ai) ? ' · ' + state.thinking_seconds + 's per move' : ''}`;
     lastStatus = signature;
   }
   if (state.notation.length !== lastHistoryLength) {
@@ -626,15 +630,15 @@ function render() {
     $('history-scroll').scrollTop = $('history-scroll').scrollHeight; lastHistoryLength = state.notation.length;
   }
   $('undo').disabled = busy || !state.notation.length || state.human === false && state.notation.length === 1;
-  $('resign').disabled = busy || !!state.result;
+  $('resign').disabled = busy || !!state.result || state.ai_vs_ai;
   if (state.result && confirmingNewGame) resetNewGameConfirmation();
   renderEngine();
   if (readyPremove) void makeMove(readyPremove, true);
 }
 function renderEngine() {
-  const analysis = state.human === null ? null : state.analysis;
-  const stats = state.human === null ? null : analysis || state.stats;
-  $('engine-status').textContent = state.human === null ? 'The computer is off in two-player mode.'
+  const analysis = state.human === null && !state.ai_vs_ai ? null : state.analysis;
+  const stats = state.human === null && !state.ai_vs_ai ? null : analysis || state.stats;
+  $('engine-status').textContent = state.human === null && !state.ai_vs_ai ? 'The computer is off in two-player mode.'
     : state.thinking ? 'Thinking… Live search.'
     : state.pondering ? 'Pondering possible replies.'
     : state.result ? 'Game finished.'
@@ -662,7 +666,7 @@ $('undo').onclick = async () => {
   finally { busy = false; render(); }
 };
 $('resign').onclick = () => {
-  if (busy || state.result) return;
+  if (busy || state.result || state.ai_vs_ai) return;
   clearBoardInput(); renderBoard();
   const white = state.human === null ? state.white : state.human;
   $('resign-detail').textContent = `${white ? 'White' : 'Black'} will resign, and ${white ? 'Black' : 'White'} will win the game.`;

@@ -21,6 +21,7 @@ use std::{
 struct App {
     game: Game,
     human: Option<bool>,
+    ai_vs_ai: bool,
     unlimited: bool,
     fixed_thinking: Duration,
     clock: Clock,
@@ -41,6 +42,7 @@ impl Default for App {
         Self {
             game: Game::default(),
             human: Some(true),
+            ai_vs_ai: false,
             unlimited: false,
             fixed_thinking: Duration::from_secs(3),
             clock: Clock::new(Duration::from_secs(300), Duration::ZERO, Instant::now()),
@@ -216,13 +218,13 @@ fn queue_engine(app: &Shared, a: &mut App) {
     if a.thinking
         || a.pondering
         || a.adjudicated.is_some()
-        || a.human.is_none()
+        || (a.human.is_none() && !a.ai_vs_ai)
         || a.game.result().is_some()
     {
         return;
     }
     let position = a.game.position().clone();
-    let pondering = a.human == Some(position.white);
+    let pondering = !a.ai_vs_ai && a.human == Some(position.white);
     let budget = if pondering {
         None
     } else if a.unlimited {
@@ -327,7 +329,7 @@ fn queue_engine(app: &Shared, a: &mut App) {
                     }
                     a.search_budget = job.budget;
                     a.stats = Some(result);
-                    // Queue pondering before exposing the human's new turn.
+                    // Start the next turn (or solo pondering) on the same worker.
                     queue_engine(&shared, &mut a);
                 }
             }
@@ -462,6 +464,13 @@ fn serve_connection(
         ("POST", "/api/new") => (|| {
             let mode = params.get("mode").copied().unwrap_or("");
             let color = params.get("color").copied().unwrap_or("");
+            let two_player_mode = params.get("two_player_mode").copied().unwrap_or("same");
+            if !["same", "ai"].contains(&two_player_mode)
+                || mode != "two" && two_player_mode != "same"
+            {
+                return Err("Choose a valid two-player mode.".into());
+            }
+            let ai_vs_ai = mode == "two" && two_player_mode == "ai";
             let unlimited = match params.get("unlimited").copied() {
                 Some("true") => true,
                 Some("false") | None => false,
@@ -475,7 +484,7 @@ fn serve_connection(
                     number(&params, "increment_seconds")?,
                 )
             };
-            let fixed_thinking = if unlimited && mode == "one" {
+            let fixed_thinking = if unlimited && (mode == "one" || ai_vs_ai) {
                 let seconds = params
                     .get("thinking_seconds")
                     .and_then(|s| s.parse::<f64>().ok())
@@ -503,12 +512,13 @@ fn serve_connection(
                 a.game = Game::default();
                 a.unlimited = unlimited;
                 a.fixed_thinking = fixed_thinking;
+                a.ai_vs_ai = ai_vs_ai;
                 a.human = if mode == "two" {
                     None
                 } else {
                     Some(color == "white")
                 };
-                if a.human.is_none() {
+                if a.human.is_none() && !a.ai_vs_ai {
                     a.release_cache();
                 }
                 let now = Instant::now();
@@ -548,7 +558,8 @@ fn serve_connection(
                 if a.revision != revision {
                     return Err("The board changed. Try your move again.".into());
                 }
-                if a.thinking || a.human.is_some_and(|c| c != a.game.position().white) {
+                if a.ai_vs_ai || a.thinking || a.human.is_some_and(|c| c != a.game.position().white)
+                {
                     return Err("The computer is thinking.".into());
                 }
                 a.apply_move(
@@ -595,6 +606,14 @@ fn serve_connection(
         ("POST", "/api/resign") => {
             let mut a = app.lock().unwrap();
             a.tick(Instant::now());
+            if a.ai_vs_ai {
+                return respond(
+                    &mut stream,
+                    400,
+                    "application/json",
+                    b"{\"error\":\"Resignation is unavailable in AI vs. AI.\"}",
+                );
+            }
             if a.adjudicated.is_none() && a.game.result().is_none() {
                 let loser = a.human.unwrap_or(a.game.position().white);
                 a.adjudicated = Some(format!(
@@ -705,8 +724,8 @@ fn state_json(a: &mut App) -> String {
         format!("{{\"revision\":{},\"pondering\":{},\"active\":{},\"depth\":{},\"searching_depth\":{},\"evaluation\":{evaluation},\"nodes\":{},\"hits\":{},\"millis\":{},\"threads\":{},\"cache_bytes\":{},\"cache_limit\":{},\"budget_millis\":{budget}}}",
             analysis.revision, analysis.pondering, active, s.depth, s.searching_depth, s.nodes, s.hits, s.elapsed.as_millis(), s.threads, s.cache_bytes, s.cache_limit)
     });
-    format!("{{\"board\":[{board}],\"white\":{},\"human\":{},\"clocks\":{clocks},\"thinking_seconds\":{},\"revision\":{},\"thinking\":{},\"pondering\":{},\"check\":{},\"result\":{},\"legal\":[{moves}],\"notation\":[{notation}],\"last\":{last},\"stats\":{stats},\"analysis\":{analysis}}}",
-        p.white, a.human.map_or("null", |c| if c { "true" } else { "false" }), a.fixed_thinking.as_secs_f64(), a.revision, a.thinking, a.pondering, p.in_check(p.white), result.map_or("null".into(), |r| quote(&r)))
+    format!("{{\"board\":[{board}],\"white\":{},\"human\":{},\"ai_vs_ai\":{},\"clocks\":{clocks},\"thinking_seconds\":{},\"revision\":{},\"thinking\":{},\"pondering\":{},\"check\":{},\"result\":{},\"legal\":[{moves}],\"notation\":[{notation}],\"last\":{last},\"stats\":{stats},\"analysis\":{analysis}}}",
+        p.white, a.human.map_or("null", |c| if c { "true" } else { "false" }), a.ai_vs_ai, a.fixed_thinking.as_secs_f64(), a.revision, a.thinking, a.pondering, p.in_check(p.white), result.map_or("null".into(), |r| quote(&r)))
 }
 fn respond(stream: &mut impl Write, status: u16, kind: &str, body: &[u8]) -> std::io::Result<()> {
     let reason = match status {
@@ -804,6 +823,101 @@ mod tests {
             thread::sleep(Duration::from_millis(5));
         }
     }
+    #[test]
+    fn ai_vs_ai_alternates_without_pondering_and_cancels_on_replacement() {
+        let app = shared();
+        let body = request(
+            &app,
+            "POST",
+            "/api/new?mode=two&two_player_mode=ai&color=white&unlimited=true&thinking_seconds=0.05",
+            200,
+        );
+        assert!(body.contains("\"ai_vs_ai\":true"));
+        let deadline = Instant::now() + Duration::from_secs(5);
+        loop {
+            let a = app.lock().unwrap();
+            assert!(!a.pondering);
+            assert!(a.thinking);
+            let analysis = a.analysis.as_ref().unwrap();
+            assert!(!analysis.pondering);
+            assert_eq!(analysis.budget, Some(Duration::from_millis(50)));
+            assert_eq!(analysis.revision, a.revision);
+            assert_eq!(a.game.position().white, a.game.moves.len() % 2 == 0);
+            if a.game.moves.len() >= 2 {
+                break;
+            }
+            drop(a);
+            assert!(Instant::now() < deadline, "AIs did not alternate turns");
+            thread::sleep(Duration::from_millis(5));
+        }
+        {
+            let a = app.lock().unwrap();
+            let target = format!(
+                "/api/move?from=12&to=28&promotion=0&revision={}",
+                a.revision
+            );
+            drop(a);
+            request(&app, "POST", &target, 400);
+        }
+        request(&app, "POST", "/api/resign", 400);
+        // Hold the next search long enough to inspect undo before another move.
+        let moves_before_undo = {
+            let mut a = app.lock().unwrap();
+            a.fixed_thinking = Duration::from_secs(3);
+            a.cancel_search();
+            queue_engine(&app, &mut a);
+            a.game.moves.len()
+        };
+        request(&app, "POST", "/api/undo", 200);
+        let old_cancel = {
+            let a = app.lock().unwrap();
+            assert!(a.thinking && !a.pondering);
+            assert_eq!(a.game.moves.len(), moves_before_undo - 1);
+            assert_eq!(a.game.position().white, a.game.moves.len() % 2 == 0);
+            assert_eq!(a.clock_history.len(), a.game.moves.len() + 1);
+            a.cancel.clone()
+        };
+        new_game(&app, "two", "white");
+        assert!(old_cancel.load(Ordering::Relaxed));
+        thread::sleep(Duration::from_millis(80));
+        let a = app.lock().unwrap();
+        assert!(!a.ai_vs_ai && !a.thinking && !a.pondering);
+        assert!(a.game.moves.is_empty());
+    }
+
+    #[test]
+    fn ai_vs_ai_stops_at_terminal_positions_and_timeout() {
+        for fen in [
+            "7k/6Q1/6K1/8/8/8/8/8 b - - 0 1",
+            "7k/5Q2/6K1/8/8/8/8/8 b - - 0 1",
+            "7k/8/6K1/8/8/8/8/8 w - - 0 1",
+            "7k/8/6K1/8/8/8/8/R7 w - - 100 1",
+        ] {
+            let app = shared();
+            {
+                let mut a = app.lock().unwrap();
+                a.ai_vs_ai = true;
+                a.human = None;
+                a.game = Game::new(Position::from_fen(fen).unwrap());
+            }
+            start_engine(&app);
+            let a = app.lock().unwrap();
+            assert!(a.game.result().is_some());
+            assert!(!a.thinking && !a.pondering);
+        }
+        let app = shared();
+        new_game(&app, "two", "white");
+        {
+            let mut a = app.lock().unwrap();
+            a.ai_vs_ai = true;
+            a.clock.remaining = [Duration::ZERO; 2];
+        }
+        start_engine(&app);
+        let a = app.lock().unwrap();
+        assert!(a.adjudicated.is_some());
+        assert!(!a.thinking && !a.pondering);
+    }
+
     #[test]
     fn bundled_assets_and_initial_state() {
         let app = shared();

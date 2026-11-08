@@ -70,6 +70,23 @@ try:
     assert state['result'] is None
     state = request('/api/resign', {})
     assert state['result'] == 'White wins by resignation'
+    state = request('/api/new', dict(mode='two', two_player_mode='ai', color='white',
+                                    unlimited='true', thinking_seconds=.05))
+    assert state['ai_vs_ai'] and state['thinking'] and not state['pondering']
+    move(state, 'e2e4', 400)
+    request('/api/resign', {}, 400)
+    deadline = time.monotonic() + 5
+    while len(state['notation']) < 4 and time.monotonic() < deadline:
+        state = request('/api/state')
+        assert state['thinking'] and not state['pondering']
+        assert state['white'] == (len(state['notation']) % 2 == 0)
+        assert not state['analysis']['pondering'] and state['analysis']['budget_millis'] == 50
+        time.sleep(.01)
+    assert len(state['notation']) >= 4
+    state = new()
+    time.sleep(.1)
+    state = request('/api/state')
+    assert not state['ai_vs_ai'] and not state['thinking'] and not state['notation']
     state = new('one', 'white')
     assert state['pondering'] and not state['thinking']
     pondered = next_analysis(state)
