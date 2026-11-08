@@ -813,7 +813,7 @@ function gamePgn(game) {
   const player = white => game.ai_vs_ai ? 'Computer' : game.human === null ? 'Player' : game.human === white ? 'Player' : 'Computer';
   const thinking = !game.clocks.enabled && (game.human !== null || game.ai_vs_ai)
     ? `, ${game.thinking_seconds} sec computer thinking time per move` : '';
-  const tags = [`[Event "${controlLabel(game.clocks)}${thinking}"]`, '[Site "github.com/bkthomps/chess-ai"]'];
+  const tags = [`[Event "${controlLabel(game.clocks)}${thinking}"]`, '[Site "Local"]'];
   if (game.started_at != null) {
     const date = new Date(game.started_at * 1000);
     if (!Number.isNaN(date.getTime())) tags.push(`[Date "${date.getFullYear()}.${String(date.getMonth() + 1).padStart(2, '0')}.${String(date.getDate()).padStart(2, '0')}"]`);

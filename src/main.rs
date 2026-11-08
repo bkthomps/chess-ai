@@ -945,13 +945,12 @@ mod tests {
     fn opening_name_tracks_moves_deviations_undo_and_new_game() {
         let app = shared();
         new_game(&app, "two", "white");
-        assert!(play(&app, "b2b4").contains("\"opening\":\"Polish (Sokolsky) opening\""));
-        let variation = "\"opening\":\"Polish, Tuebingen variation\"";
+        assert!(play(&app, "b2b4").contains("\"opening\":\"Polish Opening\""));
+        let variation = "\"opening\":\"Polish Opening: Karniewski Variation\"";
         assert!(play(&app, "g8h6").contains(variation));
         assert!(play(&app, "a2a3").contains(variation));
         assert!(request(&app, "POST", "/api/undo", 200).contains(variation));
-        assert!(request(&app, "POST", "/api/undo", 200)
-            .contains("\"opening\":\"Polish (Sokolsky) opening\""));
+        assert!(request(&app, "POST", "/api/undo", 200).contains("\"opening\":\"Polish Opening\""));
         new_game(&app, "two", "white");
         assert!(
             request(&app, "GET", "/api/state", 200).contains("\"opening\":\"Starting position\"")

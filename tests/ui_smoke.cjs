@@ -143,7 +143,7 @@ const moveRequests = () => requests.filter(r => r.url.startsWith('/api/move?'));
 (async () => {
   await tick(); assert(!elements.menu.hidden); assert(elements.game.hidden);
   await elements['copy-pgn'].onclick(); assert.match(copiedFen, /\[Result "\*"\]\n\n\*\n$/);
-  assert.equal(copiedFen, '[Event "5 min"]\n[Site "github.com/bkthomps/chess-ai"]\n[Date "2026.11.08"]\n[White "Player"]\n[Black "Player"]\n[Result "*"]\n\n*\n');
+  assert.equal(copiedFen, '[Event "5 min"]\n[Site "Local"]\n[Date "2026.11.08"]\n[White "Player"]\n[Black "Player"]\n[Result "*"]\n\n*\n');
   assert(elements['copy-pgn'].classes.has('copied'));
   assert.match(vm.runInContext("gamePgn({...state,human:false,ai_vs_ai:false})", context), /\[White "Computer"\]\n\[Black "Player"\]/);
   assert.match(vm.runInContext("gamePgn({...state,human:null,ai_vs_ai:true,thinking_seconds:2.5,clocks:{enabled:false}})", context), /\[Event "Unlimited, 2\.5 sec computer thinking time per move"\][\s\S]*\[White "Computer"\]\n\[Black "Computer"\]/);
@@ -188,9 +188,9 @@ const moveRequests = () => requests.filter(r => r.url.startsWith('/api/move?'));
     assert.equal(Number(params.get('base_seconds')), base); assert.equal(Number(params.get('increment_seconds')), increment);
     assert.equal(elements.board.children.length, 64);
     assert.equal(elements['moves-title'].textContent, 'Starting position');
-    server.opening = 'Sicilian defence'; server.revision++;
+    server.opening = 'Sicilian Defense'; server.revision++;
     await vm.runInContext('poll()', context);
-    assert.equal(elements['moves-title'].textContent, 'Sicilian defence');
+    assert.equal(elements['moves-title'].textContent, 'Sicilian Defense');
     openMenu();
   }
   elements['time-control'].value = '2+1'; await submit();

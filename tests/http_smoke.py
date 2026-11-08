@@ -61,11 +61,11 @@ try:
     assert state['notation'] == ['e4'] and not state['white']
     move(old, 'd2d4', 400)
     move(state, 'e7e4', 400)
-    assert state['opening'] == "King's pawn opening"
+    assert state['opening'] == "King's Pawn Game"
     state = move(state, 'c7c5')
-    assert state['opening'] == 'Sicilian defence'
+    assert state['opening'] == 'Sicilian Defense'
     state = request('/api/undo', {})
-    assert state['opening'] == "King's pawn opening"
+    assert state['opening'] == "King's Pawn Game"
     state = request('/api/undo', {})
     assert not state['notation'] and state['white']
     assert state['opening'] == 'Starting position'
