@@ -41,6 +41,7 @@ function squareName(s) { return String.fromCharCode(97 + s % 8) + (Math.floor(s 
 let state = null, selected = null, flipped = false, playing = false, busy = false;
 let lastHistoryLength = -1, lastStatus = '', polling = false;
 let focusSquare = 12;
+let drag = null, suppressDragClick = false;
 let soundEnabled = true, audioContext = null, soundEpoch = 0, soundSnapshot = null;
 const voices = new Set();
 try { soundEnabled = window.localStorage.getItem('chess.sounds') !== 'off'; } catch { /* Storage is optional. */ }
@@ -185,6 +186,7 @@ function enterGame({fresh = false} = {}) {
   window.scrollTo({top:0, behavior:'instant'});
 }
 $('menu-button').onclick = () => {
+  cancelDrag();
   playing = false; selected = null; $('menu').hidden = false; $('game').hidden = true;
   $('resume').hidden = false; document.body.classList.remove('in-game'); $('start').focus({preventScroll:true});
   window.scrollTo({top:0, behavior:'instant'});
@@ -217,7 +219,8 @@ function renderClocks() {
 }
 setInterval(renderClocks, 100);
 function canPlay() { return state && !busy && !state.thinking && !state.result && clockRemaining(state.white) > 0 && (state.human === null || state.human === state.white); }
-function renderBoard() {
+function renderBoard(keepDrag = false) {
+  if (!keepDrag) cancelDrag();
   const focusWasBoard = $('board').contains(document.activeElement);
   if (focusWasBoard) focusSquare = Number(document.activeElement.dataset.square);
   const targets = new Set(selected === null ? [] : state.legal.filter(m => m[0] === selected).map(m => m[1]));
@@ -231,6 +234,7 @@ function renderBoard() {
     if (selected === s) el.classList.add('selected');
     if (targets.has(s)) el.classList.add('target');
     if (pc) el.classList.add('occupied');
+    if (pc && (pc > 0) === state.white && canPlay()) el.classList.add('movable');
     if (state.check && pc === (state.white ? 6 : -6)) el.classList.add('check');
     const description = pc ? `${pc > 0 ? 'White' : 'Black'} ${names[Math.abs(pc)]}` : 'empty';
     el.setAttribute('aria-label', `${squareName(s)}, ${description}${targets.has(s) ? ', legal destination' : ''}`);
@@ -243,17 +247,90 @@ function renderBoard() {
   $('board').replaceChildren(fragment);
   if (focusWasBoard) $('board').querySelector(`[data-square="${focusSquare}"]`)?.focus({preventScroll:true});
 }
+// Wait for deliberate movement so taps and small mouse movements remain clicks.
+// Capture on the board only after dragging starts: square buttons are replaced
+// when hints render, and capturing a simple press would retarget its click.
+function cancelDrag() {
+  if (!drag) return;
+  const previous = drag; drag = null;
+  if (previous.active) suppressDragClick = true;
+  previous.ghost?.remove(); previous.over?.classList.remove('drag-over');
+  $('board').querySelector(`[data-square="${previous.from}"]`)?.classList.remove('drag-source');
+  $('board').classList.remove('dragging');
+  if ($('board').hasPointerCapture(previous.id)) $('board').releasePointerCapture(previous.id);
+}
+function squareAtPointer(e) {
+  const square = document.elementFromPoint(e.clientX, e.clientY)?.closest('[data-square]');
+  return square && $('board').contains(square) ? square : null;
+}
+function tryMove(from, to) {
+  const matching = state.legal.filter(m => m[0] === from && m[1] === to);
+  if (!matching.length) return false;
+  if (matching.some(m => m[2])) choosePromotion(matching);
+  else void makeMove(matching[0]);
+  return true;
+}
+$('board').addEventListener('pointerdown', e => {
+  if (!e.isPrimary || e.button !== 0 || drag) return;
+  suppressDragClick = false;
+  const button = e.target.closest('[data-square]');
+  if (!button || !canPlay()) return;
+  const from = Number(button.dataset.square), pc = state.board[from];
+  if (!pc || (pc > 0) !== state.white) return;
+  drag = {id:e.pointerId, from, pc, revision:state.revision, x:e.clientX, y:e.clientY, active:false};
+});
+document.addEventListener('pointermove', e => {
+  if (!drag || e.pointerId !== drag.id) return;
+  if (!canPlay() || state.revision !== drag.revision) { cancelDrag(); return; }
+  if (!drag.active) {
+    if (Math.hypot(e.clientX - drag.x, e.clientY - drag.y) < 6) return;
+    drag.active = true; selected = drag.from; focusSquare = drag.from;
+    // Transfer touch's implicit capture before replacing its original square.
+    $('board').setPointerCapture(drag.id);
+    renderBoard(true);
+    const source = $('board').querySelector(`[data-square="${drag.from}"]`);
+    const size = source.getBoundingClientRect().width;
+    source.classList.add('drag-source'); source.focus({preventScroll:true});
+    drag.ghost = document.createElement('div'); drag.ghost.className = 'drag-piece';
+    drag.ghost.setAttribute('aria-hidden', 'true'); drag.ghost.innerHTML = piece(drag.pc);
+    drag.ghost.style.width = `${size}px`; drag.ghost.style.height = `${size}px`;
+    document.body.append(drag.ghost); $('board').classList.add('dragging');
+    void unlockAudio();
+  }
+  e.preventDefault();
+  drag.ghost.style.left = `${e.clientX}px`; drag.ghost.style.top = `${e.clientY}px`;
+  drag.over?.classList.remove('drag-over');
+  drag.over = squareAtPointer(e);
+  if (drag.over?.classList.contains('target')) drag.over.classList.add('drag-over');
+}, {passive:false});
+document.addEventListener('pointerup', e => {
+  if (!drag || e.pointerId !== drag.id) return;
+  const previous = drag, target = previous.active ? squareAtPointer(e) : null;
+  cancelDrag();
+  if (!previous.active) return;
+  e.preventDefault();
+  if (target && canPlay() && state.revision === previous.revision) {
+    const to = Number(target.dataset.square);
+    focusSquare = to;
+    if (tryMove(previous.from, to)) return;
+  }
+  renderBoard();
+});
+document.addEventListener('pointercancel', e => { if (drag?.id === e.pointerId) cancelDrag(); });
+$('board').addEventListener('lostpointercapture', e => {
+  if (e.target === $('board') && drag?.id === e.pointerId) cancelDrag();
+});
+$('board').addEventListener('dragstart', e => e.preventDefault());
+window.addEventListener('blur', cancelDrag);
+document.addEventListener('visibilitychange', () => { if (document.hidden) cancelDrag(); });
 $('board').addEventListener('click', e => {
+  // A completed or cancelled drag may still produce a compatibility click.
+  // Keyboard activation (detail 0) must always keep working.
+  if (suppressDragClick && e.detail !== 0) { suppressDragClick = false; e.preventDefault(); return; }
   const button = e.target.closest('[data-square]'); if (!button || !canPlay()) return;
   void unlockAudio();
   const s = Number(button.dataset.square); focusSquare = s;
-  if (selected !== null) {
-    const matching = state.legal.filter(m => m[0] === selected && m[1] === s);
-    if (matching.length) {
-      if (matching.some(m => m[2])) { choosePromotion(matching); return; }
-      void makeMove(matching[0]); return;
-    }
-  }
+  if (selected !== null && tryMove(selected, s)) return;
   selected = selected === s ? null : (state.board[s] && (state.board[s] > 0) === state.white ? s : null);
   renderBoard();
 });
@@ -270,6 +347,7 @@ $('board').addEventListener('keydown', e => {
 });
 async function makeMove(move) {
   if (busy) return;
+  cancelDrag();
   void unlockAudio();
   busy = true; selected = null; $('error').hidden = true;
   try { state = await api('move', {from:move[0], to:move[1], promotion:move[2], revision:state.revision}); }
@@ -338,6 +416,7 @@ function renderEngine() {
 $('flip').onclick = () => { flipped = !flipped; render(); };
 $('undo').onclick = async () => {
   if (busy) return; busy = true; $('undo').disabled = true; selected = null;
+  cancelDrag();
   if ($('promotion-dialog').open) $('promotion-dialog').close();
   try { state = await api('undo', {}); resetSoundSnapshot(state); }
   catch (error) { showError(error); }
@@ -345,6 +424,7 @@ $('undo').onclick = async () => {
 };
 $('resign').onclick = () => {
   if (busy || state.result) return;
+  cancelDrag();
   const white = state.human === null ? state.white : state.human;
   $('resign-detail').textContent = `${white ? 'White' : 'Black'} will resign, and ${white ? 'Black' : 'White'} will win the game.`;
   $('resign-dialog').showModal();

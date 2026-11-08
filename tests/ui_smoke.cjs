@@ -31,17 +31,26 @@ class Element {
   set innerHTML(v) { this._html = v; this.children = []; }
   get innerHTML() { return this._html; }
   append(e) { if (e.fragment) this.children.push(...e.children); else this.children.push(e); }
+  remove() { documentBody.children = documentBody.children.filter(e => e !== this); }
   replaceChildren(...args) { this.children = []; args.forEach(e => this.append(e)); }
   setAttribute(k, v) { this.attrs[k] = String(v); }
   focus() { focused = this; }
   contains(e) { return this.children.includes(e); }
   querySelector(s) { const m = s.match(/data-square="(\d+)"/); return m ? this.children.find(e => String(e.dataset.square) === m[1]) : null; }
   addEventListener(name, fn) { this.listeners[name] = fn; }
+  getBoundingClientRect() {
+    const index = elements.board.children.indexOf(this);
+    return {left: index % 8 * 80, top: Math.floor(index / 8) * 80, width: 80, height: 80};
+  }
+  setPointerCapture(id) { this.capturedPointer = id; }
+  hasPointerCapture(id) { return this.capturedPointer === id; }
+  releasePointerCapture() { this.capturedPointer = null; }
   closest() { return this; }
   showModal() { this.open = true; }
   close() { this.open = false; this.listeners.close?.(); }
 }
 const elements = {};
+const documentBody = new Element(), documentListeners = {}, windowListeners = {};
 for (const m of html.matchAll(/<[^>]*\bid="([^"]+)"[^>]*>/g)) {
   const e = elements[m[1]] = new Element(); e.hidden = /\bhidden\b/.test(m[0]);
   e.disabled = /\bdisabled\b/.test(m[0]); e.value = m[0].match(/\bvalue="([^"]+)"/)?.[1] || '';
@@ -58,9 +67,9 @@ const fresh = (human = null, base = 300, increment = 0) => ({
 server = fresh(); server.clocks.running = false;
 const context = vm.createContext({
   console, URLSearchParams, Set, AbortSignal, performance, clearTimeout, setTimeout: (fn, delay) => { pollDelay = delay; return 0; }, setInterval: () => 0,
-  window: {scrollTo() {}, confirm: () => true, AudioContext: AudioContextMock, localStorage: {getItem: key => storedSounds.get(key) ?? null, setItem: (key, value) => storedSounds.set(key, value)}},
+  window: {scrollTo() {}, addEventListener: (name, fn) => { windowListeners[name] = fn; }, confirm: () => true, AudioContext: AudioContextMock, localStorage: {getItem: key => storedSounds.get(key) ?? null, setItem: (key, value) => storedSounds.set(key, value)}},
   FormData: class {get(k) {return {mode, color, 'time-control': elements['time-control'].value, minutes: elements['base-minutes'].value, increment: elements['increment-seconds'].value, 'thinking-time': elements['thinking-time'].value, 'thinking-seconds': elements['thinking-seconds'].value}[k];}},
-  document: {hidden: false, body: new Element(), getElementById: id => elements[id], createElement: () => new Element(), createDocumentFragment: () => new Element(true), get activeElement() {return focused;}, querySelector: () => ({value: mode}), querySelectorAll: () => [new Element(), new Element()]},
+  document: {hidden: false, body: documentBody, addEventListener: (name, fn) => { documentListeners[name] = fn; }, elementFromPoint: (x, y) => x < 0 || y < 0 || x >= 640 || y >= 640 ? null : elements.board.children[Math.floor(y / 80) * 8 + Math.floor(x / 80)], getElementById: id => elements[id], createElement: () => new Element(), createDocumentFragment: () => new Element(true), get activeElement() {return focused;}, querySelector: () => ({value: mode}), querySelectorAll: () => [new Element(), new Element()]},
   fetch: async (url, options = {}) => {
     requests.push({url, options}); const u = new URL(url, 'http://localhost');
     if (u.pathname === '/api/move' && rejectNextMove) {
@@ -91,7 +100,22 @@ const context = vm.createContext({
 vm.runInContext(fs.readFileSync(path.join(__dirname, '../web/app.js'), 'utf8'), context);
 const tick = () => new Promise(r => setImmediate(r));
 const submit = () => elements['setup-form'].listeners.submit({preventDefault() {}, currentTarget: elements['setup-form']});
-const clickSquare = s => elements.board.listeners.click({target: elements.board.children.find(e => e.dataset.square === s)});
+const square = s => elements.board.children.find(e => e.dataset.square === s);
+const clickSquare = (s, detail = 1) => elements.board.listeners.click({target: square(s), detail, preventDefault() {}});
+const pointer = (s, overrides = {}) => {
+  const target = square(s), rect = target?.getBoundingClientRect();
+  return {target, pointerId: 1, pointerType: 'mouse', isPrimary: true, button: 0,
+    clientX: rect ? rect.left + 40 : -20, clientY: rect ? rect.top + 40 : -20, preventDefault() {}, ...overrides};
+};
+const startDrag = (from, to, overrides = {}) => {
+  elements.board.listeners.pointerdown(pointer(from, overrides));
+  documentListeners.pointermove(pointer(to, overrides));
+};
+const drop = (to, overrides = {}) => {
+  documentListeners.pointerup(pointer(to, overrides));
+  if (to !== null) clickSquare(to); // Browser compatibility click must not move twice or change selection.
+};
+const moveRequests = () => requests.filter(r => r.url.startsWith('/api/move?'));
 (async () => {
   await tick(); assert(!elements.menu.hidden); assert(elements.game.hidden);
   vm.runInContext('changeMode()', context); assert(elements['solo-options'].hidden);
@@ -238,5 +262,69 @@ const clickSquare = s => elements.board.listeners.click({target: elements.board.
   vm.runInContext('cancelSounds();audioContext=null;window.AudioContext=undefined', context);
   elements['menu-button'].onclick(); await submit(); clickSquare(12); clickSquare(28); await tick();
   assert.equal(elements.status.textContent, 'Black to move.'); assert.equal(audioNotes.length, 0);
-  console.log('UI harness passed: timed and unlimited controls, clocks, moves, promotion, engine diagnostics, move/check/end sounds, mute, duplicate suppression, and audio fallback.');
+  // Pointer gestures share click-to-move's legality and promotion flow.
+  mode = 'two'; elements['time-control'].value = 'unlimited';
+  const resetBoard = async () => { elements['menu-button'].onclick(); await submit(); };
+  await resetBoard();
+  const movesBeforeDrag = moveRequests().length;
+  startDrag(12, 28);
+  assert(square(12).classes.has('drag-source')); assert(square(28).classes.has('drag-over'));
+  assert(elements.board.hasPointerCapture(1)); assert.equal(documentBody.children.length, 1);
+  drop(28); await tick();
+  assert.equal(moveRequests().length, movesBeforeDrag + 1);
+  assert(moveRequests().at(-1).url.includes('from=12&to=28&promotion=0'));
+  assert.equal(documentBody.children.length, 0); assert(!elements.board.hasPointerCapture(1));
+  // Short presses, including minor pointer movement, still select and click to move.
+  await resetBoard();
+  elements.board.listeners.pointerdown(pointer(12));
+  documentListeners.pointermove(pointer(12, {clientX:pointer(12).clientX + 2}));
+  documentListeners.pointerup(pointer(12)); clickSquare(12);
+  assert(square(12).classes.has('selected')); clickSquare(28); await tick();
+  assert.equal(elements.status.textContent, 'Black to move.');
+  // Illegal and outside drops retain the piece and legal hints. Keyboard clicks remain usable.
+  await resetBoard();
+  const beforeInvalid = moveRequests().length;
+  startDrag(12, 36); drop(36); await tick();
+  assert.equal(moveRequests().length, beforeInvalid); assert(square(12).classes.has('selected'));
+  startDrag(12, null); drop(null); await tick();
+  assert.equal(moveRequests().length, beforeInvalid); assert.equal(documentBody.children.length, 0);
+  clickSquare(28, 0); await tick(); assert.equal(moveRequests().length, beforeInvalid + 1);
+  // Board orientation does not change square identity; touch can capture a piece.
+  await resetBoard(); elements.flip.onclick();
+  vm.runInContext('state.board[28]=-1', context); vm.runInContext('renderBoard()', context);
+  startDrag(12, 28, {pointerType:'touch'}); drop(28, {pointerType:'touch'}); await tick();
+  assert(moveRequests().at(-1).url.includes('from=12&to=28&promotion=0'));
+  await resetBoard();
+  vm.runInContext('state={...state,board:Array(64).fill(0),legal:[[48,56,5],[48,56,4],[48,56,3],[48,56,2]]};state.board[48]=1;renderBoard()', context);
+  const beforePromotion = moveRequests().length;
+  startDrag(48, 56); drop(56);
+  assert(elements['promotion-dialog'].open); assert.equal(moveRequests().length, beforePromotion);
+  elements['promotion-choices'].children[2].onclick(); await tick();
+  assert(moveRequests().at(-1).url.includes('from=48&to=56&promotion=3'));
+  // Cancellation and board changes remove the floating piece without sending a move.
+  await resetBoard();
+  const beforeCancel = moveRequests().length;
+  for (const cancel of [
+    () => documentListeners.pointercancel(pointer(28)),
+    () => elements.board.listeners.lostpointercapture(pointer(28, {target:elements.board})),
+    () => windowListeners.blur(),
+    () => elements.board.listeners.keydown({key:'Escape'}),
+    () => elements.flip.onclick(),
+    () => vm.runInContext('state.revision++;selected=null;render()', context),
+    () => elements['menu-button'].onclick()
+  ]) {
+    startDrag(12, 28); assert.equal(documentBody.children.length, 1);
+    cancel(); drop(28); await tick();
+    assert.equal(documentBody.children.length, 0); assert.equal(moveRequests().length, beforeCancel);
+    if (elements.game.hidden) await elements.resume.onclick();
+  }
+  // Opponent pieces, non-primary pointers, and unavailable turns never start a drag.
+  startDrag(52, 36); assert.equal(documentBody.children.length, 0); drop(36);
+  startDrag(12, 28, {isPrimary:false}); assert.equal(documentBody.children.length, 0); drop(28);
+  for (const blocked of ['busy=true', 'state.thinking=true', "state.result='Draw'", 'state.human=false', 'state.clocks.enabled=true;state.clocks.white_ms=0']) {
+    await resetBoard(); vm.runInContext(blocked, context);
+    startDrag(12, 28); drop(28); await tick(); assert.equal(documentBody.children.length, 0);
+    assert.equal(moveRequests().length, beforeCancel); vm.runInContext('busy=false', context);
+  }
+  console.log('UI harness passed: controls, clocks, clicking, mouse/touch dragging, legality, flipped board, promotion, drag cancellation, turn guards, engine diagnostics, and sounds.');
 })().catch(e => {console.error(e); process.exitCode = 1;});
