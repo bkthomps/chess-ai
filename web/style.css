@@ -109,6 +109,11 @@ legend { margin-bottom: 10px; }
 .square.check:before { content: ""; position: absolute; inset: 0; background: #b33a3a30; border: 2px solid #a74444; }
 .square.target:after { content: ""; position: absolute; width: 20%; height: 20%; background: #234c4559; border-radius: 50%; z-index: 3; pointer-events: none; }
 .square.target.occupied:after { width: 87%; height: 87%; background: none; border: 4px solid #234c4559; }
+.square.premoved:before { content: ""; position: absolute; inset: 0; background: #7664b64d; border: 2px solid #74609b; }
+.square.preview-piece .piece { filter: drop-shadow(0 1px 2px #74609b88); }
+.square.premove-target:after { background: #74609b66; }
+.square.premove-target.occupied:after { background: none; border-color: #74609b88; }
+.square.premove-target.drag-over { box-shadow: inset 0 0 0 3px #74609b; }
 .square:hover { box-shadow: inset 0 0 0 2px #234c4533; }
 .square:focus-visible { outline: 2px solid var(--green); outline-offset: -3px; z-index: 4; }
 .coord { position: absolute; font-size: 9px; line-height: 1; z-index: 4; pointer-events: none; color: #49613e; }
@@ -116,6 +121,11 @@ legend { margin-bottom: 10px; }
 .coord.rank { top: 4px; left: 4px; }
 .coord.file { bottom: 4px; right: 4px; }
 .game-tools { display: flex; flex-wrap: wrap; gap: 8px; margin: 16px 0 0; }
+.premove-controls { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: 8px; color: #685181; font-size: 12px; }
+.premove-controls p { margin: 0; }
+.premove-controls button { flex-shrink: 0; color: inherit; font-size: inherit; }
+.premove-queue { display: flex; flex-wrap: wrap; gap: 4px 18px; margin: 8px 0 0; padding: 0; list-style-position: inside; color: #685181; font-size: 12px; }
+.premove-queue li { padding: 3px 6px; background: #7664b614; border-radius: 3px; }
 .game-tools button { padding: 7px 12px; }
 #sound-toggle[aria-pressed="true"] { background: var(--soft); border-color: #8caa85; }
 #sound-toggle[aria-pressed="false"] { color: var(--muted); }

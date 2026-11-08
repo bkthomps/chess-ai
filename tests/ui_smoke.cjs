@@ -57,7 +57,7 @@ for (const m of html.matchAll(/<[^>]*\bid="([^"]+)"[^>]*>/g)) {
 }
 elements['time-control'].value = '5';
 elements['thinking-time'].value = '3';
-let mode = 'two', color = 'white', server, requests = [], rejectNextMove = false, pollDelay;
+let mode = 'two', color = 'white', server, requests = [], rejectNextMove = false, afterNextMove = null, pollDelay;
 const initial = [4,2,3,5,6,3,2,4,...Array(8).fill(1),...Array(32).fill(0),...Array(8).fill(-1),-4,-2,-3,-5,-6,-3,-2,-4];
 const fresh = (human = null, base = 300, increment = 0) => ({
   board: [...initial], white: true, human, thinking_seconds: 3, revision: 1, thinking: false, pondering: human === true, check: false, result: null,
@@ -84,9 +84,24 @@ const context = vm.createContext({
       server.thinking = server.human === false;
     }
     if (u.pathname === '/api/move') {
+      const from = Number(u.searchParams.get('from')), to = Number(u.searchParams.get('to'));
+      const pc = server.board[from], promotion = Number(u.searchParams.get('promotion'));
+      if (Math.abs(pc) === 1 && from % 8 !== to % 8 && !server.board[to]) {
+        const captured = to + (pc > 0 ? -8 : 8);
+        if (server.board[captured] === -pc) server.board[captured] = 0;
+      }
+      if (Math.abs(pc) === 6 && Math.abs(to - from) === 2) {
+        const rookFrom = from + (to > from ? 3 : -4), rookTo = from + (to > from ? 1 : -1);
+        server.board[rookTo] = server.board[rookFrom]; server.board[rookFrom] = 0;
+      }
+      server.board[to] = promotion ? (pc > 0 ? promotion : -promotion) : pc;
+      server.board[from] = 0;
       server.clocks[server.white ? 'white_ms' : 'black_ms'] += server.clocks.increment_seconds * 1000;
-      server = {...server, revision: server.revision + 1, white: !server.white, notation: [...server.notation, 'e4'], last: [Number(u.searchParams.get('from')), Number(u.searchParams.get('to'))]};
+      server = {...server, revision: server.revision + 1, white: !server.white, notation: [...server.notation, 'e4'], last: [from,to]};
+      server.thinking = server.human !== null && server.white !== server.human;
+      server.pondering = server.human !== null && !server.thinking;
       if (server.clocks.enabled) server.clocks.active_white = server.white;
+      if (afterNextMove) { const callback = afterNextMove; afterNextMove = null; callback(); }
     }
     if (u.pathname === '/api/undo') {
       server.notation.pop(); server.revision++; server.result = null; server.check = false;
@@ -308,7 +323,7 @@ const moveRequests = () => requests.filter(r => r.url.startsWith('/api/move?'));
     () => documentListeners.pointercancel(pointer(28)),
     () => elements.board.listeners.lostpointercapture(pointer(28, {target:elements.board})),
     () => windowListeners.blur(),
-    () => elements.board.listeners.keydown({key:'Escape'}),
+    () => documentListeners.keydown({key:'Escape'}),
     () => elements.flip.onclick(),
     () => vm.runInContext('state.revision++;selected=null;render()', context),
     () => elements['menu-button'].onclick()
@@ -326,5 +341,238 @@ const moveRequests = () => requests.filter(r => r.url.startsWith('/api/move?'));
     startDrag(12, 28); drop(28); await tick(); assert.equal(documentBody.children.length, 0);
     assert.equal(moveRequests().length, beforeCancel); vm.runInContext('busy=false', context);
   }
-  console.log('UI harness passed: controls, clocks, clicking, mouse/touch dragging, legality, flipped board, promotion, drag cancellation, turn guards, engine diagnostics, and sounds.');
+  // Premoves are local intent until the next computer reply supplies legal moves.
+  const waitForComputer = async (human = true, edit = () => {}) => {
+    mode = 'one'; color = human ? 'white' : 'black'; await resetBoard();
+    server.thinking = true; server.pondering = false; server.white = !human;
+    server.revision++;
+    if (human) {
+      server.notation = ['e4']; server.board[12] = 0; server.board[28] = 1;
+    }
+    server.legal = human ? [[52,36,0]] : [[12,28,0]];
+    edit(server);
+    await vm.runInContext('poll()', context);
+  };
+  const computerReply = async (legal, edit = () => {}, reply = server.human ? [52,36] : [12,28]) => {
+    const [from, to] = reply;
+    server.revision++; server.notation.push(server.human ? 'e5' : 'e4');
+    server.board[to] = server.board[from]; server.board[from] = 0; server.last = [from,to];
+    server.white = server.human; server.thinking = false; server.pondering = true; server.legal = legal;
+    edit(server);
+    await vm.runInContext('poll()', context); await tick();
+  };
+  await waitForComputer();
+  const beforePremove = moveRequests().length;
+  clickSquare(6); assert(square(21).classes.has('premove-target'));
+  assert(square(21).attrs['aria-label'].includes('possible premove'));
+  clickSquare(21); await tick();
+  assert.equal(moveRequests().length, beforePremove); assert(square(6).classes.has('premoved'));
+  assert(square(21).classes.has('premoved')); assert(!elements['cancel-premove'].hidden);
+  assert.equal(elements['premove-status'].textContent, '1 premove queued · Board preview');
+  assert.equal(elements['premove-queue'].children[0].textContent, 'g1 → f3');
+  const queuedButton = square(21);
+  await vm.runInContext('poll()', context);
+  assert.equal(square(21), queuedButton); assert.equal(moveRequests().length, beforePremove);
+  const replyRevision = server.revision + 1;
+  await computerReply([[6,21,0]]);
+  assert.equal(moveRequests().length, beforePremove + 1);
+  assert(moveRequests().at(-1).url.includes(`from=6&to=21&promotion=0&revision=${replyRevision}`));
+  assert(elements['cancel-premove'].hidden);
+  await vm.runInContext('poll()', context); await tick();
+  assert.equal(moveRequests().length, beforePremove + 1); // Never replay after duplicate responses.
+  // Black can queue touch and keyboard moves on the flipped board, in order.
+  await waitForComputer(false);
+  assert.equal(elements.board.children[0].dataset.square, 7);
+  const beforeBlack = moveRequests().length;
+  startDrag(52, 36, {pointerType:'touch'}); drop(36, {pointerType:'touch'});
+  assert.equal(elements['premove-queue'].children[0].textContent, 'e7 → e5');
+  clickSquare(62, 0); clickSquare(45, 0);
+  assert(square(52).classes.has('premoved')); assert(square(45).classes.has('premoved'));
+  assert.equal(elements['premove-queue'].children.length, 2);
+  await computerReply([[52,36,0],[62,45,0]]);
+  assert.equal(moveRequests().length, beforeBlack + 1);
+  assert(moveRequests().at(-1).url.includes('from=52&to=36&promotion=0'));
+  assert.equal(elements['premove-queue'].children.length, 1);
+  await computerReply([[62,45,0]], () => {}, [6,21]);
+  assert.equal(moveRequests().length, beforeBlack + 2);
+  assert(moveRequests().at(-1).url.includes('from=62&to=45&promotion=0'));
+  await waitForComputer(false, s => { s.board[8]=-1; s.board[0]=0; });
+  const beforeBlackPromotion = moveRequests().length;
+  clickSquare(8); clickSquare(0); assert(elements['promotion-dialog'].open);
+  assert(elements['promotion-choices'].children[0].innerHTML.includes('fill="#263e33"'));
+  elements['promotion-choices'].children[1].onclick();
+  await computerReply([[8,0,5],[8,0,4]]);
+  assert.equal(moveRequests().length, beforeBlackPromotion + 1);
+  assert(moveRequests().at(-1).url.includes('from=8&to=0&promotion=4'));
+  await waitForComputer(); const beforeImpossible = moveRequests().length;
+  clickSquare(6); clickSquare(22); // A knight cannot move straight forward.
+  assert(elements['cancel-premove'].hidden); await computerReply([[6,21,0]]);
+  assert.equal(moveRequests().length, beforeImpossible);
+  // Conditional pawn captures, en passant, and castling use the fresh legal list.
+  for (const [from, to, edit] of [
+    [11,20, () => {}], // Empty diagonal now; the opponent can move a piece there.
+    [28,37, s => { s.board[28]=1; }], // En passant square can become legal next turn.
+    [4,6, () => {}] // Castling rights and path are checked by Rust on the next turn.
+  ]) {
+    await waitForComputer(true, edit); const before = moveRequests().length;
+    startDrag(from, to); drop(to); assert.equal(moveRequests().length, before);
+    assert(square(to).classes.has('premoved'));
+    await computerReply([[from,to,0]]); assert.equal(moveRequests().length, before + 1);
+  }
+  // A changed position can make a queued move illegal or capture its source.
+  for (const [legal, edit] of [
+    [[], () => {}],
+    [[[6,21,0]], s => { s.board[6]=-4; }],
+    [[[6,21,0]], s => { s.result='Black wins by checkmate'; }],
+    [[[6,21,0]], s => { s.clocks.enabled=true; s.clocks.white_ms=0; }],
+    [[[6,21,0]], s => { s.revision++; }],
+    [[[6,21,0]], s => { s.notation=['d4','d5']; }],
+    [[[6,21,0]], s => { s.notation.pop(); }],
+    [[[6,21,0]], s => { s.human=null; }]
+  ]) {
+    await waitForComputer(); const before = moveRequests().length;
+    clickSquare(6); clickSquare(21); clickSquare(21); clickSquare(38); await computerReply(legal, edit);
+    assert.equal(moveRequests().length, before); assert(elements['cancel-premove'].hidden);
+    assert(!square(6).classes.has('premoved'));
+  }
+  // Explicit cancellation, undo, resignation, and leaving the game discard queued intent.
+  for (const cancel of [
+    () => documentListeners.keydown({key:'Escape'}),
+    () => elements.board.listeners.contextmenu({preventDefault() {}}),
+    () => elements['cancel-premove'].onclick(),
+    async () => { await elements.undo.onclick(); },
+    () => { elements.resign.onclick(); elements['resign-dialog'].close(); },
+    async () => { elements['menu-button'].onclick(); await elements.resume.onclick(); },
+    async () => { elements['menu-button'].onclick(); await submit(); }
+  ]) {
+    await waitForComputer(); const before = moveRequests().length;
+    clickSquare(6); clickSquare(21); clickSquare(21); clickSquare(38); await cancel(); await computerReply([[6,21,0]]);
+    assert.equal(moveRequests().length, before); assert(elements['cancel-premove'].hidden);
+  }
+  // Flipping preserves an intentional queue; an opponent reply during a drag cannot queue it late.
+  await waitForComputer(); clickSquare(6); clickSquare(21); elements.flip.onclick();
+  assert(square(21).classes.has('premoved')); const beforeFlip = moveRequests().length;
+  await computerReply([[6,21,0]]); assert.equal(moveRequests().length, beforeFlip + 1);
+  await waitForComputer(); startDrag(6, 21); const beforeInterruptedDrag = moveRequests().length;
+  await computerReply([[6,21,0]]); drop(21); await tick();
+  assert.equal(documentBody.children.length, 0); assert.equal(moveRequests().length, beforeInterruptedDrag);
+  // Choose the human's promotion piece while waiting, including an underpromotion.
+  await waitForComputer(true, s => { s.board[48]=1; s.board[56]=0; });
+  const beforeQueuedPromotion = moveRequests().length;
+  startDrag(48,56); drop(56); assert(elements['promotion-dialog'].open);
+  assert(elements['promotion-choices'].children[0].innerHTML.includes('fill="#fffaf0"'));
+  elements['promotion-choices'].children[3].onclick();
+  assert(square(56).classes.has('premoved')); assert.equal(moveRequests().length, beforeQueuedPromotion);
+  await computerReply([[48,56,5],[48,56,2]]);
+  assert.equal(moveRequests().length, beforeQueuedPromotion + 1);
+  assert(moveRequests().at(-1).url.includes('from=48&to=56&promotion=2'));
+  await waitForComputer(true, s => { s.board[48]=1; s.board[56]=0; });
+  startDrag(48,56); drop(56); const beforeInterruptedPromotion = moveRequests().length;
+  await computerReply([[48,56,5]]); assert(!elements['promotion-dialog'].open);
+  assert.equal(moveRequests().length, beforeInterruptedPromotion);
+  // Stack three moves for one pawn using the projected board, without changing the real board.
+  await waitForComputer(); const beforePawnLine = moveRequests().length;
+  startDrag(11,27); drop(27); // d2-d4
+  assert(square(11).attrs['aria-label'].includes('empty'));
+  assert(square(27).attrs['aria-label'].includes('White pawn'));
+  clickSquare(27); clickSquare(35); // d4-d5
+  startDrag(35,43, {pointerType:'touch'}); drop(43, {pointerType:'touch'}); // d5-d6
+  assert.equal(elements['premove-queue'].children.length, 3);
+  assert.deepEqual(elements['premove-queue'].children.map(e => e.textContent), ['d2 → d4','d4 → d5','d5 → d6']);
+  assert.equal(vm.runInContext('state.board[11]', context), 1);
+  assert.equal(vm.runInContext('state.board[43]', context), 0);
+  assert(square(43).attrs['aria-label'].includes('White pawn'));
+  clickSquare(24); // An unrelated empty square just clears the selection.
+  assert.equal(elements['premove-queue'].children.length, 3);
+  await computerReply([[11,27,0]]);
+  assert.equal(moveRequests().length, beforePawnLine + 1); assert.equal(elements['premove-queue'].children.length, 2);
+  await vm.runInContext('poll()', context); await tick();
+  assert.equal(moveRequests().length, beforePawnLine + 1);
+  await computerReply([[27,35,0]], () => {}, [62,45]);
+  assert.equal(moveRequests().length, beforePawnLine + 2); assert.equal(elements['premove-queue'].children.length, 1);
+  await computerReply([[35,43,0]], () => {}, [57,42]);
+  assert.equal(moveRequests().length, beforePawnLine + 3); assert(elements['premove-queue'].hidden);
+  assert.deepEqual(moveRequests().slice(beforePawnLine).map(r => {
+    const params = new URL(r.url, 'http://localhost').searchParams;
+    return [Number(params.get('from')),Number(params.get('to'))];
+  }), [[11,27],[27,35],[35,43]]);
+  // Stop at an illegal middle move, even when a later move would be legal.
+  await waitForComputer(); const beforeBrokenLine = moveRequests().length;
+  startDrag(11,27); drop(27); startDrag(27,35); drop(35); startDrag(6,21); drop(21);
+  await computerReply([[11,27,0]]); assert.equal(elements['premove-queue'].children.length, 2);
+  await computerReply([[6,21,0]], () => {}, [62,45]);
+  assert.equal(moveRequests().length, beforeBrokenLine + 1); assert(elements['premove-queue'].hidden);
+  assert(!square(21).classes.has('premoved')); assert.equal(vm.runInContext('state.board[27]', context), 1);
+  // A captured piece later in the line does not skip the still-legal head.
+  await waitForComputer(); const beforeCapturedTail = moveRequests().length;
+  startDrag(11,27); drop(27); startDrag(6,21); drop(21); startDrag(27,35); drop(35);
+  await computerReply([[11,27,0]]);
+  await computerReply([[6,21,0]], () => {}, [36,27]);
+  assert.equal(moveRequests().length, beforeCapturedTail + 2); assert.equal(elements['premove-queue'].children.length, 1);
+  await computerReply([[27,35,0]], () => {}, [62,45]);
+  assert.equal(moveRequests().length, beforeCapturedTail + 2); assert(elements['premove-queue'].hidden);
+  // Starting from a vacated original square resets the entire line, for clicks and drags.
+  for (const restart of [
+    () => { clickSquare(11); clickSquare(19); },
+    () => { startDrag(11,19); drop(19); }
+  ]) {
+    await waitForComputer(); const before = moveRequests().length;
+    startDrag(11,27); drop(27); startDrag(27,35); drop(35); startDrag(6,21); drop(21);
+    restart(); assert.equal(elements['premove-queue'].children.length, 1);
+    assert.equal(elements['premove-queue'].children[0].textContent, 'd2 → d3');
+    assert(square(19).attrs['aria-label'].includes('White pawn')); assert(!square(35).classes.has('premoved'));
+    assert(square(6).attrs['aria-label'].includes('White knight'));
+    await computerReply([[11,19,0],[11,27,0],[6,21,0]]);
+    assert.equal(moveRequests().length, before + 1); assert(moveRequests().at(-1).url.includes('from=11&to=19&promotion=0'));
+    assert(elements['premove-queue'].hidden);
+  }
+  // New premoves append after the remaining line, including after one move executes.
+  await waitForComputer(); const beforeAppend = moveRequests().length;
+  startDrag(11,27); drop(27); startDrag(6,21); drop(21);
+  await computerReply([[11,27,0]]);
+  startDrag(27,35); drop(35); assert.equal(elements['premove-queue'].children.length, 2);
+  await computerReply([[6,21,0],[27,35,0]], () => {}, [62,45]);
+  assert(moveRequests().at(-1).url.includes('from=6&to=21&promotion=0'));
+  await computerReply([[27,35,0]], () => {}, [57,42]);
+  assert.equal(moveRequests().length, beforeAppend + 3); assert(elements['premove-queue'].hidden);
+  // Projection includes promotion and the rook's castling move, allowing follow-up moves.
+  for (const [edit, from, to, nextFrom, nextTo, legal] of [
+    [s => { s.board[48]=1; s.board[56]=0; },48,56,56,41,[48,56,2]],
+    [s => { s.board[5]=0; s.board[6]=0; },4,6,5,21,[4,6,0]],
+    [s => { s.board[28]=0; s.board[36]=1; },36,45,45,53,[36,45,0]]
+  ]) {
+    await waitForComputer(true, edit); const before = moveRequests().length;
+    startDrag(from,to); drop(to);
+    if (elements['promotion-dialog'].open) elements['promotion-choices'].children[3].onclick();
+    startDrag(nextFrom,nextTo); drop(nextTo); assert.equal(elements['premove-queue'].children.length, 2);
+    await computerReply([legal], () => {}, from === 36 ? [53,37] : [52,36]);
+    assert.equal(moveRequests().length, before + 1);
+    if (from === 36) assert.equal(vm.runInContext('state.board[37]', context), 0); // En passant captured the pawn.
+    await computerReply([[nextFrom,nextTo,0]], () => {}, [57,42]);
+    assert.equal(moveRequests().length, before + 2); assert(elements['premove-queue'].hidden);
+  }
+  // A forced computer reply may arrive inside the accepted move response.
+  await waitForComputer(); const beforeFastReply = moveRequests().length;
+  startDrag(6,21); drop(21); startDrag(21,38); drop(38); startDrag(38,55); drop(55);
+  afterNextMove = () => {
+    server.revision++; server.notation.push('Nf6'); server.white=true; server.thinking=false; server.pondering=true;
+    server.board[45]=server.board[62]; server.board[62]=0; server.legal=[[21,38,0]];
+  };
+  await computerReply([[6,21,0]]);
+  assert.equal(moveRequests().length, beforeFastReply + 2); assert.equal(elements['premove-queue'].children.length, 1);
+  await computerReply([[38,55,0]], () => {}, [57,42]);
+  assert.equal(moveRequests().length, beforeFastReply + 3); assert(elements['premove-queue'].hidden);
+  // Clearing the queue while its head is being submitted must not resurrect its tail.
+  await waitForComputer(); const beforeInFlightCancel = moveRequests().length;
+  startDrag(6,21); drop(21); startDrag(21,38); drop(38);
+  afterNextMove = () => elements['cancel-premove'].onclick();
+  await computerReply([[6,21,0]]); await computerReply([[21,38,0]], () => {}, [62,45]);
+  assert.equal(moveRequests().length, beforeInFlightCancel + 1); assert(elements['premove-queue'].hidden);
+  // A rejected automatic move is shown once and never retried as a premove.
+  await waitForComputer(); clickSquare(6); clickSquare(21); clickSquare(21); clickSquare(38); rejectNextMove = true;
+  const beforeRejectedPremove = moveRequests().length;
+  await computerReply([[6,21,0]]); assert(!elements.error.hidden);
+  await vm.runInContext('poll()', context); await tick();
+  assert.equal(moveRequests().length, beforeRejectedPremove + 1); assert(elements['cancel-premove'].hidden);
+  console.log('UI harness passed: controls, clocks, click/drag moves, ordered premove queues, projected pieces, restarts, illegal middle moves, special moves, cancellation, stale positions, turn guards, diagnostics, and sounds.');
 })().catch(e => {console.error(e); process.exitCode = 1;});

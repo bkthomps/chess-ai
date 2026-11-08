@@ -42,6 +42,7 @@ let state = null, selected = null, flipped = false, playing = false, busy = fals
 let lastHistoryLength = -1, lastStatus = '', polling = false;
 let focusSquare = 12;
 let drag = null, suppressDragClick = false;
+let premoves = [], premoveContext = null;
 let soundEnabled = true, audioContext = null, soundEpoch = 0, soundSnapshot = null;
 const voices = new Set();
 try { soundEnabled = window.localStorage.getItem('chess.sounds') !== 'off'; } catch { /* Storage is optional. */ }
@@ -157,6 +158,7 @@ changeMode();
 $('setup-form').addEventListener('submit', async e => {
   e.preventDefault(); if (busy) return;
   if (state && !state.result && state.notation.length && !window.confirm('Start a new game and replace the current one?')) return;
+  clearBoardInput();
   void unlockAudio();
   busy = true; $('start').disabled = true; $('error').hidden = true;
   try {
@@ -186,7 +188,7 @@ function enterGame({fresh = false} = {}) {
   window.scrollTo({top:0, behavior:'instant'});
 }
 $('menu-button').onclick = () => {
-  cancelDrag();
+  clearBoardInput();
   playing = false; selected = null; $('menu').hidden = false; $('game').hidden = true;
   $('resume').hidden = false; document.body.classList.remove('in-game'); $('start').focus({preventScroll:true});
   window.scrollTo({top:0, behavior:'instant'});
@@ -219,25 +221,140 @@ function renderClocks() {
 }
 setInterval(renderClocks, 100);
 function canPlay() { return state && !busy && !state.thinking && !state.result && clockRemaining(state.white) > 0 && (state.human === null || state.human === state.white); }
+function canPremove() {
+  return state && playing && !busy && !state.result && state.human !== null && state.human !== state.white
+    && clockRemaining(state.white) > 0 && clockRemaining(state.human) > 0;
+}
+function canInput() { return canPlay() || canPremove(); }
+function inputColor() { return state.human === null ? state.white : state.human; }
+// Preview only our queued moves. Opponent replies remain unknown until Rust
+// publishes them; previewing a move never establishes that it is legal.
+function premoveBoard() {
+  const board = state.board.slice();
+  for (const {move:[from, to, promotion], pc} of premoves) {
+    if (board[from] !== pc) continue;
+    if (Math.abs(pc) === 1 && from % 8 !== to % 8 && !board[to]) {
+      const captured = to + (pc > 0 ? -8 : 8);
+      if (board[captured] === -pc) board[captured] = 0;
+    }
+    if (Math.abs(pc) === 6 && Math.abs(to - from) === 2) {
+      const rookFrom = from + (to > from ? 3 : -4), rookTo = from + (to > from ? 1 : -1);
+      if (board[rookFrom] === (pc > 0 ? 4 : -4)) {
+        board[rookTo] = board[rookFrom]; board[rookFrom] = 0;
+      }
+    }
+    board[to] = promotion ? (pc > 0 ? promotion : -promotion) : pc;
+    board[from] = 0;
+  }
+  return board;
+}
+function inputSource(square) {
+  const pc = premoveBoard()[square];
+  if (pc && (pc > 0) === inputColor()) return {pc, restart:false};
+  // Selecting a real piece that earlier premoves moved away starts a new line.
+  const actual = state.board[square];
+  return canPremove() && actual && (actual > 0) === state.human ? {pc:actual, restart:true} : null;
+}
+// These are conditional destinations, not legal moves. Ignore occupancy and
+// check: the opponent may vacate a square, capture a blocker, or enable a capture.
+// Rust's next legal-move list is the authority before anything is submitted.
+function inputMoves(from, board = premoveBoard()) {
+  if (!canPremove()) return state.legal.filter(m => m[0] === from);
+  const pc = board[from];
+  if (!pc || (pc > 0) !== state.human) return [];
+  const moves = [], rank = Math.floor(from / 8), file = from % 8, kind = Math.abs(pc);
+  for (let to = 0; to < 64; to++) {
+    if (to === from) continue;
+    const dr = Math.floor(to / 8) - rank, df = to % 8 - file;
+    const r = Math.abs(dr), f = Math.abs(df), forward = pc > 0 ? 1 : -1;
+    let candidate = false;
+    if (kind === 1) candidate = dr === forward && f <= 1 || df === 0 && dr === 2 * forward && rank === (pc > 0 ? 1 : 6);
+    if (kind === 2) candidate = r * f === 2;
+    if (kind === 3) candidate = r === f;
+    if (kind === 4) candidate = dr === 0 || df === 0;
+    if (kind === 5) candidate = r === f || dr === 0 || df === 0;
+    if (kind === 6) candidate = Math.max(r, f) === 1 || from === (pc > 0 ? 4 : 60) && dr === 0 && f === 2;
+    if (candidate) {
+      const promotions = kind === 1 && Math.floor(to / 8) === (pc > 0 ? 7 : 0) ? [5, 4, 3, 2] : [0];
+      for (const promotion of promotions) moves.push([from, to, promotion]);
+    }
+  }
+  return moves;
+}
+function renderPremove() {
+  const count = premoves.length;
+  $('premove-controls').hidden = !count && !canPremove();
+  $('cancel-premove').hidden = !count;
+  $('premove-status').textContent = count ? `${count} premove${count === 1 ? '' : 's'} queued · Board preview`
+    : 'You can queue premoves while the computer thinks.';
+  $('premove-queue').hidden = !count;
+  const fragment = document.createDocumentFragment();
+  for (const {move:[from, to, promotion]} of premoves) {
+    const item = document.createElement('li');
+    item.textContent = `${squareName(from)} → ${squareName(to)}${promotion ? ' · ' + names[promotion] : ''}`;
+    fragment.append(item);
+  }
+  $('premove-queue').replaceChildren(fragment);
+}
+function clearPremoves() { premoves = []; premoveContext = null; }
+function clearBoardInput() {
+  cancelDrag(); selected = null; clearPremoves();
+  if ($('promotion-dialog').open) $('promotion-dialog').close();
+  renderPremove();
+}
+function queuePremove(move, revision) {
+  if (!canPremove() || state.revision !== revision) return;
+  const pc = premoveBoard()[move[0]];
+  if (!pc || (pc > 0) !== state.human) return;
+  if (!premoves.length) premoveContext = {human:state.human, revision, notation:state.notation.slice()};
+  premoves.push({move:move.slice(), pc});
+  selected = null; renderBoard();
+}
+function takeReadyPremove() {
+  if (!premoves.length || busy) return null;
+  const context = premoveContext, queued = premoves[0];
+  if (!state.result && state.human === context.human && state.revision === context.revision
+      && clockRemaining(state.white) > 0 && clockRemaining(context.human) > 0) return null;
+  // Validate only the head, after exactly one opponent reply. Later premoves
+  // wait for their own turns, and the first failure discards the entire line.
+  const next = canPlay() && state.human === context.human && state.white === context.human
+    && state.revision === context.revision + 1 && state.board[queued.move[0]] === queued.pc
+    && state.notation.length === context.notation.length + 1
+    && context.notation.every((move, i) => state.notation[i] === move)
+    && state.legal.find(m => m.every((value, i) => value === queued.move[i]));
+  if (!next) clearPremoves();
+  return next || null;
+}
+$('cancel-premove').onclick = () => { clearBoardInput(); renderBoard(); };
 function renderBoard(keepDrag = false) {
   if (!keepDrag) cancelDrag();
   const focusWasBoard = $('board').contains(document.activeElement);
   if (focusWasBoard) focusSquare = Number(document.activeElement.dataset.square);
-  const targets = new Set(selected === null ? [] : state.legal.filter(m => m[0] === selected).map(m => m[1]));
+  const premoving = canPremove(), movable = canInput();
+  const board = premoveBoard();
+  const targets = new Set(selected === null ? [] : inputMoves(selected, board).map(m => m[1]));
+  const queuedSquares = new Set(premoves.flatMap(({move}) => move.slice(0, 2)));
   const fragment = document.createDocumentFragment();
   for (let r = 0; r < 8; r++) for (let c = 0; c < 8; c++) {
-    const row = flipped ? r : 7 - r, col = flipped ? 7 - c : c, s = row * 8 + col, pc = state.board[s];
+    const row = flipped ? r : 7 - r, col = flipped ? 7 - c : c, s = row * 8 + col, pc = board[s];
     const el = document.createElement('button');
     el.type = 'button'; el.className = `square ${(row + col) % 2 ? 'light' : 'dark'}`;
     el.dataset.square = s; el.tabIndex = s === focusSquare ? 0 : -1;
     if (state.last?.includes(s)) el.classList.add('last');
     if (selected === s) el.classList.add('selected');
     if (targets.has(s)) el.classList.add('target');
+    if (targets.has(s) && premoving) el.classList.add('premove-target');
+    const queuedSquare = queuedSquares.has(s);
+    if (queuedSquare) el.classList.add('premoved');
     if (pc) el.classList.add('occupied');
-    if (pc && (pc > 0) === state.white && canPlay()) el.classList.add('movable');
+    if (pc && pc !== state.board[s]) el.classList.add('preview-piece');
+    if (pc && (pc > 0) === inputColor() && movable) el.classList.add('movable');
     if (state.check && pc === (state.white ? 6 : -6)) el.classList.add('check');
     const description = pc ? `${pc > 0 ? 'White' : 'Black'} ${names[Math.abs(pc)]}` : 'empty';
-    el.setAttribute('aria-label', `${squareName(s)}, ${description}${targets.has(s) ? ', legal destination' : ''}`);
+    const destination = targets.has(s) ? premoving ? ', possible premove destination' : ', legal destination' : '';
+    const restart = !pc && state.board[s] && (state.board[s] > 0) === state.human && premoves.length;
+    if (restart && movable) el.classList.add('movable');
+    el.setAttribute('aria-label', `${squareName(s)}, ${description}${destination}${queuedSquare ? ', queued premove' : ''}${restart ? ', select to restart premoves from the actual piece' : ''}`);
     el.setAttribute('aria-pressed', String(selected === s));
     if (pc) el.innerHTML = piece(pc);
     if (c === 0) { const coord = document.createElement('span'); coord.className = 'coord rank'; coord.textContent = row + 1; coord.setAttribute('aria-hidden','true'); el.append(coord); }
@@ -246,6 +363,7 @@ function renderBoard(keepDrag = false) {
   }
   $('board').replaceChildren(fragment);
   if (focusWasBoard) $('board').querySelector(`[data-square="${focusSquare}"]`)?.focus({preventScroll:true});
+  renderPremove();
 }
 // Wait for deliberate movement so taps and small mouse movements remain clicks.
 // Capture on the board only after dragging starts: square buttons are replaced
@@ -264,9 +382,13 @@ function squareAtPointer(e) {
   return square && $('board').contains(square) ? square : null;
 }
 function tryMove(from, to) {
-  const matching = state.legal.filter(m => m[0] === from && m[1] === to);
+  const matching = inputMoves(from).filter(m => m[1] === to);
   if (!matching.length) return false;
-  if (matching.some(m => m[2])) choosePromotion(matching);
+  if (canPremove()) {
+    const revision = state.revision;
+    if (matching.some(m => m[2])) choosePromotion(matching, m => queuePremove(m, revision), inputColor());
+    else queuePremove(matching[0], revision);
+  } else if (matching.some(m => m[2])) choosePromotion(matching);
   else void makeMove(matching[0]);
   return true;
 }
@@ -274,16 +396,17 @@ $('board').addEventListener('pointerdown', e => {
   if (!e.isPrimary || e.button !== 0 || drag) return;
   suppressDragClick = false;
   const button = e.target.closest('[data-square]');
-  if (!button || !canPlay()) return;
-  const from = Number(button.dataset.square), pc = state.board[from];
-  if (!pc || (pc > 0) !== state.white) return;
-  drag = {id:e.pointerId, from, pc, revision:state.revision, x:e.clientX, y:e.clientY, active:false};
+  if (!button || !canInput()) return;
+  const from = Number(button.dataset.square), source = inputSource(from);
+  if (!source) return;
+  drag = {id:e.pointerId, from, ...source, revision:state.revision, x:e.clientX, y:e.clientY, active:false};
 });
 document.addEventListener('pointermove', e => {
   if (!drag || e.pointerId !== drag.id) return;
-  if (!canPlay() || state.revision !== drag.revision) { cancelDrag(); return; }
+  if (!canInput() || state.revision !== drag.revision) { cancelDrag(); return; }
   if (!drag.active) {
     if (Math.hypot(e.clientX - drag.x, e.clientY - drag.y) < 6) return;
+    if (drag.restart) clearPremoves();
     drag.active = true; selected = drag.from; focusSquare = drag.from;
     // Transfer touch's implicit capture before replacing its original square.
     $('board').setPointerCapture(drag.id);
@@ -309,7 +432,7 @@ document.addEventListener('pointerup', e => {
   cancelDrag();
   if (!previous.active) return;
   e.preventDefault();
-  if (target && canPlay() && state.revision === previous.revision) {
+  if (target && canInput() && state.revision === previous.revision) {
     const to = Number(target.dataset.square);
     focusSquare = to;
     if (tryMove(previous.from, to)) return;
@@ -327,16 +450,17 @@ $('board').addEventListener('click', e => {
   // A completed or cancelled drag may still produce a compatibility click.
   // Keyboard activation (detail 0) must always keep working.
   if (suppressDragClick && e.detail !== 0) { suppressDragClick = false; e.preventDefault(); return; }
-  const button = e.target.closest('[data-square]'); if (!button || !canPlay()) return;
+  const button = e.target.closest('[data-square]'); if (!button || !canInput()) return;
   void unlockAudio();
   const s = Number(button.dataset.square); focusSquare = s;
   if (selected !== null && tryMove(selected, s)) return;
-  selected = selected === s ? null : (state.board[s] && (state.board[s] > 0) === state.white ? s : null);
+  const source = inputSource(s);
+  if (source?.restart) clearPremoves();
+  selected = selected === s ? null : source ? s : null;
   renderBoard();
 });
 $('board').addEventListener('keydown', e => {
   const keys = {ArrowUp:-8, ArrowDown:8, ArrowLeft:-1, ArrowRight:1};
-  if (e.key === 'Escape') { selected = null; renderBoard(); return; }
   if (!(e.key in keys)) return;
   e.preventDefault();
   const buttons = [...$('board').children], index = buttons.indexOf(e.target);
@@ -345,21 +469,49 @@ $('board').addEventListener('keydown', e => {
   const next = buttons[index + keys[e.key]];
   if (next) { e.target.tabIndex = -1; next.tabIndex = 0; focusSquare = Number(next.dataset.square); next.focus(); }
 });
-async function makeMove(move) {
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape' && playing && !$('promotion-dialog').open && !$('resign-dialog').open) {
+    clearBoardInput(); renderBoard();
+  }
+});
+$('board').addEventListener('contextmenu', e => {
+  if (!premoves.length && !canPremove()) return;
+  e.preventDefault(); clearBoardInput(); renderBoard();
+});
+async function makeMove(move, fromQueue = false) {
   if (busy) return;
-  cancelDrag();
+  if (fromQueue) { cancelDrag(); selected = null; }
+  else clearBoardInput();
+  const queue = premoves, previous = state;
   void unlockAudio();
   busy = true; selected = null; $('error').hidden = true;
-  try { state = await api('move', {from:move[0], to:move[1], promotion:move[2], revision:state.revision}); }
-  catch (error) { showError(error); try { state = await api('state'); } catch { /* Keep the current board available. */ } }
+  try {
+    state = await api('move', {from:move[0], to:move[1], promotion:move[2], revision:previous.revision});
+    if (fromQueue && premoves === queue) {
+      // A forced computer reply can already be included in the move response.
+      // Keep the context immediately after our accepted move in either case.
+      const steps = state.revision - previous.revision;
+      if (state.human === previous.human && (steps === 1 || steps === 2)
+          && state.notation.length === previous.notation.length + steps
+          && previous.notation.every((value, i) => state.notation[i] === value)) {
+        premoves = premoves.slice(1);
+        premoveContext = premoves.length ? {human:state.human, revision:previous.revision + 1,
+          notation:state.notation.slice(0, previous.notation.length + 1)} : null;
+      } else clearPremoves();
+    }
+  }
+  catch (error) {
+    clearPremoves(); showError(error);
+    try { state = await api('state'); } catch { /* Keep the current board available. */ }
+  }
   finally { busy = false; render(); }
 }
-function choosePromotion(moves) {
+function choosePromotion(moves, submitMove = makeMove, white = state.white) {
   $('promotion-choices').replaceChildren();
   for (const m of moves) {
     const button = document.createElement('button'); button.type = 'button';
-    button.innerHTML = piece((state.white ? 1 : -1) * m[2]) + `<span>${names[m[2]][0].toUpperCase() + names[m[2]].slice(1)}</span>`;
-    button.onclick = () => { $('promotion-dialog').close(); void makeMove(m); };
+    button.innerHTML = piece((white ? 1 : -1) * m[2]) + `<span>${names[m[2]][0].toUpperCase() + names[m[2]].slice(1)}</span>`;
+    button.onclick = () => { $('promotion-dialog').close(); void submitMove(m); };
     $('promotion-choices').append(button);
   }
   $('promotion-dialog').showModal();
@@ -367,6 +519,7 @@ function choosePromotion(moves) {
 function render() {
   if (!playing || !state) return;
   announceGameChanges();
+  const readyPremove = takeReadyPremove();
   renderBoard();
   renderClocks();
   const signature = [state.white, state.thinking, state.result, state.check, state.human, controlLabel(state.clocks), state.thinking_seconds].join('|');
@@ -391,6 +544,7 @@ function render() {
   $('undo').disabled = busy || !state.notation.length || state.human === false && state.notation.length === 1;
   $('resign').disabled = busy || !!state.result;
   renderEngine();
+  if (readyPremove) void makeMove(readyPremove, true);
 }
 function renderEngine() {
   const analysis = state.human === null ? null : state.analysis;
@@ -416,15 +570,14 @@ function renderEngine() {
 $('flip').onclick = () => { flipped = !flipped; render(); };
 $('undo').onclick = async () => {
   if (busy) return; busy = true; $('undo').disabled = true; selected = null;
-  cancelDrag();
-  if ($('promotion-dialog').open) $('promotion-dialog').close();
+  clearBoardInput();
   try { state = await api('undo', {}); resetSoundSnapshot(state); }
   catch (error) { showError(error); }
   finally { busy = false; render(); }
 };
 $('resign').onclick = () => {
   if (busy || state.result) return;
-  cancelDrag();
+  clearBoardInput(); renderBoard();
   const white = state.human === null ? state.white : state.human;
   $('resign-detail').textContent = `${white ? 'White' : 'Black'} will resign, and ${white ? 'Black' : 'White'} will win the game.`;
   $('resign-dialog').showModal();

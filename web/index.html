@@ -81,6 +81,11 @@
           <div id="clock-black" class="clock"><span id="black-clock-label">Black</span><time id="black-time" aria-label="Black time remaining">5:00</time></div>
         </div>
         <div id="board" class="board" role="group" aria-label="Chessboard. Use arrow keys to navigate and Enter to select a piece or destination."></div>
+        <div id="premove-controls" class="premove-controls" hidden>
+          <p id="premove-status" role="status" aria-live="polite"></p>
+          <button id="cancel-premove" class="text-button" type="button" hidden>Cancel premoves</button>
+        </div>
+        <ol id="premove-queue" class="premove-queue" aria-label="Queued premoves in order" hidden></ol>
         <div class="game-tools" aria-label="Game controls">
           <button id="undo" type="button">Undo</button>
           <button id="flip" type="button">Flip board</button>
