@@ -636,7 +636,7 @@ function renderEngine() {
   const stats = state.human === null ? null : analysis || state.stats;
   $('engine-status').textContent = state.human === null ? 'The computer is off in two-player mode.'
     : state.thinking ? 'Thinking… Live search.'
-    : state.pondering ? 'Pondering possible replies during your turn.'
+    : state.pondering ? 'Pondering possible replies.'
     : state.result ? 'Game finished.'
     : analysis?.pondering ? 'Pondering complete.'
     : stats ? 'Last computer move.' : 'Waiting for the first computer move.';

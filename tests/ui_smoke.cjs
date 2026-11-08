@@ -212,7 +212,7 @@ const moveRequests = () => requests.filter(r => r.url.startsWith('/api/move?'));
   vm.runInContext('state={...state,thinking:false,pondering:true,white:false,stats:{depth:6,nodes:12345,hits:123,millis:2500,budget_millis:2600,threads:6}};render()', context);
   assert(elements['engine-info'].open); assert(!elements['engine-stats'].hidden);
   assert.equal(elements.status.textContent, 'Black to move.');
-  assert.equal(elements['engine-status'].textContent, 'Pondering possible replies during your turn.');
+  assert.equal(elements['engine-status'].textContent, 'Pondering possible replies.');
   assert(vm.runInContext('canPlay()', context));
   assert.equal(Number(elements['engine-depth'].textContent), 6);
   assert.equal(Number(elements['engine-threads'].textContent), 6);

@@ -144,7 +144,6 @@ th, td { padding: 8px 6px; }
 th { position: sticky; top: 0; background: var(--surface); color: var(--muted); font-weight: 500; }
 tbody tr:nth-child(odd) { background: #eaf0e380; }
 td:first-child { color: var(--muted); width: 20%; }
-.engine-description { margin: 16px 0 0; color: var(--muted); font-size: 12px; line-height: 1.7; }
 #engine-stats { margin: 14px 0 0; font-variant-numeric: tabular-nums; }
 #engine-stats > div { display: flex; justify-content: space-between; gap: 12px; padding: 7px 0; border-top: 1px solid var(--line); }
 #engine-stats dt { color: var(--muted); }
