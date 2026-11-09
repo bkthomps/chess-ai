@@ -632,6 +632,7 @@ struct MoveBuffers {
     slots: Vec<Vec<Move>>,
     retained_bytes: usize,
     ordering: MoveOrdering,
+    evaluation: EvaluationCache,
 }
 impl MoveBuffers {
     fn take(&mut self, ply: usize) -> Vec<Move> {
@@ -650,7 +651,8 @@ impl MoveBuffers {
         moves.clear();
         let bytes = moves.capacity() * std::mem::size_of::<Move>();
         if ply < self.slots.len()
-            && self.retained_bytes + bytes <= MOVE_BUFFER_LIMIT - ORDERING_BYTES
+            && self.retained_bytes + bytes
+                <= MOVE_BUFFER_LIMIT - ORDERING_BYTES - EVALUATION_CACHE_BYTES
         {
             self.retained_bytes += bytes;
             self.slots[ply] = moves;
@@ -1408,10 +1410,10 @@ impl Search<'_> {
             return 0;
         }
         if qply >= 10 {
-            return evaluate(p);
+            return self.buffers.evaluation.get(p);
         }
         if !state.in_check {
-            let stand = evaluate(p);
+            let stand = self.buffers.evaluation.get(p);
             if stand >= beta {
                 return stand;
             }
@@ -1950,6 +1952,53 @@ fn king_safety(
     total
 }
 
+// Per-thread static evaluations. Validate the full key and all piece squares;
+// clocks/history remain exclusively the responsibility of search draw handling.
+const EVALUATION_CACHE_ENTRIES: usize = 4096;
+#[derive(Clone)]
+struct EvaluationEntry {
+    key: u64,
+    squares: [i8; 64],
+    white_score: i32,
+}
+const EVALUATION_CACHE_BYTES: usize =
+    EVALUATION_CACHE_ENTRIES * std::mem::size_of::<EvaluationEntry>();
+struct EvaluationCache {
+    entries: Vec<EvaluationEntry>,
+}
+impl Default for EvaluationCache {
+    fn default() -> Self {
+        Self {
+            entries: vec![
+                EvaluationEntry {
+                    key: 0,
+                    squares: [0; 64],
+                    white_score: 0
+                };
+                EVALUATION_CACHE_ENTRIES
+            ],
+        }
+    }
+}
+impl EvaluationCache {
+    fn get(&mut self, p: &Position) -> i32 {
+        let entry = &mut self.entries[p.hash as usize & (EVALUATION_CACHE_ENTRIES - 1)];
+        if entry.key != p.hash || entry.squares != p.squares {
+            let score = evaluate(p);
+            *entry = EvaluationEntry {
+                key: p.hash,
+                squares: p.squares,
+                white_score: if p.white { score } else { -score },
+            };
+        }
+        if p.white {
+            entry.white_score
+        } else {
+            -entry.white_score
+        }
+    }
+}
+
 fn evaluate(p: &Position) -> i32 {
     let (mut score, mut endgame_delta, mut phase) = (0, 0, 0);
     let mut bishops = [0, 0];
@@ -2467,7 +2516,18 @@ mod tests {
         oversized.reserve(MOVE_BUFFER_LIMIT / std::mem::size_of::<Move>() + 1);
         buffers.put(1, oversized);
         assert_eq!(buffers.slots[1].capacity(), 0);
-        assert!(buffers.retained_bytes + ORDERING_BYTES <= MOVE_BUFFER_LIMIT);
+        for ply in 0..BUFFER_PLIES {
+            let mut moves = buffers.take(ply);
+            moves.reserve(128);
+            buffers.put(ply, moves);
+        }
+        assert_eq!(
+            buffers.evaluation.entries.capacity() * std::mem::size_of::<EvaluationEntry>(),
+            EVALUATION_CACHE_BYTES
+        );
+        assert!(
+            buffers.retained_bytes + ORDERING_BYTES + EVALUATION_CACHE_BYTES <= MOVE_BUFFER_LIMIT
+        );
         assert_eq!(
             buffers.retained_bytes,
             buffers
@@ -2479,6 +2539,38 @@ mod tests {
         let beyond_pool = buffers.take(BUFFER_PLIES);
         buffers.put(BUFFER_PLIES, beyond_pool);
         assert!(buffers.slots.len() <= BUFFER_PLIES);
+    }
+
+    #[test]
+    fn static_evaluation_cache_handles_collisions_turns_and_special_moves() {
+        let mut cache = EvaluationCache::default();
+        for fen in [
+            "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+            "r3k2r/P6P/8/3pP3/8/8/p6p/R3K2R w KQkq d6 0 1",
+            "8/2p5/3p4/KP5r/1R3p1k/8/4P1P1/8 w - - 0 1",
+        ] {
+            let p = Position::from_fen(fen).unwrap();
+            let expected = reference_evaluate(&p);
+            for m in p.legal_moves() {
+                assert_eq!(cache.get(&p), expected);
+                let mut child = p.play(m);
+                // Force both index collisions and identical full hashes with
+                // different boards. Neither can return a stale static score.
+                child.hash = p.hash ^ EVALUATION_CACHE_ENTRIES as u64;
+                assert_eq!(cache.get(&child), reference_evaluate(&child));
+                child.hash = p.hash;
+                assert_eq!(cache.get(&child), reference_evaluate(&child));
+                child.white = !child.white;
+                assert_eq!(cache.get(&child), reference_evaluate(&child));
+                assert_eq!(cache.get(&p), expected);
+            }
+            let mut same_board = p.clone();
+            same_board.halfmove = 100;
+            same_board.fullmove = 71;
+            same_board.castling = 0;
+            same_board.ep = None;
+            assert_eq!(cache.get(&same_board), expected);
+        }
     }
 
     #[test]
@@ -2508,6 +2600,7 @@ mod tests {
                     reference_tactical_terms(&p)
                 );
                 assert_eq!(evaluate(&p), reference_evaluate(&p));
+                assert_eq!(search.buffers.evaluation.get(&p), reference_evaluate(&p));
                 assert_eq!(space_for_position(&p), reference_space(&p));
                 let mut mirrored = p.clone();
                 for (s, &pc) in p.squares.iter().enumerate() {
@@ -2515,6 +2608,10 @@ mod tests {
                 }
                 // Evaluation ignores the stale hash/rights in this mirrored copy.
                 assert_eq!(evaluate(&mirrored), -evaluate(&p));
+                assert_eq!(
+                    search.buffers.evaluation.get(&mirrored),
+                    reference_evaluate(&mirrored)
+                );
                 let mobility = mobility::Mobility::new(&p);
                 for (s, &pc) in p.squares.iter().enumerate() {
                     assert_eq!(
