@@ -93,6 +93,13 @@ mod mobility {
         (forward ^ backward.reverse_bits()) & mask
     }
 
+    pub(super) fn pawn_attacks(pawns: [u64; 2]) -> [u64; 2] {
+        [
+            ((pawns[0] & !FILE_A) >> 9) | ((pawns[0] & !FILE_H) >> 7),
+            ((pawns[1] & !FILE_A) << 7) | ((pawns[1] & !FILE_H) << 9),
+        ]
+    }
+
     pub(super) struct Mobility {
         occupied: u64,
         eligible: [u64; 2],
@@ -126,7 +133,14 @@ mod mobility {
                     _ => {}
                 }
             }
-            Self::from_masks(occupied, pawns, kings, diagonal, straight)
+            Self::from_masks(
+                occupied,
+                pawns,
+                kings,
+                diagonal,
+                straight,
+                pawn_attacks(pawns),
+            )
         }
 
         pub(super) fn from_masks(
@@ -135,11 +149,8 @@ mod mobility {
             kings: [usize; 2],
             diagonal: [u64; 2],
             straight: [u64; 2],
+            pawn_attacks: [u64; 2],
         ) -> Self {
-            let pawn_attacks = [
-                ((pawns[0] & !FILE_A) >> 9) | ((pawns[0] & !FILE_H) >> 7),
-                ((pawns[1] & !FILE_A) << 7) | ((pawns[1] & !FILE_H) << 9),
-            ];
             let mut result = Self {
                 occupied: occupied[0] | occupied[1],
                 eligible: [
@@ -1524,6 +1535,32 @@ const PHASE_WEIGHTS: [i32; 7] = [0, 0, 1, 1, 2, 4, 0];
 static SQUARE_SCORES: [[i16; 64]; 13] = evaluation_table();
 static KING_ENDGAME_DELTAS: [[i16; 64]; 2] = king_deltas();
 
+// Pawn-safe room on files c-f, ranks 2-4 (White) / 5-7 (Black).
+// Each square counts once, plus once if up to three ranks behind a friendly
+// pawn. Overlapping pawn support does not multiply that second credit.
+const SPACE_WHITE: u64 = 0x0000_0000_3c3c_3c00;
+const SPACE_MASKS: [u64; 2] = [SPACE_WHITE << 24, SPACE_WHITE];
+const SPACE_UNIT: i32 = 4;
+
+fn central_space(occupied: [u64; 2], pawns: [u64; 2], pawn_attacks: [u64; 2]) -> i32 {
+    if pawns[0] | pawns[1] == 0 {
+        return 0;
+    }
+    let behind = [
+        (pawns[0] << 8) | (pawns[0] << 16) | (pawns[0] << 24),
+        (pawns[1] >> 8) | (pawns[1] >> 16) | (pawns[1] >> 24),
+    ];
+    let mut units = [0; 2];
+    for color in 0..2 {
+        // Friendly non-pawn pieces can occupy this usable space. Enemy pieces,
+        // friendly pawns, and enemy pawn attacks exclude a square.
+        let safe =
+            SPACE_MASKS[color] & !(pawns[color] | occupied[1 - color] | pawn_attacks[1 - color]);
+        units[color] = safe.count_ones() as i32 + (safe & behind[color]).count_ones() as i32;
+    }
+    SPACE_UNIT * (units[1] - units[0])
+}
+
 fn evaluate(p: &Position) -> i32 {
     let (mut score, mut endgame_delta, mut phase) = (0, 0, 0);
     let mut bishops = [0, 0];
@@ -1559,7 +1596,18 @@ fn evaluate(p: &Position) -> i32 {
         }
     }
     if phase != 0 {
-        let mobility = mobility::Mobility::from_masks(occupied, pawns, kings, diagonal, straight);
+        let pawn_attacks = mobility::pawn_attacks(pawns);
+        let space = central_space(occupied, pawns, pawn_attacks);
+        score += space;
+        endgame_delta -= space; // Space is a middlegame-only term.
+        let mobility = mobility::Mobility::from_masks(
+            occupied,
+            pawns,
+            kings,
+            diagonal,
+            straight,
+            pawn_attacks,
+        );
         let mut active = (occupied[0] | occupied[1])
             & !(pawns[0] | pawns[1] | (1u64 << kings[0]) | (1u64 << kings[1]));
         while active != 0 {
@@ -1571,7 +1619,7 @@ fn evaluate(p: &Position) -> i32 {
         }
     }
     // Promotions can exceed the initial material; clamp before blending.
-    // Blend the signed king/mobility correction once to preserve color symmetry.
+    // Blend king, mobility, and space together once to preserve color symmetry.
     score += endgame_delta * (FULL_PHASE - phase.min(FULL_PHASE)) / FULL_PHASE;
     if bishops[0] >= 2 {
         score += 30;
@@ -2034,6 +2082,7 @@ mod tests {
             let mut random = 17;
             for _ in 0..500 {
                 assert_eq!(evaluate(&p), reference_evaluate(&p));
+                assert_eq!(space_for_position(&p), reference_space(&p));
                 let mut mirrored = p.clone();
                 for (s, &pc) in p.squares.iter().enumerate() {
                     mirrored.squares[s ^ 56] = -pc;
@@ -2378,6 +2427,92 @@ mod tests {
         assert_eq!(table.generation, 128);
     }
 
+    fn reference_space(p: &Position) -> i32 {
+        if !p.squares.iter().any(|pc| pc.abs() == 1) {
+            return 0;
+        }
+        let mut total = 0;
+        for sign in [-1i8, 1] {
+            for rank in 1..=3 {
+                let y = if sign > 0 { rank } else { 7 - rank };
+                for file in 2..=5 {
+                    let at = (y * 8 + file) as usize;
+                    let pc = p.squares[at];
+                    if pc == sign || pc != 0 && pc.signum() != sign {
+                        continue;
+                    }
+                    let attacked = p.squares.iter().enumerate().any(|(s, &enemy)| {
+                        enemy == -sign
+                            && (s as i32 % 8 - file).abs() == 1
+                            && s as i32 / 8 + i32::from(enemy.signum()) == y
+                    });
+                    if attacked {
+                        continue;
+                    }
+                    let behind = (1..=3).any(|distance| {
+                        let ahead = y + distance * i32::from(sign);
+                        (0..8).contains(&ahead) && p.squares[(ahead * 8 + file) as usize] == sign
+                    });
+                    total += i32::from(sign) * 4 * (1 + i32::from(behind));
+                }
+            }
+        }
+        total
+    }
+
+    fn space_for_position(p: &Position) -> i32 {
+        let mut occupied = [0; 2];
+        let mut pawns = [0; 2];
+        for (square, &pc) in p.squares.iter().enumerate() {
+            if pc != 0 {
+                let color = usize::from(pc > 0);
+                occupied[color] |= 1u64 << square;
+                if pc.abs() == 1 {
+                    pawns[color] |= 1u64 << square;
+                }
+            }
+        }
+        central_space(occupied, pawns, mobility::pawn_attacks(pawns))
+    }
+
+    #[test]
+    fn central_space_rewards_pawn_room_and_excludes_enemy_control() {
+        for (fen, expected) in [
+            ("4k3/8/8/8/8/8/8/4K3 w - - 0 1", 0),
+            ("4k3/8/8/8/3B4/8/P7/4K3 w - - 0 1", 0),
+            ("4k3/8/8/8/3b4/8/P7/4K3 w - - 0 1", -4),
+            ("4k3/8/8/4p3/8/8/8/4K3 w - - 0 1", -12),
+            ("4k3/8/2P5/8/8/8/8/4K3 w - - 0 1", 16),
+            ("4k3/2P5/8/8/8/8/8/4K3 w - - 0 1", 8),
+            ("4k3/8/8/2P5/2P5/8/8/4K3 w - - 0 1", 16),
+            ("4k3/8/8/8/P7/8/8/4K3 w - - 0 1", 0),
+        ] {
+            let p = Position::from_fen(fen).unwrap();
+            assert_eq!(space_for_position(&p), expected, "{fen}");
+            assert_eq!(space_for_position(&p), reference_space(&p));
+            let mut mirrored = p.clone();
+            for (square, &pc) in p.squares.iter().enumerate() {
+                mirrored.squares[square ^ 56] = -pc;
+            }
+            assert_eq!(space_for_position(&mirrored), -expected);
+        }
+        // A pawn ending has a nonzero raw territory imbalance, but its phase
+        // must remove the entire space term from the actual evaluation.
+        let ending = Position::from_fen("4k3/8/8/8/4P3/8/8/4K3 w - - 0 1").unwrap();
+        assert_eq!(space_for_position(&ending), 12);
+        assert_eq!(evaluate(&ending), 132);
+        let p = Position::default();
+        assert_eq!(space_for_position(&p), 0);
+        for (uci, expected) in [("e2e4", 16), ("d2d4", 16), ("e2e3", 4), ("b1c3", 0)] {
+            let m = p
+                .legal_moves()
+                .into_iter()
+                .find(|m| m.to_string() == uci)
+                .unwrap();
+            assert_eq!(space_for_position(&p.play(m)), expected, "{uci}");
+        }
+    }
+
     // Arithmetic reference independent of the compiled score tables.
     fn reference_evaluate(p: &Position) -> i32 {
         let mut phase = 0;
@@ -2422,8 +2557,9 @@ mod tests {
             score += pc.signum() as i32 * (value(pc) + positional);
         }
         let (mg, eg) = mobility::tests::reference_scores(p);
-        score += mg;
-        score += (king_delta + eg - mg) * (24 - phase.min(24)) / 24;
+        let space = reference_space(p);
+        score += mg + space;
+        score += (king_delta + eg - mg - space) * (24 - phase.min(24)) / 24;
         if bishops[0] >= 2 {
             score += 30;
         }
