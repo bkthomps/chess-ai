@@ -1663,6 +1663,69 @@ fn pawn_structure(pawns: [u64; 2], attacks: [u64; 2]) -> (i32, i32) {
     total
 }
 
+// Original, untuned (middlegame, endgame) weights. These positional
+// estimates do not establish tactical safety, legal mobility, or pawn races.
+const KNIGHT_OUTPOST: (i32, i32) = (20, 12);
+const BISHOP_OUTPOST: (i32, i32) = (12, 8);
+const MINOR_BEHIND_PAWN: (i32, i32) = (8, 4);
+const BISHOP_PAWN_COLOR: (i32, i32) = (2, 3);
+const ROOK_SEMI_OPEN: (i32, i32) = (12, 8);
+const ROOK_OPEN: (i32, i32) = (24, 12);
+
+fn piece_pawn_relationships(
+    pawns: [u64; 2],
+    attacks: [u64; 2],
+    knights: [u64; 2],
+    diagonal: [u64; 2],
+    straight: [u64; 2],
+) -> (i32, i32) {
+    // Pawnless open-file bonuses apply too; do not return early without pawns.
+    let challenges = [
+        pawn_neighbors(pawn_south_fill(pawns[0] >> 8)),
+        pawn_neighbors(pawn_north_fill(pawns[1] << 8)),
+    ];
+    let mut total = (0, 0);
+    for color in 0..2 {
+        let bishops = diagonal[color] & !straight[color];
+        let rooks = straight[color] & !diagonal[color];
+        let minors = knights[color] | bishops;
+        // Relative ranks 4–6. Including current enemy pawn attacks in the
+        // challenge span also excludes squares already attacked by a pawn.
+        let ranks = if color == 1 {
+            0x0000_ffff_ff00_0000
+        } else {
+            0x0000_00ff_ffff_0000
+        };
+        let outposts = ranks & attacks[color] & !challenges[1 - color];
+        let behind = if color == 1 {
+            pawns[color] >> 8
+        } else {
+            pawns[color] << 8
+        };
+        let n = (knights[color] & outposts).count_ones() as i32;
+        let b = (bishops & outposts).count_ones() as i32;
+        let sheltered = (minors & behind).count_ones() as i32;
+        let mut mg = n * KNIGHT_OUTPOST.0 + b * BISHOP_OUTPOST.0 + sheltered * MINOR_BEHIND_PAWN.0;
+        let mut eg = n * KNIGHT_OUTPOST.1 + b * BISHOP_OUTPOST.1 + sheltered * MINOR_BEHIND_PAWN.1;
+        let light = 0x55aa_55aa_55aa_55aa;
+        let same_color = (bishops & light).count_ones() * (pawns[color] & light).count_ones()
+            + (bishops & !light).count_ones() * (pawns[color] & !light).count_ones();
+        mg -= same_color as i32 * BISHOP_PAWN_COLOR.0;
+        eg -= same_color as i32 * BISHOP_PAWN_COLOR.1;
+        let own_files = pawn_north_fill(pawn_south_fill(pawns[color]));
+        let enemy_files = pawn_north_fill(pawn_south_fill(pawns[1 - color]));
+        let open = rooks & !own_files;
+        let semi_count = (open & enemy_files).count_ones() as i32;
+        let open_count = (open & !enemy_files).count_ones() as i32;
+        mg += semi_count * ROOK_SEMI_OPEN.0 + open_count * ROOK_OPEN.0;
+        eg += semi_count * ROOK_SEMI_OPEN.1 + open_count * ROOK_OPEN.1;
+        let sign = if color == 1 { 1 } else { -1 };
+        total.0 += sign * mg;
+        total.1 += sign * eg;
+    }
+    total
+}
+
 fn evaluate(p: &Position) -> i32 {
     let (mut score, mut endgame_delta, mut phase) = (0, 0, 0);
     let mut bishops = [0, 0];
@@ -1670,6 +1733,7 @@ fn evaluate(p: &Position) -> i32 {
     let mut pawns = [0; 2];
     let mut kings = [0; 2];
     let mut diagonal = [0; 2];
+    let mut knights = [0; 2];
     let mut straight = [0; 2];
     for (square, &piece) in p.squares.iter().enumerate() {
         if piece == 0 {
@@ -1681,6 +1745,7 @@ fn evaluate(p: &Position) -> i32 {
         occupied[color] |= 1u64 << square;
         match piece.abs() {
             1 => pawns[color] |= 1u64 << square,
+            2 => knights[color] |= 1u64 << square,
             3 => {
                 bishops[usize::from(piece < 0)] += 1;
                 diagonal[color] |= 1u64 << square;
@@ -1702,6 +1767,10 @@ fn evaluate(p: &Position) -> i32 {
     score += pawn_mg;
     endgame_delta += pawn_eg - pawn_mg;
     if phase != 0 {
+        let (piece_mg, piece_eg) =
+            piece_pawn_relationships(pawns, pawn_attacks, knights, diagonal, straight);
+        score += piece_mg;
+        endgame_delta += piece_eg - piece_mg;
         let space = central_space(occupied, pawns, pawn_attacks);
         score += space;
         endgame_delta -= space; // Space is a middlegame-only term.
@@ -2192,6 +2261,10 @@ mod tests {
                     "{:?}",
                     p.squares
                 );
+                assert_eq!(
+                    relationships_for_position(&p),
+                    reference_piece_pawn_relationships(&p)
+                );
                 assert_eq!(evaluate(&p), reference_evaluate(&p));
                 assert_eq!(space_for_position(&p), reference_space(&p));
                 let mut mirrored = p.clone();
@@ -2538,6 +2611,135 @@ mod tests {
         assert_eq!(table.generation, 128);
     }
 
+    fn reference_piece_pawn_relationships(p: &Position) -> (i32, i32) {
+        let mut total = (0, 0);
+        for (s, &pc) in p.squares.iter().enumerate() {
+            if !matches!(pc.abs(), 2..=4) {
+                continue;
+            }
+            let sign = pc.signum();
+            let direction = i32::from(sign);
+            let (x, y) = (s as i32 % 8, s as i32 / 8);
+            let own: Vec<_> = p
+                .squares
+                .iter()
+                .enumerate()
+                .filter_map(|(s, &v)| (v == sign).then_some((s as i32 % 8, s as i32 / 8)))
+                .collect();
+            let enemy: Vec<_> = p
+                .squares
+                .iter()
+                .enumerate()
+                .filter_map(|(s, &v)| (v == -sign).then_some((s as i32 % 8, s as i32 / 8)))
+                .collect();
+            let mut bonus = (0, 0);
+            if pc.abs() == 4 {
+                if !own.iter().any(|&(a, _)| a == x) {
+                    bonus = if enemy.iter().any(|&(a, _)| a == x) {
+                        (12, 8)
+                    } else {
+                        (24, 12)
+                    };
+                }
+            } else {
+                let rank = if sign > 0 { y + 1 } else { 8 - y };
+                let supported = own
+                    .iter()
+                    .any(|&(a, b)| (a - x).abs() == 1 && b + direction == y);
+                let challenge = enemy
+                    .iter()
+                    .any(|&(a, b)| (a - x).abs() == 1 && (b - y) * direction >= 1);
+                if (4..=6).contains(&rank) && supported && !challenge {
+                    bonus = if pc.abs() == 2 { (20, 12) } else { (12, 8) };
+                }
+                if own.contains(&(x, y + direction)) {
+                    bonus.0 += 8;
+                    bonus.1 += 4;
+                }
+                if pc.abs() == 3 {
+                    let same = own
+                        .iter()
+                        .filter(|&&(a, b)| (a + b) % 2 == (x + y) % 2)
+                        .count() as i32;
+                    bonus.0 -= same * 2;
+                    bonus.1 -= same * 3;
+                }
+            }
+            total.0 += direction * bonus.0;
+            total.1 += direction * bonus.1;
+        }
+        total
+    }
+
+    fn relationships_for_position(p: &Position) -> (i32, i32) {
+        let (mut pawns, mut knights, mut diagonal, mut straight) = ([0; 2], [0; 2], [0; 2], [0; 2]);
+        for (s, &pc) in p.squares.iter().enumerate() {
+            let color = usize::from(pc > 0);
+            match pc.abs() {
+                1 => pawns[color] |= 1u64 << s,
+                2 => knights[color] |= 1u64 << s,
+                3 => diagonal[color] |= 1u64 << s,
+                4 => straight[color] |= 1u64 << s,
+                5 => {
+                    diagonal[color] |= 1u64 << s;
+                    straight[color] |= 1u64 << s;
+                }
+                _ => {}
+            }
+        }
+        piece_pawn_relationships(
+            pawns,
+            mobility::pawn_attacks(pawns),
+            knights,
+            diagonal,
+            straight,
+        )
+    }
+
+    #[test]
+    fn piece_pawn_terms_cover_outposts_pawn_colors_shelter_and_rook_files() {
+        for (fen, expected) in [
+            ("4k3/8/8/4N3/3P4/8/8/4K3 w - - 0 1", (20, 12)),
+            ("4k3/8/4P3/4N3/3P4/8/8/4K3 w - - 0 1", (28, 16)),
+            ("4k3/5p2/8/4N3/3P4/8/8/4K3 w - - 0 1", (0, 0)),
+            ("4k3/8/3p4/4N3/3P4/8/8/4K3 w - - 0 1", (0, 0)),
+            ("4k3/8/8/4Np2/3P4/8/8/4K3 w - - 0 1", (20, 12)),
+            ("4k3/8/8/4N3/8/8/8/4K3 w - - 0 1", (0, 0)),
+            ("4k3/8/8/8/8/4N3/3P4/4K3 w - - 0 1", (0, 0)),
+            ("4k3/8/8/8/4N3/3P4/8/4K3 w - - 0 1", (20, 12)),
+            ("4k3/8/4N3/3P4/8/8/8/4K3 w - - 0 1", (20, 12)),
+            ("4k3/4N3/3P4/8/8/8/8/4K3 w - - 0 1", (0, 0)),
+            ("4k3/8/8/N7/1P6/8/8/4K3 w - - 0 1", (20, 12)),
+            ("4k3/8/8/N6p/1P6/8/8/4K3 w - - 0 1", (20, 12)),
+            ("4k3/8/8/4B3/3P4/8/8/4K3 w - - 0 1", (10, 5)),
+            ("4k3/8/4P3/4B3/3P4/8/8/4K3 w - - 0 1", (18, 9)),
+            ("4k3/8/8/4B3/8/8/4P3/4K3 w - - 0 1", (0, 0)),
+            ("4k3/8/8/4B3/8/8/3P4/4K3 w - - 0 1", (-2, -3)),
+            ("4k3/8/8/8/8/8/8/R3K3 w - - 0 1", (24, 12)),
+            ("4k3/p7/8/8/8/8/8/R3K3 w - - 0 1", (12, 8)),
+            ("4k3/p7/8/8/8/8/P7/R3K3 w - - 0 1", (0, 0)),
+            ("4k3/8/8/8/8/8/8/Q3K3 w - - 0 1", (0, 0)),
+        ] {
+            let p = Position::from_fen(fen).unwrap();
+            assert_eq!(relationships_for_position(&p), expected, "{fen}");
+            assert_eq!(
+                relationships_for_position(&p),
+                reference_piece_pawn_relationships(&p),
+                "{fen}"
+            );
+            let mut mirrored = p.clone();
+            for (s, &pc) in p.squares.iter().enumerate() {
+                mirrored.squares[s ^ 56] = -pc;
+            }
+            assert_eq!(
+                relationships_for_position(&mirrored),
+                (-expected.0, -expected.1),
+                "{fen}"
+            );
+        }
+        assert_eq!(relationships_for_position(&Position::default()), (0, 0));
+    }
+
     // Coordinate/piece-list oracle independent of production fills and masks.
     fn reference_pawn_structure(p: &Position) -> (i32, i32) {
         let mut total = (0, 0);
@@ -2780,8 +2982,11 @@ mod tests {
         let (mg, eg) = mobility::tests::reference_scores(p);
         let space = reference_space(p);
         let (pawn_mg, pawn_eg) = reference_pawn_structure(p);
-        score += mg + space + pawn_mg;
-        score += (king_delta + eg - mg - space + pawn_eg - pawn_mg) * (24 - phase.min(24)) / 24;
+        let (piece_mg, piece_eg) = reference_piece_pawn_relationships(p);
+        score += mg + space + pawn_mg + piece_mg;
+        score += (king_delta + eg - mg - space + pawn_eg - pawn_mg + piece_eg - piece_mg)
+            * (24 - phase.min(24))
+            / 24;
         if bishops[0] >= 2 {
             score += 30;
         }
