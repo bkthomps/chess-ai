@@ -1561,6 +1561,108 @@ fn central_space(occupied: [u64; 2], pawns: [u64; 2], pawn_attacks: [u64; 2]) ->
     SPACE_UNIT * (units[1] - units[0])
 }
 
+// Static pawn-only terms, returned as signed (middlegame, endgame) centipawns.
+// These initial weights are untuned. Rank tables are from each pawn's own side.
+const ISOLATED_PAWN: (i32, i32) = (12, 18);
+const DOUBLED_PAWN: (i32, i32) = (10, 16);
+const BACKWARD_PAWN: (i32, i32) = (8, 12);
+const CONNECTED_PAWN: (i32, i32) = (6, 10);
+const PASSED_PAWN: [(i32, i32); 8] = [
+    (0, 0),
+    (0, 5),
+    (4, 10),
+    (10, 20),
+    (20, 40),
+    (35, 70),
+    (60, 120),
+    (0, 0),
+];
+const PAWN_FILE_A: u64 = 0x0101_0101_0101_0101;
+const PAWN_FILE_H: u64 = PAWN_FILE_A << 7;
+
+fn pawn_neighbors(bits: u64) -> u64 {
+    ((bits & !PAWN_FILE_A) >> 1) | ((bits & !PAWN_FILE_H) << 1)
+}
+fn pawn_north_fill(mut bits: u64) -> u64 {
+    bits |= bits << 8;
+    bits |= bits << 16;
+    bits | (bits << 32)
+}
+fn pawn_south_fill(mut bits: u64) -> u64 {
+    bits |= bits >> 8;
+    bits |= bits >> 16;
+    bits | (bits >> 32)
+}
+
+fn pawn_structure(pawns: [u64; 2], attacks: [u64; 2]) -> (i32, i32) {
+    if pawns[0] | pawns[1] == 0 {
+        return (0, 0);
+    }
+    let rear = [
+        pawn_north_fill(pawns[0] << 8),
+        pawn_south_fill(pawns[1] >> 8),
+    ];
+    let forward_span = [
+        pawn_south_fill(pawns[0] >> 8),
+        pawn_north_fill(pawns[1] << 8),
+    ];
+    let support_span = [
+        pawn_neighbors(forward_span[0]),
+        pawn_neighbors(forward_span[1]),
+    ];
+    let all_pawns = pawns[0] | pawns[1];
+    let mut total = (0, 0);
+    for color in 0..2 {
+        let own = pawns[color];
+        let downward = if color == 1 {
+            rear[color]
+        } else {
+            forward_span[color]
+        };
+        let files = (own | downward) & 0xff;
+        let occupied_files = files * PAWN_FILE_A;
+        let isolated = own & !pawn_neighbors(occupied_files);
+        let doubled = own.count_ones() as i32 - files.count_ones() as i32;
+        let connected = own & (attacks[color] | pawn_neighbors(own));
+        let stops = if color == 1 { own << 8 } else { own >> 8 };
+        // No backward penalty for isolated pawns or pawn-blocked advances.
+        // The support span includes possible future support from adjacent pawns
+        // on the same rank or behind, without simulating their moves.
+        let unsafe_stops = stops & attacks[1 - color] & !all_pawns & !support_span[color];
+        let backward = (if color == 1 {
+            unsafe_stops >> 8
+        } else {
+            unsafe_stops << 8
+        }) & !isolated;
+        let blockers = forward_span[1 - color] | pawn_neighbors(forward_span[1 - color]);
+        // Only the frontmost pawn on a friendly file can receive a passer bonus.
+        let mut passed = own & !rear[color] & !blockers;
+        let sign = if color == 1 { 1 } else { -1 };
+        let mut mg = connected.count_ones() as i32 * CONNECTED_PAWN.0
+            - isolated.count_ones() as i32 * ISOLATED_PAWN.0
+            - doubled * DOUBLED_PAWN.0
+            - backward.count_ones() as i32 * BACKWARD_PAWN.0;
+        let mut eg = connected.count_ones() as i32 * CONNECTED_PAWN.1
+            - isolated.count_ones() as i32 * ISOLATED_PAWN.1
+            - doubled * DOUBLED_PAWN.1
+            - backward.count_ones() as i32 * BACKWARD_PAWN.1;
+        while passed != 0 {
+            let square = passed.trailing_zeros() as usize;
+            passed &= passed - 1;
+            let rank = if color == 1 {
+                square / 8
+            } else {
+                7 - square / 8
+            };
+            mg += PASSED_PAWN[rank].0;
+            eg += PASSED_PAWN[rank].1;
+        }
+        total.0 += sign * mg;
+        total.1 += sign * eg;
+    }
+    total
+}
+
 fn evaluate(p: &Position) -> i32 {
     let (mut score, mut endgame_delta, mut phase) = (0, 0, 0);
     let mut bishops = [0, 0];
@@ -1595,8 +1697,11 @@ fn evaluate(p: &Position) -> i32 {
             _ => {}
         }
     }
+    let pawn_attacks = mobility::pawn_attacks(pawns);
+    let (pawn_mg, pawn_eg) = pawn_structure(pawns, pawn_attacks);
+    score += pawn_mg;
+    endgame_delta += pawn_eg - pawn_mg;
     if phase != 0 {
-        let pawn_attacks = mobility::pawn_attacks(pawns);
         let space = central_space(occupied, pawns, pawn_attacks);
         score += space;
         endgame_delta -= space; // Space is a middlegame-only term.
@@ -1619,7 +1724,7 @@ fn evaluate(p: &Position) -> i32 {
         }
     }
     // Promotions can exceed the initial material; clamp before blending.
-    // Blend king, mobility, and space together once to preserve color symmetry.
+    // Blend all phase-dependent terms once to preserve color symmetry.
     score += endgame_delta * (FULL_PHASE - phase.min(FULL_PHASE)) / FULL_PHASE;
     if bishops[0] >= 2 {
         score += 30;
@@ -2081,6 +2186,12 @@ mod tests {
             let mut search = test_search(&mut cache, &p, &[p.repetition_key()]);
             let mut random = 17;
             for _ in 0..500 {
+                assert_eq!(
+                    pawn_structure_for_position(&p),
+                    reference_pawn_structure(&p),
+                    "{:?}",
+                    p.squares
+                );
                 assert_eq!(evaluate(&p), reference_evaluate(&p));
                 assert_eq!(space_for_position(&p), reference_space(&p));
                 let mut mirrored = p.clone();
@@ -2427,6 +2538,116 @@ mod tests {
         assert_eq!(table.generation, 128);
     }
 
+    // Coordinate/piece-list oracle independent of production fills and masks.
+    fn reference_pawn_structure(p: &Position) -> (i32, i32) {
+        let mut total = (0, 0);
+        for sign in [-1i8, 1] {
+            let own: Vec<_> = p
+                .squares
+                .iter()
+                .enumerate()
+                .filter_map(|(s, &pc)| (pc == sign).then_some((s as i32 % 8, s as i32 / 8)))
+                .collect();
+            let enemy: Vec<_> = p
+                .squares
+                .iter()
+                .enumerate()
+                .filter_map(|(s, &pc)| (pc == -sign).then_some((s as i32 % 8, s as i32 / 8)))
+                .collect();
+            let forward = i32::from(sign);
+            let mut score = (0, 0);
+            for &(x, y) in &own {
+                let isolated = !own.iter().any(|&(a, _)| (a - x).abs() == 1);
+                let connected = own
+                    .iter()
+                    .any(|&(a, b)| (a - x).abs() == 1 && (b == y || b + forward == y));
+                let stop = (x, y + forward);
+                let blocked = own.contains(&stop) || enemy.contains(&stop);
+                let threatened = enemy
+                    .iter()
+                    .any(|&(a, b)| (a - x).abs() == 1 && b - forward == stop.1);
+                let can_support = own
+                    .iter()
+                    .any(|&(a, b)| (a - x).abs() == 1 && (b - y) * forward <= 0);
+                let backward = !isolated && !blocked && threatened && !can_support;
+                if isolated {
+                    score.0 -= 12;
+                    score.1 -= 18;
+                }
+                if connected {
+                    score.0 += 6;
+                    score.1 += 10;
+                }
+                if backward {
+                    score.0 -= 8;
+                    score.1 -= 12;
+                }
+                let frontmost = !own.iter().any(|&(a, b)| a == x && (b - y) * forward > 0);
+                let passed = frontmost
+                    && !enemy
+                        .iter()
+                        .any(|&(a, b)| (a - x).abs() <= 1 && (b - y) * forward > 0);
+                if passed {
+                    let rank = if sign > 0 { y } else { 7 - y } as usize;
+                    score.0 += [0, 0, 4, 10, 20, 35, 60, 0][rank];
+                    score.1 += [0, 5, 10, 20, 40, 70, 120, 0][rank];
+                }
+            }
+            for file in 0..8 {
+                let n = own.iter().filter(|&&(x, _)| x == file).count() as i32;
+                score.0 -= (n - 1).max(0) * 10;
+                score.1 -= (n - 1).max(0) * 16;
+            }
+            total.0 += i32::from(sign) * score.0;
+            total.1 += i32::from(sign) * score.1;
+        }
+        total
+    }
+
+    fn pawn_structure_for_position(p: &Position) -> (i32, i32) {
+        let mut pawns = [0; 2];
+        for (s, &pc) in p.squares.iter().enumerate() {
+            if pc.abs() == 1 {
+                pawns[usize::from(pc > 0)] |= 1u64 << s;
+            }
+        }
+        pawn_structure(pawns, mobility::pawn_attacks(pawns))
+    }
+
+    #[test]
+    fn pawn_structure_distinguishes_weaknesses_connections_and_frontmost_passers() {
+        for (fen, expected) in [
+            ("4k3/8/8/8/8/8/8/4K3 w - - 0 1", (0, 0)),
+            ("4k3/8/8/8/4P3/8/8/4K3 w - - 0 1", (-2, 2)),
+            ("4k3/8/8/8/8/8/P7/4K3 w - - 0 1", (-12, -13)),
+            ("4k3/8/8/8/8/P7/P7/4K3 w - - 0 1", (-30, -42)),
+            ("4k3/8/8/8/8/8/PP6/4K3 w - - 0 1", (12, 30)),
+            ("4k3/8/8/8/1P6/P7/8/4K3 w - - 0 1", (20, 40)),
+            ("4k3/8/8/3p4/5P2/4P3/8/4K3 w - - 0 1", (20, 36)),
+            ("4k3/8/8/8/8/PP6/P7/4K3 w - - 0 1", (10, 24)),
+            ("4k3/8/8/3p4/4pP2/4P3/8/4K3 w - - 0 1", (18, 32)),
+            ("4k3/8/8/3p4/8/4P3/8/4K3 w - - 0 1", (0, 0)),
+            ("4k3/8/8/8/3pP3/8/8/4K3 w - - 0 1", (-10, -20)),
+        ] {
+            let p = Position::from_fen(fen).unwrap();
+            assert_eq!(
+                pawn_structure_for_position(&p),
+                reference_pawn_structure(&p),
+                "{fen}"
+            );
+            assert_eq!(pawn_structure_for_position(&p), expected, "{fen}");
+            let mut mirrored = p.clone();
+            for (s, &pc) in p.squares.iter().enumerate() {
+                mirrored.squares[s ^ 56] = -pc;
+            }
+            assert_eq!(
+                pawn_structure_for_position(&mirrored),
+                (-expected.0, -expected.1)
+            );
+        }
+        assert_eq!(pawn_structure_for_position(&Position::default()), (0, 0));
+    }
+
     fn reference_space(p: &Position) -> i32 {
         if !p.squares.iter().any(|pc| pc.abs() == 1) {
             return 0;
@@ -2500,7 +2721,7 @@ mod tests {
         // must remove the entire space term from the actual evaluation.
         let ending = Position::from_fen("4k3/8/8/8/4P3/8/8/4K3 w - - 0 1").unwrap();
         assert_eq!(space_for_position(&ending), 12);
-        assert_eq!(evaluate(&ending), 132);
+        assert_eq!(evaluate(&ending), 134); // 132 material/position + 2 endgame pawn structure.
         let p = Position::default();
         assert_eq!(space_for_position(&p), 0);
         for (uci, expected) in [("e2e4", 16), ("d2d4", 16), ("e2e3", 4), ("b1c3", 0)] {
@@ -2558,8 +2779,9 @@ mod tests {
         }
         let (mg, eg) = mobility::tests::reference_scores(p);
         let space = reference_space(p);
-        score += mg + space;
-        score += (king_delta + eg - mg - space) * (24 - phase.min(24)) / 24;
+        let (pawn_mg, pawn_eg) = reference_pawn_structure(p);
+        score += mg + space + pawn_mg;
+        score += (king_delta + eg - mg - space + pawn_eg - pawn_mg) * (24 - phase.min(24)) / 24;
         if bishops[0] >= 2 {
             score += 30;
         }
