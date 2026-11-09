@@ -10,6 +10,7 @@ use std::time::{Duration, Instant};
 
 mod mobility {
     //! Pawn-safe pseudo-mobility, without move generation or heap scratch.
+    #[cfg(test)]
     use crate::chess::Position;
     use crate::tables::DIRECTIONS;
 
@@ -21,12 +22,14 @@ mod mobility {
     struct Geometry {
         rays: [[u64; 8]; 64],
         knights: [u64; 64],
+        kings: [u64; 64],
         lines: [[u64; 4]; 64],
     }
     const fn geometry() -> Geometry {
         let mut result = Geometry {
             rays: [[0; 8]; 64],
             knights: [0; 64],
+            kings: [0; 64],
             lines: [[0; 4]; 64],
         };
         let steps: [(i32, i32); 8] = [
@@ -42,6 +45,18 @@ mod mobility {
         let mut square = 0;
         while square < 64 {
             let (x, y) = (square as i32 % 8, square as i32 / 8);
+            let mut ox = -1;
+            while ox <= 1 {
+                let mut oy = -1;
+                while oy <= 1 {
+                    let (nx, ny) = (x + ox, y + oy);
+                    if (ox != 0 || oy != 0) && nx >= 0 && nx < 8 && ny >= 0 && ny < 8 {
+                        result.kings[square] |= 1u64 << (ny * 8 + nx);
+                    }
+                    oy += 1;
+                }
+                ox += 1;
+            }
             let mut d = 0;
             while d < 8 {
                 let (dx, dy) = DIRECTIONS[d];
@@ -98,6 +113,10 @@ mod mobility {
             ((pawns[0] & !FILE_A) >> 9) | ((pawns[0] & !FILE_H) >> 7),
             ((pawns[1] & !FILE_A) << 7) | ((pawns[1] & !FILE_H) << 9),
         ]
+    }
+
+    pub(super) fn king_attacks(square: usize) -> u64 {
+        GEOMETRY.kings[square]
     }
 
     pub(super) struct Mobility {
@@ -195,7 +214,9 @@ mod mobility {
             result
         }
 
-        pub(super) fn count(&self, _p: &Position, from: usize, pc: i8) -> i32 {
+        // Includes friendly blockers as defended squares. Mobility applies its
+        // own destination exclusions after threats/king safety reuse this map.
+        pub(super) fn attacks(&self, from: usize, pc: i8) -> u64 {
             let kind = pc.unsigned_abs() as usize;
             if !(2..=5).contains(&kind) {
                 return 0;
@@ -203,11 +224,7 @@ mod mobility {
             let color = usize::from(pc > 0);
             let pinned = self.pinned[color] & (1u64 << from) != 0;
             if kind == 2 {
-                return if pinned {
-                    0
-                } else {
-                    (GEOMETRY.knights[from] & self.eligible[color]).count_ones() as i32
-                };
+                return if pinned { 0 } else { GEOMETRY.knights[from] };
             }
             let lines = match kind {
                 3 => 2..4,
@@ -231,13 +248,22 @@ mod mobility {
                 } else {
                     (5, 6)
                 };
-                attacks &= GEOMETRY.rays[king][a] | GEOMETRY.rays[king][b];
+                attacks &= GEOMETRY.rays[king][a] | GEOMETRY.rays[king][b] | (1u64 << king);
             }
-            (attacks & self.eligible[color]).count_ones() as i32
+            attacks
         }
 
-        pub(super) fn bonus(&self, p: &Position, from: usize, pc: i8) -> (i32, i32) {
-            let count = self.count(p, from, pc) * i32::from(pc.signum());
+        #[cfg(test)]
+        pub(super) fn count(&self, _p: &Position, from: usize, pc: i8) -> i32 {
+            if !(2..=5).contains(&pc.abs()) {
+                return 0;
+            }
+            (self.attacks(from, pc) & self.eligible[usize::from(pc > 0)]).count_ones() as i32
+        }
+
+        pub(super) fn bonus_from_attacks(&self, pc: i8, attacks: u64) -> (i32, i32) {
+            let count = (attacks & self.eligible[usize::from(pc > 0)]).count_ones() as i32
+                * i32::from(pc.signum());
             let (mg, eg) = WEIGHTS[pc.unsigned_abs() as usize];
             (count * mg, count * eg)
         }
@@ -284,10 +310,10 @@ mod mobility {
 
         // Scalar oracle: enumerate all destination squares and walk paths with
         // coordinates, independently of the production attack tables and bit masks.
-        pub(crate) fn reference_count(p: &Position, from: usize) -> i32 {
+        pub(crate) fn reference_attacks(p: &Position, from: usize) -> u64 {
             let pc = p.squares[from];
             let kind = pc.abs();
-            if !(2..=5).contains(&kind) {
+            if !(1..=6).contains(&kind) {
                 return 0;
             }
             let xy = |s: usize| (s as i32 % 8, s as i32 / 8);
@@ -324,14 +350,16 @@ mod mobility {
                 }
                 pinned |= blockers == [from];
             }
-            let mut count = 0;
+            let mut attacks = 0;
             for to in 0..64 {
                 let (tx, ty) = xy(to);
                 let (dx, dy) = (tx - fx, ty - fy);
-                if to == from || p.squares[to].signum() == pc.signum() || p.squares[to].abs() == 6 {
+                if to == from {
                     continue;
                 }
                 let geometry = match kind {
+                    1 => dx.abs() == 1 && dy == i32::from(pc.signum()),
+                    6 => dx.abs().max(dy.abs()) == 1,
                     2 => dx.abs() * dy.abs() == 2,
                     3 => dx.abs() == dy.abs(),
                     4 => dx == 0 || dy == 0,
@@ -339,17 +367,13 @@ mod mobility {
                     _ => false,
                 };
                 if !geometry
-                    || pinned && (kind == 2 || (tx - kx) * (fy - ky) != (ty - ky) * (fx - kx))
+                    || (2..=5).contains(&kind)
+                        && pinned
+                        && (kind == 2 || (tx - kx) * (fy - ky) != (ty - ky) * (fx - kx))
                 {
                     continue;
                 }
-                if p.squares.iter().enumerate().any(|(s, &enemy)| {
-                    let (x, y) = xy(s);
-                    enemy == -pc.signum() && (x - tx).abs() == 1 && y - i32::from(pc.signum()) == ty
-                }) {
-                    continue;
-                }
-                if kind != 2 {
+                if (3..=5).contains(&kind) {
                     let (mut x, mut y) = (fx + dx.signum(), fy + dy.signum());
                     let mut blocked = false;
                     while (x, y) != (tx, ty) {
@@ -361,9 +385,32 @@ mod mobility {
                         continue;
                     }
                 }
-                count += 1;
+                attacks |= 1u64 << to;
             }
-            count
+            attacks
+        }
+
+        pub(crate) fn reference_count(p: &Position, from: usize) -> i32 {
+            let pc = p.squares[from];
+            if !(2..=5).contains(&pc.abs()) {
+                return 0;
+            }
+            let attacks = reference_attacks(p, from);
+            (0..64)
+                .filter(|&to| {
+                    if attacks & (1u64 << to) == 0
+                        || p.squares[to].signum() == pc.signum()
+                        || p.squares[to].abs() == 6
+                    {
+                        return false;
+                    }
+                    !p.squares.iter().enumerate().any(|(s, &enemy)| {
+                        enemy == -pc.signum()
+                            && (s as i32 % 8 - to as i32 % 8).abs() == 1
+                            && s as i32 / 8 - i32::from(pc.signum()) == to as i32 / 8
+                    })
+                })
+                .count() as i32
         }
 
         pub(crate) fn reference_scores(p: &Position) -> (i32, i32) {
@@ -1726,6 +1773,183 @@ fn piece_pawn_relationships(
     total
 }
 
+// Static tactical guidance, not a proof of a profitable exchange. Weights
+// are original and untuned; each target receives its largest applicable term.
+const HANGING: [(i32, i32); 7] = [
+    (0, 0),
+    (6, 10),
+    (16, 20),
+    (16, 20),
+    (24, 30),
+    (40, 50),
+    (0, 0),
+];
+const PAWN_THREAT: [(i32, i32); 7] = [
+    (0, 0),
+    (0, 0),
+    (24, 32),
+    (24, 32),
+    (40, 48),
+    (60, 72),
+    (0, 0),
+];
+const LOWER_THREAT: [(i32, i32); 7] = [(0, 0), (0, 0), (0, 0), (0, 0), (20, 24), (32, 40), (0, 0)];
+
+struct Pressure {
+    all: [u64; 2],
+    non_king: [u64; 2],
+    minor: [u64; 2],
+    rook: [u64; 2],
+    king_units: [i32; 2],
+    zones: [u64; 2],
+}
+impl Pressure {
+    fn new(pawn_attacks: [u64; 2], kings: [usize; 2]) -> Self {
+        let adjacent = [
+            mobility::king_attacks(kings[0]),
+            mobility::king_attacks(kings[1]),
+        ];
+        let zones = [
+            adjacent[0] | (1u64 << kings[0]),
+            adjacent[1] | (1u64 << kings[1]),
+        ];
+        Self {
+            all: [pawn_attacks[0] | adjacent[0], pawn_attacks[1] | adjacent[1]],
+            non_king: pawn_attacks,
+            minor: [0; 2],
+            rook: [0; 2],
+            king_units: [
+                (pawn_attacks[0] & zones[1]).count_ones() as i32,
+                (pawn_attacks[1] & zones[0]).count_ones() as i32,
+            ],
+            zones,
+        }
+    }
+    fn add(&mut self, pc: i8, attacks: u64) {
+        let color = usize::from(pc > 0);
+        let kind = pc.unsigned_abs() as usize;
+        self.all[color] |= attacks;
+        self.non_king[color] |= attacks;
+        if kind == 2 || kind == 3 {
+            self.minor[color] |= attacks;
+        }
+        if kind == 4 {
+            self.rook[color] |= attacks;
+        }
+        let weight = [0, 0, 2, 2, 3, 5, 0][kind];
+        self.king_units[color] +=
+            weight * (attacks & self.zones[1 - color]).count_ones().min(4) as i32;
+    }
+}
+
+fn threats(
+    p: &Position,
+    occupied: [u64; 2],
+    kings: [usize; 2],
+    pawn_attacks: [u64; 2],
+    pressure: &Pressure,
+) -> (i32, i32) {
+    let mut total = (0, 0);
+    for color in 0..2 {
+        let enemy = 1 - color;
+        let mut targets = occupied[color] & pressure.all[enemy] & !(1u64 << kings[color]);
+        while targets != 0 {
+            let square = targets.trailing_zeros() as usize;
+            targets &= targets - 1;
+            let bit = 1u64 << square;
+            let kind = p.squares[square].unsigned_abs() as usize;
+            let mut bonus = if pressure.all[color] & bit == 0 {
+                HANGING[kind]
+            } else {
+                (0, 0)
+            };
+            if pawn_attacks[enemy] & bit != 0 {
+                bonus.0 = bonus.0.max(PAWN_THREAT[kind].0);
+                bonus.1 = bonus.1.max(PAWN_THREAT[kind].1);
+            }
+            let lower = if kind == 4 {
+                pressure.minor[enemy]
+            } else if kind == 5 {
+                pressure.minor[enemy] | pressure.rook[enemy]
+            } else {
+                0
+            };
+            if lower & bit != 0 {
+                bonus.0 = bonus.0.max(LOWER_THREAT[kind].0);
+                bonus.1 = bonus.1.max(LOWER_THREAT[kind].1);
+            }
+            let sign = if color == 1 { -1 } else { 1 };
+            total.0 += sign * bonus.0;
+            total.1 += sign * bonus.1;
+        }
+    }
+    total
+}
+
+// Middlegame-only danger, additionally scaled by opposing attacking material.
+fn king_safety(
+    kings: [usize; 2],
+    pawns: [u64; 2],
+    knights: [u64; 2],
+    diagonal: [u64; 2],
+    straight: [u64; 2],
+    pressure: &Pressure,
+) -> i32 {
+    let mut total = 0;
+    for color in 0..2 {
+        let enemy = 1 - color;
+        let queens = diagonal[enemy] & straight[enemy];
+        let bishops = diagonal[enemy] & !straight[enemy];
+        let rooks = straight[enemy] & !diagonal[enemy];
+        let attack_material = (knights[enemy].count_ones()
+            + bishops.count_ones()
+            + 2 * rooks.count_ones()
+            + 4 * queens.count_ones())
+        .min(12) as i32;
+        if attack_material == 0 {
+            continue;
+        }
+        let units = pressure.king_units[enemy];
+        let weak = (pressure.zones[color] & pressure.all[enemy] & !pressure.non_king[color])
+            .count_ones() as i32;
+        let mut danger = 2 * units + units * units / 16 + 4 * weak;
+        let file = (kings[color] % 8) as i32;
+        let rank = (kings[color] / 8) as i32;
+        let forward = if color == 1 { 1 } else { -1 };
+        let home_rank = if color == 1 { rank } else { 7 - rank };
+        for x in (file - 1).max(0)..=(file + 1).min(7) {
+            let file_mask = PAWN_FILE_A << x;
+            if straight[enemy] != 0 && pawns[color] & file_mask == 0 {
+                danger += 6;
+                if pawns[enemy] & file_mask == 0 {
+                    danger += 4;
+                }
+            }
+            let (mut shield, mut storm) = (0, 0);
+            for distance in 1..=3 {
+                let y = rank + forward * distance;
+                if !(0..8).contains(&y) {
+                    break;
+                }
+                let bit = 1u64 << (8 * y + x);
+                if shield == 0 && pawns[color] & bit != 0 {
+                    shield = distance;
+                }
+                if storm == 0 && pawns[enemy] & bit != 0 {
+                    storm = distance;
+                }
+            }
+            if home_rank <= 2 {
+                danger += [12, 0, 4, 8][shield as usize];
+            }
+            danger += [0, 12, 8, 4][storm as usize];
+        }
+        let penalty = danger.min(300) * attack_material / 12;
+        total += if color == 1 { -penalty } else { penalty };
+    }
+    total
+}
+
 fn evaluate(p: &Position) -> i32 {
     let (mut score, mut endgame_delta, mut phase) = (0, 0, 0);
     let mut bishops = [0, 0];
@@ -1766,6 +1990,7 @@ fn evaluate(p: &Position) -> i32 {
     let (pawn_mg, pawn_eg) = pawn_structure(pawns, pawn_attacks);
     score += pawn_mg;
     endgame_delta += pawn_eg - pawn_mg;
+    let mut pressure = Pressure::new(pawn_attacks, kings);
     if phase != 0 {
         let (piece_mg, piece_eg) =
             piece_pawn_relationships(pawns, pawn_attacks, knights, diagonal, straight);
@@ -1787,11 +2012,18 @@ fn evaluate(p: &Position) -> i32 {
         while active != 0 {
             let square = active.trailing_zeros() as usize;
             active &= active - 1;
-            let (mg, eg) = mobility.bonus(p, square, p.squares[square]);
+            let piece = p.squares[square];
+            let attacks = mobility.attacks(square, piece);
+            let (mg, eg) = mobility.bonus_from_attacks(piece, attacks);
+            pressure.add(piece, attacks);
             score += mg;
             endgame_delta += eg - mg;
         }
     }
+    let (threat_mg, threat_eg) = threats(p, occupied, kings, pawn_attacks, &pressure);
+    let safety = king_safety(kings, pawns, knights, diagonal, straight, &pressure);
+    score += threat_mg + safety;
+    endgame_delta += threat_eg - threat_mg - safety;
     // Promotions can exceed the initial material; clamp before blending.
     // Blend all phase-dependent terms once to preserve color symmetry.
     score += endgame_delta * (FULL_PHASE - phase.min(FULL_PHASE)) / FULL_PHASE;
@@ -1827,10 +2059,16 @@ mod tests {
         ] {
             let mut p = Position::from_fen(fen).unwrap();
             let (mg, eg) = mobility::tests::reference_scores(&p);
-            let mobility_score = (mg * phase + eg * (24 - phase)) / 24;
-            assert_eq!(evaluate(&p) - mobility_score, expected, "{fen}");
+            let ((threat_mg, threat_eg), safety) = reference_tactical_terms(&p);
+            assert_eq!((-30 * phase + 48 * (24 - phase)) / 24, expected);
+            let combined = -30
+                + mg
+                + threat_mg
+                + safety
+                + (78 + eg - mg + threat_eg - threat_mg - safety) * (24 - phase) / 24;
+            assert_eq!(evaluate(&p), combined, "{fen}");
             p.white = false;
-            assert_eq!(evaluate(&p) + mobility_score, -expected);
+            assert_eq!(evaluate(&p), -combined);
         }
     }
 
@@ -2265,6 +2503,10 @@ mod tests {
                     relationships_for_position(&p),
                     reference_piece_pawn_relationships(&p)
                 );
+                assert_eq!(
+                    tactical_terms_for_position(&p),
+                    reference_tactical_terms(&p)
+                );
                 assert_eq!(evaluate(&p), reference_evaluate(&p));
                 assert_eq!(space_for_position(&p), reference_space(&p));
                 let mut mirrored = p.clone();
@@ -2279,6 +2521,12 @@ mod tests {
                         mobility.count(&p, s, pc),
                         mobility::tests::reference_count(&p, s)
                     );
+                    if (2..=5).contains(&pc.abs()) {
+                        assert_eq!(
+                            mobility.attacks(s, pc),
+                            mobility::tests::reference_attacks(&p, s)
+                        );
+                    }
                 }
                 assert_eq!(search.history_context, reversible_context(&p, &search.keys));
                 assert_eq!(
@@ -2609,6 +2857,254 @@ mod tests {
         }
         assert_eq!(table.probe(0), None);
         assert_eq!(table.generation, 128);
+    }
+
+    // Independent square/coordinate oracle. No production pressure masks,
+    // king geometry, danger helper, or threat weight constants are used here.
+    fn reference_tactical_terms(p: &Position) -> ((i32, i32), i32) {
+        let kings = [
+            p.squares.iter().position(|&pc| pc == -6).unwrap(),
+            p.squares.iter().position(|&pc| pc == 6).unwrap(),
+        ];
+        let in_zone = |square: usize, king: usize| {
+            (square as i32 % 8 - king as i32 % 8).abs() <= 1
+                && (square as i32 / 8 - king as i32 / 8).abs() <= 1
+        };
+        // Slot zero holds the union; other slots hold attacks by piece kind.
+        let mut maps = [[[false; 64]; 7]; 2];
+        let mut units = [0; 2];
+        for (s, &pc) in p.squares.iter().enumerate() {
+            if pc == 0 {
+                continue;
+            }
+            let c = usize::from(pc > 0);
+            let kind = pc.unsigned_abs() as usize;
+            let raw = mobility::tests::reference_attacks(p, s);
+            let mut hits = 0;
+            for (to, _) in p.squares.iter().enumerate() {
+                if raw & (1u64 << to) != 0 {
+                    maps[c][0][to] = true;
+                    maps[c][kind][to] = true;
+                    if in_zone(to, kings[1 - c]) {
+                        hits += 1;
+                    }
+                }
+            }
+            units[c] += match kind {
+                2 | 3 => 2 * hits.min(4),
+                4 => 3 * hits.min(4),
+                5 => 5 * hits.min(4),
+                _ => 0,
+            };
+        }
+        for c in 0..2 {
+            units[c] += (0..64)
+                .filter(|&to| maps[c][1][to] && in_zone(to, kings[1 - c]))
+                .count() as i32;
+        }
+        let mut threats = (0, 0);
+        for (s, &pc) in p.squares.iter().enumerate() {
+            if pc == 0 || pc.abs() == 6 {
+                continue;
+            }
+            let c = usize::from(pc > 0);
+            let enemy = 1 - c;
+            let k = pc.unsigned_abs() as usize;
+            if !maps[enemy][0][s] {
+                continue;
+            }
+            let mut options = vec![(0, 0)];
+            if !maps[c][0][s] {
+                options.push([(0, 0), (6, 10), (16, 20), (16, 20), (24, 30), (40, 50)][k]);
+            }
+            if maps[enemy][1][s] {
+                options.push([(0, 0), (0, 0), (24, 32), (24, 32), (40, 48), (60, 72)][k]);
+            }
+            if (k == 4 || k == 5)
+                && (maps[enemy][2][s] || maps[enemy][3][s] || k == 5 && maps[enemy][4][s])
+            {
+                options.push(if k == 4 { (20, 24) } else { (32, 40) });
+            }
+            let sign = -i32::from(pc.signum());
+            threats.0 += sign * options.iter().map(|x| x.0).max().unwrap();
+            threats.1 += sign * options.iter().map(|x| x.1).max().unwrap();
+        }
+        let mut safety = 0;
+        for c in 0..2 {
+            let sign = if c == 1 { 1i8 } else { -1 };
+            let (x, y) = (kings[c] as i32 % 8, kings[c] as i32 / 8);
+            let forward = i32::from(sign);
+            let enemy_material = p
+                .squares
+                .iter()
+                .filter(|v| v.signum() == -sign)
+                .map(|v| match v.abs() {
+                    2 | 3 => 1,
+                    4 => 2,
+                    5 => 4,
+                    _ => 0,
+                })
+                .sum::<i32>()
+                .min(12);
+            if enemy_material == 0 {
+                continue;
+            }
+            let weak = (0..64)
+                .filter(|&to| {
+                    in_zone(to, kings[c])
+                        && maps[1 - c][0][to]
+                        && !(1..=5).any(|kind| maps[c][kind][to])
+                })
+                .count() as i32;
+            let mut danger = 2 * units[1 - c] + units[1 - c] * units[1 - c] / 16 + 4 * weak;
+            let pawns: Vec<_> = p
+                .squares
+                .iter()
+                .enumerate()
+                .filter(|(_, v)| v.abs() == 1)
+                .map(|(s, &v)| (s as i32 % 8, s as i32 / 8, v))
+                .collect();
+            let enemy_sliders = p
+                .squares
+                .iter()
+                .any(|v| v.signum() == -sign && matches!(v.abs(), 4 | 5));
+            for file in (x - 1).max(0)..=(x + 1).min(7) {
+                if enemy_sliders && !pawns.iter().any(|&(a, _, v)| a == file && v == sign) {
+                    danger += if pawns.iter().any(|&(a, _, v)| a == file && v == -sign) {
+                        6
+                    } else {
+                        10
+                    };
+                }
+                let nearest = |owner| {
+                    pawns
+                        .iter()
+                        .filter(|&&(a, b, v)| {
+                            a == file && v == owner && (1..=3).contains(&((b - y) * forward))
+                        })
+                        .map(|&(_, b, _)| (b - y) * forward)
+                        .min()
+                };
+                if (if sign > 0 { y } else { 7 - y }) <= 2 {
+                    danger += match nearest(sign) {
+                        Some(1) => 0,
+                        Some(2) => 4,
+                        Some(3) => 8,
+                        _ => 12,
+                    };
+                }
+                danger += match nearest(-sign) {
+                    Some(1) => 12,
+                    Some(2) => 8,
+                    Some(3) => 4,
+                    _ => 0,
+                };
+            }
+            safety -= i32::from(sign) * danger.min(300) * enemy_material / 12;
+        }
+        (threats, safety)
+    }
+
+    fn tactical_terms_for_position(p: &Position) -> ((i32, i32), i32) {
+        let (mut occupied, mut pawns, mut knights, mut diagonal, mut straight, mut kings) =
+            ([0; 2], [0; 2], [0; 2], [0; 2], [0; 2], [0; 2]);
+        for (s, &pc) in p.squares.iter().enumerate() {
+            if pc == 0 {
+                continue;
+            }
+            let c = usize::from(pc > 0);
+            occupied[c] |= 1u64 << s;
+            match pc.abs() {
+                1 => pawns[c] |= 1u64 << s,
+                2 => knights[c] |= 1u64 << s,
+                3 => diagonal[c] |= 1u64 << s,
+                4 => straight[c] |= 1u64 << s,
+                5 => {
+                    diagonal[c] |= 1u64 << s;
+                    straight[c] |= 1u64 << s;
+                }
+                6 => kings[c] = s,
+                _ => {}
+            }
+        }
+        let pawn_attacks = mobility::pawn_attacks(pawns);
+        let mobility = mobility::Mobility::from_masks(
+            occupied,
+            pawns,
+            kings,
+            diagonal,
+            straight,
+            pawn_attacks,
+        );
+        let mut pressure = Pressure::new(pawn_attacks, kings);
+        for (s, &pc) in p.squares.iter().enumerate() {
+            if (2..=5).contains(&pc.abs()) {
+                pressure.add(pc, mobility.attacks(s, pc));
+            }
+        }
+        (
+            threats(p, occupied, kings, pawn_attacks, &pressure),
+            king_safety(kings, pawns, knights, diagonal, straight, &pressure),
+        )
+    }
+
+    #[test]
+    fn threats_count_targets_once_and_distinguish_defense_and_cheaper_attacks() {
+        for (fen, expected) in [
+            ("4k3/8/8/n7/8/8/8/R3K3 w - - 0 1", (16, 20)),
+            ("4k3/8/8/n7/8/P7/8/R3K3 w - - 0 1", (0, 0)),
+            ("k3r3/8/8/8/5p2/8/4N3/4K3 w - - 0 1", (0, 0)),
+            ("4k3/8/1p6/n7/8/8/8/R3K3 w - - 0 1", (0, 0)),
+            ("7k/4p3/3r4/8/2N5/8/8/K7 w - - 0 1", (20, 24)),
+            ("7k/8/4p3/3n4/4P3/8/8/K7 w - - 0 1", (24, 32)),
+            ("7k/8/8/3p4/4P3/4K3/8/8 w - - 0 1", (6, 10)),
+            ("8/8/4k3/3q4/4P3/5K2/8/8 w - - 0 1", (60, 72)),
+            ("7k/8/8/R3n3/8/8/8/4R2K w - - 0 1", (16, 20)),
+        ] {
+            let p = Position::from_fen(fen).unwrap();
+            let actual = tactical_terms_for_position(&p);
+            assert_eq!(actual.0, expected, "{fen}");
+            assert_eq!(actual, reference_tactical_terms(&p), "{fen}");
+            let mut mirrored = p.clone();
+            for (s, &pc) in p.squares.iter().enumerate() {
+                mirrored.squares[s ^ 56] = -pc;
+            }
+            assert_eq!(
+                tactical_terms_for_position(&mirrored),
+                ((-actual.0 .0, -actual.0 .1), -actual.1)
+            );
+        }
+    }
+
+    #[test]
+    fn king_safety_rewards_shields_accounts_for_storms_and_scales_with_material() {
+        for (fen, expected) in [
+            ("q5k1/8/8/8/8/8/5PPP/6K1 w - - 0 1", -5),
+            ("q5k1/8/8/8/8/8/5P1P/6K1 w - - 0 1", -18),
+            ("q5k1/8/8/8/8/8/8/6K1 w - - 0 1", -33),
+            ("n5k1/8/8/8/8/8/8/6K1 w - - 0 1", -3),
+            ("6k1/8/8/8/8/8/8/6K1 w - - 0 1", 0),
+            ("q5k1/8/8/8/8/6p1/5PPP/6K1 w - - 0 1", -12),
+            ("6kq/8/8/8/8/8/8/K7 w - - 0 1", -26),
+            ("7k/8/8/8/8/8/qqqqqqqq/4K3 w - - 0 1", -300),
+        ] {
+            let p = Position::from_fen(fen).unwrap();
+            let actual = tactical_terms_for_position(&p);
+            assert_eq!(actual.1, expected, "{fen}");
+            assert_eq!(actual, reference_tactical_terms(&p), "{fen}");
+            let mut mirrored = p.clone();
+            for (s, &pc) in p.squares.iter().enumerate() {
+                mirrored.squares[s ^ 56] = -pc;
+            }
+            assert_eq!(
+                tactical_terms_for_position(&mirrored),
+                ((-actual.0 .0, -actual.0 .1), -actual.1)
+            );
+        }
+        assert_eq!(
+            tactical_terms_for_position(&Position::default()),
+            ((0, 0), 0)
+        );
     }
 
     fn reference_piece_pawn_relationships(p: &Position) -> (i32, i32) {
@@ -2983,8 +3479,12 @@ mod tests {
         let space = reference_space(p);
         let (pawn_mg, pawn_eg) = reference_pawn_structure(p);
         let (piece_mg, piece_eg) = reference_piece_pawn_relationships(p);
-        score += mg + space + pawn_mg + piece_mg;
-        score += (king_delta + eg - mg - space + pawn_eg - pawn_mg + piece_eg - piece_mg)
+        let ((threat_mg, threat_eg), safety) = reference_tactical_terms(p);
+        score += mg + space + pawn_mg + piece_mg + threat_mg + safety;
+        score += (king_delta + eg - mg - space + pawn_eg - pawn_mg + piece_eg - piece_mg
+            + threat_eg
+            - threat_mg
+            - safety)
             * (24 - phase.min(24))
             / 24;
         if bishops[0] >= 2 {
