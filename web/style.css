@@ -206,3 +206,8 @@ dialog form { margin: 0; }
 body.in-game:not(.disconnected) .clicker { display: none; }
 
 .clicker-row button[aria-disabled="true"] { opacity: .5; }
+
+.lan-panel { margin-bottom: 12px; padding: 0.8rem 1rem; border-radius: 12px; background: #e5e9d6; }
+.lan-panel p { margin: 0 0 0.5rem; }
+.lan-panel label { display: block; margin-bottom: 0.4rem; }
+.lan-panel input { width: 100%; box-sizing: border-box; font: inherit; }

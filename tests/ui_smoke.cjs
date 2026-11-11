@@ -1,6 +1,7 @@
 // UI wiring checks with a simulated DOM; not a visual browser test.
 const fs = require('node:fs'), vm = require('node:vm'), assert = require('node:assert/strict'), path = require('node:path');
 const html = fs.readFileSync(path.join(__dirname, '../web/index.html'), 'utf8');
+assert.match(html, /<option value="lan" selected>LAN<\/option>\s*<option value="same">Same computer<\/option>\s*<option value="ai">AI vs\. AI<\/option>/);
 let focused;
 let boardRect = {left:0, top:0, width:640, height:640};
 const audioNotes = [], storedSounds = new Map();
@@ -312,6 +313,35 @@ const moveRequests = () => requests.filter(r => r.url.startsWith('/api/move?'));
   assert(elements['game-clocks'].hidden);
   openMenu(); elements['time-control'].value = '5'; elements['time-control'].listeners.change();
   assert(elements['unlimited-thinking'].hidden); await submit(); assert(!elements['game-clocks'].hidden);
+  // LAN seats gate browser input and expose the host's invitation.
+  vm.runInContext(`state.lan=true;state.player=true;state.waiting=true;state.join_url='http://192.168.1.2:7878/#join=test';render()`, context);
+  assert.equal(vm.runInContext('canPlay()', context), false);
+  assert(elements.undo.disabled); assert(!elements['lan-panel'].hidden);
+  assert(elements['lan-link'].value.includes('#join=test'));
+  vm.runInContext('state.waiting=false;render()', context);
+  assert.equal(vm.runInContext('canPlay()', context), true);
+  vm.runInContext('state.player=false;render()', context);
+  assert.equal(vm.runInContext('canPlay()', context), false);
+  vm.runInContext('state.white=false;render()', context);
+  assert.equal(vm.runInContext('canPlay()', context), true);
+  vm.runInContext('state.player=null;render()', context);
+  assert.equal(vm.runInContext('canPlay()', context), false); assert(elements.resign.disabled);
+  vm.runInContext('state.lan=false;state.white=true;render()', context);
+  // Following an invitation enters as Black and retains credentials for polling.
+  const seats = new Map();
+  context.window.sessionStorage = {getItem: key => seats.get(key), setItem: (key, value) => seats.set(key, value)};
+  context.window.location = {hash: '#join=invitation-test'};
+  context.window.history = {replaceState() {context.window.location.hash = '';}};
+  server = {...fresh(), lan:true, waiting:false, player:false, player_token:'guest-test', join_url:null};
+  await vm.runInContext('connectLan()', context); await tick();
+  assert.equal(seats.get('chess-player'), 'guest-test');
+  assert.equal(vm.runInContext('flipped', context), true);
+  assert(!elements.game.hidden); assert.equal(elements['game-mode'].textContent, 'LAN · You: Black · 5 min');
+  assert(requests.some(r => r.url.includes('/api/join?invite=invitation-test')));
+  assert(requests.at(-1).url.includes('player=guest-test'));
+  vm.runInContext('playing=false;state=null;lanMenuOpen=false', context);
+  await vm.runInContext('poll()', context);
+  assert.equal(vm.runInContext('playing', context), true);
   // AI spectators cannot move or queue premoves, including between searches.
   openMenu(); elements['two-player-mode'].value = 'ai';
   elements['time-control'].value = 'unlimited'; elements['two-player-mode'].listeners.change();

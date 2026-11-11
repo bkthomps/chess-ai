@@ -1,4 +1,4 @@
-//! Small loopback-only HTTP server; all chess decisions remain in Rust.
+//! Small local and LAN HTTP server; all chess decisions remain in Rust.
 use chess_ai::{
     chess::{Move, Position},
     clock::Clock,
@@ -6,9 +6,10 @@ use chess_ai::{
     game::Game,
 };
 use std::{
-    collections::HashMap,
+    collections::{hash_map::RandomState, HashMap},
+    hash::{BuildHasher, Hasher},
     io::{Read, Write},
-    net::{TcpListener, TcpStream},
+    net::{Ipv4Addr, TcpListener, TcpStream, UdpSocket},
     sync::{
         atomic::{AtomicBool, Ordering},
         mpsc::{self, Sender},
@@ -18,11 +19,89 @@ use std::{
     time::{Duration, Instant, SystemTime, UNIX_EPOCH},
 };
 
+struct Lan {
+    invite: String,
+    host: String,
+    guest: String,
+    joined: bool,
+    address: Option<Ipv4Addr>,
+}
+impl Lan {
+    fn player(&self, token: &str) -> Option<bool> {
+        if token == self.host {
+            Some(true)
+        } else if self.joined && token == self.guest {
+            Some(false)
+        } else {
+            None
+        }
+    }
+}
+fn seat_token() -> String {
+    // Use randomly keyed standard-library hashers for opaque seat identifiers.
+    let mut token = String::new();
+    for _ in 0..2 {
+        token.push_str(&format!(
+            "{:016x}",
+            RandomState::new().build_hasher().finish()
+        ));
+    }
+    token
+}
+fn lan_address() -> Option<Ipv4Addr> {
+    let socket = UdpSocket::bind((Ipv4Addr::UNSPECIFIED, 0)).ok()?;
+    // UDP connect selects an interface without transmitting any packets.
+    socket.connect((Ipv4Addr::new(192, 0, 2, 1), 80)).ok()?;
+    match socket.local_addr().ok()?.ip() {
+        std::net::IpAddr::V4(ip) if ip.is_private() || ip.is_link_local() => Some(ip),
+        _ => None,
+    }
+}
+fn authorized(a: &App, path: &str, token: &str, local: bool) -> bool {
+    match path {
+        "/api/new" => local && a.lan.as_ref().map_or(true, |lan| lan.host == token),
+        "/api/undo" => local && a.lan.is_none(),
+        "/api/move" | "/api/resign" => {
+            if let Some(lan) = &a.lan {
+                lan.player(token).is_some()
+                    && (path != "/api/move"
+                        || lan.joined && lan.player(token) == Some(a.game.position().white))
+            } else {
+                local
+            }
+        }
+        _ => true,
+    }
+}
+
+fn viewer_json(a: &mut App, token: &str, port: u16) -> String {
+    let mut json = state_json(a);
+    json.pop();
+    let player = a.lan.as_ref().and_then(|lan| lan.player(token));
+    let waiting = a.lan.as_ref().is_some_and(|lan| !lan.joined);
+    let link = a
+        .lan
+        .as_ref()
+        .filter(|lan| lan.host == token)
+        .and_then(|lan| {
+            lan.address
+                .map(|ip| quote(&format!("http://{ip}:{port}/#join={}", lan.invite)))
+        })
+        .unwrap_or_else(|| "null".into());
+    json.push_str(&format!(
+        ",\"lan\":{},\"player\":{},\"waiting\":{waiting},\"join_url\":{link}}}",
+        a.lan.is_some(),
+        player.map_or("null", |white| if white { "true" } else { "false" })
+    ));
+    json
+}
+
 struct App {
     game: Game,
     started_at: Option<u64>,
     human: Option<bool>,
     ai_vs_ai: bool,
+    lan: Option<Lan>,
     unlimited: bool,
     fixed_thinking: Duration,
     clock: Clock,
@@ -45,6 +124,7 @@ impl Default for App {
             started_at: game_start_time(),
             human: Some(true),
             ai_vs_ai: false,
+            lan: None,
             unlimited: false,
             fixed_thinking: Duration::from_secs(3),
             clock: Clock::new(Duration::from_secs(300), Duration::ZERO, Instant::now()),
@@ -164,7 +244,7 @@ fn main() -> std::io::Result<()> {
                 });
             }
             "--help" | "-h" => {
-                println!("Chess AI\n\nUsage: cargo run --release -- [--port 7878] [--open]\n\n--open opens the local address in your default browser.\nOne local game is shared by tabs; Ctrl+C stops the server.");
+                println!("Chess AI\n\nUsage: cargo run --release -- [--port 7878] [--open]\n\n--open opens the local address in your default browser.\nOne game is shared by tabs; LAN mode accepts an invited opponent on your network; Ctrl+C stops the server.");
                 return Ok(());
             }
             _ => {
@@ -173,9 +253,9 @@ fn main() -> std::io::Result<()> {
             }
         }
     }
-    let listener = TcpListener::bind(("127.0.0.1", port))?;
+    let listener = TcpListener::bind(("0.0.0.0", port))?;
     if open_browser {
-        let url = format!("http://{}", listener.local_addr()?);
+        let url = format!("http://127.0.0.1:{}", listener.local_addr()?.port());
         thread::spawn(move || {
             #[cfg(target_os = "windows")]
             let result = std::process::Command::new("cmd")
@@ -191,8 +271,8 @@ fn main() -> std::io::Result<()> {
         });
     }
     println!(
-        "\n  Chess AI is ready.\n  Open http://{} in your browser.\n  Press Ctrl+C to quit.\n",
-        listener.local_addr()?
+        "\n  Chess AI is ready.\n  Open http://127.0.0.1:{} in your browser.\n  Press Ctrl+C to quit.\n",
+        listener.local_addr()?.port()
     );
     let app = Arc::new(Mutex::new(App::default()));
     // Flags are adjudicated even when no browser is polling.
@@ -364,7 +444,8 @@ fn serve(mut stream: TcpStream, app: Shared) -> std::io::Result<()> {
     stream.set_read_timeout(Some(Duration::from_secs(3)))?;
     stream.set_write_timeout(Some(Duration::from_secs(3)))?;
     let port = stream.local_addr()?.port();
-    serve_connection(&mut stream, app, port)
+    let local = stream.peer_addr()?.ip().is_loopback();
+    serve_connection(&mut stream, app, port, local)
 }
 
 // The transport is generic so the exact HTTP handler can also be exercised
@@ -373,6 +454,7 @@ fn serve_connection(
     mut stream: &mut (impl Read + Write),
     app: Shared,
     port: u16,
+    local: bool,
 ) -> std::io::Result<()> {
     let mut bytes = Vec::new();
     let mut buf = [0; 1024];
@@ -419,29 +501,26 @@ fn serve_connection(
         .collect();
     // Reject DNS rebinding and cross-origin mutations. The browser sends a
     // dedicated header on API writes; no CORS permission is ever granted.
-    let valid_hosts = [format!("127.0.0.1:{port}"), format!("localhost:{port}")];
-    if !headers
-        .get("host")
-        .is_some_and(|h| valid_hosts.iter().any(|v| v == h))
+    let host = headers.get("host").copied().unwrap_or("");
+    let valid_host = host == format!("localhost:{port}")
+        || host.rsplit_once(':').is_some_and(|(ip, p)| {
+            p.parse::<u16>() == Ok(port)
+                && ip
+                    .parse::<Ipv4Addr>()
+                    .is_ok_and(|ip| ip.is_loopback() || ip.is_private() || ip.is_link_local())
+        });
+    if !valid_host
+        || method == "POST"
+            && (headers.get("x-chess-request") != Some(&"1")
+                || headers
+                    .get("origin")
+                    .is_some_and(|origin| **origin != format!("http://{host}")))
     {
         return respond(
             &mut stream,
             403,
             "application/json",
-            b"{\"error\":\"Use the local address printed in the terminal\"}",
-        );
-    }
-    if method == "POST"
-        && (headers.get("x-chess-request") != Some(&"1")
-            || headers.get("origin").is_some_and(|origin| {
-                !valid_hosts.iter().any(|h| format!("http://{h}") == *origin)
-            }))
-    {
-        return respond(
-            &mut stream,
-            403,
-            "application/json",
-            b"{\"error\":\"Invalid request origin\"}",
+            b"{\"error\":\"Invalid request origin or address\"}",
         );
     }
     let (path, query) = target.split_once('?').unwrap_or((target, ""));
@@ -467,13 +546,49 @@ fn serve_connection(
             return respond(&mut stream, 200, kind, body);
         }
     }
+    let mut token = params.get("player").copied().unwrap_or("").to_string();
+    if method == "POST" {
+        let a = app.lock().unwrap();
+        let denied = !authorized(&a, path, &token, local);
+        if denied {
+            return respond(
+                &mut stream,
+                403,
+                "application/json",
+                b"{\"error\":\"This action is unavailable for this player.\"}",
+            );
+        }
+    }
     let answer: Result<String, String> = match (method, path) {
-        ("GET", "/api/state") => Ok(state_json(&mut app.lock().unwrap())),
+        ("POST", "/api/join") => (|| {
+            let mut a = app.lock().unwrap();
+            if (a.adjudicated.is_some() || a.game.result().is_some())
+                && a.lan.as_ref().and_then(|lan| lan.player(&token)).is_none()
+            {
+                return Err("This game has ended.".into());
+            }
+            let lan = a.lan.as_mut().ok_or("No LAN game is waiting.")?;
+            if lan.player(&token).is_none() {
+                if lan.joined || params.get("invite").copied() != Some(lan.invite.as_str()) {
+                    return Err("This invitation is invalid or already used.".into());
+                }
+                lan.joined = true;
+                token = lan.guest.clone();
+                a.revision += 1;
+                if !a.unlimited {
+                    a.clock.start(true, Instant::now());
+                }
+            }
+            let mut json = viewer_json(&mut a, &token, port);
+            json.pop();
+            Ok(format!("{json},\"player_token\":{}}}", quote(&token)))
+        })(),
+        ("GET", "/api/state") => Ok(viewer_json(&mut app.lock().unwrap(), &token, port)),
         ("POST", "/api/new") => (|| {
             let mode = params.get("mode").copied().unwrap_or("");
             let color = params.get("color").copied().unwrap_or("");
             let two_player_mode = params.get("two_player_mode").copied().unwrap_or("same");
-            if !["same", "ai"].contains(&two_player_mode)
+            if !["lan", "same", "ai"].contains(&two_player_mode)
                 || mode != "two" && two_player_mode != "same"
             {
                 return Err("Choose a valid two-player mode.".into());
@@ -515,6 +630,9 @@ fn serve_connection(
             }
             {
                 let mut a = app.lock().unwrap();
+                if !authorized(&a, path, &token, local) {
+                    return Err("This action is unavailable for this player.".into());
+                }
                 a.cancel_search();
                 a.cache_epoch += 1;
                 a.game = Game::default();
@@ -522,6 +640,18 @@ fn serve_connection(
                 a.unlimited = unlimited;
                 a.fixed_thinking = fixed_thinking;
                 a.ai_vs_ai = ai_vs_ai;
+                a.lan = if mode == "two" && two_player_mode == "lan" {
+                    token = seat_token();
+                    Some(Lan {
+                        invite: seat_token(),
+                        host: token.clone(),
+                        guest: seat_token(),
+                        joined: false,
+                        address: lan_address(),
+                    })
+                } else {
+                    None
+                };
                 a.human = if mode == "two" {
                     None
                 } else {
@@ -536,7 +666,7 @@ fn serve_connection(
                     Duration::from_secs(increment),
                     now,
                 );
-                if !unlimited {
+                if !unlimited && a.lan.is_none() {
                     a.clock.start(true, now);
                 }
                 a.clock_history = vec![a.clock.remaining];
@@ -548,7 +678,9 @@ fn serve_connection(
                 a.adjudicated = None;
             }
             start_engine(&app);
-            Ok(state_json(&mut app.lock().unwrap()))
+            let mut json = viewer_json(&mut app.lock().unwrap(), &token, port);
+            json.pop();
+            Ok(format!("{json},\"player_token\":{}}}", quote(&token)))
         })(),
         ("POST", "/api/move") => (|| {
             let from = number(&params, "from")?;
@@ -560,6 +692,9 @@ fn serve_connection(
             }
             {
                 let mut a = app.lock().unwrap();
+                if !authorized(&a, path, &token, local) {
+                    return Err("This action is unavailable for this player.".into());
+                }
                 a.tick(Instant::now());
                 if a.adjudicated.is_some() {
                     return Err("The game has ended.".into());
@@ -581,11 +716,19 @@ fn serve_connection(
                 )?;
             }
             start_engine(&app);
-            Ok(state_json(&mut app.lock().unwrap()))
+            Ok(viewer_json(&mut app.lock().unwrap(), &token, port))
         })(),
         ("POST", "/api/undo") => {
             {
                 let mut a = app.lock().unwrap();
+                if !authorized(&a, path, &token, local) {
+                    return respond(
+                        &mut stream,
+                        403,
+                        "application/json",
+                        b"{\"error\":\"This action is unavailable for this player.\"}",
+                    );
+                }
                 a.tick(Instant::now());
                 if a.game.undo() {
                     a.clock_history.pop();
@@ -610,10 +753,18 @@ fn serve_connection(
                 }
             }
             start_engine(&app);
-            Ok(state_json(&mut app.lock().unwrap()))
+            Ok(viewer_json(&mut app.lock().unwrap(), &token, port))
         }
         ("POST", "/api/resign") => {
             let mut a = app.lock().unwrap();
+            if !authorized(&a, path, &token, local) {
+                return respond(
+                    &mut stream,
+                    403,
+                    "application/json",
+                    b"{\"error\":\"This action is unavailable for this player.\"}",
+                );
+            }
             a.tick(Instant::now());
             if a.ai_vs_ai {
                 return respond(
@@ -624,7 +775,12 @@ fn serve_connection(
                 );
             }
             if a.adjudicated.is_none() && a.game.result().is_none() {
-                let loser = a.human.unwrap_or(a.game.position().white);
+                let loser = a
+                    .lan
+                    .as_ref()
+                    .and_then(|lan| lan.player(&token))
+                    .or(a.human)
+                    .unwrap_or(a.game.position().white);
                 a.adjudicated = Some(format!(
                     "{} wins by resignation",
                     if loser { "Black" } else { "White" }
@@ -633,7 +789,7 @@ fn serve_connection(
                 a.release_cache();
                 a.clock.stop(Instant::now());
             }
-            Ok(state_json(&mut a))
+            Ok(viewer_json(&mut a, &token, port))
         }
         _ => {
             return respond(
@@ -775,11 +931,14 @@ mod tests {
         Arc::new(Mutex::new(App::default()))
     }
     fn raw(app: &Shared, request: &str) -> (u16, String) {
+        raw_peer(app, request, true)
+    }
+    fn raw_peer(app: &Shared, request: &str, local: bool) -> (u16, String) {
         let mut conn = Connection {
             input: Cursor::new(request.as_bytes().to_vec()),
             output: vec![],
         };
-        serve_connection(&mut conn, app.clone(), 7878).unwrap();
+        serve_connection(&mut conn, app.clone(), 7878, local).unwrap();
         let response = String::from_utf8(conn.output).unwrap();
         let (head, body) = response.split_once("\r\n\r\n").unwrap();
         let status = head.split_whitespace().nth(1).unwrap().parse().unwrap();
@@ -956,6 +1115,95 @@ mod tests {
             request(&app, "GET", "/api/state", 200).contains("\"opening\":\"Starting position\"")
         );
     }
+    #[test]
+    fn lan_seats_clocks_reconnect_and_authority() {
+        let app = shared();
+        let body = request(
+            &app,
+            "POST",
+            "/api/new?mode=two&two_player_mode=lan&color=white&base_seconds=60&increment_seconds=1",
+            200,
+        );
+        assert!(body.contains("\"waiting\":true"));
+        let (host, guest, invite) = {
+            let a = app.lock().unwrap();
+            assert_eq!(a.clock.active, None);
+            assert!(!a.thinking && !a.pondering);
+            let lan = a.lan.as_ref().unwrap();
+            (lan.host.clone(), lan.guest.clone(), lan.invite.clone())
+        };
+        let remote = |path: &str| {
+            raw_peer(&app, &format!("POST {path} HTTP/1.1\r\nHost: 192.168.1.10:7878\r\nOrigin: http://192.168.1.10:7878\r\nX-Chess-Request: 1\r\n\r\n"), false)
+        };
+        let rev = app.lock().unwrap().revision;
+        request(
+            &app,
+            "POST",
+            &format!("/api/move?from=12&to=28&promotion=0&revision={rev}&player={host}"),
+            403,
+        );
+        assert_eq!(remote("/api/join?invite=wrong").0, 400);
+        let (status, joined) = remote(&format!("/api/join?invite={invite}"));
+        assert_eq!(status, 200);
+        assert!(joined.contains(&format!("\"player_token\":\"{guest}\"")));
+        assert!(joined.contains("\"player\":false"));
+        assert!(!joined.contains(&host));
+        assert!(!joined.contains(&invite));
+        assert_eq!(app.lock().unwrap().clock.active, Some(true));
+        assert_eq!(remote(&format!("/api/join?invite={invite}")).0, 400);
+        assert_eq!(remote(&format!("/api/join?player={guest}")).0, 200);
+        let rev = app.lock().unwrap().revision;
+        assert_eq!(
+            remote(&format!(
+                "/api/move?from=12&to=28&promotion=0&revision={rev}&player={guest}"
+            ))
+            .0,
+            403
+        );
+        request(
+            &app,
+            "POST",
+            &format!("/api/move?from=12&to=28&promotion=0&revision={rev}&player={host}"),
+            200,
+        );
+        let rev = app.lock().unwrap().revision;
+        assert_eq!(
+            remote(&format!(
+                "/api/move?from=52&to=36&promotion=0&revision={rev}&player={guest}"
+            ))
+            .0,
+            200
+        );
+        request(&app, "POST", &format!("/api/undo?player={host}"), 403);
+        assert_eq!(remote(&format!("/api/new?player={guest}")).0, 403);
+        request(
+            &app,
+            "POST",
+            "/api/new?mode=two&color=white&unlimited=true",
+            403,
+        );
+        assert_eq!(remote("/api/resign").0, 403);
+        assert_eq!(remote(&format!("/api/resign?player={guest}")).0, 200);
+        assert_eq!(
+            app.lock().unwrap().adjudicated.as_deref(),
+            Some("White wins by resignation")
+        );
+        request(
+            &app,
+            "POST",
+            &format!(
+                "/api/new?mode=two&two_player_mode=same&color=white&unlimited=true&player={host}"
+            ),
+            200,
+        );
+        assert_eq!(
+            remote("/api/move?from=12&to=28&promotion=0&revision=0").0,
+            403
+        );
+        let spoof = "POST /api/join HTTP/1.1\r\nHost: 192.168.1.10:7878\r\nOrigin: http://192.168.1.11:7878\r\nX-Chess-Request: 1\r\n\r\n";
+        assert_eq!(raw_peer(&app, spoof, false).0, 403);
+    }
+
     #[test]
     fn local_play_validation_and_undo() {
         let app = shared();
