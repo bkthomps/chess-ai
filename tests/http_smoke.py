@@ -17,9 +17,9 @@ try:
     else:
         raise AssertionError('Server did not start')
 
-    def request(path, params=None, expected=200):
-        conn = http.client.HTTPConnection('127.0.0.1', port, timeout=8)
-        headers = {'X-Chess-Request': '1', 'Origin': f'http://127.0.0.1:{port}'}
+    def request(path, params=None, expected=200, address='127.0.0.1'):
+        conn = http.client.HTTPConnection(address, port, timeout=8)
+        headers = {'X-Chess-Request': '1', 'Origin': f'http://{address}:{port}'}
         conn.request('GET' if params is None else 'POST', path +
                      (('?' + urllib.parse.urlencode(params)) if params else ''), headers=headers)
         response = conn.getresponse()
@@ -148,7 +148,39 @@ try:
     state = request('/api/resign', {})
     assert not state['pondering'] and not state['thinking']
     assert not state['analysis']['active']
-    print('HTTP integration passed: local play, illegal/stale moves, mate, undo, resignation, both AI sides, pondering, worker isolation.')
+    # LAN uses one-use invitations and independent browser credentials.
+    state = request('/api/new', dict(mode='two', two_player_mode='lan', color='white',
+                                     base_seconds=60, increment_seconds=1))
+    host = state['player_token']
+    assert state['lan'] and state['waiting'] and state['player'] is True
+    assert not state['clocks']['running'] and not state['pondering']
+    assert state['join_url'], 'No LAN interface was detected'
+    invitation = urllib.parse.urlsplit(state['join_url'])
+    lan_ip = invitation.hostname
+    invite = urllib.parse.parse_qs(invitation.fragment)['join'][0]
+    spectator = request('/api/state')
+    assert spectator['player'] is None and spectator['join_url'] is None
+    request('/api/move', dict(player=host, **{'from': 12, 'to': 28, 'promotion': 0,
+                                             'revision': state['revision']}), 403)
+    guest_state = request('/api/join', dict(invite=invite), address=lan_ip)
+    guest = guest_state['player_token']
+    assert guest_state['player'] is False and not guest_state['waiting']
+    assert guest_state['clocks']['running'] and guest_state['join_url'] is None
+    request('/api/join', dict(invite=invite), 400)
+    assert request('/api/state?player=' + guest, address=lan_ip)['player'] is False
+    state = request('/api/move', dict(player=host, **{'from': 12, 'to': 28, 'promotion': 0,
+                                                    'revision': guest_state['revision']}))
+    state = request('/api/move', dict(player=guest, **{'from': 52, 'to': 36, 'promotion': 0,
+                                                     'revision': state['revision']}), address=lan_ip)
+    assert state['notation'] == ['e4', 'e5']
+    request('/api/undo', dict(player=host), 403)
+    request('/api/new', dict(player=guest), 403, address=lan_ip)
+    state = request('/api/resign', dict(player=guest), address=lan_ip)
+    assert state['result'] == 'White wins by resignation'
+    state = request('/api/new', dict(mode='two', two_player_mode='same', color='white',
+                                     unlimited='true', player=host))
+    assert not state['lan']
+    print('HTTP integration passed: LAN seats and invitations, local play, illegal/stale moves, mate, undo, resignation, both AI sides, pondering, worker isolation.')
 finally:
     server.terminate()
     server.wait(timeout=5)

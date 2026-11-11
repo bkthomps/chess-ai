@@ -33,7 +33,8 @@
         <div id="two-player-options" class="time-control-row" hidden>
           <label for="two-player-mode">Mode</label>
           <select id="two-player-mode" name="two-player-mode" disabled>
-            <option value="same" selected>Same computer</option>
+            <option value="lan" selected>LAN</option>
+            <option value="same">Same computer</option>
             <option value="ai">AI vs. AI</option>
           </select>
         </div>
@@ -90,6 +91,11 @@
         <button id="menu-button" class="text-button" type="button">New game</button>
       </div>
       <div class="play-area">
+        <div id="lan-panel" class="lan-panel" hidden>
+          <p id="lan-status" role="status"></p>
+          <label id="lan-link-label" for="lan-link">Invite your opponent (same Wi-Fi or network)</label>
+          <input id="lan-link" type="text" readonly aria-label="LAN join link">
+        </div>
         <div id="game-clocks" class="clocks" aria-label="Game clocks">
           <div id="clock-white" class="clock"><span id="white-clock-label">White</span><time id="white-time" aria-label="White time remaining">5:00</time></div>
           <div id="clock-black" class="clock"><span id="black-clock-label">Black</span><time id="black-time" aria-label="Black time remaining">5:00</time></div>

@@ -354,11 +354,16 @@ function showError(error) {
   $('error-text').textContent = error.message || String(error); $('error').hidden = false;
 }
 $('dismiss-error').onclick = () => { $('error').hidden = true; };
+let lanMenuOpen = false;
+let playerToken = '';
+try { playerToken = window.sessionStorage?.getItem('chess-player') || ''; } catch {}
 async function api(path, params) {
   const options = { cache: 'no-store', signal: AbortSignal.timeout(10000) };
   if (params) { options.method = 'POST'; options.headers = { 'X-Chess-Request': '1' }; }
   let response;
-  try { response = await fetch('/api/' + path + (params ? '?' + new URLSearchParams(params) : ''), options); }
+  const query = new URLSearchParams(params || {});
+  if (playerToken) query.set('player', playerToken);
+  try { response = await fetch('/api/' + path + (query.toString() ? '?' + query : ''), options); }
   catch {
     if (!document.body.classList.contains('disconnected')) {
       const white = state ? (state.human === null ? state.white : state.human) : true;
@@ -371,6 +376,10 @@ async function api(path, params) {
   }
   const data = await response.json();
   if (!response.ok) throw new Error(data.error || 'Something went wrong. Please try again.');
+  if (data.player_token) {
+    playerToken = data.player_token;
+    try { window.sessionStorage?.setItem('chess-player', playerToken); } catch {}
+  }
   data.receivedAt = performance.now();
   return data;
 }
@@ -408,6 +417,7 @@ $('setup-form').addEventListener('submit', async e => {
     const control = form.get('time-control');
     const params = {mode: form.get('mode'), color: form.get('color')};
     if (params.mode === 'two') params.two_player_mode = form.get('two-player-mode');
+    if (params.two_player_mode === 'lan') params.color = 'white';
     if (control === 'unlimited') {
       params.unlimited = true;
       if (params.mode === 'one' || params.two_player_mode === 'ai') params.thinking_seconds = Number(form.get('thinking-time') === 'custom' ? form.get('thinking-seconds') : form.get('thinking-time'));
@@ -417,11 +427,11 @@ $('setup-form').addEventListener('submit', async e => {
       Object.assign(params, {base_seconds: base, increment_seconds: increment});
     }
     const next = await api('new', params);
-    flipped = next.human === false; selected = null; lastHistoryLength = -1; lastStatus = '';
+    flipped = next.lan ? next.player === false : next.human === false; selected = null; lastHistoryLength = -1; lastStatus = '';
     $('engine-info').open = false;
     state = next; enterGame();
   } catch (error) { showError(error); }
-  finally { busy = false; $('start').disabled = false; }
+  finally { busy = false; $('start').disabled = false; if (playing) render(); }
 });
 function resetNewGameConfirmation() {
   if (newGameConfirmationTimer !== null) clearTimeout(newGameConfirmationTimer);
@@ -432,6 +442,7 @@ document.addEventListener('click', e => {
   if (confirmingNewGame && !$('menu-button').contains(e.target)) resetNewGameConfirmation();
 });
 function enterGame() {
+  lanMenuOpen = false;
   resetNewGameConfirmation();
   playing = true; $('menu').hidden = true; $('game').hidden = false; syncMusic();
   resetSoundSnapshot({notation: [], result: null});
@@ -449,7 +460,7 @@ $('menu-button').onclick = () => {
     return;
   }
   resetNewGameConfirmation();
-  playing = false; selected = null; $('menu').hidden = false; $('game').hidden = true;
+  playing = false; lanMenuOpen = true; selected = null; $('menu').hidden = false; $('game').hidden = true;
   document.body.classList.remove('in-game'); syncMusic(); $('start').focus({preventScroll:true});
   window.scrollTo({top:0, behavior:'instant'});
 };
@@ -476,7 +487,7 @@ function renderClocks() {
   }
 }
 setInterval(renderClocks, 100);
-function canPlay() { return state && !state.ai_vs_ai && !busy && !state.thinking && !state.result && clockRemaining(state.white) > 0 && (state.human === null || state.human === state.white); }
+function canPlay() { return state && (!state.lan || !state.waiting && state.player === state.white) && !state.ai_vs_ai && !busy && !state.thinking && !state.result && clockRemaining(state.white) > 0 && (state.human === null || state.human === state.white); }
 function canPremove() {
   return state && !state.ai_vs_ai && playing && !busy && !state.result && state.human !== null && state.human !== state.white
     && clockRemaining(state.white) > 0 && clockRemaining(state.human) > 0;
@@ -485,7 +496,7 @@ function canInput() {
   return playing && !$('game').hidden && !document.body.classList.contains('disconnected')
     && !$('promotion-dialog').open && !$('resign-dialog').open && (canPlay() || canPremove());
 }
-function inputColor() { return state.human === null ? state.white : state.human; }
+function inputColor() { return state.lan ? state.player : state.human === null ? state.white : state.human; }
 // Preview submitted and queued moves without changing the authoritative state.
 // Opponent replies remain unknown until Rust publishes them.
 function premoveBoard() {
@@ -861,13 +872,20 @@ function render() {
   const readyPremove = takeReadyPremove();
   renderBoard(!!drag && state.revision === drag.revision && canInput());
   renderClocks();
-  const signature = [state.white, state.thinking, state.result, state.check, state.human, state.ai_vs_ai, controlLabel(state.clocks), state.thinking_seconds].join('|');
+  const signature = [state.white, state.thinking, state.result, state.check, state.human, state.ai_vs_ai, state.lan, state.waiting, state.player, controlLabel(state.clocks), state.thinking_seconds].join('|');
   if (signature !== lastStatus) {
     const side = state.white ? 'White' : 'Black';
-    $('status').textContent = state.result || (state.thinking ? (state.ai_vs_ai ? `${side} computer thinking…` : 'Computer thinking…') : state.check ? `${side} is in check.` : `${side} to move.`);
-    $('game-mode').textContent = `${state.ai_vs_ai ? 'AI vs. AI' : state.human === null ? 'Two players' : 'You: ' + (state.human ? 'White' : 'Black')} · ${controlLabel(state.clocks)}${!state.clocks.enabled && (state.human !== null || state.ai_vs_ai) ? ' · ' + state.thinking_seconds + 's per move' : ''}`;
+    $('status').textContent = state.result || (state.lan && state.waiting ? 'Waiting for your opponent to join…' : state.thinking ? (state.ai_vs_ai ? `${side} computer thinking…` : 'Computer thinking…') : state.check ? `${side} is in check.` : `${side} to move.`);
+    $('game-mode').textContent = `${state.lan ? 'LAN · ' + (state.player === null ? 'Spectating' : 'You: ' + (state.player ? 'White' : 'Black')) : state.ai_vs_ai ? 'AI vs. AI' : state.human === null ? 'Two players' : 'You: ' + (state.human ? 'White' : 'Black')} · ${controlLabel(state.clocks)}${!state.clocks.enabled && (state.human !== null || state.ai_vs_ai) ? ' · ' + state.thinking_seconds + 's per move' : ''}`;
     lastStatus = signature;
   }
+  $('menu-button').disabled = state.lan && state.player !== true;
+  $('lan-panel').hidden = !state.lan;
+  $('lan-status').textContent = state.waiting ? 'Clocks start when your opponent joins. You play White.' : 'LAN game · reconnect by refreshing this tab.';
+  $('lan-link-label').hidden = !state.join_url;
+  $('lan-link').hidden = !state.join_url;
+  $('lan-link').value = state.join_url || '';
+  if (state.lan && state.waiting && state.player === true && !state.join_url) $('lan-status').textContent = 'No LAN address found. Connect the host to Wi-Fi or a wired network, then restart the game.';
   $('moves-title').textContent = state.opening;
   if (state.notation.length !== lastHistoryLength) {
     const fragment = document.createDocumentFragment();
@@ -881,8 +899,8 @@ function render() {
     $('history-empty').hidden = !!state.notation.length;
     $('history-scroll').scrollTop = $('history-scroll').scrollHeight; lastHistoryLength = state.notation.length;
   }
-  $('undo').disabled = busy || !state.notation.length || state.human === false && state.notation.length === 1;
-  $('resign').disabled = busy || !!state.result || state.ai_vs_ai;
+  $('undo').disabled = state.lan || busy || !state.notation.length || state.human === false && state.notation.length === 1;
+  $('resign').disabled = state.lan && state.player === null || busy || !!state.result || state.ai_vs_ai;
   if (state.result && confirmingNewGame) resetNewGameConfirmation();
   renderEngine();
   if (readyPremove) void makeMove(readyPremove, true);
@@ -951,7 +969,7 @@ $('undo').onclick = async () => {
 $('resign').onclick = () => {
   if (busy || state.result || state.ai_vs_ai) return;
   clearBoardInput(); renderBoard();
-  const white = state.human === null ? state.white : state.human;
+  const white = state.lan ? state.player : state.human === null ? state.white : state.human;
   $('resign-detail').textContent = `${white ? 'White' : 'Black'} will resign, and ${white ? 'Black' : 'White'} will win the game.`;
   $('resign-dialog').showModal();
 };
@@ -978,7 +996,12 @@ async function poll() {
         document.body.classList.remove('in-game');
         document.body.classList.remove('disconnected'); $('disconnected').hidden = true; syncMusic();
         $('start').focus({preventScroll:true});
-      } else if (!playing || !state) { state = next; }
+      } else if (!playing || !state) {
+        state = next;
+        if (next.lan && next.player !== null && !playing && !lanMenuOpen) {
+          flipped = next.player === false; enterGame();
+        }
+      }
       // Never overwrite a newer move response with an older polling response.
       else if (!busy && (next.revision > state.revision || next.revision === state.revision && (next.thinking !== state.thinking || next.pondering !== state.pondering))) {
         if (next.revision !== state.revision) {
@@ -996,4 +1019,18 @@ async function poll() {
   }
   setTimeout(poll, playing && (state?.thinking || state?.pondering) ? 150 : playing && state?.clocks.running ? 250 : 1000);
 }
-void poll();
+async function connectLan() {
+  const invite = new URLSearchParams((window.location?.hash || '').replace(/^#/, '')).get('join');
+  if (invite) {
+    busy = true;
+    try {
+      const next = await api('join', {invite});
+      state = next; flipped = next.player === false;
+      window.history?.replaceState(null, '', '/');
+      enterGame();
+    } catch (error) { showError(error); }
+    finally { busy = false; if (playing) render(); }
+  }
+  void poll();
+}
+void connectLan();
