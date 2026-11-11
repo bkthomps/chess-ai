@@ -1,0 +1,70 @@
+# Measurements
+
+Fresh processes, seeded shuffled order, equal 100 MB total budget. Ponder: warmup then 2 s reply.
+
+| Position | Threads | Mode | Variant | Depth range | Median ms (range) | Max cache MB | Peak RSS MB |
+|---|---:|---|---|---|---|---:|---:|
+| opening | 1 | depth | baseline | 8–8 | 1084.20 (869.02–1245.04) | 8.42 | 10.53 |
+| opening | 1 | depth | evasions | 8–8 | 1016.70 (948.95–1191.23) | 8.42 | 10.52 |
+| opening | 1 | time | evasions | 7–8 | 1000.01 (1000.00–1000.02) | 8.42 | 10.53 |
+| opening | 1 | time | baseline | 7–8 | 1000.01 (1000.00–1000.03) | 8.42 | 10.53 |
+| opening | 6 | depth | baseline | 8–8 | 311.21 (284.68–433.32) | 8.42 | 12.76 |
+| opening | 6 | depth | evasions | 8–8 | 285.45 (249.99–357.13) | 8.42 | 12.76 |
+| opening | 6 | time | evasions | 8–8 | 1000.09 (1000.06–1000.17) | 18.88 | 23.30 |
+| opening | 6 | time | baseline | 8–8 | 1000.14 (1000.06–1000.25) | 16.84 | 21.25 |
+| after_e4 | 1 | depth | evasions | 7–7 | 305.24 (241.17–356.13) | 4.21 | 6.60 |
+| after_e4 | 1 | depth | baseline | 7–7 | 330.92 (261.26–391.27) | 4.21 | 6.28 |
+| after_e4 | 1 | time | evasions | 7–7 | 1000.01 (1000.00–1000.04) | 8.42 | 10.52 |
+| after_e4 | 1 | time | baseline | 7–7 | 1000.01 (1000.00–1000.04) | 7.83 | 9.91 |
+| after_e4 | 6 | depth | baseline | 7–7 | 150.41 (94.28–186.00) | 4.21 | 8.47 |
+| after_e4 | 6 | depth | evasions | 7–7 | 124.18 (94.64–145.85) | 4.21 | 8.47 |
+| after_e4 | 6 | time | baseline | 8–8 | 1000.09 (1000.01–1000.14) | 20.79 | 25.17 |
+| after_e4 | 6 | time | evasions | 8–8 | 1000.08 (1000.06–1000.12) | 29.08 | 33.44 |
+| after_d4 | 1 | depth | baseline | 7–7 | 254.73 (250.13–268.18) | 4.21 | 6.29 |
+| after_d4 | 1 | depth | evasions | 7–7 | 249.01 (245.07–256.03) | 4.21 | 6.28 |
+| after_d4 | 1 | time | baseline | 7–7 | 1000.01 (1000.00–1000.02) | 6.58 | 8.65 |
+| after_d4 | 1 | time | evasions | 7–7 | 1000.00 (1000.00–1000.15) | 8.22 | 10.29 |
+| after_d4 | 6 | depth | baseline | 7–7 | 86.94 (77.96–147.28) | 4.21 | 8.45 |
+| after_d4 | 6 | depth | evasions | 7–7 | 88.73 (73.78–143.09) | 4.21 | 8.47 |
+| after_d4 | 6 | time | baseline | 8–8 | 1000.06 (1000.03–1005.22) | 16.84 | 21.17 |
+| after_d4 | 6 | time | evasions | 8–8 | 1000.12 (1000.05–1003.02) | 16.84 | 21.17 |
+| middlegame | 1 | depth | evasions | 6–6 | 668.23 (500.33–722.35) | 4.21 | 6.29 |
+| middlegame | 1 | depth | baseline | 6–6 | 745.80 (562.06–837.86) | 4.21 | 6.31 |
+| middlegame | 1 | time | baseline | 6–6 | 1000.01 (1000.00–1000.02) | 4.21 | 6.31 |
+| middlegame | 1 | time | evasions | 6–6 | 1000.01 (1000.00–1000.17) | 4.21 | 6.31 |
+| middlegame | 6 | depth | evasions | 6–6 | 327.47 (227.86–370.50) | 4.21 | 8.44 |
+| middlegame | 6 | depth | baseline | 6–6 | 340.82 (263.08–392.00) | 4.21 | 8.44 |
+| middlegame | 6 | time | baseline | 7–7 | 1000.08 (1000.07–1000.15) | 12.63 | 17.04 |
+| middlegame | 6 | time | evasions | 7–7 | 1000.12 (1000.07–1000.19) | 16.84 | 21.23 |
+| closed_center | 1 | depth | baseline | 6–6 | 250.93 (187.78–280.11) | 4.21 | 6.28 |
+| closed_center | 1 | depth | evasions | 6–6 | 232.52 (174.21–269.14) | 4.21 | 6.28 |
+| closed_center | 1 | time | evasions | 6–7 | 1000.01 (1000.00–1000.02) | 4.21 | 6.31 |
+| closed_center | 1 | time | baseline | 6–7 | 1000.02 (1000.00–1000.04) | 4.21 | 6.32 |
+| closed_center | 6 | depth | baseline | 6–6 | 73.31 (64.68–123.18) | 4.21 | 8.37 |
+| closed_center | 6 | depth | evasions | 6–6 | 66.40 (61.87–99.63) | 4.21 | 8.37 |
+| closed_center | 6 | time | evasions | 7–7 | 1000.22 (1000.05–1000.40) | 33.49 | 37.83 |
+| closed_center | 6 | time | baseline | 7–7 | 1000.14 (1000.10–1002.28) | 24.47 | 28.82 |
+| endgame | 1 | depth | baseline | 10–10 | 1349.08 (1138.61–1485.79) | 15.86 | 17.96 |
+| endgame | 1 | depth | evasions | 10–10 | 1187.25 (1032.44–1432.62) | 15.86 | 17.94 |
+| endgame | 1 | time | baseline | 9–9 | 1000.01 (1000.00–1000.02) | 12.63 | 14.71 |
+| endgame | 1 | time | evasions | 9–9 | 1000.01 (1000.00–1000.03) | 14.15 | 16.20 |
+| endgame | 6 | depth | baseline | 10–10 | 607.61 (473.77–711.52) | 16.84 | 21.10 |
+| endgame | 6 | depth | evasions | 10–10 | 624.01 (443.18–756.09) | 16.84 | 21.22 |
+| endgame | 6 | time | evasions | 10–11 | 1000.09 (1000.00–1001.18) | 29.34 | 33.62 |
+| endgame | 6 | time | baseline | 10–11 | 1000.08 (1000.01–1003.79) | 29.67 | 34.01 |
+| tactics | 1 | depth | evasions | 6–6 | 254.54 (192.55–298.05) | 4.21 | 6.31 |
+| tactics | 1 | depth | baseline | 6–6 | 313.43 (228.65–338.57) | 4.21 | 6.31 |
+| tactics | 1 | time | baseline | 6–7 | 1000.01 (1000.00–1000.03) | 4.21 | 6.31 |
+| tactics | 1 | time | evasions | 7–7 | 1000.01 (1000.00–1000.03) | 5.26 | 7.31 |
+| tactics | 6 | depth | baseline | 6–6 | 81.93 (66.48–109.09) | 4.21 | 8.40 |
+| tactics | 6 | depth | evasions | 6–6 | 76.08 (58.09–96.03) | 4.21 | 8.40 |
+| tactics | 6 | time | baseline | 7–7 | 1000.14 (1000.08–1000.27) | 29.47 | 33.82 |
+| tactics | 6 | time | evasions | 7–7 | 1000.19 (1000.05–1001.58) | 33.75 | 38.09 |
+| relationships | 1 | depth | baseline | 10–10 | 68.77 (66.35–106.56) | 4.21 | 6.29 |
+| relationships | 1 | depth | evasions | 10–10 | 68.92 (65.22–101.91) | 4.21 | 6.28 |
+| relationships | 1 | time | baseline | 13–13 | 1000.01 (1000.00–1000.02) | 20.00 | 22.09 |
+| relationships | 1 | time | evasions | 13–13 | 1000.00 (1000.00–1000.01) | 16.84 | 18.94 |
+| relationships | 6 | depth | baseline | 10–10 | 37.49 (33.66–83.65) | 4.21 | 8.50 |
+| relationships | 6 | depth | evasions | 10–10 | 36.62 (33.74–84.68) | 4.21 | 8.50 |
+| relationships | 6 | time | baseline | 14–15 | 1000.06 (1000.00–1000.23) | 46.38 | 50.87 |
+| relationships | 6 | time | evasions | 14–15 | 1000.05 (1000.00–1000.11) | 61.58 | 66.13 |

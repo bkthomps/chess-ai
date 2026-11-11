@@ -301,9 +301,27 @@ impl Position {
         false
     }
     /// Check status and absolute pins, computed once for the current king.
-    fn king_safety(&self, king: usize) -> (bool, u64) {
+    fn king_safety(&self, king: usize) -> (bool, u64, u64) {
         let sign = if self.white { 1 } else { -1 };
         let mut check = self.leaper_attacked(king, !self.white);
+        let mut evasions = u64::MAX;
+        if check {
+            for square in PAWN_ATTACKERS[usize::from(!self.white)][king].iter() {
+                if self.squares[square] == -sign {
+                    evasions &= 1u64 << square;
+                }
+            }
+            for square in KNIGHT_TARGETS[king].iter() {
+                if self.squares[square] == -sign * KNIGHT {
+                    evasions &= 1u64 << square;
+                }
+            }
+            for square in KING_TARGETS[king].iter() {
+                if self.squares[square] == -sign * KING {
+                    evasions &= 1u64 << square;
+                }
+            }
+        }
         let mut pinned = 0;
         for (direction, ray) in RAYS[king].iter().enumerate() {
             let mut blocker = None;
@@ -326,13 +344,19 @@ impl Position {
                             pinned |= 1u64 << square;
                         } else {
                             check = true;
+                            // A non-king reply must capture this checker or
+                            // block its ray. Intersect for multiple checks.
+                            evasions &= ray
+                                .iter()
+                                .take_while(|&s| s != target)
+                                .fold(1u64 << target, |mask, s| mask | (1u64 << s));
                         }
                     }
                     break;
                 }
             }
         }
-        (check, pinned)
+        (check, pinned, evasions)
     }
     pub fn in_check(&self, white: bool) -> bool {
         self.squares
@@ -369,10 +393,10 @@ impl Position {
                 has_legal: false,
             };
         };
-        let (check, pinned) = if FAST {
+        let (check, pinned, evasions) = if FAST {
             self.king_safety(king)
         } else {
-            (self.in_check(self.white), 0)
+            (self.in_check(self.white), 0, u64::MAX)
         };
         let mut has_legal = false;
         let sign = if self.white { 1 } else { -1 };
@@ -389,6 +413,11 @@ impl Position {
                     && self.ep == Some(to)
                     && self.squares[to] == 0
                     && from % 8 != to % 8;
+                // En passant can remove a checker from another square or
+                // change two blocking files, so retain full validation for it.
+                if FAST && check && from != king && !en_passant && evasions & (1u64 << to) == 0 {
+                    return has_legal;
+                }
                 let capture = self.squares[to] != 0 || en_passant;
                 let collect = !TACTICAL || check || promotion || capture;
                 if !collect && has_legal {
@@ -700,6 +729,12 @@ mod tests {
             "8/2p5/3p4/KP5r/1R3p1k/8/4P1P1/8 w - - 0 1",
             "r3k2r/P6P/8/3pP3/8/8/p6p/R3K2R w KQkq d6 0 1",
             "k3r3/8/8/3pP3/8/8/8/4K3 w - d6 0 1",
+            // Double check, en passant capture/block evasions, and promotions.
+            "k3r3/8/8/8/1b6/8/2N5/4K3 w - - 0 1",
+            "k7/8/8/3pP3/4K3/8/8/8 w - d6 0 1",
+            "k7/2b5/8/2PpK3/8/8/8/8 w - d6 0 1",
+            "1b2k3/P7/8/8/8/8/7K/8 w - - 0 1",
+            "r6K/5P2/8/8/8/8/8/k7 w - - 0 1",
             "8/8/8/r4pPK/8/8/8/7k w - f6 0 1",
             "4k3/8/8/8/8/8/4r3/4K3 w - - 0 1",
             "7k/5Q2/6K1/8/8/8/8/8 b - - 0 1",

@@ -1,0 +1,114 @@
+diff --git a/engine.rs b/engine.rs
+index 8ee97f3..5ad2aa5 100644
+--- a/engine.rs
++++ b/engine.rs
+@@ -1425,12 +1425,14 @@ impl Search<'_> {
+             );
+         }
+         let original_alpha = alpha;
+-        self.buffers
+-            .ordering
+-            .order(p, moves, entry.and_then(|e| e.best), ply as usize);
++        let mut picker =
++            self.buffers
++                .ordering
++                .picker(p, moves, entry.and_then(|e| e.best), ply as usize);
+         let mut best = None;
+         let mut value = -INF;
+-        for (index, &m) in moves.iter().enumerate() {
++        for index in 0..moves.len() {
++            let m = picker.next(moves, index);
+             let next = p.play(m);
+             let previous = self.push_position(&next);
+             // The first move establishes a score with the full window. Later
+@@ -1587,6 +1589,42 @@ fn order(p: &Position, moves: &mut [Move], best: Option<Move>) {
+     };
+     sort_moves(moves, priority);
+ }
++// Select moves only as search consumes them. Stable extraction preserves the
++// original tie order and therefore the serial search tree. Oversized lists use
++// the existing allocation-free sort instead of increasing per-ply scratch.
++struct MovePicker {
++    priorities: [i32; 64],
++    sorted: bool,
++}
++impl MovePicker {
++    fn new(moves: &mut [Move], priority: impl Fn(Move) -> i32) -> Self {
++        let mut picker = Self {
++            priorities: [0; 64],
++            sorted: moves.len() > 64,
++        };
++        if picker.sorted {
++            sort_moves(moves, priority);
++        } else {
++            for (score, &m) in picker.priorities.iter_mut().zip(moves.iter()) {
++                *score = priority(m);
++            }
++        }
++        picker
++    }
++    fn next(&mut self, moves: &mut [Move], index: usize) -> Move {
++        if !self.sorted {
++            let mut best = index;
++            for candidate in index + 1..moves.len() {
++                if self.priorities[candidate] > self.priorities[best] {
++                    best = candidate;
++                }
++            }
++            moves[index..=best].rotate_right(1);
++            self.priorities[index..=best].rotate_right(1);
++        }
++        moves[index]
++    }
++}
+ fn sort_moves(moves: &mut [Move], priority: impl Fn(Move) -> i32) {
+     // Equal priorities retain their generated order without heap scratch.
+     let mut priorities = [0; 64];
+diff --git a/ordering.rs b/ordering.rs
+index 70c54c5..bb8a933 100644
+--- a/ordering.rs
++++ b/ordering.rs
+@@ -1,5 +1,5 @@
+ //! Quiet-move ordering, private to each search thread.
+-use super::{sort_moves, value, Move, Position, BUFFER_PLIES};
++use super::{sort_moves, value, Move, MovePicker, Position, BUFFER_PLIES};
+ 
+ // The benchmark changes these constants only in temporary source copies to
+ // measure each heuristic independently. Production enables both.
+@@ -36,9 +36,26 @@ impl MoveOrdering {
+         }
+     }
+     pub(super) fn order(&self, p: &Position, moves: &mut [Move], best: Option<Move>, ply: usize) {
++        sort_moves(moves, self.priorities(p, best, ply));
++    }
++    pub(super) fn picker(
++        &self,
++        p: &Position,
++        moves: &mut [Move],
++        best: Option<Move>,
++        ply: usize,
++    ) -> MovePicker {
++        MovePicker::new(moves, self.priorities(p, best, ply))
++    }
++    fn priorities<'a>(
++        &'a self,
++        p: &'a Position,
++        best: Option<Move>,
++        ply: usize,
++    ) -> impl Fn(Move) -> i32 + 'a {
+         let killers = self.killers.get(ply).copied().unwrap_or([0; 2]);
+         let history = &self.history[usize::from(p.white)];
+-        sort_moves(moves, |m| {
++        move |m: Move| {
+             let capture = p.is_capture(m);
+             let tactical = if capture {
+                 10_000 + value(p.squares[m.to]).max(100) * 10 - value(p.squares[m.from])
+@@ -66,7 +83,7 @@ impl MoveOrdering {
+             } else {
+                 0
+             }
+-        });
++        }
+     }
+     pub(super) fn cutoff(
+         &mut self,
