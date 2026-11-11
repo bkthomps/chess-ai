@@ -64,6 +64,7 @@ elements['thinking-time'].value = '3';
 elements['two-player-mode'].value = 'same';
 let mode = 'two', color = 'white', server, requests = [], rejectNextMove = false, afterNextMove = null, pollDelay, offline = false;
 let confirmationTimeout = null, copiedFen = null, clipboardFails = false;
+let moveResponseGate = null;
 const initial = [4,2,3,5,6,3,2,4,...Array(8).fill(1),...Array(32).fill(0),...Array(8).fill(-1),-4,-2,-3,-5,-6,-3,-2,-4];
 const fresh = (human = null, base = 300, increment = 0) => ({
   board: [...initial], started_at: new Date(2026, 10, 8, 12).getTime() / 1000, white: true, human, thinking_seconds: 3, revision: 1, thinking: false, pondering: human === true, check: false, result: null,
@@ -81,6 +82,9 @@ const context = vm.createContext({
   document: {hidden: false, body: documentBody, addEventListener: (name, fn) => { documentListeners[name] = fn; }, elementFromPoint: (x, y) => x < boardRect.left || y < boardRect.top || x >= boardRect.left + boardRect.width || y >= boardRect.top + boardRect.height ? null : elements.board.children[Math.floor((y - boardRect.top) * 8 / boardRect.height) * 8 + Math.floor((x - boardRect.left) * 8 / boardRect.width)], getElementById: id => elements[id], createElement: () => new Element(), createDocumentFragment: () => new Element(true), get activeElement() {return focused;}, querySelector: () => ({value: mode}), querySelectorAll: () => [new Element(), new Element()]},
   fetch: async (url, options = {}) => {
     requests.push({url, options}); const u = new URL(url, 'http://localhost');
+    if (u.pathname === '/api/move' && moveResponseGate) {
+      const gate = moveResponseGate; moveResponseGate = null; await gate;
+    }
     if (offline) throw new Error('Network error');
     if (u.pathname === '/api/move' && rejectNextMove) {
       rejectNextMove = false; return {ok: false, json: async () => ({error: 'That move is not legal.'})};
@@ -374,6 +378,32 @@ const moveRequests = () => requests.filter(r => r.url.startsWith('/api/move?'));
   assert.equal(moveRequests().length, movesBeforeDrag + 1);
   assert(moveRequests().at(-1).url.includes('from=12&to=28&promotion=0'));
   assert.equal(documentBody.children.length, 0); assert(!elements.board.hasPointerCapture(1));
+  // A slow response must not flash the dropped piece back at its source.
+  // Only an actual rejection restores the authoritative position.
+  for (const rejected of [false, true]) {
+    await resetBoard();
+    let release;
+    moveResponseGate = new Promise(resolve => { release = resolve; });
+    rejectNextMove = rejected;
+    const before = moveRequests().length;
+    startDrag(12, 28); drop(28); await tick();
+    assert.equal(moveRequests().length, before + 1);
+    assert.equal(documentBody.children.length, 0);
+    assert(square(12).attrs['aria-label'].includes('empty'));
+    assert(square(28).attrs['aria-label'].includes('White pawn'));
+    assert(!square(28).classes.has('preview-piece'));
+    assert(square(28).classes.has('last'));
+    assert.equal(vm.runInContext('state.board[12]', context), 1);
+    assert.equal(vm.runInContext('state.board[28]', context), 0);
+    clickSquare(11); clickSquare(27); await vm.runInContext('poll()', context);
+    assert.equal(moveRequests().length, before + 1);
+    assert(square(28).attrs['aria-label'].includes('White pawn'));
+    release(); await tick();
+    assert(square(rejected ? 12 : 28).attrs['aria-label'].includes('White pawn'));
+    assert(square(rejected ? 28 : 12).attrs['aria-label'].includes('empty'));
+    assert.equal(vm.runInContext('pendingMove', context), null);
+    assert.equal(elements.error.hidden, !rejected);
+  }
   // Fast releases and the final pointer coordinates decide the actual destination.
   for (const fast of [false, true]) {
     await resetBoard(); const before = moveRequests().length;

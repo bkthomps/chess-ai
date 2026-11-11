@@ -167,6 +167,7 @@ let lastHistoryLength = -1, lastStatus = '', polling = false;
 let focusSquare = 12;
 let drag = null, suppressDragClick = false;
 let premoves = [], premoveContext = null;
+let pendingMove = null;
 let soundEnabled = true, audioContext = null, soundEpoch = 0, soundSnapshot = null;
 const voices = new Set();
 try { soundEnabled = window.localStorage.getItem('chess.sounds') !== 'off'; } catch { /* Storage is optional. */ }
@@ -440,11 +441,12 @@ function canInput() {
     && !$('promotion-dialog').open && !$('resign-dialog').open && (canPlay() || canPremove());
 }
 function inputColor() { return state.human === null ? state.white : state.human; }
-// Preview only our queued moves. Opponent replies remain unknown until Rust
-// publishes them; previewing a move never establishes that it is legal.
+// Preview submitted and queued moves without changing the authoritative state.
+// Opponent replies remain unknown until Rust publishes them.
 function premoveBoard() {
   const board = state.board.slice();
-  for (const {move:[from, to, promotion], pc} of premoves) {
+  const preview = pendingMove ? [pendingMove, ...premoves] : premoves;
+  for (const {move:[from, to, promotion], pc} of preview) {
     if (board[from] !== pc) continue;
     if (Math.abs(pc) === 1 && from % 8 !== to % 8 && !board[to]) {
       const captured = to + (pc > 0 ? -8 : 8);
@@ -545,6 +547,7 @@ function renderBoard(keepDrag = false) {
   if (focusWasBoard) focusSquare = Number(document.activeElement.dataset.square);
   const premoving = canPremove(), movable = canInput();
   const board = premoveBoard();
+  const last = pendingMove ? pendingMove.move.slice(0, 2) : state.last;
   const targets = new Set(selected === null ? [] : inputMoves(selected, board).map(m => m[1]));
   const queuedSquares = new Set(premoves.flatMap(({move}) => move.slice(0, 2)));
   // Preserve pressed square elements during polling and turn handoffs. Removing
@@ -557,14 +560,14 @@ function renderBoard(keepDrag = false) {
     el.innerHTML = '';
     el.type = 'button'; el.className = `square ${(row + col) % 2 ? 'light' : 'dark'}`;
     el.dataset.square = s; el.tabIndex = s === focusSquare ? 0 : -1;
-    if (state.last?.includes(s)) el.classList.add('last');
+    if (last?.includes(s)) el.classList.add('last');
     if (selected === s) el.classList.add('selected');
     if (targets.has(s)) el.classList.add('target');
     if (targets.has(s) && premoving) el.classList.add('premove-target');
     const queuedSquare = queuedSquares.has(s);
     if (queuedSquare) el.classList.add('premoved');
     if (pc) el.classList.add('occupied');
-    if (pc && pc !== state.board[s]) el.classList.add('preview-piece');
+    if (premoves.length && pc && pc !== state.board[s]) el.classList.add('preview-piece');
     if (pc && (pc > 0) === inputColor() && movable) el.classList.add('movable');
     if (state.check && pc === (state.white ? 6 : -6)) el.classList.add('check');
     const description = pc ? `${pc > 0 ? 'White' : 'Black'} ${names[Math.abs(pc)]}` : 'empty';
@@ -722,6 +725,10 @@ async function makeMove(move, fromQueue = false) {
   const queue = premoves, previous = state;
   void unlockAudio();
   busy = true; selected = null; $('error').hidden = true;
+  // Keep a dropped piece at its destination while the server validates it.
+  // Queued moves already project their entire remaining line on the board.
+  if (!fromQueue) pendingMove = {move, pc:previous.board[move[0]]};
+  renderBoard();
   try {
     state = await api('move', {from:move[0], to:move[1], promotion:move[2], revision:previous.revision});
     if (fromQueue && premoves === queue) {
@@ -743,7 +750,7 @@ async function makeMove(move, fromQueue = false) {
       try { state = await api('state'); } catch { /* Keep the current board available. */ }
     }
   }
-  finally { busy = false; render(); }
+  finally { pendingMove = null; busy = false; render(); }
 }
 function choosePromotion(moves, submitMove = makeMove, white = state.white) {
   $('promotion-choices').replaceChildren();
