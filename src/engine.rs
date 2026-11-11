@@ -1,6 +1,8 @@
 //! Iterative-deepening negamax (minimax), alpha-beta pruning, and a Zobrist
 //! transposition table. Root moves are searched in parallel, away from the UI.
 use crate::chess::{random_key, Move, MoveState, Position};
+use std::collections::hash_map::RandomState;
+use std::hash::{BuildHasher, Hasher};
 use std::sync::{
     atomic::{AtomicBool, AtomicI32, AtomicU64, AtomicUsize, Ordering},
     mpsc, Arc, Mutex,
@@ -606,8 +608,35 @@ struct RootWork<'a> {
     ply: i32,
     next: AtomicUsize,
     alpha: AtomicI32,
+    selection_margin: i32,
     aborted: AtomicBool,
     scores: Vec<Mutex<Option<i32>>>,
+}
+
+// Only raw, proven candidate scores survive a completed iteration. Random
+// bonuses are drawn once, after search, and never enter the transposition table.
+#[derive(Default)]
+struct RootSelection {
+    margin: i32,
+    candidates: Vec<(Move, i32)>,
+}
+
+fn opening_margin(fullmove: u16) -> i32 {
+    match fullmove {
+        1 => 60,
+        2 => 40,
+        3 => 20,
+        _ => 0,
+    }
+}
+
+impl RootSelection {
+    fn choose(&self, mut bonus: impl FnMut() -> i32) -> Option<Move> {
+        self.candidates
+            .iter()
+            .max_by_key(|(_, score)| score + bonus())
+            .map(|&(m, _)| m)
+    }
 }
 
 /// Owned by the search worker and retained across pondering and computer moves.
@@ -784,7 +813,7 @@ impl SearchCache {
         budget: Duration,
         cancelled: Arc<AtomicBool>,
     ) -> SearchResult {
-        self.run(position, history, Some(budget), cancelled, None)
+        self.run(position, history, (Some(budget), 0), cancelled, None)
     }
 
     pub fn search_with_progress(
@@ -795,7 +824,32 @@ impl SearchCache {
         cancelled: Arc<AtomicBool>,
         progress: &Mutex<SearchProgress>,
     ) -> SearchResult {
-        self.run(position, history, Some(budget), cancelled, Some(progress))
+        self.run(
+            position,
+            history,
+            (Some(budget), 0),
+            cancelled,
+            Some(progress),
+        )
+    }
+
+    /// Select a played move with transient opening variety. Search scores and
+    /// progress remain unadjusted; pondering uses the deterministic search API.
+    pub fn search_move_with_progress(
+        &mut self,
+        position: &Position,
+        history: &[u64],
+        budget: Duration,
+        cancelled: Arc<AtomicBool>,
+        progress: &Mutex<SearchProgress>,
+    ) -> SearchResult {
+        self.run(
+            position,
+            history,
+            (Some(budget), opening_margin(position.fullmove)),
+            cancelled,
+            Some(progress),
+        )
     }
 
     /// Explore the human's possible moves and the computer's replies until
@@ -806,7 +860,7 @@ impl SearchCache {
         history: &[u64],
         cancelled: Arc<AtomicBool>,
     ) -> SearchResult {
-        self.run(position, history, None, cancelled, None)
+        self.run(position, history, (None, 0), cancelled, None)
     }
 
     pub fn ponder_with_progress(
@@ -816,17 +870,19 @@ impl SearchCache {
         cancelled: Arc<AtomicBool>,
         progress: &Mutex<SearchProgress>,
     ) -> SearchResult {
-        self.run(position, history, None, cancelled, Some(progress))
+        self.run(position, history, (None, 0), cancelled, Some(progress))
     }
 
     fn run(
         &mut self,
         position: &Position,
         history: &[u64],
-        budget: Option<Duration>,
+        selection: (Option<Duration>, i32),
         cancelled: Arc<AtomicBool>,
         progress: Option<&Mutex<SearchProgress>>,
     ) -> SearchResult {
+        let (budget, margin) = selection;
+        let mut completed_selection = RootSelection::default();
         let start = Instant::now();
         let legal = position.legal_moves();
         let threads = self.threads.min(legal.len()).max(1);
@@ -905,7 +961,13 @@ impl SearchCache {
         });
         s.searching_depth = result.depth.saturating_add(1);
         s.publish(true);
-        let mut depth = result.depth.saturating_add(1);
+        // A cached best move alone has no alternative scores. Revisit its
+        // completed depth to recover candidates before attempting a deeper one.
+        let mut depth = if margin > 0 {
+            result.depth.max(1)
+        } else {
+            result.depth.saturating_add(1)
+        };
         while !s.cancelled.load(Ordering::Relaxed)
             && s.deadline
                 .map_or(true, |deadline| Instant::now() < deadline)
@@ -914,7 +976,18 @@ impl SearchCache {
                 break;
             }
             s.searching_depth = depth;
-            let (score, best) = if threads > 1 && depth >= 4 {
+            let mut selection = RootSelection {
+                margin,
+                candidates: Vec::new(),
+            };
+            let (score, best) = if margin > 0 {
+                let helpers = if depth >= 4 {
+                    &mut self.helpers[..]
+                } else {
+                    &mut []
+                };
+                s.parallel_moves(position, (depth, 0), &legal, helpers, Some(&mut selection))
+            } else if threads > 1 && depth >= 4 {
                 s.parallel_root(position, depth, &legal, &mut self.helpers)
             } else {
                 s.negamax(position, depth, 0, -INF, INF)
@@ -922,6 +995,7 @@ impl SearchCache {
             if s.aborted {
                 break;
             }
+            completed_selection = selection;
             result.best = best;
             result.score = score;
             result.depth = depth;
@@ -935,6 +1009,15 @@ impl SearchCache {
             // There is no depth target. Saturation protects the representation;
             // the deadline still controls termination at its maximum value.
             depth = depth.saturating_add(1);
+        }
+        if margin > 0 && result.score.abs() <= MATE - 256 {
+            // RandomState supplies portable, process-seeded randomness without
+            // dependencies or retained RNG state. Draw only for final selection.
+            if let Some(best) = completed_selection.choose(|| {
+                (RandomState::new().build_hasher().finish() % (margin as u64 + 1)) as i32
+            }) {
+                result.best = Some(best);
+            }
         }
         (result.nodes, result.hits) = s.totals();
         result.elapsed = start.elapsed();
@@ -959,7 +1042,7 @@ impl Search<'_> {
         if self.expired() {
             return (0, None);
         }
-        self.parallel_moves(position, depth, 0, legal, helpers)
+        self.parallel_moves(position, (depth, 0), legal, helpers, None)
     }
 
     /// Use the same workers while the leading root branch is being resolved.
@@ -988,7 +1071,7 @@ impl Search<'_> {
         } else if self.is_draw(position) {
             (0, None)
         } else {
-            self.parallel_moves(position, depth, ply, &moves, helpers)
+            self.parallel_moves(position, (depth, ply), &moves, helpers, None)
         };
         self.buffers.put(ply as usize, moves);
         result
@@ -997,11 +1080,13 @@ impl Search<'_> {
     fn parallel_moves(
         &mut self,
         position: &Position,
-        depth: u8,
-        ply: i32,
+        level: (u8, i32),
         legal: &[Move],
         helpers: &mut [MoveBuffers],
+        selection: Option<&mut RootSelection>,
     ) -> (i32, Option<Move>) {
+        let (depth, ply) = level;
+        let selection_margin = selection.as_ref().map_or(0, |s| s.margin);
         let key = self.table_key(position);
         let mut moves = legal.to_vec();
         let cached = self.probe(key).and_then(|entry| entry.best);
@@ -1026,6 +1111,7 @@ impl Search<'_> {
             ply,
             next: AtomicUsize::new(1),
             alpha: AtomicI32::new(first_score),
+            selection_margin,
             aborted: AtomicBool::new(false),
             scores: (0..moves.len()).map(|_| Mutex::new(None)).collect(),
         };
@@ -1093,12 +1179,21 @@ impl Search<'_> {
             self.aborted = true;
             return (0, None);
         }
+        let mut selection = selection;
+        if let Some(selection) = &mut selection {
+            selection.candidates.push((moves[0], first_score));
+        }
         let (mut score, mut best) = (first_score, moves[0]);
         for (index, result) in work.scores.iter().enumerate().skip(1) {
             let value = result
                 .lock()
                 .expect("root score poisoned")
                 .expect("unfinished root move");
+            if let Some(selection) = &mut selection {
+                if value != -INF {
+                    selection.candidates.push((moves[index], value));
+                }
+            }
             if value > score {
                 score = value;
                 best = moves[index];
@@ -1124,7 +1219,11 @@ impl Search<'_> {
             };
             let next = work.position.play(m);
             let previous = self.push_position(&next);
-            let alpha = work.alpha.load(Ordering::Relaxed);
+            // Resolve every move that could win with a bonus, including the
+            // endpoint. Failed probes remain ineligible for final selection.
+            let alpha = work.alpha.load(Ordering::Relaxed)
+                - work.selection_margin
+                - i32::from(work.selection_margin > 0);
             let mut score = -self
                 .negamax(&next, work.depth - 1, work.ply + 1, -alpha - 1, -alpha)
                 .0;
@@ -1138,7 +1237,9 @@ impl Search<'_> {
                 work.aborted.store(true, Ordering::Relaxed);
                 break;
             }
-            work.alpha.fetch_max(score, Ordering::Relaxed);
+            if score > alpha {
+                work.alpha.fetch_max(score, Ordering::Relaxed);
+            }
             // A failed null-window probe supplies only an upper bound. It
             // must never replace a proven best move, even on an equal score.
             *work.scores[index].lock().expect("root score poisoned") =
@@ -2159,6 +2260,132 @@ mod tests {
     use super::*;
     use crate::game::Game;
     use std::{sync::mpsc, thread};
+
+    #[test]
+    fn opening_selection_uses_only_transient_bounded_bonuses() {
+        let mut game = Game::default();
+        for (uci, margin) in [
+            ("e2e4", 60),
+            ("e7e5", 60),
+            ("g1f3", 40),
+            ("b8c6", 40),
+            ("f1c4", 20),
+            ("g8f6", 20),
+            ("d2d3", 0),
+            ("f8c5", 0),
+        ] {
+            assert_eq!(opening_margin(game.position().fullmove), margin);
+            let m = game
+                .position()
+                .legal_moves()
+                .into_iter()
+                .find(|m| m.to_string() == uci)
+                .unwrap();
+            game.play(m).unwrap();
+        }
+        for _ in 0..3 {
+            assert!(game.undo());
+        }
+        assert_eq!(opening_margin(game.position().fullmove), 20);
+        let moves = Position::default().legal_moves();
+        let selection = RootSelection {
+            margin: 30,
+            candidates: vec![(moves[0], 100), (moves[1], 80), (moves[2], 69)],
+        };
+        let original = selection.candidates.clone();
+        let mut bonuses = [0, 30, 30].into_iter();
+        assert_eq!(selection.choose(|| bonuses.next().unwrap()), Some(moves[1]));
+        assert_eq!(selection.choose(|| 0), Some(moves[0]));
+        assert_eq!(selection.candidates, original);
+    }
+
+    #[test]
+    fn opening_candidates_are_proven_in_serial_and_parallel_and_leave_cache_raw() {
+        for fen in [
+            "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+            "rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b KQkq e3 0 1",
+            "rnbqkbnr/pppp1ppp/8/4p3/6P1/5P2/PPPPP2P/RNBQKBNR b KQkq g3 0 2",
+            "4k3/8/8/8/8/8/4R3/4K3 w - - 99 1",
+        ] {
+            let p = Position::from_fen(fen).unwrap();
+            let keys = [p.repetition_key()];
+            let legal = p.legal_moves();
+            let depth = 3;
+            let exact: Vec<_> = legal
+                .iter()
+                .map(|&m| {
+                    let child = p.play(m);
+                    let score = -at_depth(
+                        &mut SearchCache::with_threads(1),
+                        &child,
+                        &[keys[0], child.repetition_key()],
+                        depth - 1,
+                        1,
+                    )
+                    .0;
+                    (m, score)
+                })
+                .collect();
+            let expected = exact.iter().map(|&(_, score)| score).max().unwrap();
+            for helper_count in [0, 2] {
+                let mut cache = SearchCache::with_threads(3);
+                cache.table.initialize();
+                let mut helpers: Vec<_> =
+                    (0..helper_count).map(|_| MoveBuffers::default()).collect();
+                let peers: Vec<_> = (0..helper_count).map(|_| WorkerStats::default()).collect();
+                let mut search = test_search(&mut cache, &p, &keys);
+                search.peers = &peers;
+                let mut selection = RootSelection {
+                    margin: 60,
+                    candidates: Vec::new(),
+                };
+                let (score, best) = search.parallel_moves(
+                    &p,
+                    (depth, 0),
+                    &legal,
+                    &mut helpers,
+                    Some(&mut selection),
+                );
+                assert_eq!(score, expected, "{fen}");
+                assert!(exact.contains(&(best.unwrap(), expected)));
+                for candidate in &selection.candidates {
+                    assert!(exact.contains(candidate), "unproven candidate: {fen}");
+                }
+                for &(m, value) in &exact {
+                    if value >= expected - 60 {
+                        assert!(
+                            selection.candidates.contains(&(m, value)),
+                            "missing contender: {fen}"
+                        );
+                    }
+                }
+                assert_eq!(search.keys, keys);
+                assert_eq!(search.history_context, reversible_context(&p, &keys));
+                let entry = search.probe(search.table_key(&p)).unwrap();
+                assert_eq!(entry.bound, Bound::Exact);
+                assert_eq!(entry.score, expected);
+                assert_eq!(entry.best, best);
+                // Cancellation cannot supply a partial candidate set or corrupt
+                // history, even after the cache has been warmed.
+                search.cancelled.store(true, Ordering::Relaxed);
+                let mut interrupted = RootSelection {
+                    margin: 60,
+                    candidates: Vec::new(),
+                };
+                search.parallel_moves(
+                    &p,
+                    (depth + 1, 0),
+                    &legal,
+                    &mut helpers,
+                    Some(&mut interrupted),
+                );
+                assert!(search.aborted);
+                assert!(interrupted.candidates.is_empty());
+                assert_eq!(search.keys, keys);
+                assert_eq!(search.history_context, reversible_context(&p, &keys));
+            }
+        }
+    }
 
     #[test]
     fn evaluation_blends_king_activity_through_material_exchanges() {

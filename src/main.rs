@@ -282,7 +282,7 @@ fn queue_engine(app: &Shared, a: &mut App) {
                     epoch = Some(job.cache_epoch);
                 }
                 let result = match job.budget {
-                    Some(budget) => cache.search_with_progress(
+                    Some(budget) => cache.search_move_with_progress(
                         &job.position,
                         &job.keys,
                         budget.saturating_sub(job.started.elapsed()),
