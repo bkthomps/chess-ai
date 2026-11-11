@@ -591,7 +591,8 @@ function renderBoard(keepDrag = false) {
   if (focusWasBoard) $('board').querySelector(`[data-square="${focusSquare}"]`)?.focus({preventScroll:true});
   renderPremove();
 }
-// Wait for deliberate movement so taps and small mouse movements remain clicks.
+// Same-square taps and small mouse movements remain clicks. Crossing a square
+// boundary counts as dragging even when the press began close to that edge.
 // Capture on the board only after dragging starts: square buttons are replaced
 // when hints render, and capturing a simple press would retarget its click.
 function cancelDrag() {
@@ -610,6 +611,11 @@ function squareAtPointer(e) {
   // Use the visible grid and release coordinates, regardless of pointer capture,
   // the floating piece, SVG hit testing, scroll position, or board orientation.
   return board.children[Math.floor(y * 8 / rect.height) * 8 + Math.floor(x * 8 / rect.width)] || null;
+}
+function movedForDrag(e) {
+  if (Math.hypot(e.clientX - drag.startX, e.clientY - drag.startY) >= 6) return true;
+  const target = squareAtPointer(e);
+  return target !== null && Number(target.dataset.square) !== drag.from;
 }
 function tryMove(from, to) {
   const matching = inputMoves(from).filter(m => m[1] === to);
@@ -637,7 +643,7 @@ document.addEventListener('pointermove', e => {
   if (!drag || e.pointerId !== drag.id) return;
   if (!canInput() || state.revision !== drag.revision) { cancelDrag(); return; }
   if (!drag.active) {
-    if (Math.hypot(e.clientX - drag.x, e.clientY - drag.y) < 6) return;
+    if (!movedForDrag(e)) return;
     if (drag.restart) clearPremoves();
     drag.active = true; selected = drag.from; focusSquare = drag.from;
     // Transfer touch's implicit capture before replacing its original square.
@@ -664,7 +670,7 @@ document.addEventListener('pointerup', e => {
   const previous = drag;
   // A fast gesture can reach pointerup before the browser dispatches a
   // pointermove. Treat clear down-to-up movement as a drag on release too.
-  if (!previous.active && Math.hypot(e.clientX - previous.startX, e.clientY - previous.startY) >= 6) {
+  if (!previous.active && movedForDrag(e)) {
     if (previous.restart) clearPremoves();
     previous.active = true;
   }

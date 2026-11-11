@@ -413,6 +413,20 @@ const moveRequests = () => requests.filter(r => r.url.startsWith('/api/move?'));
     assert.equal(moveRequests().length, before + 1);
     assert(moveRequests().at(-1).url.includes('from=12&to=28&promotion=0'));
   }
+  // Crossing a square boundary is a drop even below the tap-jitter threshold.
+  for (const pointerType of ['mouse', 'touch', 'pen']) for (const fast of [false, true]) for (const flip of [false, true]) {
+    await resetBoard();
+    vm.runInContext(`flipped=${flip};renderBoard()`, context);
+    const before = moveRequests().length, rect = square(12).getBoundingClientRect();
+    const edge = flip ? rect.top + rect.height : rect.top;
+    const down = {pointerType, clientY:edge + (flip ? -2 : 2)};
+    const up = {pointerType, clientY:edge + (flip ? 2 : -2)};
+    elements.board.listeners.pointerdown(pointer(12, down));
+    if (!fast) documentListeners.pointermove(pointer(20, up));
+    drop(20, up); await tick();
+    assert.equal(moveRequests().length, before + 1);
+    assert(moveRequests().at(-1).url.includes('from=12&to=20&promotion=0'));
+  }
   // Fractional sizing, page offsets, scrolling, and orientation keep drops aligned.
   for (const flip of [false, true]) {
     await resetBoard();
