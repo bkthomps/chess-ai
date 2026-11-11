@@ -62,6 +62,7 @@ for (const m of html.matchAll(/<[^>]*\bid="([^"]+)"[^>]*>/g)) {
 elements['time-control'].value = '5';
 elements['thinking-time'].value = '3';
 elements['two-player-mode'].value = 'same';
+elements['copy-input-log'].textContent = 'Copy input log';
 let mode = 'two', color = 'white', server, requests = [], rejectNextMove = false, afterNextMove = null, pollDelay, offline = false;
 let confirmationTimeout = null, copiedFen = null, clipboardFails = false;
 let moveResponseGate = null;
@@ -79,7 +80,7 @@ const context = vm.createContext({
   setTimeout: (fn, delay) => { if (delay === 5000) { confirmationTimeout = fn; return 5000; } pollDelay = delay; return 0; }, setInterval: () => 0,
   window: {scrollTo() {}, addEventListener: (name, fn) => { windowListeners[name] = fn; }, AudioContext: AudioContextMock, localStorage: {getItem: key => storedSounds.get(key) ?? null, setItem: (key, value) => storedSounds.set(key, value)}},
   FormData: class {get(k) {return {mode, color, 'two-player-mode': elements['two-player-mode'].value, 'time-control': elements['time-control'].value, minutes: elements['base-minutes'].value, increment: elements['increment-seconds'].value, 'thinking-time': elements['thinking-time'].value, 'thinking-seconds': elements['thinking-seconds'].value}[k];}},
-  document: {hidden: false, body: documentBody, addEventListener: (name, fn) => { documentListeners[name] = fn; }, elementFromPoint: (x, y) => x < boardRect.left || y < boardRect.top || x >= boardRect.left + boardRect.width || y >= boardRect.top + boardRect.height ? null : elements.board.children[Math.floor((y - boardRect.top) * 8 / boardRect.height) * 8 + Math.floor((x - boardRect.left) * 8 / boardRect.width)], getElementById: id => elements[id], createElement: () => new Element(), createDocumentFragment: () => new Element(true), get activeElement() {return focused;}, querySelector: () => ({value: mode}), querySelectorAll: () => [new Element(), new Element()]},
+  document: {hidden: false, hasFocus: () => true, body: documentBody, addEventListener: (name, fn) => { documentListeners[name] = fn; }, elementFromPoint: (x, y) => x < boardRect.left || y < boardRect.top || x >= boardRect.left + boardRect.width || y >= boardRect.top + boardRect.height ? null : elements.board.children[Math.floor((y - boardRect.top) * 8 / boardRect.height) * 8 + Math.floor((x - boardRect.left) * 8 / boardRect.width)], getElementById: id => elements[id], createElement: () => new Element(), createDocumentFragment: () => new Element(true), get activeElement() {return focused;}, querySelector: () => ({value: mode}), querySelectorAll: () => [new Element(), new Element()]},
   fetch: async (url, options = {}) => {
     requests.push({url, options}); const u = new URL(url, 'http://localhost');
     if (u.pathname === '/api/move' && moveResponseGate) {
@@ -135,7 +136,7 @@ const square = s => elements.board.children.find(e => e.dataset.square === s);
 const clickSquare = (s, detail = 1) => elements.board.listeners.click({target: square(s), detail, preventDefault() {}});
 const pointer = (s, overrides = {}) => {
   const target = square(s), rect = target?.getBoundingClientRect();
-  return {target, pointerId: 1, pointerType: 'mouse', isPrimary: true, button: 0,
+  return {target, pointerId: 1, pointerType: 'mouse', isPrimary: true, button: 0, buttons: 1,
     clientX: rect ? rect.left + rect.width / 2 : -20, clientY: rect ? rect.top + rect.height / 2 : -20, preventDefault() {}, ...overrides};
 };
 const startDrag = (from, to, overrides = {}) => {
@@ -143,7 +144,7 @@ const startDrag = (from, to, overrides = {}) => {
   documentListeners.pointermove(pointer(to, overrides));
 };
 const drop = (to, overrides = {}) => {
-  documentListeners.pointerup(pointer(to, overrides));
+  documentListeners.pointerup(pointer(to, {buttons:0, ...overrides}));
   if (to !== null) clickSquare(to); // Browser compatibility click must not move twice or change selection.
 };
 const openMenu = () => { elements['menu-button'].onclick(); if (elements.menu.hidden) elements['menu-button'].onclick(); };
@@ -413,6 +414,77 @@ const moveRequests = () => requests.filter(r => r.url.startsWith('/api/move?'));
     assert.equal(moveRequests().length, before + 1);
     assert(moveRequests().at(-1).url.includes('from=12&to=28&promotion=0'));
   }
+  // A mouse/trackpad release can also arrive as mouseup or a movement with
+  // the primary button already up. Recover once, using that event's position.
+  for (const release of ['mouseup', 'hover', 'other-button-held']) for (const fast of [false, true]) {
+    await resetBoard(); const before = moveRequests().length;
+    elements.board.listeners.pointerdown(pointer(12));
+    if (!fast) documentListeners.pointermove(pointer(20));
+    if (release === 'mouseup') documentListeners.mouseup(pointer(28));
+    else documentListeners.pointermove(pointer(28, {buttons:release === 'hover' ? 0 : 2}));
+    await tick();
+    assert.equal(moveRequests().length, before + 1, `${release}, fast=${fast}`);
+    assert(moveRequests().at(-1).url.includes('from=12&to=28&promotion=0'));
+    assert.equal(documentBody.children.length, 0);
+    assert.equal(vm.runInContext('drag', context), null);
+    // A delayed pointerup, mouseup, or compatibility click must not submit twice.
+    drop(28); documentListeners.mouseup(pointer(28)); await tick();
+    assert.equal(moveRequests().length, before + 1);
+  }
+  // Chrome can report capture loss with the button already released before
+  // pointerup. The physical trackpad trace ended here at a legal destination.
+  await resetBoard();
+  const beforeReleasedCapture = moveRequests().length;
+  startDrag(12, 20);
+  elements.board.listeners.lostpointercapture(pointer(28, {target:elements.board, buttons:0, button:-1}));
+  await tick();
+  assert.equal(moveRequests().length, beforeReleasedCapture + 1);
+  assert(moveRequests().at(-1).url.includes('from=12&to=28&promotion=0'));
+  assert.equal(vm.runInContext('drag', context), null);
+  drop(28); await tick();
+  assert.equal(moveRequests().length, beforeReleasedCapture + 1);
+  // Unrelated pointers and secondary-button releases do not finish our drag.
+  await resetBoard();
+  const beforeUnrelatedRelease = moveRequests().length;
+  startDrag(12, 20);
+  documentListeners.pointermove(pointer(28, {pointerId:2, buttons:0}));
+  documentListeners.mouseup(pointer(28, {button:2}));
+  assert(vm.runInContext('drag !== null', context));
+  assert.equal(moveRequests().length, beforeUnrelatedRelease);
+  drop(28); await tick();
+  assert.equal(moveRequests().length, beforeUnrelatedRelease + 1);
+  // Compatibility mouse events must not finish an unrelated touch/pen press.
+  for (const pointerType of ['touch', 'pen']) {
+    await resetBoard(); const before = moveRequests().length;
+    startDrag(12, 20, {pointerType});
+    documentListeners.mouseup(pointer(28));
+    assert.equal(moveRequests().length, before);
+    assert(vm.runInContext('drag !== null', context));
+    drop(28, {pointerType}); await tick();
+    assert.equal(moveRequests().length, before + 1);
+  }
+  // Recovery still rejects illegal and off-board destinations.
+  for (const to of [36, null]) for (const release of ['mouseup', 'hover', 'released-capture']) {
+    await resetBoard(); const before = moveRequests().length;
+    startDrag(12, 20);
+    if (release === 'mouseup') documentListeners.mouseup(pointer(to, {buttons:0}));
+    else if (release === 'hover') documentListeners.pointermove(pointer(to, {buttons:0}));
+    else elements.board.listeners.lostpointercapture(pointer(to, {target:elements.board, buttons:0}));
+    await tick();
+    assert.equal(moveRequests().length, before);
+    assert.equal(vm.runInContext('drag', context), null);
+    assert.equal(documentBody.children.length, 0);
+  }
+  // Capture lost because the page became hidden or unfocused is cancellation.
+  for (const unavailable of ['document.hidden=true', 'document.hasFocus=()=>false']) {
+    await resetBoard(); const before = moveRequests().length;
+    startDrag(12, 28);
+    vm.runInContext(unavailable, context);
+    elements.board.listeners.lostpointercapture(pointer(28, {target:elements.board, buttons:0}));
+    assert.equal(moveRequests().length, before);
+    assert.equal(vm.runInContext('drag', context), null);
+    vm.runInContext('document.hidden=false;document.hasFocus=()=>true', context);
+  }
   // Crossing a square boundary is a drop even below the tap-jitter threshold.
   for (const pointerType of ['mouse', 'touch', 'pen']) for (const fast of [false, true]) for (const flip of [false, true]) {
     await resetBoard();
@@ -476,7 +548,30 @@ const moveRequests = () => requests.filter(r => r.url.startsWith('/api/move?'));
   const beforeInvalid = moveRequests().length;
   startDrag(12, 36); drop(36); await tick();
   assert.equal(moveRequests().length, beforeInvalid); assert(square(12).classes.has('selected'));
+  await elements['copy-input-log'].onclick();
+  const inputReport = JSON.parse(copiedFen);
+  assert.equal(inputReport.version, 1);
+  assert(inputReport.events.length <= 96);
+  const rejectedDrop = inputReport.events.filter(event => event.event === 'drop rejected').at(-1);
+  assert.equal(rejectedDrop.reason, 'illegal destination');
+  assert.equal(rejectedDrop.source, 'e2'); assert.equal(rejectedDrop.pointer.square, 'e5');
+  assert.equal(elements['copy-input-log'].textContent, 'Input log copied');
+  assert(elements['copy-input-log'].disabled);
   startDrag(12, null); drop(null); await tick();
+  assert.equal(elements['copy-input-log'].textContent, 'Copy input log');
+  assert(!elements['copy-input-log'].disabled);
+  // Events arriving during an asynchronous copy still need to be copyable.
+  const writeInputLog = context.navigator.clipboard.writeText;
+  let finishInputCopy;
+  context.navigator.clipboard.writeText = text => {
+    copiedFen = text; return new Promise(resolve => { finishInputCopy = resolve; });
+  };
+  startDrag(12, 20);
+  const copyingInput = elements['copy-input-log'].onclick();
+  drop(36); finishInputCopy(); await copyingInput;
+  context.navigator.clipboard.writeText = writeInputLog;
+  assert.equal(elements['copy-input-log'].textContent, 'Copy input log');
+  assert(!elements['copy-input-log'].disabled);
   assert.equal(moveRequests().length, beforeInvalid); assert.equal(documentBody.children.length, 0);
   clickSquare(28, 0); await tick(); assert.equal(moveRequests().length, beforeInvalid + 1);
   // Board orientation does not change square identity; touch can capture a piece.
@@ -504,7 +599,11 @@ const moveRequests = () => requests.filter(r => r.url.startsWith('/api/move?'));
     ['menu', () => openMenu()]
   ]) {
     startDrag(12, 28); assert.equal(documentBody.children.length, 1);
-    cancel(); drop(28); await tick();
+    cancel();
+    elements.board.listeners.lostpointercapture(pointer(28, {target:elements.board, buttons:0}));
+    documentListeners.mouseup(pointer(28, {buttons:0}));
+    documentListeners.pointermove(pointer(28, {buttons:0}));
+    drop(28); await tick();
     assert.equal(documentBody.children.length, 0, reason); assert.equal(moveRequests().length, beforeCancel, reason);
     if (elements.game.hidden) await submit();
   }

@@ -166,6 +166,36 @@ let newGameConfirmationTimer = null;
 let lastHistoryLength = -1, lastStatus = '', polling = false;
 let focusSquare = 12;
 let drag = null, suppressDragClick = false;
+// Temporary, bounded diagnostics for intermittent physical trackpad gestures.
+// Record transitions only; ordinary pointer movement and engine polling do not log.
+const inputLog = [];
+function logInput(event, e = null, details = {}) {
+  const target = e ? squareAtPointer(e) : null;
+  if (inputLog.length === 96) inputLog.shift();
+  inputLog.push({event, time:Math.round(performance.now()), revision:state?.revision,
+    from:drag ? squareName(drag.from) : null, active:drag?.active,
+    pointer:e ? {id:e.pointerId, type:e.pointerType, button:e.button, buttons:e.buttons,
+      x:e.clientX, y:e.clientY, square:target ? squareName(Number(target.dataset.square)) : null} : null,
+    ...details});
+  $('copy-input-log').textContent = 'Copy input log';
+  $('copy-input-log').disabled = false;
+}
+window.addEventListener('error', e => logInput('script error', null, {message:e.message, line:e.lineno}));
+window.addEventListener('unhandledrejection', e => logInput('unhandled rejection', null, {message:String(e.reason)}));
+$('copy-input-log').onclick = async () => {
+  const button = $('copy-input-log');
+  if (button.disabled) return;
+  const lastEntry = inputLog[inputLog.length - 1];
+  try {
+    await navigator.clipboard.writeText(JSON.stringify({version:1, userAgent:navigator.userAgent, events:inputLog}, null, 2));
+    // A new entry may arrive while the clipboard write is pending, including
+    // when the bounded log is full and its length no longer changes.
+    if (inputLog[inputLog.length - 1] === lastEntry) {
+      button.textContent = 'Input log copied';
+      button.disabled = true;
+    }
+  } catch { showError(new Error('Could not copy input log. Check clipboard permissions.')); }
+};
 let premoves = [], premoveContext = null;
 let pendingMove = null;
 let soundEnabled = true, audioContext = null, soundEpoch = 0, soundSnapshot = null;
@@ -595,8 +625,9 @@ function renderBoard(keepDrag = false) {
 // boundary counts as dragging even when the press began close to that edge.
 // Capture on the board only after dragging starts: square buttons are replaced
 // when hints render, and capturing a simple press would retarget its click.
-function cancelDrag() {
+function cancelDrag(reason = 'board input reset') {
   if (!drag) return;
+  logInput('cancel', null, {reason});
   const previous = drag; drag = null;
   if (previous.active) suppressDragClick = true;
   previous.ghost?.remove(); previous.over?.classList.remove('drag-over');
@@ -629,23 +660,31 @@ function tryMove(from, to) {
   return true;
 }
 $('board').addEventListener('pointerdown', e => {
+  logInput('press', e, {primary:e.isPrimary, inputAllowed:canInput(), busy, thinking:state?.thinking,
+    alreadyPressed:!!drag, hitSquare:e.target.closest('[data-square]')?.dataset.square});
   if (!e.isPrimary || e.button !== 0 || drag) return;
   suppressDragClick = false;
   const button = e.target.closest('[data-square]');
   if (!button || !canInput()) return;
   const from = Number(button.dataset.square), source = inputSource(from);
-  if (!source) return;
-  drag = {id:e.pointerId, from, ...source, revision:state.revision,
+  if (!source) { logInput('source unavailable', e); return; }
+  logInput('source accepted', e, {source:squareName(from), legal:inputMoves(from).map(m => squareName(m[1]))});
+  drag = {id:e.pointerId, pointerType:e.pointerType, from, ...source, revision:state.revision,
     human:state.human, white:state.white, startedAt:state.started_at, notation:state.notation.slice(),
     startX:e.clientX, startY:e.clientY, x:e.clientX, y:e.clientY, active:false};
 });
 document.addEventListener('pointermove', e => {
   if (!drag || e.pointerId !== drag.id) return;
-  if (!canInput() || state.revision !== drag.revision) { cancelDrag(); return; }
+  if (!canInput() || state.revision !== drag.revision) { cancelDrag('input unavailable or revision changed during movement'); return; }
+  // Trackpads use mouse pointers. If the primary button is already released,
+  // finish at this position instead of waiting for a pointerup that was missed
+  // (or is withheld while another mouse button remains pressed).
+  if (drag.pointerType === 'mouse' && (e.buttons & 1) === 0) { finishDrag(e, 'released movement'); return; }
   if (!drag.active) {
     if (!movedForDrag(e)) return;
     if (drag.restart) clearPremoves();
     drag.active = true; selected = drag.from; focusSquare = drag.from;
+    logInput('drag activated', e);
     // Transfer touch's implicit capture before replacing its original square.
     $('board').setPointerCapture(drag.id);
     renderBoard(true);
@@ -665,9 +704,9 @@ document.addEventListener('pointermove', e => {
   drag.over = squareAtPointer(e);
   if (drag.over?.classList.contains('target')) drag.over.classList.add('drag-over');
 }, {passive:false});
-document.addEventListener('pointerup', e => {
-  if (!drag || e.pointerId !== drag.id) return;
+function finishDrag(e, release = 'pointerup') {
   const previous = drag;
+  logInput('release', e, {release, inputAllowed:canInput(), pressRevision:previous.revision});
   // A fast gesture can reach pointerup before the browser dispatches a
   // pointermove. Treat clear down-to-up movement as a drag on release too.
   if (!previous.active && movedForDrag(e)) {
@@ -675,23 +714,42 @@ document.addEventListener('pointerup', e => {
     previous.active = true;
   }
   const target = previous.active ? squareAtPointer(e) : null;
-  cancelDrag();
-  if (!previous.active) return;
+  cancelDrag('release');
+  if (!previous.active) { logInput('tap', e); return; }
   e.preventDefault();
   if (target && canInput() && state.revision === previous.revision) {
     const to = Number(target.dataset.square);
     focusSquare = to;
-    if (tryMove(previous.from, to)) return;
+    if (tryMove(previous.from, to)) { logInput('drop accepted', e, {source:squareName(previous.from)}); return; }
   }
+  logInput('drop rejected', e, {source:squareName(previous.from), reason:!target ? 'outside board'
+    : !canInput() ? 'input unavailable' : state.revision !== previous.revision ? 'position changed' : 'illegal destination'});
   renderBoard();
+}
+document.addEventListener('pointerup', e => {
+  if (drag?.id === e.pointerId) finishDrag(e);
 });
-document.addEventListener('pointercancel', e => { if (drag?.id === e.pointerId) cancelDrag(); });
+// Mouse releases are a second chance to finish a trackpad gesture. All release
+// paths clear drag first, so later events cannot submit the same move again.
+document.addEventListener('mouseup', e => {
+  if (drag?.pointerType === 'mouse' && e.button === 0) finishDrag(e, 'mouseup');
+});
+document.addEventListener('pointercancel', e => {
+  if (drag?.id === e.pointerId) { logInput('pointercancel', e); cancelDrag('pointercancel'); }
+});
 $('board').addEventListener('lostpointercapture', e => {
-  if (e.target === $('board') && drag?.id === e.pointerId) cancelDrag();
+  if (e.target !== $('board') || drag?.id !== e.pointerId) return;
+  logInput('lostpointercapture', e);
+  // Chrome can lose mouse capture on release before delivering pointerup.
+  // The event carries the release coordinates and buttons=0; cancelling here
+  // would discard a legal drop. Capture loss during a held press still cancels.
+  if (drag.pointerType === 'mouse' && e.buttons === 0 && !document.hidden && document.hasFocus()) {
+    finishDrag(e, 'released capture');
+  } else cancelDrag('lost pointer capture');
 });
-$('board').addEventListener('dragstart', e => e.preventDefault());
-window.addEventListener('blur', cancelDrag);
-document.addEventListener('visibilitychange', () => { if (document.hidden) cancelDrag(); syncMusic(); });
+$('board').addEventListener('dragstart', e => { logInput('native drag prevented', e); e.preventDefault(); });
+window.addEventListener('blur', () => cancelDrag('window blur'));
+document.addEventListener('visibilitychange', () => { if (document.hidden) cancelDrag('page hidden'); syncMusic(); });
 $('board').addEventListener('click', e => {
   // A completed or cancelled drag may still produce a compatibility click.
   // Keyboard activation (detail 0) must always keep working.
@@ -751,6 +809,7 @@ async function makeMove(move, fromQueue = false) {
     }
   }
   catch (error) {
+    logInput('move request failed', null, {move:move.map((s, i) => i < 2 ? squareName(s) : s), error:error.message});
     clearPremoves(); showError(error);
     if (!document.body.classList.contains('disconnected')) {
       try { state = await api('state'); } catch { /* Keep the current board available. */ }
@@ -782,7 +841,7 @@ function render() {
     if (reply && state.board[drag.from] === drag.pc && canPlay()) {
       drag.revision = state.revision;
       if (drag.active) selected = drag.from;
-    } else cancelDrag();
+    } else cancelDrag('position changed');
   }
   const readyPremove = takeReadyPremove();
   renderBoard(!!drag && state.revision === drag.revision && canInput());
