@@ -24,14 +24,15 @@ struct Lan {
     host: String,
     guest: String,
     joined: bool,
+    host_white: bool,
     address: Option<Ipv4Addr>,
 }
 impl Lan {
     fn player(&self, token: &str) -> Option<bool> {
         if token == self.host {
-            Some(true)
+            Some(self.host_white)
         } else if self.joined && token == self.guest {
-            Some(false)
+            Some(!self.host_white)
         } else {
             None
         }
@@ -102,9 +103,10 @@ fn viewer_json(a: &mut App, token: &str, port: u16) -> String {
         })
         .unwrap_or_else(|| "null".into());
     json.push_str(&format!(
-        ",\"lan\":{},\"player\":{},\"waiting\":{waiting},\"join_url\":{link}}}",
+        ",\"lan\":{},\"player\":{},\"is_host\":{},\"waiting\":{waiting},\"join_url\":{link}}}",
         a.lan.is_some(),
-        player.map_or("null", |white| if white { "true" } else { "false" })
+        player.map_or("null", |white| if white { "true" } else { "false" }),
+        a.lan.as_ref().is_some_and(|lan| lan.host == token)
     ));
     json
 }
@@ -635,7 +637,7 @@ fn serve_connection(
                 Duration::from_secs(3)
             };
             if !["one", "two"].contains(&mode)
-                || !["white", "black"].contains(&color)
+                || !["random", "white", "black"].contains(&color)
                 || !unlimited && !(1..=10_800).contains(&base)
                 || increment > 600
             {
@@ -646,6 +648,11 @@ fn serve_connection(
                 if !authorized(&a, path, &token, local) {
                     return Err("This action is unavailable for this player.".into());
                 }
+                let white = match color {
+                    "random" => RandomState::new().build_hasher().finish() & 1 == 0,
+                    "white" => true,
+                    _ => false,
+                };
                 a.cancel_search();
                 a.cache_epoch += 1;
                 a.game = Game::default();
@@ -660,16 +667,13 @@ fn serve_connection(
                         host: token.clone(),
                         guest: seat_token(),
                         joined: false,
+                        host_white: white,
                         address: lan_address(),
                     })
                 } else {
                     None
                 };
-                a.human = if mode == "two" {
-                    None
-                } else {
-                    Some(color == "white")
-                };
+                a.human = if mode == "two" { None } else { Some(white) };
                 if a.human.is_none() && !a.ai_vs_ai {
                     a.release_cache();
                 }
@@ -1135,97 +1139,143 @@ mod tests {
         );
     }
     #[test]
+    fn random_color_is_assigned_once_for_solo_and_lan() {
+        for mode in ["one", "two"] {
+            let app = shared();
+            let lan_param = if mode == "two" {
+                "&two_player_mode=lan"
+            } else {
+                ""
+            };
+            let body = request(
+                &app,
+                "POST",
+                &format!("/api/new?mode={mode}&color=random&base_seconds=60&increment_seconds=0{lan_param}"),
+                200,
+            );
+            let (white, token) = {
+                let a = app.lock().unwrap();
+                if let Some(lan) = &a.lan {
+                    assert_eq!(lan.player(&lan.host), Some(lan.host_white));
+                    assert!(body.contains(&format!("\"player\":{}", lan.host_white)));
+                    assert_eq!(a.clock.active, None);
+                    (lan.host_white, lan.host.clone())
+                } else {
+                    let white = a.human.unwrap();
+                    assert!(body.contains(&format!("\"human\":{white}")));
+                    (white, String::new())
+                }
+            };
+            let state = request(&app, "GET", &format!("/api/state?player={token}"), 200);
+            let field = if mode == "two" { "player" } else { "human" };
+            assert!(state.contains(&format!("\"{field}\":{white}")));
+        }
+    }
+
+    #[test]
     fn lan_seats_clocks_reconnect_and_authority() {
-        let app = shared();
-        let body = request(
+        for host_white in [true, false] {
+            let color = if host_white { "white" } else { "black" };
+            let app = shared();
+            let body = request(
             &app,
             "POST",
-            "/api/new?mode=two&two_player_mode=lan&color=white&base_seconds=60&increment_seconds=1",
+            &format!("/api/new?mode=two&two_player_mode=lan&color={color}&base_seconds=60&increment_seconds=1"),
             200,
         );
-        assert!(body.contains("\"waiting\":true"));
-        let (host, guest, invite) = {
-            let a = app.lock().unwrap();
-            assert_eq!(a.clock.active, None);
-            assert!(!a.thinking && !a.pondering);
-            let lan = a.lan.as_ref().unwrap();
-            (lan.host.clone(), lan.guest.clone(), lan.invite.clone())
-        };
-        let words: Vec<_> = invite.split('.').collect();
-        assert_eq!(words.len(), 4);
-        assert!(words
-            .iter()
-            .all(|word| !word.is_empty() && word.bytes().all(|b| b.is_ascii_lowercase())));
-        let remote = |path: &str| {
-            raw_peer(&app, &format!("POST {path} HTTP/1.1\r\nHost: 192.168.1.10:7878\r\nOrigin: http://192.168.1.10:7878\r\nX-Chess-Request: 1\r\n\r\n"), false)
-        };
-        let rev = app.lock().unwrap().revision;
-        request(
-            &app,
-            "POST",
-            &format!("/api/move?from=12&to=28&promotion=0&revision={rev}&player={host}"),
-            403,
-        );
-        assert_eq!(remote("/api/join?invite=wrong").0, 400);
-        let (status, joined) = remote(&format!("/api/join?invite={invite}"));
-        assert_eq!(status, 200);
-        assert!(joined.contains(&format!("\"player_token\":\"{guest}\"")));
-        assert!(joined.contains("\"player\":false"));
-        assert!(!joined.contains(&host));
-        assert!(!joined.contains(&invite));
-        assert_eq!(app.lock().unwrap().clock.active, Some(true));
-        assert_eq!(remote(&format!("/api/join?invite={invite}")).0, 400);
-        assert_eq!(remote(&format!("/api/join?player={guest}")).0, 200);
-        let rev = app.lock().unwrap().revision;
-        assert_eq!(
-            remote(&format!(
-                "/api/move?from=12&to=28&promotion=0&revision={rev}&player={guest}"
-            ))
-            .0,
-            403
-        );
-        request(
-            &app,
-            "POST",
-            &format!("/api/move?from=12&to=28&promotion=0&revision={rev}&player={host}"),
-            200,
-        );
-        let rev = app.lock().unwrap().revision;
-        assert_eq!(
-            remote(&format!(
-                "/api/move?from=52&to=36&promotion=0&revision={rev}&player={guest}"
-            ))
-            .0,
-            200
-        );
-        request(&app, "POST", &format!("/api/undo?player={host}"), 403);
-        assert_eq!(remote(&format!("/api/new?player={guest}")).0, 403);
-        request(
-            &app,
-            "POST",
-            "/api/new?mode=two&color=white&unlimited=true",
-            403,
-        );
-        assert_eq!(remote("/api/resign").0, 403);
-        assert_eq!(remote(&format!("/api/resign?player={guest}")).0, 200);
-        assert_eq!(
-            app.lock().unwrap().adjudicated.as_deref(),
-            Some("White wins by resignation")
-        );
-        request(
-            &app,
-            "POST",
-            &format!(
+            assert!(body.contains("\"waiting\":true"));
+            assert!(body.contains(&format!("\"player\":{host_white}")));
+            assert!(body.contains("\"is_host\":true"));
+            let (host, guest, invite) = {
+                let a = app.lock().unwrap();
+                assert_eq!(a.clock.active, None);
+                assert!(!a.thinking && !a.pondering);
+                let lan = a.lan.as_ref().unwrap();
+                (lan.host.clone(), lan.guest.clone(), lan.invite.clone())
+            };
+            let white = if host_white { &host } else { &guest };
+            let black = if host_white { &guest } else { &host };
+            let words: Vec<_> = invite.split('.').collect();
+            assert_eq!(words.len(), 4);
+            assert!(words
+                .iter()
+                .all(|word| !word.is_empty() && word.bytes().all(|b| b.is_ascii_lowercase())));
+            let remote = |path: &str| {
+                raw_peer(&app, &format!("POST {path} HTTP/1.1\r\nHost: 192.168.1.10:7878\r\nOrigin: http://192.168.1.10:7878\r\nX-Chess-Request: 1\r\n\r\n"), false)
+            };
+            let rev = app.lock().unwrap().revision;
+            request(
+                &app,
+                "POST",
+                &format!("/api/move?from=12&to=28&promotion=0&revision={rev}&player={host}"),
+                403,
+            );
+            assert_eq!(remote("/api/join?invite=wrong").0, 400);
+            let (status, joined) = remote(&format!("/api/join?invite={invite}"));
+            assert_eq!(status, 200);
+            assert!(joined.contains(&format!("\"player_token\":\"{guest}\"")));
+            assert!(joined.contains(&format!("\"player\":{}", !host_white)));
+            assert!(joined.contains("\"is_host\":false"));
+            assert!(!joined.contains(&host));
+            assert!(!joined.contains(&invite));
+            assert_eq!(app.lock().unwrap().clock.active, Some(true));
+            assert_eq!(remote(&format!("/api/join?invite={invite}")).0, 400);
+            assert_eq!(remote(&format!("/api/join?player={guest}")).0, 200);
+            let rev = app.lock().unwrap().revision;
+            assert_eq!(
+                remote(&format!(
+                    "/api/move?from=12&to=28&promotion=0&revision={rev}&player={black}"
+                ))
+                .0,
+                403
+            );
+            request(
+                &app,
+                "POST",
+                &format!("/api/move?from=12&to=28&promotion=0&revision={rev}&player={white}"),
+                200,
+            );
+            let rev = app.lock().unwrap().revision;
+            assert_eq!(
+                remote(&format!(
+                    "/api/move?from=52&to=36&promotion=0&revision={rev}&player={black}"
+                ))
+                .0,
+                200
+            );
+            request(&app, "POST", &format!("/api/undo?player={host}"), 403);
+            assert_eq!(remote(&format!("/api/new?player={guest}")).0, 403);
+            request(
+                &app,
+                "POST",
+                "/api/new?mode=two&color=white&unlimited=true",
+                403,
+            );
+            assert_eq!(remote("/api/resign").0, 403);
+            assert_eq!(remote(&format!("/api/resign?player={guest}")).0, 200);
+            assert_eq!(
+                app.lock().unwrap().adjudicated.as_deref(),
+                Some(if host_white {
+                    "White wins by resignation"
+                } else {
+                    "Black wins by resignation"
+                })
+            );
+            request(
+                &app,
+                "POST",
+                &format!(
                 "/api/new?mode=two&two_player_mode=same&color=white&unlimited=true&player={host}"
             ),
-            200,
-        );
-        assert_eq!(
-            remote("/api/move?from=12&to=28&promotion=0&revision=0").0,
-            403
-        );
-        let spoof = "POST /api/join HTTP/1.1\r\nHost: 192.168.1.10:7878\r\nOrigin: http://192.168.1.11:7878\r\nX-Chess-Request: 1\r\n\r\n";
-        assert_eq!(raw_peer(&app, spoof, false).0, 403);
+                200,
+            );
+            assert_eq!(
+                remote("/api/move?from=12&to=28&promotion=0&revision=0").0,
+                403
+            );
+            let spoof = "POST /api/join HTTP/1.1\r\nHost: 192.168.1.10:7878\r\nOrigin: http://192.168.1.11:7878\r\nX-Chess-Request: 1\r\n\r\n";
+            assert_eq!(raw_peer(&app, spoof, false).0, 403);
+        }
     }
 
     #[test]

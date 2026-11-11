@@ -30,19 +30,12 @@
             <label><input type="radio" name="mode" value="two"> Two players</label>
           </div>
         </fieldset>
-        <div id="two-player-options" class="time-control-row" hidden>
-          <label for="two-player-mode">Mode</label>
-          <select id="two-player-mode" name="two-player-mode" disabled>
-            <option value="lan" selected>LAN</option>
-            <option value="same">Same computer</option>
-            <option value="ai">AI vs. AI</option>
-          </select>
-        </div>
-        <div id="solo-options">
+        <div id="color-options">
           <fieldset>
             <legend>Your color</legend>
             <div class="options">
-              <label><input type="radio" name="color" value="white" checked> White</label>
+              <label><input type="radio" name="color" value="random" checked> Random</label>
+              <label><input type="radio" name="color" value="white"> White</label>
               <label><input type="radio" name="color" value="black"> Black</label>
             </div>
           </fieldset>
@@ -77,6 +70,14 @@
           <div id="custom-thinking" class="custom-time custom-thinking" hidden>
             <label for="thinking-seconds">Seconds per move<input id="thinking-seconds" name="thinking-seconds" type="number" min="0.000000001" step="any" value="3" required disabled></label>
           </div>
+        </div>
+        <div id="two-player-options" class="time-control-row" hidden>
+          <label for="two-player-mode">Mode</label>
+          <select id="two-player-mode" name="two-player-mode" disabled>
+            <option value="lan" selected>LAN</option>
+            <option value="same">Same computer</option>
+            <option value="ai">AI vs. AI</option>
+          </select>
         </div>
         <button id="start" class="primary" type="submit">Start game</button>
       </form>

@@ -385,7 +385,7 @@ async function api(path, params) {
 }
 function changeMode() {
   const solo = document.querySelector('input[name="mode"]:checked').value === 'one';
-  $('solo-options').hidden = !solo;
+  $('color-options').hidden = !solo && $('two-player-mode').value !== 'lan';
   $('two-player-options').hidden = solo;
   $('two-player-mode').disabled = solo;
   changeTimeControl();
@@ -405,7 +405,7 @@ function changeTimeControl() {
 }
 $('time-control').addEventListener('change', changeTimeControl);
 $('thinking-time').addEventListener('change', changeTimeControl);
-$('two-player-mode').addEventListener('change', changeTimeControl);
+$('two-player-mode').addEventListener('change', changeMode);
 changeMode();
 $('setup-form').addEventListener('submit', async e => {
   e.preventDefault(); if (busy) return;
@@ -417,7 +417,6 @@ $('setup-form').addEventListener('submit', async e => {
     const control = form.get('time-control');
     const params = {mode: form.get('mode'), color: form.get('color')};
     if (params.mode === 'two') params.two_player_mode = form.get('two-player-mode');
-    if (params.two_player_mode === 'lan') params.color = 'white';
     if (control === 'unlimited') {
       params.unlimited = true;
       if (params.mode === 'one' || params.two_player_mode === 'ai') params.thinking_seconds = Number(form.get('thinking-time') === 'custom' ? form.get('thinking-seconds') : form.get('thinking-time'));
@@ -879,13 +878,13 @@ function render() {
     $('game-mode').textContent = `${state.lan ? 'LAN · ' + (state.player === null ? 'Spectating' : 'You: ' + (state.player ? 'White' : 'Black')) : state.ai_vs_ai ? 'AI vs. AI' : state.human === null ? 'Two players' : 'You: ' + (state.human ? 'White' : 'Black')} · ${controlLabel(state.clocks)}${!state.clocks.enabled && (state.human !== null || state.ai_vs_ai) ? ' · ' + state.thinking_seconds + 's per move' : ''}`;
     lastStatus = signature;
   }
-  $('menu-button').disabled = state.lan && state.player !== true;
+  $('menu-button').disabled = state.lan && !state.is_host;
   $('lan-panel').hidden = !state.lan;
-  $('lan-status').textContent = state.waiting ? 'Clocks start when your opponent joins. You play White.' : 'LAN game · reconnect by refreshing this tab.';
+  $('lan-status').textContent = state.waiting ? `Clocks start when your opponent joins. You play ${state.player ? 'White' : 'Black'}.` : 'LAN game · reconnect by refreshing this tab.';
   $('lan-link-label').hidden = !state.join_url;
   $('lan-link').hidden = !state.join_url;
   $('lan-link').value = state.join_url || '';
-  if (state.lan && state.waiting && state.player === true && !state.join_url) $('lan-status').textContent = 'No LAN address found. Connect the host to Wi-Fi or a wired network, then restart the game.';
+  if (state.lan && state.waiting && state.is_host && !state.join_url) $('lan-status').textContent = 'No LAN address found. Connect the host to Wi-Fi or a wired network, then restart the game.';
   $('moves-title').textContent = state.opening;
   if (state.notation.length !== lastHistoryLength) {
     const fragment = document.createDocumentFragment();

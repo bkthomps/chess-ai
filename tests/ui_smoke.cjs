@@ -2,6 +2,8 @@
 const fs = require('node:fs'), vm = require('node:vm'), assert = require('node:assert/strict'), path = require('node:path');
 const html = fs.readFileSync(path.join(__dirname, '../web/index.html'), 'utf8');
 assert.match(html, /<option value="lan" selected>LAN<\/option>\s*<option value="same">Same computer<\/option>\s*<option value="ai">AI vs\. AI<\/option>/);
+assert.match(html, /name="color" value="random" checked/);
+assert.doesNotMatch(html, /name="color" value="(?:white|black)" checked/);
 let focused;
 let boardRect = {left:0, top:0, width:640, height:640};
 const audioNotes = [], storedSounds = new Map();
@@ -101,6 +103,10 @@ const context = vm.createContext({
         server.thinking_seconds = Number(u.searchParams.get('thinking_seconds') || 3);
         server.clocks.enabled = false; server.clocks.running = false; server.clocks.active_white = null;
       }
+      if (u.searchParams.get('two_player_mode') === 'lan') {
+        Object.assign(server, {lan:true, is_host:true, player:u.searchParams.get('color') === 'white', waiting:true, join_url:'http://192.168.1.2:7878/join=test'});
+        server.clocks.running = false;
+      }
       server.ai_vs_ai = u.searchParams.get('two_player_mode') === 'ai';
       server.thinking = server.ai_vs_ai || server.human === false;
       if (server.ai_vs_ai) server.pondering = false;
@@ -193,7 +199,7 @@ const moveRequests = () => requests.filter(r => r.url.startsWith('/api/move?'));
     assert(elements['disconnected-king'].innerHTML.includes(`fill="${fill}"`));
     offline = false; await vm.runInContext('poll()', context);
   }
-  vm.runInContext('changeMode()', context); assert(elements['solo-options'].hidden);
+  vm.runInContext('changeMode()', context); assert(elements['color-options'].hidden);
   // Every preset must reach the server in seconds, including both increments.
   for (const [preset, base, increment] of [['1',60,0], ['2+1',120,1], ['5',300,0], ['10+5',600,5]]) {
     elements['time-control'].value = preset; elements['time-control'].listeners.change();
@@ -313,8 +319,20 @@ const moveRequests = () => requests.filter(r => r.url.startsWith('/api/move?'));
   assert(elements['game-clocks'].hidden);
   openMenu(); elements['time-control'].value = '5'; elements['time-control'].listeners.change();
   assert(elements['unlimited-thinking'].hidden); await submit(); assert(!elements['game-clocks'].hidden);
+  // LAN setup keeps the selected host color and orients the board accordingly.
+  for (const hostColor of ['white', 'black', 'random']) {
+    openMenu(); elements['two-player-mode'].value = 'lan';
+    elements['two-player-mode'].listeners.change();
+    assert(!elements['color-options'].hidden);
+    color = hostColor; await submit();
+    assert.equal(new URL(requests.at(-1).url, 'http://localhost').searchParams.get('color'), hostColor);
+    assert.equal(vm.runInContext('flipped', context), hostColor !== 'white');
+    assert(!elements['menu-button'].disabled);
+    assert(elements['lan-status'].textContent.includes('You play ' + (hostColor === 'white' ? 'White' : 'Black')));
+  }
+  color = 'white';
   // LAN seats gate browser input and expose the host's invitation.
-  vm.runInContext(`state.lan=true;state.player=true;state.waiting=true;state.join_url='http://192.168.1.2:7878/join=maple.river.otter.moon';render()`, context);
+  vm.runInContext(`state.lan=true;state.is_host=true;state.player=true;state.waiting=true;state.join_url='http://192.168.1.2:7878/join=maple.river.otter.moon';render()`, context);
   assert.equal(vm.runInContext('canPlay()', context), false);
   assert(elements.undo.disabled); assert(!elements['lan-panel'].hidden);
   assert(elements['lan-link'].value.includes('/join=maple.river.otter.moon'));
@@ -324,6 +342,8 @@ const moveRequests = () => requests.filter(r => r.url.startsWith('/api/move?'));
   assert.equal(vm.runInContext('canPlay()', context), false);
   vm.runInContext('state.white=false;render()', context);
   assert.equal(vm.runInContext('canPlay()', context), true);
+  vm.runInContext('state.is_host=false;render()', context);
+  assert(elements['menu-button'].disabled);
   vm.runInContext('state.player=null;render()', context);
   assert.equal(vm.runInContext('canPlay()', context), false); assert(elements.resign.disabled);
   vm.runInContext('state.lan=false;state.white=true;render()', context);
