@@ -48,6 +48,19 @@ fn seat_token() -> String {
     }
     token
 }
+fn invitation_token() -> String {
+    let words = include_str!("invite_words.txt").split_ascii_whitespace();
+    let count = words.clone().count();
+    let mut token = String::new();
+    for i in 0..4 {
+        if i > 0 {
+            token.push('.');
+        }
+        let index = (RandomState::new().build_hasher().finish() % count as u64) as usize;
+        token.push_str(words.clone().nth(index).unwrap());
+    }
+    token
+}
 fn lan_address() -> Option<Ipv4Addr> {
     let socket = UdpSocket::bind((Ipv4Addr::UNSPECIFIED, 0)).ok()?;
     // UDP connect selects an interface without transmitting any packets.
@@ -85,7 +98,7 @@ fn viewer_json(a: &mut App, token: &str, port: u16) -> String {
         .filter(|lan| lan.host == token)
         .and_then(|lan| {
             lan.address
-                .map(|ip| quote(&format!("http://{ip}:{port}/#join={}", lan.invite)))
+                .map(|ip| quote(&format!("http://{ip}:{port}/join={}", lan.invite)))
         })
         .unwrap_or_else(|| "null".into());
     json.push_str(&format!(
@@ -527,7 +540,7 @@ fn serve_connection(
     let params: HashMap<_, _> = query.split('&').filter_map(|p| p.split_once('=')).collect();
     if method == "GET" {
         let resource: Option<(&str, &[u8])> = match path {
-            "/" => Some((
+            p if p == "/" || p.starts_with("/join=") => Some((
                 "text/html; charset=utf-8",
                 include_bytes!("../web/index.html"),
             )),
@@ -643,7 +656,7 @@ fn serve_connection(
                 a.lan = if mode == "two" && two_player_mode == "lan" {
                     token = seat_token();
                     Some(Lan {
-                        invite: seat_token(),
+                        invite: invitation_token(),
                         host: token.clone(),
                         guest: seat_token(),
                         joined: false,
@@ -1090,7 +1103,13 @@ mod tests {
     #[test]
     fn bundled_assets_and_initial_state() {
         let app = shared();
-        for target in ["/", "/style.css", "/app.js", "/favicon.svg"] {
+        for target in [
+            "/",
+            "/join=maple.river.otter.moon",
+            "/style.css",
+            "/app.js",
+            "/favicon.svg",
+        ] {
             assert!(!request(&app, "GET", target, 200).is_empty());
         }
         let body = request(&app, "GET", "/api/state", 200);
@@ -1132,6 +1151,11 @@ mod tests {
             let lan = a.lan.as_ref().unwrap();
             (lan.host.clone(), lan.guest.clone(), lan.invite.clone())
         };
+        let words: Vec<_> = invite.split('.').collect();
+        assert_eq!(words.len(), 4);
+        assert!(words
+            .iter()
+            .all(|word| !word.is_empty() && word.bytes().all(|b| b.is_ascii_lowercase())));
         let remote = |path: &str| {
             raw_peer(&app, &format!("POST {path} HTTP/1.1\r\nHost: 192.168.1.10:7878\r\nOrigin: http://192.168.1.10:7878\r\nX-Chess-Request: 1\r\n\r\n"), false)
         };

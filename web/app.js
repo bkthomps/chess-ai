@@ -1020,7 +1020,8 @@ async function poll() {
   setTimeout(poll, playing && (state?.thinking || state?.pondering) ? 150 : playing && state?.clocks.running ? 250 : 1000);
 }
 async function connectLan() {
-  const invite = new URLSearchParams((window.location?.hash || '').replace(/^#/, '')).get('join');
+  const invite = new URLSearchParams((window.location?.pathname || '').replace(/^\//, '')).get('join')
+    || new URLSearchParams((window.location?.hash || '').replace(/^#/, '')).get('join');
   if (invite) {
     busy = true;
     try {

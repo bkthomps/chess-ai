@@ -157,8 +157,13 @@ try:
     assert state['join_url'], 'No LAN interface was detected'
     invitation = urllib.parse.urlsplit(state['join_url'])
     lan_ip = invitation.hostname
-    invite = urllib.parse.parse_qs(invitation.fragment)['join'][0]
+    assert invitation.path.startswith('/join=') and not invitation.fragment
+    invite = invitation.path.removeprefix('/join=')
+    words = invite.split('.')
+    assert len(words) == 4 and all(word.isascii() and word.isalpha() and word.islower()
+                                   for word in words), invite
     spectator = request('/api/state')
+    assert '<html' in request(invitation.path, address=lan_ip)
     assert spectator['player'] is None and spectator['join_url'] is None
     request('/api/move', dict(player=host, **{'from': 12, 'to': 28, 'promotion': 0,
                                              'revision': state['revision']}), 403)
