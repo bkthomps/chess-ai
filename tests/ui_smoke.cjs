@@ -7,6 +7,10 @@ const audioNotes = [], storedSounds = new Map();
 class AudioContextMock {
   constructor() { this.state = 'suspended'; this.currentTime = 0; this.destination = {}; }
   resume() { this.state = 'running'; return Promise.resolve(); }
+  createDynamicsCompressor() {
+    return {threshold: {}, knee: {}, ratio: {}, attack: {}, release: {}, connect() {}};
+  }
+  createWaveShaper() { return {curve: null, connect() {}}; }
   createOscillator() {
     const note = {};
     return {

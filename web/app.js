@@ -198,7 +198,9 @@ $('copy-input-log').onclick = async () => {
 };
 let premoves = [], premoveContext = null;
 let pendingMove = null;
-let soundEnabled = true, audioContext = null, soundEpoch = 0, soundSnapshot = null;
+let soundEnabled = true, audioContext = null, audioOutput = null, soundEpoch = 0, soundSnapshot = null;
+// About 6 dB above the previous level, for roughly 1.5× perceived loudness.
+const audioVolumeBoost = 32;
 const voices = new Set();
 try { soundEnabled = window.localStorage.getItem('chess.sounds') !== 'off'; } catch { /* Storage is optional. */ }
 function stopVoices() {
@@ -217,7 +219,20 @@ async function unlockAudio() {
     if (!audioContext) {
       const Audio = window.AudioContext || window.webkitAudioContext;
       if (!Audio) return false;
-      audioContext = new Audio();
+      const context = new Audio();
+      const compressor = context.createDynamicsCompressor();
+      compressor.threshold.value = -3;
+      compressor.knee.value = 0;
+      compressor.ratio.value = 20;
+      compressor.attack.value = 0;
+      compressor.release.value = 0.08;
+      // A final ceiling also catches transients before the compressor reacts.
+      const ceiling = context.createWaveShaper();
+      ceiling.curve = new Float32Array([-0.95, 0.95]);
+      compressor.connect(ceiling);
+      ceiling.connect(context.destination);
+      audioOutput = compressor;
+      audioContext = context;
     }
     if (audioContext.state !== 'running') await audioContext.resume();
     return audioContext.state === 'running';
@@ -243,9 +258,9 @@ async function playSound(kind) {
       oscillator.frequency.setValueAtTime(frequency, time);
       oscillator.frequency.exponentialRampToValueAtTime(endFrequency, time + duration);
       gain.gain.setValueAtTime(0.0001, time);
-      gain.gain.exponentialRampToValueAtTime(volume, time + 0.005);
+      gain.gain.exponentialRampToValueAtTime(volume * audioVolumeBoost, time + 0.005);
       gain.gain.exponentialRampToValueAtTime(0.0001, time + duration);
-      oscillator.connect(gain); gain.connect(audioContext.destination);
+      oscillator.connect(gain); gain.connect(audioOutput);
       voices.add(voice);
       oscillator.onended = () => { oscillator.disconnect(); gain.disconnect(); voices.delete(voice); };
       oscillator.start(time); oscillator.stop(time + duration + 0.01);
@@ -313,9 +328,9 @@ async function startMusic() {
         oscillator.type = 'sine';
         oscillator.frequency.setValueAtTime(frequency, time);
         gain.gain.setValueAtTime(0.0001, time);
-        gain.gain.exponentialRampToValueAtTime(0.025, time + 0.04);
+        gain.gain.exponentialRampToValueAtTime(0.025 * audioVolumeBoost, time + 0.04);
         gain.gain.exponentialRampToValueAtTime(0.0001, time + theme.step * 0.9);
-        oscillator.connect(gain); gain.connect(audioContext.destination);
+        oscillator.connect(gain); gain.connect(audioOutput);
         musicVoices.add(voice);
         oscillator.onended = () => { oscillator.disconnect(); gain.disconnect(); musicVoices.delete(voice); };
         oscillator.start(time); oscillator.stop(time + theme.step * 0.9 + 0.01);
