@@ -1,0 +1,300 @@
+sequence,games,reference_cp,reference_depth,source_url,fen,baseline_depth4_cp,candidate_depth4_cp,baseline_depth5_cp,candidate_depth5_cp,baseline_depth6_cp,candidate_depth6_cp
+e4,1934514,20,50,https://www.365chess.com/opening.php,rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b KQkq e3 0 1,42,21,0,12,36,12
+d4,1285724,26,50,https://www.365chess.com/opening.php,rnbqkbnr/pppppppp/8/8/3P4/8/PPP1PPPP/RNBQKBNR b KQkq d3 0 1,56,14,0,24,41,13
+Nf3,343030,25,48,https://www.365chess.com/opening.php,rnbqkbnr/pppppppp/8/8/8/5N2/PPPPPPPP/RNBQKB1R b KQkq - 1 1,52,14,0,24,41,13
+c4,271463,17,47,https://www.365chess.com/opening.php,rnbqkbnr/pppppppp/8/8/2P5/8/PP1PPPPP/RNBQKBNR b KQkq c3 0 1,22,1,-38,0,22,7
+g3,26475,0,45,https://www.365chess.com/opening.php,rnbqkbnr/pppppppp/8/8/8/6P1/PPPPPP1P/RNBQKBNR b KQkq - 0 1,16,-13,-44,-13,10,-14
+f4,21201,0,45,https://www.365chess.com/opening.php,rnbqkbnr/pppppppp/8/8/5P2/8/PPPPP1PP/RNBQKBNR b KQkq f3 0 1,26,-16,-26,-13,16,-15
+b3,16338,-4,48,https://www.365chess.com/opening.php,rnbqkbnr/pppppppp/8/8/8/1P6/P1PPPPPP/RNBQKBNR b KQkq - 0 1,16,-25,-45,-22,1,-21
+e4 c5,801030,25,50,https://www.365chess.com/opening.php?m=2&ms=e4&n=3&ns=3,rnbqkbnr/pp1ppppp/8/2p5/4P3/8/PPPP1PPP/RNBQKBNR w KQkq c6 0 2,26,40,88,41,26,43
+e4 e5,471796,22,50,https://www.365chess.com/opening.php?m=2&ms=e4&n=3&ns=3,rnbqkbnr/pppp1ppp/8/4p3/4P3/8/PPPP1PPP/RNBQKBNR w KQkq e6 0 2,0,24,64,23,23,38
+e4 e6,248781,4,45,https://www.365chess.com/opening.php?m=2&ms=e4&n=3&ns=3,rnbqkbnr/pppp1ppp/4p3/8/4P3/8/PPPP1PPP/RNBQKBNR w KQkq - 0 2,20,54,74,41,31,48
+e4 c6,147474,39,50,https://www.365chess.com/opening.php?m=2&ms=e4&n=3&ns=3,rnbqkbnr/pp1ppppp/2p5/8/4P3/8/PPPP1PPP/RNBQKBNR w KQkq - 0 2,36,60,77,50,38,49
+e4 d6,80957,22,45,https://www.365chess.com/opening.php?m=2&ms=e4&n=3&ns=3,rnbqkbnr/ppp1pppp/3p4/8/4P3/8/PPPP1PPP/RNBQKBNR w KQkq - 0 2,16,48,79,52,32,56
+e4 d5,64507,55,50,https://www.365chess.com/opening.php?m=2&ms=e4&n=3&ns=3,rnbqkbnr/ppp1pppp/8/3p4/4P3/8/PPPP1PPP/RNBQKBNR w KQkq d6 0 2,11,12,55,12,-12,-1
+e4 g6,55840,58,26,https://www.365chess.com/opening.php?m=2&ms=e4&n=3&ns=3,rnbqkbnr/pppppp1p/6p1/8/4P3/8/PPPP1PPP/RNBQKBNR w KQkq - 0 2,44,86,104,74,68,80
+e4 Nf6,42219,62,50,https://www.365chess.com/opening.php?m=2&ms=e4&n=3&ns=3,rnbqkb1r/pppppppp/5n2/8/4P3/8/PPPP1PPP/RNBQKBNR w KQkq - 1 2,18,68,68,76,30,86
+e4 Nc6,12525,45,50,https://www.365chess.com/opening.php?m=2&ms=e4&n=3&ns=3,r1bqkbnr/pppppppp/2n5/8/4P3/8/PPPP1PPP/RNBQKBNR w KQkq - 1 2,0,25,36,18,8,29
+d4 Nf6,726276,22,48,https://www.365chess.com/opening.php?m=2&ms=d4&n=7&ns=7,rnbqkb1r/pppppppp/5n2/8/3P4/8/PPP1PPPP/RNBQKBNR w KQkq - 1 2,0,24,41,14,0,24
+d4 d5,358857,20,50,https://www.365chess.com/opening.php?m=2&ms=d4&n=7&ns=7,rnbqkbnr/ppp1pppp/8/3p4/3P4/8/PPP1PPPP/RNBQKBNR w KQkq d6 0 2,0,24,41,13,0,24
+d4 e6,57978,4,45,https://www.365chess.com/opening.php?m=2&ms=d4&n=7&ns=7,rnbqkbnr/pppp1ppp/4p3/8/3P4/8/PPP1PPPP/RNBQKBNR w KQkq - 0 2,20,54,79,41,26,48
+d4 f5,41457,17,45,https://www.365chess.com/opening.php?m=2&ms=d4&n=7&ns=7,rnbqkbnr/ppppp1pp/8/5p2/3P4/8/PPP1PPPP/RNBQKBNR w KQkq f6 0 2,26,57,67,43,33,45
+d4 g6,35903,56,50,https://www.365chess.com/opening.php?m=2&ms=d4&n=7&ns=7,rnbqkbnr/pppppp1p/6p1/8/3P4/8/PPP1PPPP/RNBQKBNR w KQkq - 0 2,44,74,100,71,68,66
+d4 d6,34446,22,45,https://www.365chess.com/opening.php?m=2&ms=d4&n=7&ns=7,rnbqkbnr/ppp1pppp/3p4/8/3P4/8/PPP1PPPP/RNBQKBNR w KQkq - 0 2,16,48,79,52,32,56
+d4 c5,17292,36,45,https://www.365chess.com/opening.php?m=2&ms=d4&n=7&ns=7,rnbqkbnr/pp1ppppp/8/2p5/3P4/8/PPP1PPPP/RNBQKBNR w KQkq c6 0 2,50,50,73,56,24,50
+Nf3 Nf6,154243,8,45,https://www.365chess.com/opening.php?m=2&ms=Nf3&n=1&ns=1,rnbqkb1r/pppppppp/5n2/8/8/5N2/PPPPPPPP/RNBQKB1R w KQkq - 2 2,0,24,41,13,0,24
+Nf3 d5,98084,8,45,https://www.365chess.com/opening.php?m=2&ms=Nf3&n=1&ns=1,rnbqkbnr/ppp1pppp/8/3p4/8/5N2/PPPPPPPP/RNBQKB1R w KQkq d6 0 2,0,24,41,13,0,24
+Nf3 c5,38349,17,45,https://www.365chess.com/opening.php?m=2&ms=Nf3&n=1&ns=1,rnbqkbnr/pp1ppppp/8/2p5/8/5N2/PPPPPPPP/RNBQKB1R w KQkq c6 0 2,46,40,106,39,30,38
+Nf3 g6,17806,22,45,https://www.365chess.com/opening.php?m=2&ms=Nf3&n=1&ns=1,rnbqkbnr/pppppp1p/6p1/8/8/5N2/PPPPPPPP/RNBQKB1R w KQkq - 0 2,41,49,100,45,52,57
+Nf3 f5,10179,27,45,https://www.365chess.com/opening.php?m=2&ms=Nf3&n=1&ns=1,rnbqkbnr/ppppp1pp/8/5p2/8/5N2/PPPPPPPP/RNBQKB1R w KQkq f6 0 2,29,53,75,43,33,45
+c4 Nf6,82394,8,45,https://www.365chess.com/opening.php?m=2&ms=c4&n=15&ns=15,rnbqkb1r/pppppppp/5n2/8/2P5/8/PP1PPPPP/RNBQKBNR w KQkq - 1 2,-38,6,22,14,-34,9
+c4 e5,61441,17,45,https://www.365chess.com/opening.php?m=2&ms=c4&n=15&ns=15,rnbqkbnr/pppp1ppp/8/4p3/2P5/8/PP1PPPPP/RNBQKBNR w KQkq e6 0 2,-14,4,44,19,13,21
+c4 e6,38558,13,45,https://www.365chess.com/opening.php?m=2&ms=c4&n=15&ns=15,rnbqkbnr/pppp1ppp/4p3/8/2P5/8/PP1PPPPP/RNBQKBNR w KQkq - 0 2,-1,18,62,16,-1,21
+c4 c5,31709,13,45,https://www.365chess.com/opening.php?m=2&ms=c4&n=15&ns=15,rnbqkbnr/pp1ppppp/8/2p5/2P5/8/PP1PPPPP/RNBQKBNR w KQkq c6 0 2,4,24,74,24,13,20
+c4 g6,20892,27,45,https://www.365chess.com/opening.php?m=2&ms=c4&n=15&ns=15,rnbqkbnr/pppppp1p/6p1/8/2P5/8/PP1PPPPP/RNBQKBNR w KQkq - 0 2,21,44,79,60,24,54
+c4 c6,18893,8,45,https://www.365chess.com/opening.php?m=2&ms=c4&n=15&ns=15,rnbqkbnr/pp1ppppp/2p5/8/2P5/8/PP1PPPPP/RNBQKBNR w KQkq - 0 2,17,36,69,31,22,38
+f4 d5,10273,-8,45,https://www.365chess.com/opening.php?m=2&ms=f4&n=67&ns=67,rnbqkbnr/ppp1pppp/8/3p4/5P2/8/PPPPP1PP/RNBQKBNR w KQkq d6 0 2,-26,-13,16,-15,-32,-12
+e4 c5 Nf3,609123,34,50,https://www.365chess.com/opening.php?m=4&ms=e4.c5.Nf3&n=4&ns=3.3.4,rnbqkbnr/pp1ppppp/8/2p5/4P3/5N2/PPPP1PPP/RNBQKB1R b KQkq - 1 2,67,35,26,28,64,30
+e4 c5 Nc3,82440,20,43,https://www.365chess.com/opening.php?m=3&ms=e4.c5&n=3&ns=3.3,rnbqkbnr/pp1ppppp/8/2p5/4P3/2N5/PPPP1PPP/R1BQKBNR b KQkq - 1 2,88,41,26,43,79,43
+e4 c5 c3,59712,5,50,https://www.365chess.com/opening.php?m=3&ms=e4.c5&n=3&ns=3.3,rnbqkbnr/pp1ppppp/8/2p5/4P3/2P5/PP1P1PPP/RNBQKBNR b KQkq - 0 2,-3,-1,-60,-5,-5,-2
+e4 c5 d4,12564,0,41,https://www.365chess.com/opening.php?m=3&ms=e4.c5&n=3&ns=3.3,rnbqkbnr/pp1ppppp/8/2p5/3PP3/8/PPP2PPP/RNBQKBNR b KQkq d3 0 2,48,35,-36,8,19,5
+e4 e5 Nf3,408520,15,50,https://www.365chess.com/opening.php?m=3&ms=e4.e5&n=5&ns=3.5,rnbqkbnr/pppp1ppp/8/4p3/4P3/5N2/PPPP1PPP/RNBQKB1R b KQkq - 1 2,64,23,23,38,40,29
+e4 e5 Nc3,19444,9,42,https://www.365chess.com/opening.php?m=3&ms=e4.e5&n=5&ns=3.5,rnbqkbnr/pppp1ppp/8/4p3/4P3/2N5/PPPP1PPP/R1BQKBNR b KQkq - 1 2,57,13,1,24,40,29
+e4 e5 Bc4,17528,0,43,https://www.365chess.com/opening.php?m=3&ms=e4.e5&n=5&ns=3.5,rnbqkbnr/pppp1ppp/8/4p3/2B1P3/8/PPPP1PPP/RNBQK1NR b KQkq - 1 2,47,23,0,24,40,16
+e4 e5 f4,16170,-17,45,https://www.365chess.com/opening.php?m=3&ms=e4.e5&n=5&ns=3.5,rnbqkbnr/pppp1ppp/8/4p3/4PP2/8/PPPP2PP/RNBQKBNR b KQkq f3 0 2,-45,-84,-107,-104,-66,-94
+e4 e6 d4,210638,8,45,https://www.365chess.com/opening.php?m=4&ms=e4.e6.d4&n=12&ns=3.16.12,rnbqkbnr/pppp1ppp/4p3/8/3PP3/8/PPP2PPP/RNBQKBNR b KQkq d3 0 2,74,41,12,48,58,43
+e4 e6 d3,17922,0,45,https://www.365chess.com/opening.php?m=3&ms=e4.e6&n=16&ns=3.16,rnbqkbnr/pppp1ppp/4p3/8/4P3/3P4/PPP2PPP/RNBQKBNR b KQkq - 0 2,42,23,-5,18,48,22
+e4 c6 d4,116657,48,43,https://www.365chess.com/opening.php?m=3&ms=e4.c6&n=31&ns=3.31,rnbqkbnr/pp1ppppp/2p5/8/3PP3/8/PPP2PPP/RNBQKBNR b KQkq d3 0 2,67,50,36,49,60,49
+e4 c6 Nc3,11403,13,45,https://www.365chess.com/opening.php?m=3&ms=e4.c6&n=31&ns=3.31,rnbqkbnr/pp1ppppp/2p5/8/4P3/2N5/PPPP1PPP/R1BQKBNR b KQkq - 1 2,77,42,35,39,69,48
+e4 d6 d4,73278,45,46,https://www.365chess.com/opening.php?m=4&ms=e4.d6.d4&n=29&ns=3.51.29,rnbqkbnr/ppp1pppp/3p4/8/3PP3/8/PPP2PPP/RNBQKBNR b KQkq d3 0 2,79,52,32,56,78,55
+e4 d5 exd5,59702,26,43,https://www.365chess.com/opening.php?m=3&ms=e4.d5&n=20&ns=3.20,rnbqkbnr/ppp1pppp/8/3P4/8/8/PPPP1PPP/RNBQKBNR b KQkq - 0 2,55,-3,-19,-1,50,10
+e4 g6 d4,50573,53,50,https://www.365chess.com/opening.php?m=3&ms=e4.g6&n=143&ns=3.143,rnbqkbnr/pppppp1p/6p1/8/3PP3/8/PPP2PPP/RNBQKBNR b KQkq d3 0 2,80,71,68,66,115,66
+e4 Nf6 e5,30990,62,50,https://www.365chess.com/opening.php?m=3&ms=e4.Nf6&n=11&ns=3.11,rnbqkb1r/pppppppp/5n2/4P3/8/8/PPPP1PPP/RNBQKBNR b KQkq - 0 2,68,76,30,86,99,88
+d4 Nf6 c4,488301,26,48,https://www.365chess.com/opening.php?m=3&ms=d4.Nf6&n=14&ns=7.14,rnbqkb1r/pppppppp/5n2/8/2PP4/8/PP2PPPP/RNBQKBNR b KQkq c3 0 2,3,14,-43,9,26,23
+d4 Nf6 Nf3,175931,24,48,https://www.365chess.com/opening.php?m=4&ms=d4.Nf6.Nf3&n=20&ns=7.14.20,rnbqkb1r/pppppppp/5n2/8/3P4/5N2/PPP1PPPP/RNBQKB1R b KQkq - 2 2,41,13,0,24,26,17
+d4 Nf6 Bg5,29661,0,45,https://www.365chess.com/opening.php?m=3&ms=d4.Nf6&n=14&ns=7.14,rnbqkb1r/pppppppp/5n2/6B1/3P4/8/PPP1PPPP/RN1QKBNR b KQkq - 2 2,4,-13,-50,-15,2,-15
+d4 Nf6 Nc3,12451,0,50,https://www.365chess.com/opening.php?m=3&ms=d4.Nf6&n=14&ns=7.14,rnbqkb1r/pppppppp/5n2/8/3P4/2N5/PPP1PPPP/R1BQKBNR b KQkq - 2 2,41,13,0,24,41,17
+d4 d5 c4,245110,4,45,https://www.365chess.com/opening.php?m=3&ms=d4.d5&n=8&ns=7.8,rnbqkbnr/ppp1pppp/8/3p4/2PP4/8/PP2PPPP/RNBQKBNR b KQkq c3 0 2,-31,-56,-44,-44,7,-41
+d4 d5 Nf3,84838,13,45,https://www.365chess.com/opening.php?m=4&ms=d4.d5.Nf3&n=10&ns=7.8.10,rnbqkbnr/ppp1pppp/8/3p4/3P4/5N2/PPP1PPPP/RNBQKB1R b KQkq - 1 2,41,13,0,24,26,17
+d4 e6 c4,33618,0,45,https://www.365chess.com/opening.php?m=3&ms=d4.e6&n=18&ns=7.18,rnbqkbnr/pppp1ppp/4p3/8/2PP4/8/PP2PPPP/RNBQKBNR b KQkq c3 0 2,44,16,-2,21,34,18
+d4 e6 Nf3,15375,4,45,https://www.365chess.com/opening.php?m=4&ms=d4.e6.Nf3&n=13&ns=7.18.13,rnbqkbnr/pppp1ppp/4p3/8/3P4/5N2/PPP1PPPP/RNBQKB1R b KQkq - 1 2,79,28,26,34,48,18
+d4 f5 g3,12385,27,45,https://www.365chess.com/opening.php?m=3&ms=d4.f5&n=60&ns=7.60,rnbqkbnr/ppppp1pp/8/5p2/3P4/6P1/PPP1PP1P/RNBQKBNR b KQkq - 0 2,42,29,0,31,48,26
+d4 g6 c4,17004,25,38,https://www.365chess.com/opening.php?m=3&ms=d4.g6&n=79&ns=7.79,rnbqkbnr/pppppp1p/6p1/8/2PP4/8/PP2PPPP/RNBQKBNR b KQkq c3 0 2,51,35,21,42,73,60
+d4 g6 e4,10181,53,50,https://www.365chess.com/opening.php?m=3&ms=d4.g6&n=79&ns=7.79,rnbqkbnr/pppppp1p/6p1/8/3PP3/8/PPP2PPP/RNBQKBNR b KQkq e3 0 2,80,71,68,66,115,66
+d4 d6 Nf3,12724,59,36,https://www.365chess.com/opening.php?m=4&ms=d4.d6.Nf3&n=22&ns=7.34.22,rnbqkbnr/ppp1pppp/3p4/8/3P4/5N2/PPP1PPPP/RNBQKB1R b KQkq - 1 2,62,27,13,33,60,34
+d4 c5 d5,11331,73,42,https://www.365chess.com/opening.php?m=3&ms=d4.c5&n=209&ns=7.209,rnbqkbnr/pp1ppppp/8/2pP4/8/8/PPP1PPPP/RNBQKBNR b KQkq - 0 2,66,42,17,17,70,29
+Nf3 Nf6 c4,80195,25,50,https://www.365chess.com/opening.php?m=4&ms=Nf3.Nf6.c4&n=39&ns=1.46.39,rnbqkb1r/pppppppp/5n2/8/2P5/5N2/PP1PPPPP/RNBQKB1R b KQkq c3 0 2,22,6,-40,6,37,23
+Nf3 Nf6 g3,47667,16,40,https://www.365chess.com/opening.php?m=3&ms=Nf3.Nf6&n=46&ns=1.46,rnbqkb1r/pppppppp/5n2/8/8/5NP1/PPPPPP1P/RNBQKB1R b KQkq - 0 2,11,-14,-30,-6,6,-18
+Nf3 Nf6 d4,16429,28,22,https://www.365chess.com/opening.php?m=3&ms=Nf3.Nf6&n=46&ns=1.46,rnbqkb1r/pppppppp/5n2/8/3P4/5N2/PPP1PPPP/RNBQKB1R b KQkq d3 0 2,41,13,0,24,26,17
+Nf3 d5 g3,37936,4,43,https://www.365chess.com/opening.php?m=3&ms=Nf3.d5&n=85&ns=1.85,rnbqkbnr/ppp1pppp/8/3p4/8/5NP1/PPPPPP1P/RNBQKB1R b KQkq - 0 2,11,-14,-30,-6,6,-18
+Nf3 d5 d4,27778,30,22,https://www.365chess.com/opening.php?m=3&ms=Nf3.d5&n=85&ns=1.85,rnbqkbnr/ppp1pppp/8/3p4/3P4/5N2/PPP1PPPP/RNBQKB1R b KQkq d3 0 2,41,13,0,24,26,17
+Nf3 d5 c4,20728,11,30,https://www.365chess.com/opening.php?m=4&ms=Nf3.d5.c4&n=60&ns=1.85.60,rnbqkbnr/ppp1pppp/8/3p4/2P5/5N2/PP1PPPPP/RNBQKB1R b KQkq c3 0 2,16,-8,-11,-13,37,-7
+Nf3 c5 c4,20617,31,28,https://www.365chess.com/opening.php?m=3&ms=Nf3.c5&n=1&ns=1.1,rnbqkbnr/pp1ppppp/8/2p5/2P5/5N2/PP1PPPPP/RNBQKB1R b KQkq c3 0 2,60,24,13,20,54,26
+c4 Nf6 Nc3,52859,13,50,https://www.365chess.com/opening.php?m=3&ms=c4.Nf6&n=24&ns=15.24,rnbqkb1r/pppppppp/5n2/8/2P5/2N5/PP1PPPPP/R1BQKBNR b KQkq - 2 2,20,9,-34,9,34,26
+c4 Nf6 g3,12575,13,45,https://www.365chess.com/opening.php?m=3&ms=c4.Nf6&n=24&ns=15.24,rnbqkb1r/pppppppp/5n2/8/2P5/6P1/PP1PPP1P/RNBQKBNR b KQkq - 0 2,-41,-43,-95,-47,-26,-32
+c4 Nf6 Nf3,12433,29,29,https://www.365chess.com/opening.php?m=3&ms=c4.Nf6&n=24&ns=15.24,rnbqkb1r/pppppppp/5n2/8/2P5/5N2/PP1PPPPP/RNBQKB1R b KQkq - 2 2,22,6,-40,6,37,23
+c4 e5 Nc3,42889,0,43,https://www.365chess.com/opening.php?m=3&ms=c4.e5&n=112&ns=15.112,rnbqkbnr/pppp1ppp/8/4p3/2P5/2N5/PP1PPPPP/R1BQKBNR b KQkq - 1 2,44,7,13,21,54,28
+c4 e5 g3,15277,20,49,https://www.365chess.com/opening.php?m=3&ms=c4.e5&n=112&ns=15.112,rnbqkbnr/pppp1ppp/8/4p3/2P5/6P1/PP1PPP1P/RNBQKBNR b KQkq - 0 2,-23,-40,-77,-40,-13,-37
+c4 e6 Nc3,13292,19,40,https://www.365chess.com/opening.php?m=3&ms=c4.e6&n=28&ns=15.28,rnbqkbnr/pppp1ppp/4p3/8/2P5/2N5/PP1PPPPP/R1BQKBNR b KQkq - 1 2,51,5,-1,9,45,18
+c4 e6 Nf3,11752,4,38,https://www.365chess.com/opening.php?m=4&ms=c4.e6.Nf3&n=32&ns=15.28.32,rnbqkbnr/pppp1ppp/4p3/8/2P5/5N2/PP1PPPPP/RNBQKB1R b KQkq - 1 2,62,16,-1,13,45,17
+c4 c5 Nc3,13355,22,38,https://www.365chess.com/opening.php?m=3&ms=c4.c5&n=26&ns=15.26,rnbqkbnr/pp1ppppp/8/2p5/2P5/2N5/PP1PPPPP/R1BQKBNR b KQkq - 1 2,74,21,13,19,54,26
+c4 c5 Nf3,11870,13,39,https://www.365chess.com/opening.php?m=4&ms=c4.c5.Nf3&n=2&ns=15.26.2,rnbqkbnr/pp1ppppp/8/2p5/2P5/5N2/PP1PPPPP/RNBQKB1R b KQkq - 1 2,60,24,13,20,54,26
+c4 g6 Nc3,10009,20,38,https://www.365chess.com/opening.php?m=3&ms=c4.g6&n=22&ns=15.22,rnbqkbnr/pppppp1p/6p1/8/2P5/2N5/PP1PPPPP/R1BQKBNR b KQkq - 1 2,79,60,24,54,84,60
+e4 c5 Nf3 d6,250736,0,45,https://www.365chess.com/opening.php?m=4&ms=e4.c5.Nf3&n=4&ns=3.3.4,rnbqkbnr/pp2pppp/3p4/2p5/4P3/5N2/PPPP1PPP/RNBQKB1R w KQkq - 0 3,40,57,87,61,51,52
+e4 c5 Nf3 Nc6,186346,33,50,https://www.365chess.com/opening.php?m=4&ms=e4.c5.Nf3&n=4&ns=3.3.4,r1bqkbnr/pp1ppppp/2n5/2p5/4P3/5N2/PPPP1PPP/RNBQKB1R w KQkq - 2 3,26,50,79,51,29,37
+e4 c5 Nf3 e6,145277,4,45,https://www.365chess.com/opening.php?m=4&ms=e4.c5.Nf3&n=4&ns=3.3.4,rnbqkbnr/pp1p1ppp/4p3/2p5/4P3/5N2/PPPP1PPP/RNBQKB1R w KQkq - 0 3,57,51,103,55,60,47
+e4 c5 Nf3 g6,13398,8,43,https://www.365chess.com/opening.php?m=4&ms=e4.c5.Nf3&n=4&ns=3.3.4,rnbqkbnr/pp1ppp1p/6p1/2p5/4P3/5N2/PPPP1PPP/RNBQKB1R w KQkq - 0 3,95,95,142,94,82,84
+e4 c5 Nc3 Nc6,50785,32,50,https://www.365chess.com/opening.php?m=4&ms=e4.c5.Nc3&n=6&ns=3.3.6,r1bqkbnr/pp1ppppp/2n5/2p5/4P3/2N5/PPPP1PPP/R1BQKBNR w KQkq - 2 3,26,50,79,51,29,37
+e4 c5 Nc3 d6,13208,17,34,https://www.365chess.com/opening.php?m=4&ms=e4.c5.Nc3&n=6&ns=3.3.6,rnbqkbnr/pp2pppp/3p4/2p5/4P3/2N5/PPPP1PPP/R1BQKBNR w KQkq - 0 3,40,55,87,55,51,51
+e4 c5 Nc3 e6,12816,25,41,https://www.365chess.com/opening.php?m=4&ms=e4.c5.Nc3&n=6&ns=3.3.6,rnbqkbnr/pp1p1ppp/4p3/2p5/4P3/2N5/PPPP1PPP/R1BQKBNR w KQkq - 0 3,57,43,103,43,60,47
+e4 c5 c3 d5,21630,0,45,https://www.365chess.com/opening.php?m=4&ms=e4.c5.c3&n=37&ns=3.3.37,rnbqkbnr/pp2pppp/8/2pp4/4P3/2P5/PP1P1PPP/RNBQKBNR w KQkq d6 0 3,-43,-5,17,-2,-26,0
+e4 c5 c3 Nf6,20860,18,50,https://www.365chess.com/opening.php?m=4&ms=e4.c5.c3&n=37&ns=3.3.37,rnbqkb1r/pp1ppppp/5n2/2p5/4P3/2P5/PP1P1PPP/RNBQKBNR w KQkq - 1 3,-29,35,45,53,9,53
+e4 c5 d4 cxd4,12451,0,45,https://www.365chess.com/opening.php?m=4&ms=e4.c5.d4&n=52&ns=3.3.52,rnbqkbnr/pp1ppppp/8/8/3pP3/8/PPP2PPP/RNBQKBNR w KQkq - 0 3,-36,8,19,5,-11,10
+e4 e5 Nf3 Nc6,342736,13,45,https://www.365chess.com/opening.php?m=4&ms=e4.e5.Nf3&n=5&ns=3.5.5,r1bqkbnr/pppp1ppp/2n5/4p3/4P3/5N2/PPPP1PPP/RNBQKB1R w KQkq - 2 3,23,38,45,34,15,30
+e4 e5 Nf3 Nf6,44770,23,49,https://www.365chess.com/opening.php?m=4&ms=e4.e5.Nf3&n=5&ns=3.5.5,rnbqkb1r/pppp1ppp/5n2/4p3/4P3/5N2/PPPP1PPP/RNBQKB1R w KQkq - 2 3,37,61,40,29,15,29
+e4 e5 Nf3 d6,16711,17,45,https://www.365chess.com/opening.php?m=5&ms=e4.e5.Nf3.d6&n=147&ns=3.5.5.147,rnbqkbnr/ppp2ppp/3p4/4p3/4P3/5N2/PPPP1PPP/RNBQKB1R w KQkq - 0 3,32,56,79,55,55,64
+e4 e5 Nc3 Nf6,12338,11,50,https://www.365chess.com/opening.php?m=4&ms=e4.e5.Nc3&n=55&ns=3.5.55,rnbqkb1r/pppp1ppp/5n2/4p3/4P3/2N5/PPPP1PPP/R1BQKBNR w KQkq - 2 3,23,43,40,29,15,29
+e4 e5 Bc4 Nf6,12394,-4,45,https://www.365chess.com/opening.php?m=4&ms=e4.e5.Bc4&n=30&ns=3.5.30,rnbqkb1r/pppp1ppp/5n2/4p3/2B1P3/8/PPPP1PPP/RNBQK1NR w KQkq - 2 3,0,24,40,16,0,15
+e4 e6 d4 d5,209788,0,45,https://www.365chess.com/opening.php?m=4&ms=e4.e6.d4&n=12&ns=3.16.12,rnbqkbnr/ppp2ppp/4p3/3p4/3PP3/8/PPP2PPP/RNBQKBNR w KQkq d6 0 3,31,48,62,43,25,36
+e4 e6 d3 d5,14237,0,43,https://www.365chess.com/opening.php?m=4&ms=e4.e6.d3&n=43&ns=3.16.43,rnbqkbnr/ppp2ppp/4p3/3p4/4P3/3P4/PPP2PPP/RNBQKBNR w KQkq d6 0 3,-1,18,48,22,-16,11
+e4 c6 d4 d5,113221,36,50,https://www.365chess.com/opening.php?m=4&ms=e4.c6.d4&n=21&ns=3.31.21,rnbqkbnr/pp2pppp/2p5/3p4/3PP3/8/PPP2PPP/RNBQKBNR w KQkq d6 0 3,36,49,85,49,50,62
+e4 c6 Nc3 d5,10932,41,40,https://www.365chess.com/opening.php?m=4&ms=e4.c6.Nc3&n=101&ns=3.31.101,rnbqkbnr/pp2pppp/2p5/3p4/4P3/2N5/PPPP1PPP/R1BQKBNR w KQkq d6 0 3,35,39,69,48,49,54
+e4 d6 d4 Nf6,66155,22,45,https://www.365chess.com/opening.php?m=4&ms=e4.d6.d4&n=29&ns=3.51.29,rnbqkb1r/ppp1pppp/3p1n2/8/3PP3/8/PPP2PPP/RNBQKBNR w KQkq - 1 3,32,56,78,55,51,58
+e4 d6 d4 g6,12955,60,40,https://www.365chess.com/opening.php?m=4&ms=e4.d6.d4&n=29&ns=3.51.29,rnbqkbnr/ppp1pp1p/3p2p1/8/3PP3/8/PPP2PPP/RNBQKBNR w KQkq - 0 3,68,92,115,91,83,94
+e4 d5 exd5 Qxd5,36424,35,45,https://www.365chess.com/opening.php?m=4&ms=e4.d5.exd5&n=27&ns=3.20.27,rnb1kbnr/ppp1pppp/8/3q4/8/8/PPPP1PPP/RNBQKBNR w KQkq - 0 3,-19,-1,50,10,-9,15
+e4 d5 exd5 Nf6,23054,30,45,https://www.365chess.com/opening.php?m=4&ms=e4.d5.exd5&n=27&ns=3.20.27,rnbqkb1r/ppp1pppp/5n2/3P4/8/8/PPPP1PPP/RNBQKBNR w KQkq - 1 3,20,74,68,90,3,62
+e4 g6 d4 Bg7,52923,52,40,https://www.365chess.com/opening.php?m=4&ms=e4.g6.d4&n=81&ns=3.143.81,rnbqk1nr/ppppppbp/6p1/8/3PP3/8/PPP2PPP/RNBQKBNR w KQkq - 1 3,102,126,149,116,115,113
+e4 Nf6 e5 Nd5,30648,65,50,https://www.365chess.com/opening.php?m=4&ms=e4.Nf6.e5&n=42&ns=3.11.42,rnbqkb1r/pppppppp/8/3nP3/8/8/PPPP1PPP/RNBQKBNR w KQkq - 1 3,36,86,99,92,72,97
+d4 Nf6 c4 e6,226036,19,50,https://www.365chess.com/opening.php?m=5&ms=d4.Nf6.c4.e6&n=33&ns=7.14.11.33,rnbqkb1r/pppp1ppp/4pn2/8/2PP4/8/PP2PPPP/RNBQKBNR w KQkq - 0 3,9,29,34,23,4,27
+d4 Nf6 c4 g6,173645,8,45,https://www.365chess.com/opening.php?m=4&ms=d4.Nf6.c4&n=11&ns=7.14.11,rnbqkb1r/pppppp1p/5np1/8/2PP4/8/PP2PPPP/RNBQKBNR w KQkq - 0 3,21,42,73,60,52,71
+d4 Nf6 c4 c5,55930,40,45,https://www.365chess.com/opening.php?m=4&ms=d4.Nf6.c4&n=11&ns=7.14.11,rnbqkb1r/pp1ppppp/5n2/2p5/2PP4/8/PP2PPPP/RNBQKBNR w KQkq c6 0 3,17,41,51,40,-3,40
+d4 Nf6 c4 d6,14558,35,45,https://www.365chess.com/opening.php?m=4&ms=d4.Nf6.c4&n=11&ns=7.14.11,rnbqkb1r/ppp1pppp/3p1n2/8/2PP4/8/PP2PPPP/RNBQKBNR w KQkq - 0 3,13,36,53,33,26,38
+d4 Nf6 Nf3 g6,78194,27,49,https://www.365chess.com/opening.php?m=4&ms=d4.Nf6.Nf3&n=20&ns=7.14.20,rnbqkb1r/pppppp1p/5np1/8/3P4/5N2/PPP1PPPP/RNBQKB1R w KQkq - 0 3,42,54,72,45,49,55
+d4 Nf6 Nf3 e6,60157,18,43,https://www.365chess.com/opening.php?m=5&ms=d4.Nf6.Nf3.e6&n=19&ns=7.14.20.19,rnbqkb1r/pppp1ppp/4pn2/8/3P4/5N2/PPP1PPPP/RNBQKB1R w KQkq - 0 3,26,34,48,29,22,27
+d4 Nf6 Nf3 d5,23912,29,25,https://www.365chess.com/opening.php?m=4&ms=d4.Nf6.Nf3&n=20&ns=7.14.20,rnbqkb1r/ppp1pppp/5n2/3p4/3P4/5N2/PPP1PPPP/RNBQKB1R w KQkq d6 0 3,0,24,26,17,7,23
+d4 Nf6 Nf3 c5,16308,17,45,https://www.365chess.com/opening.php?m=4&ms=d4.Nf6.Nf3&n=20&ns=7.14.20,rnbqkb1r/pp1ppppp/5n2/2p5/3P4/5N2/PPP1PPPP/RNBQKB1R w KQkq c6 0 3,54,54,73,57,19,53
+d4 d5 c4 e6,102666,25,50,https://www.365chess.com/opening.php?m=5&ms=d4.d5.c4.e6&n=41&ns=7.8.23.41,rnbqkbnr/ppp2ppp/4p3/3p4/2PP4/8/PP2PPPP/RNBQKBNR w KQkq - 0 3,-2,21,59,18,4,27
+d4 d5 c4 c6,96934,7,45,https://www.365chess.com/opening.php?m=5&ms=d4.d5.c4.c6&n=36&ns=7.8.23.36,rnbqkbnr/pp2pppp/2p5/3p4/2PP4/8/PP2PPPP/RNBQKBNR w KQkq - 0 3,0,24,58,18,4,24
+d4 d5 c4 dxc4,29075,22,45,https://www.365chess.com/opening.php?m=4&ms=d4.d5.c4&n=23&ns=7.8.23,rnbqkbnr/ppp1pppp/8/8/2pP4/8/PP2PPPP/RNBQKBNR w KQkq - 0 3,-44,-44,7,-41,-19,-13
+d4 d5 Nf3 Nf6,73995,22,50,https://www.365chess.com/opening.php?m=5&ms=d4.d5.Nf3.Nf6&n=13&ns=7.8.10.13,rnbqkb1r/ppp1pppp/5n2/3p4/3P4/5N2/PPP1PPPP/RNBQKB1R w KQkq - 2 3,0,24,26,17,7,23
+d4 d5 Nf3 e6,12012,24,34,https://www.365chess.com/opening.php?m=4&ms=d4.d5.Nf3&n=10&ns=7.8.10,rnbqkbnr/ppp2ppp/4p3/3p4/3P4/5N2/PPP1PPPP/RNBQKB1R w KQkq - 0 3,26,34,48,18,26,21
+d4 d5 Nf3 c6,11168,13,45,https://www.365chess.com/opening.php?m=4&ms=d4.d5.Nf3&n=10&ns=7.8.10,rnbqkbnr/pp2pppp/2p5/3p4/3P4/5N2/PPP1PPPP/RNBQKB1R w KQkq - 0 3,44,40,73,37,39,37
+d4 e6 c4 Nf6,11094,27,25,https://www.365chess.com/opening.php?m=4&ms=d4.e6.c4&n=84&ns=7.18.84,rnbqkb1r/pppp1ppp/4pn2/8/2PP4/8/PP2PPPP/RNBQKBNR w KQkq - 1 3,9,29,34,23,4,27
+d4 f5 g3 Nf6,10825,56,33,https://www.365chess.com/opening.php?m=4&ms=d4.f5.g3&n=34&ns=7.60.34,rnbqkb1r/ppppp1pp/5n2/5p2/3P4/6P1/PPP1PP1P/RNBQKBNR w KQkq - 1 3,0,31,48,26,21,24
+d4 g6 e4 Bg7,52838,52,40,https://www.365chess.com/opening.php?m=4&ms=d4.g6.e4&n=81&ns=7.79.81,rnbqk1nr/ppppppbp/6p1/8/3PP3/8/PPP2PPP/RNBQKBNR w KQkq - 1 3,102,126,149,116,115,113
+Nf3 Nf6 c4 g6,34445,37,25,https://www.365chess.com/opening.php?m=4&ms=Nf3.Nf6.c4&n=39&ns=1.46.39,rnbqkb1r/pppppp1p/5np1/8/2P5/5N2/PP1PPPPP/RNBQKB1R w KQkq - 0 3,21,41,72,45,49,55
+Nf3 Nf6 c4 e6,29477,23,45,https://www.365chess.com/opening.php?m=5&ms=Nf3.Nf6.c4.e6&n=150&ns=1.46.39.150,rnbqkb1r/pppp1ppp/4pn2/8/2P5/5N2/PP1PPPPP/RNBQKB1R w KQkq - 0 3,9,25,45,23,4,27
+Nf3 Nf6 c4 c5,13893,27,42,https://www.365chess.com/opening.php?m=4&ms=Nf3.Nf6.c4&n=39&ns=1.46.39,rnbqkb1r/pp1ppppp/5n2/2p5/2P5/5N2/PP1PPPPP/RNBQKB1R w KQkq c6 0 3,13,20,60,26,12,24
+Nf3 Nf6 d4 g6,77874,27,49,https://www.365chess.com/opening.php?m=4&ms=Nf3.Nf6.d4&n=20&ns=1.46.20,rnbqkb1r/pppppp1p/5np1/8/3P4/5N2/PPP1PPPP/RNBQKB1R w KQkq - 0 3,42,54,72,45,49,55
+Nf3 Nf6 d4 e6,59796,18,43,https://www.365chess.com/opening.php?m=5&ms=Nf3.Nf6.d4.e6&n=19&ns=1.46.20.19,rnbqkb1r/pppp1ppp/4pn2/8/3P4/5N2/PPP1PPPP/RNBQKB1R w KQkq - 0 3,26,34,48,29,22,27
+Nf3 Nf6 d4 d5,23652,32,32,https://www.365chess.com/opening.php?m=4&ms=Nf3.Nf6.d4&n=20&ns=1.46.20,rnbqkb1r/ppp1pppp/5n2/3p4/3P4/5N2/PPP1PPPP/RNBQKB1R w KQkq d6 0 3,0,24,26,17,7,23
+Nf3 Nf6 d4 c5,16274,17,45,https://www.365chess.com/opening.php?m=4&ms=Nf3.Nf6.d4&n=20&ns=1.46.20,rnbqkb1r/pp1ppppp/5n2/2p5/3P4/5N2/PPP1PPPP/RNBQKB1R w KQkq c6 0 3,54,54,73,57,19,53
+Nf3 d5 g3 Nf6,15277,12,43,https://www.365chess.com/opening.php?m=4&ms=Nf3.d5.g3&n=47&ns=1.85.47,rnbqkb1r/ppp1pppp/5n2/3p4/8/5NP1/PPPPPP1P/RNBQKB1R w KQkq - 1 3,-30,-6,6,-18,-19,-4
+Nf3 d5 d4 Nf6,73697,32,32,https://www.365chess.com/opening.php?m=4&ms=Nf3.d5.d4&n=10&ns=1.85.10,rnbqkb1r/ppp1pppp/5n2/3p4/3P4/5N2/PPP1PPPP/RNBQKB1R w KQkq - 1 3,0,24,26,17,7,23
+Nf3 d5 d4 e6,11972,8,45,https://www.365chess.com/opening.php?m=4&ms=Nf3.d5.d4&n=10&ns=1.85.10,rnbqkbnr/ppp2ppp/4p3/3p4/3P4/5N2/PPP1PPPP/RNBQKB1R w KQkq - 0 3,26,34,48,18,26,21
+Nf3 d5 d4 c6,11161,13,45,https://www.365chess.com/opening.php?m=4&ms=Nf3.d5.d4&n=10&ns=1.85.10,rnbqkbnr/pp2pppp/2p5/3p4/3P4/5N2/PPP1PPPP/RNBQKB1R w KQkq - 0 3,44,40,73,37,39,37
+Nf3 c5 c4 Nc6,13862,26,50,https://www.365chess.com/opening.php?m=5&ms=Nf3.c5.c4.Nc6&n=100&ns=1.1.2.100,r1bqkbnr/pp1ppppp/2n5/2p5/2P5/5N2/PP1PPPPP/RNBQKB1R w KQkq - 1 3,13,24,54,30,12,24
+Nf3 c5 c4 Nf6,11296,27,42,https://www.365chess.com/opening.php?m=4&ms=Nf3.c5.c4&n=2&ns=1.1.2,rnbqkb1r/pp1ppppp/5n2/2p5/2P5/5N2/PP1PPPPP/RNBQKB1R w KQkq - 1 3,13,20,60,26,12,24
+c4 Nf6 Nc3 g6,18168,56,40,https://www.365chess.com/opening.php?m=4&ms=c4.Nf6.Nc3&n=87&ns=15.24.87,rnbqkb1r/pppppp1p/5np1/8/2P5/2N5/PP1PPPPP/R1BQKBNR w KQkq - 0 3,24,54,84,60,52,71
+c4 Nf6 Nc3 e6,11816,13,45,https://www.365chess.com/opening.php?m=4&ms=c4.Nf6.Nc3&n=87&ns=15.24.87,rnbqkb1r/pppp1ppp/4pn2/8/2P5/2N5/PP1PPPPP/R1BQKBNR w KQkq - 0 3,2,21,45,35,4,44
+c4 Nf6 Nf3 g6,34495,27,45,https://www.365chess.com/opening.php?m=5&ms=c4.Nf6.Nf3.g6&n=101&ns=15.24.39.101,rnbqkb1r/pppppp1p/5np1/8/2P5/5N2/PP1PPPPP/RNBQKB1R w KQkq - 0 3,21,41,72,45,49,55
+c4 Nf6 Nf3 e6,29568,31,43,https://www.365chess.com/opening.php?m=5&ms=c4.Nf6.Nf3.e6&n=150&ns=15.24.39.150,rnbqkb1r/pppp1ppp/4pn2/8/2P5/5N2/PP1PPPPP/RNBQKB1R w KQkq - 0 3,9,25,45,23,4,27
+c4 Nf6 Nf3 c5,13916,32,20,https://www.365chess.com/opening.php?m=4&ms=c4.Nf6.Nf3&n=39&ns=15.24.39,rnbqkb1r/pp1ppppp/5n2/2p5/2P5/5N2/PP1PPPPP/RNBQKB1R w KQkq c6 0 3,13,20,60,26,12,24
+c4 e5 Nc3 Nf6,20521,10,47,https://www.365chess.com/opening.php?m=4&ms=c4.e5.Nc3&n=62&ns=15.112.62,rnbqkb1r/pppp1ppp/5n2/4p3/2P5/2N5/PP1PPPPP/R1BQKBNR w KQkq - 2 3,13,34,55,33,12,35
+c4 e5 Nc3 Nc6,12181,37,43,https://www.365chess.com/opening.php?m=4&ms=c4.e5.Nc3&n=62&ns=15.112.62,r1bqkbnr/pppp1ppp/2n5/4p3/2P5/2N5/PP1PPPPP/R1BQKBNR w KQkq - 2 3,13,21,55,28,12,24
+c4 c5 Nf3 Nc6,13842,26,50,https://www.365chess.com/opening.php?m=5&ms=c4.c5.Nf3.Nc6&n=100&ns=15.26.2.100,r1bqkbnr/pp1ppppp/2n5/2p5/2P5/5N2/PP1PPPPP/RNBQKB1R w KQkq - 2 3,13,24,54,30,12,24
+c4 c5 Nf3 Nf6,11279,27,42,https://www.365chess.com/opening.php?m=4&ms=c4.c5.Nf3&n=2&ns=15.26.2,rnbqkb1r/pp1ppppp/5n2/2p5/2P5/5N2/PP1PPPPP/RNBQKB1R w KQkq - 2 3,13,20,60,26,12,24
+e4 c5 Nf3 d6 d4,195128,37,45,https://www.365chess.com/opening.php?m=5&ms=e4.c5.Nf3.d6&n=4&ns=3.3.4.4,rnbqkbnr/pp2pppp/3p4/2p5/3PP3/5N2/PPP2PPP/RNBQKB1R b KQkq d3 0 3,87,61,47,46,57,26
+e4 c5 Nf3 d6 Bb5+,29011,26,44,https://www.365chess.com/opening.php?m=5&ms=e4.c5.Nf3.d6&n=4&ns=3.3.4.4,rnbqkbnr/pp2pppp/3p4/1Bp5/4P3/5N2/PPPP1PPP/RNBQK2R b KQkq - 1 3,71,28,21,16,62,21
+e4 c5 Nf3 d6 c3,11253,0,45,https://www.365chess.com/opening.php?m=5&ms=e4.c5.Nf3.d6&n=4&ns=3.3.4.4,rnbqkbnr/pp2pppp/3p4/2p5/4P3/2P2N2/PP1P1PPP/RNBQKB1R b KQkq - 0 3,17,-2,-41,5,-8,-5
+e4 c5 Nf3 Nc6 d4,120425,33,44,https://www.365chess.com/opening.php?m=5&ms=e4.c5.Nf3.Nc6&n=37&ns=3.3.4.37,r1bqkbnr/pp1ppppp/2n5/2p5/3PP3/5N2/PPP2PPP/RNBQKB1R b KQkq d3 0 3,50,18,-11,6,42,6
+e4 c5 Nf3 Nc6 Bb5,38720,34,42,https://www.365chess.com/opening.php?m=5&ms=e4.c5.Nf3.Nc6&n=37&ns=3.3.4.37,r1bqkbnr/pp1ppppp/2n5/1Bp5/4P3/5N2/PPPP1PPP/RNBQK2R b KQkq - 3 3,34,9,-21,6,29,20
+e4 c5 Nf3 Nc6 Nc3,13446,33,40,https://www.365chess.com/opening.php?m=5&ms=e4.c5.Nf3.Nc6&n=37&ns=3.3.4.37,r1bqkbnr/pp1ppppp/2n5/2p5/4P3/2N2N2/PPPP1PPP/R1BQKB1R b KQkq - 3 3,79,51,29,37,52,25
+e4 c5 Nf3 e6 d4,104602,42,25,https://www.365chess.com/opening.php?m=5&ms=e4.c5.Nf3.e6&n=75&ns=3.3.4.75,rnbqkbnr/pp1p1ppp/4p3/2p5/3PP3/5N2/PPP2PPP/RNBQKB1R b KQkq d3 0 3,103,55,39,41,81,42
+e4 c5 Nf3 e6 c3,10591,8,45,https://www.365chess.com/opening.php?m=5&ms=e4.c5.Nf3.e6&n=75&ns=3.3.4.75,rnbqkbnr/pp1p1ppp/4p3/2p5/4P3/2P2N2/PP1P1PPP/RNBQKB1R b KQkq - 0 3,40,12,-8,25,37,20
+e4 c5 c3 d5 exd5,21120,9,40,https://www.365chess.com/opening.php?m=5&ms=e4.c5.c3.d5&n=226&ns=3.3.37.226,rnbqkbnr/pp2pppp/8/2pP4/8/2P5/PP1P1PPP/RNBQKBNR b KQkq - 0 3,17,-2,-44,-6,22,-6
+e4 c5 c3 Nf6 e5,20277,0,40,https://www.365chess.com/opening.php?m=5&ms=e4.c5.c3.Nf6&n=65&ns=3.3.37.65,rnbqkb1r/pp1ppppp/5n2/2p1P3/8/2P5/PP1P1PPP/RNBQKBNR b KQkq - 0 3,45,53,9,53,55,45
+e4 c5 d4 cxd4 c3,10189,-13,45,https://www.365chess.com/opening.php?m=5&ms=e4.c5.d4.cxd4&n=94&ns=3.3.52.94,rnbqkbnr/pp1ppppp/8/8/3pP3/2P5/PP3PPP/RNBQKBNR b KQkq - 0 3,12,-19,-35,-13,19,-13
+e4 e5 Nf3 Nc6 Bb5,180758,15,47,https://www.365chess.com/opening.php?m=5&ms=e4.e5.Nf3.Nc6&n=6&ns=3.5.5.6,r1bqkbnr/pppp1ppp/2n5/1B2p3/4P3/5N2/PPPP1PPP/RNBQK2R b KQkq - 3 3,27,24,11,23,36,5
+e4 e5 Nf3 Nc6 Bc4,85306,8,45,https://www.365chess.com/opening.php?m=5&ms=e4.e5.Nf3.Nc6&n=6&ns=3.5.5.6,r1bqkbnr/pppp1ppp/2n5/4p3/2B1P3/5N2/PPPP1PPP/RNBQK2R b KQkq - 3 3,40,16,0,8,29,12
+e4 e5 Nf3 Nc6 d4,43875,0,43,https://www.365chess.com/opening.php?m=5&ms=e4.e5.Nf3.Nc6&n=6&ns=3.5.5.6,r1bqkbnr/pppp1ppp/2n5/4p3/3PP3/5N2/PPP2PPP/RNBQKB1R b KQkq d3 0 3,45,34,8,30,69,19
+e4 e5 Nf3 Nc6 Nc3,28816,11,42,https://www.365chess.com/opening.php?m=5&ms=e4.e5.Nf3.Nc6&n=6&ns=3.5.5.6,r1bqkbnr/pppp1ppp/2n5/4p3/4P3/2N2N2/PPPP1PPP/R1BQKB1R b KQkq - 3 3,40,29,15,29,36,26
+e4 e5 Nf3 Nf6 Nxe5,24580,30,46,https://www.365chess.com/opening.php?m=5&ms=e4.e5.Nf3.Nf6&n=221&ns=3.5.5.221,rnbqkb1r/pppp1ppp/5n2/4N3/4P3/8/PPPP1PPP/RNBQKB1R b KQkq - 0 3,9,-31,0,24,12,-20
+e4 e5 Nf3 Nf6 Nc3,10361,14,41,https://www.365chess.com/opening.php?m=5&ms=e4.e5.Nf3.Nf6&n=221&ns=3.5.5.221,rnbqkb1r/pppp1ppp/5n2/4p3/4P3/2N2N2/PPPP1PPP/R1BQKB1R b KQkq - 3 3,40,29,15,29,36,26
+e4 e5 Nf3 d6 d4,11592,64,27,https://www.365chess.com/opening.php?m=5&ms=e4.e5.Nf3.d6&n=147&ns=3.5.5.147,rnbqkbnr/ppp2ppp/3p4/4p3/3PP3/5N2/PPP2PPP/RNBQKB1R b KQkq d3 0 3,79,55,55,64,69,38
+e4 e6 d4 d5 Nc3,88857,37,24,https://www.365chess.com/opening.php?m=5&ms=e4.e6.d4.d5&n=17&ns=3.16.12.17,rnbqkbnr/ppp2ppp/4p3/3p4/3PP3/2N5/PPP2PPP/R1BQKBNR b KQkq - 1 3,58,43,25,36,65,32
+e4 e6 d4 d5 Nd2,61067,0,41,https://www.365chess.com/opening.php?m=5&ms=e4.e6.d4.d5&n=17&ns=3.16.12.17,rnbqkbnr/ppp2ppp/4p3/3p4/3PP3/8/PPPN1PPP/R1BQKBNR b KQkq - 1 3,33,17,5,8,25,-5
+e4 e6 d4 d5 e5,33380,0,45,https://www.365chess.com/opening.php?m=5&ms=e4.e6.d4.d5&n=17&ns=3.16.12.17,rnbqkbnr/ppp2ppp/4p3/3pP3/3P4/8/PPP2PPP/RNBQKBNR b KQkq - 0 3,58,36,19,31,69,31
+e4 e6 d4 d5 exd5,24456,0,40,https://www.365chess.com/opening.php?m=5&ms=e4.e6.d4.d5&n=17&ns=3.16.12.17,rnbqkbnr/ppp2ppp/4p3/3P4/3P4/8/PPP2PPP/RNBQKBNR b KQkq - 0 3,62,17,0,23,56,29
+e4 e6 d3 d5 Nd2,11964,0,33,https://www.365chess.com/opening.php?m=5&ms=e4.e6.d3.d5&n=78&ns=3.16.43.78,rnbqkbnr/ppp2ppp/4p3/3p4/4P3/3P4/PPPN1PPP/R1BQKBNR b KQkq - 1 3,13,-27,-44,-14,9,-23
+e4 c6 d4 d5 e5,33779,23,50,https://www.365chess.com/opening.php?m=5&ms=e4.c6.d4.d5&n=32&ns=3.31.21.32,rnbqkbnr/pp2pppp/2p5/3pP3/3P4/8/PPP2PPP/RNBQKBNR b KQkq - 0 3,85,49,50,62,98,63
+e4 c6 d4 d5 Nc3,31923,4,45,https://www.365chess.com/opening.php?m=6&ms=e4.c6.d4.d5.Nc3&n=90&ns=3.31.21.32.90,rnbqkbnr/pp2pppp/2p5/3p4/3PP3/2N5/PPP2PPP/R1BQKBNR b KQkq - 1 3,56,48,40,54,80,50
+e4 c6 d4 d5 exd5,29975,39,40,https://www.365chess.com/opening.php?m=5&ms=e4.c6.d4.d5&n=32&ns=3.31.21.32,rnbqkbnr/pp2pppp/2p5/3P4/3P4/8/PPP2PPP/RNBQKBNR b KQkq - 0 3,61,30,3,30,52,25
+e4 c6 d4 d5 Nd2,14256,24,40,https://www.365chess.com/opening.php?m=5&ms=e4.c6.d4.d5&n=32&ns=3.31.21.32,rnbqkbnr/pp2pppp/2p5/3p4/3PP3/8/PPPN1PPP/R1BQKBNR b KQkq - 1 3,44,21,37,39,80,39
+e4 d6 d4 Nf6 Nc3,59118,54,30,https://www.365chess.com/opening.php?m=5&ms=e4.d6.d4.Nf6&n=52&ns=3.51.29.52,rnbqkb1r/ppp1pppp/3p1n2/8/3PP3/2N5/PPP2PPP/R1BQKBNR b KQkq - 2 3,78,55,51,58,79,68
+e4 d5 exd5 Qxd5 Nc3,32981,57,47,https://www.365chess.com/opening.php?m=5&ms=e4.d5.exd5.Qxd5&n=56&ns=3.20.27.56,rnb1kbnr/ppp1pppp/8/3q4/8/2N5/PPPP1PPP/R1BQKBNR b KQkq - 1 3,50,2,-9,15,61,47
+e4 d5 exd5 Nf6 d4,10999,27,45,https://www.365chess.com/opening.php?m=5&ms=e4.d5.exd5.Nf6&n=45&ns=3.20.27.45,rnbqkb1r/ppp1pppp/5n2/3P4/3P4/8/PPP2PPP/RNBQKBNR b KQkq d3 0 3,54,30,-5,40,59,44
+e4 g6 d4 Bg7 Nc3,30079,17,44,https://www.365chess.com/opening.php?m=6&ms=e4.g6.d4.Bg7.Nc3&n=479&ns=3.143.81.144.479,rnbqk1nr/ppppppbp/6p1/8/3PP3/2N5/PPP2PPP/R1BQKBNR b KQkq - 2 3,149,116,115,113,157,99
+e4 g6 d4 Bg7 Nf3,11538,51,42,https://www.365chess.com/opening.php?m=5&ms=e4.g6.d4.Bg7&n=144&ns=3.143.81.144,rnbqk1nr/ppppppbp/6p1/8/3PP3/5N2/PPP2PPP/RNBQKB1R b KQkq - 2 3,134,101,81,82,112,94
+e4 Nf6 e5 Nd5 d4,23091,62,50,https://www.365chess.com/opening.php?m=5&ms=e4.Nf6.e5.Nd5&n=76&ns=3.11.42.76,rnbqkb1r/pppppppp/8/3nP3/3P4/8/PPP2PPP/RNBQKBNR b KQkq d3 0 3,56,70,72,95,80,81
+d4 Nf6 c4 e6 Nc3,110841,15,50,https://www.365chess.com/opening.php?m=6&ms=d4.Nf6.c4.e6.Nc3&n=38&ns=7.14.11.33.38,rnbqkb1r/pppp1ppp/4pn2/8/2PP4/2N5/PP2PPPP/R1BQKBNR b KQkq - 1 3,34,18,4,27,46,29
+d4 Nf6 c4 e6 Nf3,101241,27,33,https://www.365chess.com/opening.php?m=6&ms=d4.Nf6.c4.e6.Nf3&n=21&ns=7.14.11.33.21,rnbqkb1r/pppp1ppp/4pn2/8/2PP4/5N2/PP2PPPP/RNBQKB1R b KQkq - 1 3,34,23,4,27,46,29
+d4 Nf6 c4 e6 g3,22261,30,18,https://www.365chess.com/opening.php?m=5&ms=d4.Nf6.c4.e6&n=33&ns=7.14.11.33,rnbqkb1r/pppp1ppp/4pn2/8/2PP4/6P1/PP2PP1P/RNBQKBNR b KQkq - 0 3,-11,-7,-42,-3,8,-11
+d4 Nf6 c4 g6 Nc3,146681,13,45,https://www.365chess.com/opening.php?m=5&ms=d4.Nf6.c4.g6&n=15&ns=7.14.11.15,rnbqkb1r/pppppp1p/5np1/8/2PP4/2N5/PP2PPPP/R1BQKBNR b KQkq - 1 3,73,60,52,71,88,70
+d4 Nf6 c4 g6 g3,12943,15,50,https://www.365chess.com/opening.php?m=5&ms=d4.Nf6.c4.g6&n=15&ns=7.14.11.15,rnbqkb1r/pppppp1p/5np1/8/2PP4/6P1/PP2PP1P/RNBQKBNR b KQkq - 0 3,-2,6,-43,6,35,22
+d4 Nf6 c4 g6 Nf3,12185,19,50,https://www.365chess.com/opening.php?m=6&ms=d4.Nf6.c4.g6.Nf3&n=76&ns=7.14.11.15.76,rnbqkb1r/pppppp1p/5np1/8/2PP4/5N2/PP2PPPP/RNBQKB1R b KQkq - 1 3,72,45,49,55,77,53
+d4 Nf6 c4 c5 d5,46840,32,40,https://www.365chess.com/opening.php?m=6&ms=d4.Nf6.c4.c5.d5&n=107&ns=7.14.11.69.107,rnbqkb1r/pp1ppppp/5n2/2pP4/2P5/8/PP2PPPP/RNBQKBNR b KQkq - 0 3,51,9,-3,21,55,30
+d4 Nf6 c4 d6 Nc3,11873,26,42,https://www.365chess.com/opening.php?m=6&ms=d4.Nf6.c4.d6.Nc3&n=427&ns=7.14.11.157.427,rnbqkb1r/ppp1pppp/3p1n2/8/2PP4/2N5/PP2PPPP/R1BQKBNR b KQkq - 1 3,53,33,26,38,59,33
+d4 Nf6 Nf3 g6 c4,32133,35,18,https://www.365chess.com/opening.php?m=5&ms=d4.Nf6.Nf3.g6&n=48&ns=7.14.20.48,rnbqkb1r/pppppp1p/5np1/8/2PP4/5N2/PP2PPPP/RNBQKB1R b KQkq c3 0 3,72,45,49,55,77,53
+d4 Nf6 Nf3 g6 g3,15312,25,40,https://www.365chess.com/opening.php?m=5&ms=d4.Nf6.Nf3.g6&n=48&ns=7.14.20.48,rnbqkb1r/pppppp1p/5np1/8/3P4/5NP1/PPP1PP1P/RNBQKB1R b KQkq - 0 3,36,12,0,24,24,10
+d4 Nf6 Nf3 g6 Bg5,11529,0,40,https://www.365chess.com/opening.php?m=5&ms=d4.Nf6.Nf3.g6&n=48&ns=7.14.20.48,rnbqkb1r/pppppp1p/5np1/6B1/3P4/5N2/PPP1PPPP/RN1QKB1R b KQkq - 1 3,35,12,-3,17,23,6
+d4 Nf6 Nf3 e6 c4,27226,31,24,https://www.365chess.com/opening.php?m=5&ms=d4.Nf6.Nf3.e6&n=19&ns=7.14.20.19,rnbqkb1r/pppp1ppp/4pn2/8/2PP4/5N2/PP2PPPP/RNBQKB1R b KQkq c3 0 3,34,23,4,27,46,29
+d4 Nf6 Nf3 e6 Bg5,10509,0,43,https://www.365chess.com/opening.php?m=6&ms=d4.Nf6.Nf3.e6.Bg5&n=171&ns=7.14.20.19.171,rnbqkb1r/pppp1ppp/4pn2/6B1/3P4/5N2/PPP1PPPP/RN1QKB1R b KQkq - 1 3,30,1,-28,-2,15,3
+d4 Nf6 Nf3 e6 e3,10150,8,50,https://www.365chess.com/opening.php?m=5&ms=d4.Nf6.Nf3.e6&n=19&ns=7.14.20.19,rnbqkb1r/pppp1ppp/4pn2/8/3P4/4PN2/PPP2PPP/RNBQKB1R b KQkq - 0 3,36,29,13,24,49,17
+d4 Nf6 Nf3 d5 c4,55998,4,45,https://www.365chess.com/opening.php?m=6&ms=d4.Nf6.Nf3.d5.c4&n=15&ns=7.14.20.13.15,rnbqkb1r/ppp1pppp/5n2/3p4/2PP4/5N2/PP2PPPP/RNBQKB1R b KQkq c3 0 3,7,7,-4,4,36,4
+d4 Nf6 Nf3 d5 Bf4,13335,16,18,https://www.365chess.com/opening.php?m=5&ms=d4.Nf6.Nf3.d5&n=13&ns=7.14.20.13,rnbqkb1r/ppp1pppp/5n2/3p4/3P1B2/5N2/PPP1PPPP/RN1QKB1R b KQkq - 1 3,19,8,-5,19,22,5
+d4 Nf6 Nf3 d5 e3,12310,0,45,https://www.365chess.com/opening.php?m=5&ms=d4.Nf6.Nf3.d5&n=13&ns=7.14.20.13,rnbqkb1r/ppp1pppp/5n2/3p4/3P4/4PN2/PPP2PPP/RNBQKB1R b KQkq - 0 3,13,12,-1,23,44,17
+d4 d5 c4 e6 Nc3,73746,4,45,https://www.365chess.com/opening.php?m=6&ms=d4.d5.c4.e6.Nc3&n=53&ns=7.8.23.41.53,rnbqkbnr/ppp2ppp/4p3/3p4/2PP4/2N5/PP2PPPP/R1BQKBNR b KQkq - 1 3,56,18,4,27,46,29
+d4 d5 c4 e6 Nf3,31763,4,45,https://www.365chess.com/opening.php?m=5&ms=d4.d5.c4.e6&n=41&ns=7.8.23.41,rnbqkbnr/ppp2ppp/4p3/3p4/2PP4/5N2/PP2PPPP/RNBQKB1R b KQkq - 1 3,34,12,-3,3,38,12
+e4 e6 d4 d5 Nc3 Bb4,43165,4,45,https://www.365chess.com/opening.php?m=6&ms=e4.e6.d4.d5.Nc3&n=19&ns=3.16.12.17.19,rnbqk1nr/ppp2ppp/4p3/3p4/1b1PP3/2N5/PPP2PPP/R1BQKBNR w KQkq - 2 4,63,36,79,32,44,43
+e4 e6 d4 d5 Nc3 Nf6,35148,0,45,https://www.365chess.com/opening.php?m=6&ms=e4.e6.d4.d5.Nc3&n=19&ns=3.16.12.17.19,rnbqkb1r/ppp2ppp/4pn2/3p4/3PP3/2N5/PPP2PPP/R1BQKBNR w KQkq - 2 4,49,71,93,58,30,62
+e4 e6 d4 d5 Nd2 Nf6,23434,13,45,https://www.365chess.com/opening.php?m=6&ms=e4.e6.d4.d5.Nd2&n=74&ns=3.16.12.17.74,rnbqkb1r/ppp2ppp/4pn2/3p4/3PP3/8/PPPN1PPP/R1BQKBNR w KQkq - 2 4,25,59,62,55,24,55
+e4 e6 d4 d5 Nd2 c5,18778,17,45,https://www.365chess.com/opening.php?m=6&ms=e4.e6.d4.d5.Nd2&n=74&ns=3.16.12.17.74,rnbqkbnr/pp3ppp/4p3/2pp4/3PP3/8/PPPN1PPP/R1BQKBNR w KQkq c6 0 4,6,8,32,-5,-2,5
+e4 e6 d4 d5 e5 c5,31804,8,45,https://www.365chess.com/opening.php?m=6&ms=e4.e6.d4.d5.e5&n=453&ns=3.16.12.17.453,rnbqkbnr/pp3ppp/4p3/2ppP3/3P4/8/PPP2PPP/RNBQKBNR w KQkq c6 0 4,19,31,75,31,10,30
+e4 e6 d4 d5 exd5 exd5,24081,0,45,https://www.365chess.com/opening.php?m=6&ms=e4.e6.d4.d5.exd5&n=129&ns=3.16.12.17.129,rnbqkbnr/ppp2ppp/8/3p4/3P4/8/PPP2PPP/RNBQKBNR w KQkq - 0 4,0,23,56,29,0,23
+e4 c6 d4 d5 e5 Bf5,27230,17,45,https://www.365chess.com/opening.php?m=6&ms=e4.c6.d4.d5.e5&n=35&ns=3.31.21.32.35,rn1qkbnr/pp2pppp/2p5/3pPb2/3P4/8/PPP2PPP/RNBQKBNR w KQkq - 1 4,50,64,98,63,63,75
+e4 c6 d4 d5 Nc3 dxe4,30863,34,43,https://www.365chess.com/opening.php?m=6&ms=e4.c6.d4.d5.Nc3&n=90&ns=3.31.21.32.90,rnbqkbnr/pp2pppp/2p5/8/3Pp3/2N5/PPP2PPP/R1BQKBNR w KQkq - 0 4,40,54,80,50,34,43
+e4 c6 d4 d5 exd5 cxd5,29800,22,47,https://www.365chess.com/opening.php?m=6&ms=e4.c6.d4.d5.exd5&n=93&ns=3.31.21.32.93,rnbqkbnr/pp2pppp/8/3p4/3P4/8/PPP2PPP/RNBQKBNR w KQkq - 0 4,3,30,52,25,10,29
+e4 c6 d4 d5 Nd2 dxe4,13278,24,43,https://www.365chess.com/opening.php?m=6&ms=e4.c6.d4.d5.Nd2&n=202&ns=3.31.21.32.202,rnbqkbnr/pp2pppp/2p5/8/3Pp3/8/PPPN1PPP/R1BQKBNR w KQkq - 0 4,40,54,80,50,34,43
+e4 d6 d4 Nf6 Nc3 g6,37034,29,42,https://www.365chess.com/opening.php?m=6&ms=e4.d6.d4.Nf6.Nc3&n=70&ns=3.51.29.52.70,rnbqkb1r/ppp1pp1p/3p1np1/8/3PP3/2N5/PPP2PPP/R1BQKBNR w KQkq - 0 4,83,94,125,82,95,86
+e4 d6 d4 Nf6 Nc3 e5,11777,59,43,https://www.365chess.com/opening.php?m=6&ms=e4.d6.d4.Nf6.Nc3&n=70&ns=3.51.29.52.70,rnbqkb1r/ppp2ppp/3p1n2/4p3/3PP3/2N5/PPP2PPP/R1BQKBNR w KQkq e6 0 4,51,58,85,69,65,68
+e4 d5 exd5 Qxd5 Nc3 Qa5,23445,54,50,https://www.365chess.com/opening.php?m=6&ms=e4.d5.exd5.Qxd5.Nc3&n=84&ns=3.20.27.56.84,rnb1kbnr/ppp1pppp/8/q7/8/2N5/PPPP1PPP/R1BQKBNR w KQkq - 2 4,36,52,100,60,49,64
+e4 g6 d4 Bg7 Nc3 d6,19095,68,18,https://www.365chess.com/opening.php?m=6&ms=e4.g6.d4.Bg7.Nc3&n=479&ns=3.143.81.144.479,rnbqk1nr/ppp1ppbp/3p2p1/8/3PP3/2N5/PPP2PPP/R1BQKBNR w KQkq - 0 4,117,113,169,130,120,124
+e4 g6 d4 Bg7 Nf3 d6,12280,61,24,https://www.365chess.com/opening.php?m=6&ms=e4.g6.d4.Bg7.Nf3&n=550&ns=3.143.81.144.550,rnbqk1nr/ppp1ppbp/3p2p1/8/3PP3/5N2/PPP2PPP/RNBQKB1R w KQkq - 0 4,117,113,169,130,120,128
+e4 Nf6 e5 Nd5 d4 d6,22628,66,50,https://www.365chess.com/opening.php?m=6&ms=e4.Nf6.e5.Nd5.d4&n=139&ns=3.11.42.76.139,rnbqkb1r/ppp1pppp/3p4/3nP3/3P4/8/PPP2PPP/RNBQKBNR w KQkq - 0 4,72,95,80,81,46,80
+d4 Nf6 c4 e6 Nc3 Bb4,88907,20,25,https://www.365chess.com/opening.php?m=6&ms=d4.Nf6.c4.e6.Nc3&n=38&ns=7.14.11.33.38,rnbqk2r/pppp1ppp/4pn2/8/1bPP4/2N5/PP2PPPP/R1BQKBNR w KQkq - 2 4,32,44,79,39,11,28
+d4 Nf6 c4 e6 Nc3 d5,18620,30,22,https://www.365chess.com/opening.php?m=6&ms=d4.Nf6.c4.e6.Nc3&n=38&ns=7.14.11.33.38,rnbqkb1r/ppp2ppp/4pn2/3p4/2PP4/2N5/PP2PPPP/R1BQKBNR w KQkq d6 0 4,4,27,46,29,6,26
+d4 Nf6 c4 e6 Nf3 b6,50743,28,38,https://www.365chess.com/opening.php?m=6&ms=d4.Nf6.c4.e6.Nf3&n=21&ns=7.14.11.33.21,rnbqkb1r/p1pp1ppp/1p2pn2/8/2PP4/5N2/PP2PPPP/RNBQKB1R w KQkq - 0 4,68,64,97,63,58,63
+d4 Nf6 c4 e6 Nf3 d5,42834,28,18,https://www.365chess.com/opening.php?m=6&ms=d4.Nf6.c4.e6.Nf3&n=21&ns=7.14.11.33.21,rnbqkb1r/ppp2ppp/4pn2/3p4/2PP4/5N2/PP2PPPP/RNBQKB1R w KQkq d6 0 4,4,27,46,29,6,26
+d4 Nf6 c4 e6 Nf3 Bb4+,23864,36,18,https://www.365chess.com/opening.php?m=6&ms=d4.Nf6.c4.e6.Nf3&n=21&ns=7.14.11.33.21,rnbqk2r/pppp1ppp/4pn2/8/1bPP4/5N2/PP2PPPP/RNBQKB1R w KQkq - 2 4,32,50,79,53,22,49
+d4 Nf6 c4 e6 Nf3 c5,12664,64,18,https://www.365chess.com/opening.php?m=6&ms=d4.Nf6.c4.e6.Nf3&n=21&ns=7.14.11.33.21,rnbqkb1r/pp1p1ppp/4pn2/2p5/2PP4/5N2/PP2PPPP/RNBQKB1R w KQkq c6 0 4,32,43,64,38,15,33
+d4 Nf6 c4 e6 g3 d5,12454,31,40,https://www.365chess.com/opening.php?m=6&ms=d4.Nf6.c4.e6.g3&n=264&ns=7.14.11.33.264,rnbqkb1r/ppp2ppp/4pn2/3p4/2PP4/6P1/PP2PP1P/RNBQKBNR w KQkq d6 0 4,-42,-3,8,-11,-34,-12
+d4 Nf6 c4 g6 Nc3 Bg7,102426,36,45,https://www.365chess.com/opening.php?m=6&ms=d4.Nf6.c4.g6.Nc3&n=17&ns=7.14.11.15.17,rnbqk2r/ppppppbp/5np1/8/2PP4/2N5/PP2PPPP/R1BQKBNR w KQkq - 2 4,91,95,133,96,100,100
+d4 Nf6 c4 g6 Nc3 d5,45372,13,45,https://www.365chess.com/opening.php?m=6&ms=d4.Nf6.c4.g6.Nc3&n=17&ns=7.14.11.15.17,rnbqkb1r/ppp1pp1p/5np1/3p4/2PP4/2N5/PP2PPPP/R1BQKBNR w KQkq d6 0 4,73,76,98,76,51,84
+d4 Nf6 c4 g6 g3 Bg7,10296,25,40,https://www.365chess.com/opening.php?m=6&ms=d4.Nf6.c4.g6.g3&n=225&ns=7.14.11.15.225,rnbqk2r/ppppppbp/5np1/8/2PP4/6P1/PP2PP1P/RNBQKBNR w KQkq - 1 4,21,37,62,54,42,60
+d4 Nf6 c4 g6 Nf3 Bg7,43251,23,40,https://www.365chess.com/opening.php?m=6&ms=d4.Nf6.c4.g6.Nf3&n=76&ns=7.14.11.15.76,rnbqk2r/ppppppbp/5np1/8/2PP4/5N2/PP2PPPP/RNBQKB1R w KQkq - 2 4,76,75,126,89,89,100
+d4 Nf6 c4 c5 d5 b5,23700,31,45,https://www.365chess.com/opening.php?m=6&ms=d4.Nf6.c4.c5.d5&n=107&ns=7.14.11.69.107,rnbqkb1r/p2ppppp/5n2/1ppP4/2P5/8/PP2PPPP/RNBQKBNR w KQkq b6 0 4,87,123,114,111,57,105
+d4 Nf6 c4 c5 d5 e6,12652,72,18,https://www.365chess.com/opening.php?m=6&ms=d4.Nf6.c4.c5.d5&n=107&ns=7.14.11.69.107,rnbqkb1r/pp1p1ppp/4pn2/2pP4/2P5/8/PP2PPPP/RNBQKBNR w KQkq - 0 4,11,36,64,37,9,31
+d4 Nf6 Nf3 g6 g3 Bg7,14487,25,40,https://www.365chess.com/opening.php?m=6&ms=d4.Nf6.Nf3.g6.g3&n=156&ns=7.14.20.48.156,rnbqk2r/ppppppbp/5np1/8/3P4/5NP1/PPP1PP1P/RNBQKB1R w KQkq - 1 4,42,39,71,43,39,34
+d4 Nf6 Nf3 g6 Bg5 Bg7,10771,0,40,https://www.365chess.com/opening.php?m=6&ms=d4.Nf6.Nf3.g6.Bg5&n=63&ns=7.14.20.48.63,rnbqk2r/ppppppbp/5np1/6B1/3P4/5N2/PPP1PPPP/RN1QKB1R w KQkq - 2 4,52,53,83,47,35,39
+d4 Nf6 Nf3 e6 c4 b6,50574,33,20,https://www.365chess.com/opening.php?m=6&ms=d4.Nf6.Nf3.e6.c4&n=21&ns=7.14.20.19.21,rnbqkb1r/p1pp1ppp/1p2pn2/8/2PP4/5N2/PP2PPPP/RNBQKB1R w KQkq - 0 4,68,64,97,63,58,63
+d4 Nf6 Nf3 e6 c4 d5,42284,4,45,https://www.365chess.com/opening.php?m=6&ms=d4.Nf6.Nf3.e6.c4&n=21&ns=7.14.20.19.21,rnbqkb1r/ppp2ppp/4pn2/3p4/2PP4/5N2/PP2PPPP/RNBQKB1R w KQkq d6 0 4,4,27,46,29,6,26
+d4 Nf6 Nf3 e6 c4 Bb4+,23721,36,35,https://www.365chess.com/opening.php?m=6&ms=d4.Nf6.Nf3.e6.c4&n=21&ns=7.14.20.19.21,rnbqk2r/pppp1ppp/4pn2/8/1bPP4/5N2/PP2PPPP/RNBQKB1R w KQkq - 1 4,32,50,79,53,22,49
+d4 Nf6 Nf3 e6 c4 c5,12634,67,45,https://www.365chess.com/opening.php?m=6&ms=d4.Nf6.Nf3.e6.c4&n=21&ns=7.14.20.19.21,rnbqkb1r/pp1p1ppp/4pn2/2p5/2PP4/5N2/PP2PPPP/RNBQKB1R w KQkq c6 0 4,32,43,64,38,15,33
+d4 Nf6 Nf3 d5 c4 e6,26267,4,45,https://www.365chess.com/opening.php?m=6&ms=d4.Nf6.Nf3.d5.c4&n=15&ns=7.14.20.13.15,rnbqkb1r/ppp2ppp/4pn2/3p4/2PP4/5N2/PP2PPPP/RNBQKB1R w KQkq - 0 4,4,27,46,29,6,26
+d4 Nf6 Nf3 d5 c4 c6,21579,22,43,https://www.365chess.com/opening.php?m=6&ms=d4.Nf6.Nf3.d5.c4&n=15&ns=7.14.20.13.15,rnbqkb1r/pp2pppp/2p2n2/3p4/2PP4/5N2/PP2PPPP/RNBQKB1R w KQkq - 0 4,11,28,54,18,21,29
+d4 d5 c4 e6 Nc3 Nf6,41553,30,22,https://www.365chess.com/opening.php?m=6&ms=d4.d5.c4.e6.Nc3&n=53&ns=7.8.23.41.53,rnbqkb1r/ppp2ppp/4pn2/3p4/2PP4/2N5/PP2PPPP/R1BQKBNR w KQkq - 2 4,4,27,46,29,6,26
+d4 d5 c4 e6 Nc3 c6,14553,32,29,https://www.365chess.com/opening.php?m=6&ms=d4.d5.c4.e6.Nc3&n=53&ns=7.8.23.41.53,rnbqkbnr/pp3ppp/2p1p3/3p4/2PP4/2N5/PP2PPPP/R1BQKBNR w KQkq - 0 4,69,54,94,49,33,49
+d4 d5 c4 e6 Nf3 Nf6,25387,4,45,https://www.365chess.com/opening.php?m=6&ms=d4.d5.c4.e6.Nf3&n=303&ns=7.8.23.41.303,rnbqkb1r/ppp2ppp/4pn2/3p4/2PP4/5N2/PP2PPPP/RNBQKB1R w KQkq - 2 4,4,27,46,29,6,26
+d4 d5 c4 c6 Nf3,53615,26,22,https://www.365chess.com/opening.php?m=5&ms=d4.d5.c4.c6&n=36&ns=7.8.23.36,rnbqkbnr/pp2pppp/2p5/3p4/2PP4/5N2/PP2PPPP/RNBQKB1R b KQkq - 1 3,38,-26,-13,-22,37,-22
+d4 d5 c4 c6 Nc3,30620,13,45,https://www.365chess.com/opening.php?m=5&ms=d4.d5.c4.c6&n=36&ns=7.8.23.36,rnbqkbnr/pp2pppp/2p5/3p4/2PP4/2N5/PP2PPPP/R1BQKBNR b KQkq - 1 3,40,-13,-21,-7,28,-20
+d4 d5 c4 c6 cxd5,11918,15,20,https://www.365chess.com/opening.php?m=5&ms=d4.d5.c4.c6&n=36&ns=7.8.23.36,rnbqkbnr/pp2pppp/2p5/3P4/3P4/8/PP2PPPP/RNBQKBNR b KQkq - 0 3,58,18,0,24,54,13
+d4 d5 c4 dxc4 Nf3,14701,17,45,https://www.365chess.com/opening.php?m=5&ms=d4.d5.c4.dxc4&n=109&ns=7.8.23.109,rnbqkbnr/ppp1pppp/8/8/2pP4/5N2/PP2PPPP/RNBQKB1R b KQkq - 1 3,-7,-41,-39,-40,7,-22
+d4 d5 Nf3 Nf6 c4,56023,30,29,https://www.365chess.com/opening.php?m=5&ms=d4.d5.Nf3.Nf6&n=13&ns=7.8.10.13,rnbqkb1r/ppp1pppp/5n2/3p4/2PP4/5N2/PP2PPPP/RNBQKB1R b KQkq c3 0 3,7,7,-4,4,36,4
+d4 d5 Nf3 Nf6 Bf4,13348,16,18,https://www.365chess.com/opening.php?m=5&ms=d4.d5.Nf3.Nf6&n=13&ns=7.8.10.13,rnbqkb1r/ppp1pppp/5n2/3p4/3P1B2/5N2/PPP1PPPP/RN1QKB1R b KQkq - 3 3,19,8,-5,19,22,5
+d4 d5 Nf3 Nf6 e3,12320,0,45,https://www.365chess.com/opening.php?m=5&ms=d4.d5.Nf3.Nf6&n=13&ns=7.8.10.13,rnbqkb1r/ppp1pppp/5n2/3p4/3P4/4PN2/PPP2PPP/RNBQKB1R b KQkq - 0 3,13,12,-1,23,44,17
+d4 e6 c4 Nf6 Nc3,110454,15,50,https://www.365chess.com/opening.php?m=6&ms=d4.e6.c4.Nf6.Nc3&n=38&ns=7.18.84.33.38,rnbqkb1r/pppp1ppp/4pn2/8/2PP4/2N5/PP2PPPP/R1BQKBNR b KQkq - 2 3,34,18,4,27,46,29
+d4 e6 c4 Nf6 Nf3,100790,31,24,https://www.365chess.com/opening.php?m=5&ms=d4.e6.c4.Nf6&n=33&ns=7.18.84.33,rnbqkb1r/pppp1ppp/4pn2/8/2PP4/5N2/PP2PPPP/RNBQKB1R b KQkq - 2 3,34,23,4,27,46,29
+d4 e6 c4 Nf6 g3,22154,0,45,https://www.365chess.com/opening.php?m=5&ms=d4.e6.c4.Nf6&n=33&ns=7.18.84.33,rnbqkb1r/pppp1ppp/4pn2/8/2PP4/6P1/PP2PP1P/RNBQKBNR b KQkq - 0 3,-11,-7,-42,-3,8,-11
+d4 g6 e4 Bg7 Nc3,30028,17,44,https://www.365chess.com/opening.php?m=5&ms=d4.g6.e4.Bg7&n=144&ns=7.79.81.144,rnbqk1nr/ppppppbp/6p1/8/3PP3/2N5/PPP2PPP/R1BQKBNR b KQkq - 2 3,149,116,115,113,157,99
+d4 g6 e4 Bg7 Nf3,11511,51,42,https://www.365chess.com/opening.php?m=5&ms=d4.g6.e4.Bg7&n=144&ns=7.79.81.144,rnbqk1nr/ppppppbp/6p1/8/3PP3/5N2/PPP2PPP/RNBQKB1R b KQkq - 2 3,134,101,81,82,112,94
+Nf3 Nf6 c4 g6 Nc3,18750,52,22,https://www.365chess.com/opening.php?m=5&ms=Nf3.Nf6.c4.g6&n=101&ns=1.46.39.101,rnbqkb1r/pppppp1p/5np1/8/2P5/2N2N2/PP1PPPPP/R1BQKB1R b KQkq - 1 3,70,43,43,51,78,55
+Nf3 Nf6 c4 e6 g3,16949,8,41,https://www.365chess.com/opening.php?m=5&ms=Nf3.Nf6.c4.e6&n=150&ns=1.46.39.150,rnbqkb1r/pppp1ppp/4pn2/8/2P5/5NP1/PP1PPP1P/RNBQKB1R b KQkq - 0 3,12,-11,-35,-11,6,-11
+Nf3 Nf6 c4 e6 Nc3,10489,25,41,https://www.365chess.com/opening.php?m=6&ms=Nf3.Nf6.c4.e6.Nc3&n=545&ns=1.46.39.150.545,rnbqkb1r/pppp1ppp/4pn2/8/2P5/2N2N2/PP1PPPPP/R1BQKB1R b KQkq - 1 3,45,11,4,27,46,29
+Nf3 Nf6 c4 c5 Nc3,15928,14,50,https://www.365chess.com/opening.php?m=5&ms=Nf3.Nf6.c4.c5&n=88&ns=1.46.39.88,rnbqkb1r/pp1ppppp/5n2/2p5/2P5/2N2N2/PP1PPPPP/R1BQKB1R b KQkq - 1 3,60,26,12,24,44,25
+Nf3 Nf6 d4 e6 c4,26710,13,45,https://www.365chess.com/opening.php?m=5&ms=Nf3.Nf6.d4.e6&n=19&ns=1.46.20.19,rnbqkb1r/pppp1ppp/4pn2/8/2PP4/5N2/PP2PPPP/RNBQKB1R b KQkq c3 0 3,34,23,4,27,46,29
+Nf3 Nf6 d4 e6 Bg5,10393,0,43,https://www.365chess.com/opening.php?m=5&ms=Nf3.Nf6.d4.e6&n=19&ns=1.46.20.19,rnbqkb1r/pppp1ppp/4pn2/6B1/3P4/5N2/PPP1PPPP/RN1QKB1R b KQkq - 1 3,30,1,-28,-2,15,3
+Nf3 Nf6 d4 d5 c4,55930,30,29,https://www.365chess.com/opening.php?m=5&ms=Nf3.Nf6.d4.d5&n=13&ns=1.46.20.13,rnbqkb1r/ppp1pppp/5n2/3p4/2PP4/5N2/PP2PPPP/RNBQKB1R b KQkq c3 0 3,7,7,-4,4,36,4
+Nf3 Nf6 d4 d5 Bf4,13293,0,45,https://www.365chess.com/opening.php?m=6&ms=Nf3.Nf6.d4.d5.Bf4&n=226&ns=1.46.20.13.226,rnbqkb1r/ppp1pppp/5n2/3p4/3P1B2/5N2/PPP1PPPP/RN1QKB1R b KQkq - 1 3,19,8,-5,19,22,5
+Nf3 Nf6 d4 d5 e3,12296,0,45,https://www.365chess.com/opening.php?m=5&ms=Nf3.Nf6.d4.d5&n=13&ns=1.46.20.13,rnbqkb1r/ppp1pppp/5n2/3p4/3P4/4PN2/PPP2PPP/RNBQKB1R b KQkq - 0 3,13,12,-1,23,44,17
+Nf3 d5 g3 Nf6 Bg2,26348,8,50,https://www.365chess.com/opening.php?m=5&ms=Nf3.d5.g3.Nf6&n=47&ns=1.85.47.47,rnbqkb1r/ppp1pppp/5n2/3p4/8/5NP1/PPPPPPBP/RNBQK2R b KQkq - 2 3,-31,-30,-60,-32,-23,-26
+Nf3 d5 d4 Nf6 c4,55825,30,29,https://www.365chess.com/opening.php?m=5&ms=Nf3.d5.d4.Nf6&n=13&ns=1.85.10.13,rnbqkb1r/ppp1pppp/5n2/3p4/2PP4/5N2/PP2PPPP/RNBQKB1R b KQkq c3 0 3,7,7,-4,4,36,4
+Nf3 d5 d4 Nf6 Bf4,13256,0,45,https://www.365chess.com/opening.php?m=5&ms=Nf3.d5.d4.Nf6&n=13&ns=1.85.10.13,rnbqkb1r/ppp1pppp/5n2/3p4/3P1B2/5N2/PPP1PPPP/RN1QKB1R b KQkq - 2 3,19,8,-5,19,22,5
+Nf3 d5 d4 Nf6 e3,12277,0,45,https://www.365chess.com/opening.php?m=5&ms=Nf3.d5.d4.Nf6&n=13&ns=1.85.10.13,rnbqkb1r/ppp1pppp/5n2/3p4/3P4/4PN2/PPP2PPP/RNBQKB1R b KQkq - 0 3,13,12,-1,23,44,17
+Nf3 c5 c4 Nf6 Nc3,16118,37,25,https://www.365chess.com/opening.php?m=5&ms=Nf3.c5.c4.Nf6&n=88&ns=1.1.2.88,rnbqkb1r/pp1ppppp/5n2/2p5/2P5/2N2N2/PP1PPPPP/R1BQKB1R b KQkq - 2 3,60,26,12,24,44,25
+c4 Nf6 Nf3 g6 Nc3,18515,53,40,https://www.365chess.com/opening.php?m=5&ms=c4.Nf6.Nf3.g6&n=101&ns=15.24.39.101,rnbqkb1r/pppppp1p/5np1/8/2P5/2N2N2/PP1PPPPP/R1BQKB1R b KQkq - 1 3,70,43,43,51,78,55
+c4 Nf6 Nf3 e6 g3,16547,8,41,https://www.365chess.com/opening.php?m=5&ms=c4.Nf6.Nf3.e6&n=150&ns=15.24.39.150,rnbqkb1r/pppp1ppp/4pn2/8/2P5/5NP1/PP1PPP1P/RNBQKB1R b KQkq - 0 3,12,-11,-35,-11,6,-11
+c4 Nf6 Nf3 e6 Nc3,10289,25,41,https://www.365chess.com/opening.php?m=5&ms=c4.Nf6.Nf3.e6&n=150&ns=15.24.39.150,rnbqkb1r/pppp1ppp/4pn2/8/2P5/2N2N2/PP1PPPPP/R1BQKB1R b KQkq - 1 3,45,11,4,27,46,29
+c4 e5 Nc3 Nf6 Nf3,14193,13,40,https://www.365chess.com/opening.php?m=5&ms=c4.e5.Nc3.Nf6&n=160&ns=15.112.62.160,rnbqkb1r/pppp1ppp/5n2/4p3/2P5/2N2N2/PP1PPPPP/R1BQKB1R b KQkq - 3 3,55,27,12,22,45,24
+c4 e5 Nc3 Nf6 g3,11001,0,45,https://www.365chess.com/opening.php?m=5&ms=c4.e5.Nc3.Nf6&n=160&ns=15.112.62.160,rnbqkb1r/pppp1ppp/5n2/4p3/2P5/2N3P1/PP1PPP1P/R1BQKBNR b KQkq - 0 3,-13,-37,-63,-40,-19,-27
+c4 c5 Nf3 Nf6 Nc3,16118,37,25,https://www.365chess.com/opening.php?m=5&ms=c4.c5.Nf3.Nf6&n=88&ns=15.26.2.88,rnbqkb1r/pp1ppppp/5n2/2p5/2P5/2N2N2/PP1PPPPP/R1BQKB1R b KQkq - 3 3,60,26,12,24,44,25
+e4 c5 Nf3 d6 d4 cxd4,187733,22,43,https://www.365chess.com/opening.php?m=6&ms=e4.c5.Nf3.d6.d4&n=3&ns=3.3.4.4.3,rnbqkbnr/pp2pppp/3p4/8/3pP3/5N2/PPP2PPP/RNBQKB1R w KQkq - 0 4,55,62,57,26,2,22
+e4 c5 Nf3 d6 Bb5+ Bd7,15036,25,40,https://www.365chess.com/opening.php?m=6&ms=e4.c5.Nf3.d6.Bb5+&n=409&ns=3.3.4.4.409,rn1qkbnr/pp1bpppp/3p4/1Bp5/4P3/5N2/PPPP1PPP/RNBQK2R w KQkq - 2 4,21,16,62,21,10,35
+e4 c5 Nf3 d6 Bb5+ Nd7,10393,0,45,https://www.365chess.com/opening.php?m=6&ms=e4.c5.Nf3.d6.Bb5+&n=409&ns=3.3.4.4.409,r1bqkbnr/pp1npppp/3p4/1Bp5/4P3/5N2/PPPP1PPP/RNBQK2R w KQkq - 2 4,34,65,84,54,37,51
+e4 c5 Nf3 d6 c3 Nf6,10493,0,45,https://www.365chess.com/opening.php?m=6&ms=e4.c5.Nf3.d6.c3&n=1215&ns=3.3.4.4.1215,rnbqkb1r/pp2pppp/3p1n2/2p5/4P3/2P2N2/PP1P1PPP/RNBQKB1R w KQkq - 1 4,-41,5,-8,-5,-21,7
+e4 c5 Nf3 Nc6 d4 cxd4,120013,0,45,https://www.365chess.com/opening.php?m=6&ms=e4.c5.Nf3.Nc6.d4&n=45&ns=3.3.4.37.45,r1bqkbnr/pp1ppppp/2n5/8/3pP3/5N2/PPP2PPP/RNBQKB1R w KQkq - 0 4,-11,6,42,6,-17,5
+e4 c5 Nf3 Nc6 Bb5 g6,18940,13,45,https://www.365chess.com/opening.php?m=6&ms=e4.c5.Nf3.Nc6.Bb5&n=327&ns=3.3.4.37.327,r1bqkbnr/pp1ppp1p/2n3p1/1Bp5/4P3/5N2/PPPP1PPP/RNBQK2R w KQkq - 0 4,46,58,94,54,30,68
+e4 c5 Nf3 e6 d4 cxd4,105536,43,22,https://www.365chess.com/opening.php?m=6&ms=e4.c5.Nf3.e6.d4&n=131&ns=3.3.4.75.131,rnbqkbnr/pp1p1ppp/4p3/8/3pP3/5N2/PPP2PPP/RNBQKB1R w KQkq - 0 4,39,41,91,42,39,48
+e4 c5 c3 d5 exd5 Qxd5,20716,0,45,https://www.365chess.com/opening.php?m=6&ms=e4.c5.c3.d5.exd5&n=616&ns=3.3.37.226.616,rnb1kbnr/pp2pppp/8/2pq4/8/2P5/PP1P1PPP/RNBQKBNR w KQkq - 0 4,-44,-6,22,-6,-37,-14
+e4 c5 c3 Nf6 e5 Nd5,20238,21,43,https://www.365chess.com/opening.php?m=6&ms=e4.c5.c3.Nf6.e5&n=101&ns=3.3.37.65.101,rnbqkb1r/pp1ppppp/8/2pnP3/8/2P5/PP1P1PPP/RNBQKBNR w KQkq - 1 4,9,53,55,45,14,45
+e4 e5 Nf3 Nc6 Bb5 a6,126051,8,45,https://www.365chess.com/opening.php?m=6&ms=e4.e5.Nf3.Nc6.Bb5&n=5&ns=3.5.5.6.5,r1bqkbnr/1ppp1ppp/p1n5/1B2p3/4P3/5N2/PPPP1PPP/RNBQK2R w KQkq - 0 4,91,104,47,5,29,19
+e4 e5 Nf3 Nc6 Bb5 Nf6,26113,22,45,https://www.365chess.com/opening.php?m=6&ms=e4.e5.Nf3.Nc6.Bb5&n=5&ns=3.5.5.6.5,r1bqkb1r/pppp1ppp/2n2n2/1B2p3/4P3/5N2/PPPP1PPP/RNBQK2R w KQkq - 4 4,15,23,36,20,-9,17
+e4 e5 Nf3 Nc6 Bc4 Bc5,42218,19,50,https://www.365chess.com/opening.php?m=6&ms=e4.e5.Nf3.Nc6.Bc4&n=80&ns=3.5.5.6.80,r1bqk1nr/pppp1ppp/2n5/2b1p3/2B1P3/5N2/PPPP1PPP/RNBQK2R w KQkq - 4 4,36,73,70,69,5,36
+e4 e5 Nf3 Nc6 Bc4 Nf6,34899,18,50,https://www.365chess.com/opening.php?m=6&ms=e4.e5.Nf3.Nc6.Bc4&n=80&ns=3.5.5.6.80,r1bqkb1r/pppp1ppp/2n2n2/4p3/2B1P3/5N2/PPPP1PPP/RNBQK2R w KQkq - 4 4,0,8,29,12,1,12
+e4 e5 Nf3 Nc6 d4 exd4,41547,33,20,https://www.365chess.com/opening.php?m=6&ms=e4.e5.Nf3.Nc6.d4&n=256&ns=3.5.5.6.256,r1bqkbnr/pppp1ppp/2n5/8/3pP3/5N2/PPP2PPP/RNBQKB1R w KQkq - 0 4,8,30,69,19,4,19
+e4 e5 Nf3 Nc6 Nc3 Nf6,24073,15,42,https://www.365chess.com/opening.php?m=6&ms=e4.e5.Nf3.Nc6.Nc3&n=47&ns=3.5.5.6.47,r1bqkb1r/pppp1ppp/2n2n2/4p3/4P3/2N2N2/PPPP1PPP/R1BQKB1R w KQkq - 4 4,15,29,36,26,13,23
+e4 e5 Nf3 Nf6 Nxe5 d6,23222,21,45,https://www.365chess.com/opening.php?m=6&ms=e4.e5.Nf3.Nf6.Nxe5&n=601&ns=3.5.5.221.601,rnbqkb1r/ppp2ppp/3p1n2/4N3/4P3/8/PPPP1PPP/RNBQKB1R w KQkq - 0 4,0,24,52,24,0,24
+d4 d5 c4 c6 Nf3 Nf6,54501,38,26,https://www.365chess.com/opening.php?m=6&ms=d4.d5.c4.c6.Nf3&n=138&ns=7.8.23.36.138,rnbqkb1r/pp2pppp/2p2n2/3p4/2PP4/5N2/PP2PPPP/RNBQKB1R w KQkq - 2 4,11,28,54,18,21,29
+d4 d5 c4 c6 Nc3 Nf6,26178,26,50,https://www.365chess.com/opening.php?m=6&ms=d4.d5.c4.c6.Nc3&n=307&ns=7.8.23.36.307,rnbqkb1r/pp2pppp/2p2n2/3p4/2PP4/2N5/PP2PPPP/R1BQKBNR w KQkq - 2 4,4,21,56,18,19,29
+d4 d5 c4 c6 cxd5 cxd5,11849,14,36,https://www.365chess.com/opening.php?m=6&ms=d4.d5.c4.c6.cxd5&n=43&ns=7.8.23.36.43,rnbqkbnr/pp2pppp/8/3p4/3P4/8/PP2PPPP/RNBQKBNR w KQkq - 0 4,0,24,54,13,0,24
+d4 d5 c4 dxc4 Nf3 Nf6,10082,17,45,https://www.365chess.com/opening.php?m=6&ms=d4.d5.c4.dxc4.Nf3&n=219&ns=7.8.23.109.219,rnbqkb1r/ppp1pppp/5n2/8/2pP4/5N2/PP2PPPP/RNBQKB1R w KQkq - 2 4,-4,4,36,4,-7,4
+d4 e6 c4 Nf6 Nc3 Bb4,87495,0,45,https://www.365chess.com/opening.php?m=6&ms=d4.e6.c4.Nf6.Nc3&n=38&ns=7.18.84.33.38,rnbqk2r/pppp1ppp/4pn2/8/1bPP4/2N5/PP2PPPP/R1BQKBNR w KQkq - 3 4,32,44,79,39,11,28
+d4 e6 c4 Nf6 Nc3 d5,18288,22,50,https://www.365chess.com/opening.php?m=6&ms=d4.e6.c4.Nf6.Nc3&n=38&ns=7.18.84.33.38,rnbqkb1r/ppp2ppp/4pn2/3p4/2PP4/2N5/PP2PPPP/R1BQKBNR w KQkq d6 0 4,4,27,46,29,6,26
+d4 e6 c4 Nf6 g3 d5,12245,31,40,https://www.365chess.com/opening.php?m=6&ms=d4.e6.c4.Nf6.g3&n=264&ns=7.18.84.33.264,rnbqkb1r/ppp2ppp/4pn2/3p4/2PP4/6P1/PP2PP1P/RNBQKBNR w KQkq d6 0 4,-42,-3,8,-11,-34,-12
+d4 g6 e4 Bg7 Nc3 d6,18994,51,50,https://www.365chess.com/opening.php?m=6&ms=d4.g6.e4.Bg7.Nc3&n=479&ns=7.79.81.144.479,rnbqk1nr/ppp1ppbp/3p2p1/8/3PP3/2N5/PPP2PPP/R1BQKBNR w KQkq - 0 4,117,113,169,130,120,124
+Nf3 Nf6 c4 e6 g3 d5,10847,34,22,https://www.365chess.com/opening.php?m=6&ms=Nf3.Nf6.c4.e6.g3&n=476&ns=1.46.39.150.476,rnbqkb1r/ppp2ppp/4pn2/3p4/2P5/5NP1/PP1PPP1P/RNBQKB1R w KQkq d6 0 4,-35,-11,8,-11,-40,-14
+Nf3 Nf6 d4 d5 c4 e6,26781,28,18,https://www.365chess.com/opening.php?m=6&ms=Nf3.Nf6.d4.d5.c4&n=15&ns=1.46.20.13.15,rnbqkb1r/ppp2ppp/4pn2/3p4/2PP4/5N2/PP2PPPP/RNBQKB1R w KQkq - 0 4,4,27,46,29,6,26
+Nf3 Nf6 d4 d5 c4 c6,21690,31,18,https://www.365chess.com/opening.php?m=6&ms=Nf3.Nf6.d4.d5.c4&n=15&ns=1.46.20.13.15,rnbqkb1r/pp2pppp/2p2n2/3p4/2PP4/5N2/PP2PPPP/RNBQKB1R w KQkq - 0 4,11,28,54,18,21,29
+Nf3 d5 d4 Nf6 c4 e6,26696,4,45,https://www.365chess.com/opening.php?m=6&ms=Nf3.d5.d4.Nf6.c4&n=15&ns=1.85.10.13.15,rnbqkb1r/ppp2ppp/4pn2/3p4/2PP4/5N2/PP2PPPP/RNBQKB1R w KQkq - 0 4,4,27,46,29,6,26
+Nf3 d5 d4 Nf6 c4 c6,21667,22,43,https://www.365chess.com/opening.php?m=6&ms=Nf3.d5.d4.Nf6.c4&n=15&ns=1.85.10.13.15,rnbqkb1r/pp2pppp/2p2n2/3p4/2PP4/5N2/PP2PPPP/RNBQKB1R w KQkq - 0 4,11,28,54,18,21,29
+c4 e5 Nc3 Nf6 Nf3 Nc6,12787,14,34,https://www.365chess.com/opening.php?m=6&ms=c4.e5.Nc3.Nf6.Nf3&n=394&ns=15.112.62.160.394,r1bqkb1r/pppp1ppp/2n2n2/4p3/2P5/2N2N2/PP1PPPPP/R1BQKB1R w KQkq - 4 4,12,24,45,24,2,24

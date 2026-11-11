@@ -1,0 +1,4133 @@
+{
+  "baseline_revision": "bdb77b1c4af864b24b9dd81a4906110ef970b129",
+  "baseline_engine_sha256": "bf4a7ba8abf7fe1504c78eae4734e328775043b18838e607cef690b202638952",
+  "compiler": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+  "flags": [
+    "--edition=2021",
+    "-C",
+    "opt-level=3",
+    "-C",
+    "codegen-units=1",
+    "-C",
+    "lto=fat"
+  ],
+  "platform": "macOS-26.5.1-arm64-arm-64bit",
+  "threads": 1,
+  "total_memory_budget": 100000000,
+  "scope": "pair",
+  "references": [
+    {
+      "id": "8",
+      "sequence": [
+        "e4",
+        "e5"
+      ],
+      "games": 471796,
+      "reference_cp": 22,
+      "reference_depth": 50,
+      "source_url": "https://www.365chess.com/opening.php?m=2&ms=e4&n=3&ns=3",
+      "snapshot": "0001.json",
+      "family": "e4",
+      "parent": "e4",
+      "alternative": {
+        "score_cp": 22,
+        "depth": 50,
+        "source_url": "https://www.365chess.com/opening.php?m=3&ms=e4.e5&n=5&ns=3.5",
+        "snapshot": "0009.json"
+      }
+    },
+    {
+      "id": "12",
+      "sequence": [
+        "e4",
+        "d5"
+      ],
+      "games": 64507,
+      "reference_cp": 55,
+      "reference_depth": 50,
+      "source_url": "https://www.365chess.com/opening.php?m=2&ms=e4&n=3&ns=3",
+      "snapshot": "0001.json",
+      "family": "e4",
+      "parent": "e4",
+      "alternative": {
+        "score_cp": 55,
+        "depth": 50,
+        "source_url": "https://www.365chess.com/opening.php?m=3&ms=e4.d5&n=20&ns=3.20",
+        "snapshot": "0013.json"
+      }
+    }
+  ],
+  "shared_sha256": {
+    "chess": "d29bf74343b3e225500ab9f40085898f050baf6079c5d2cdbd5246bc3978167a",
+    "tables": "33170ea449259320b74a4dad812b49dcff609a0914cff3a61e2b29db34eb4186",
+    "cache": "873372bdbdb4643fb66cd15e94081a5edf0b1aa7734f2c00b0cf8d4082a53cc6",
+    "ordering": "5302eff4f2d61c58ec1f02d8907b82b6a68c49e5f3df377f89ebc2398a5644ab"
+  },
+  "changes": {
+    "current": [],
+    "knight_center_middlegame-0": [
+      [
+        "const KNIGHT_CENTER_MIDDLEGAME: i32 = 6;",
+        "const KNIGHT_CENTER_MIDDLEGAME: i32 = 0;"
+      ]
+    ],
+    "knight_center_middlegame-2": [
+      [
+        "const KNIGHT_CENTER_MIDDLEGAME: i32 = 6;",
+        "const KNIGHT_CENTER_MIDDLEGAME: i32 = 2;"
+      ]
+    ],
+    "knight_center_middlegame-4": [
+      [
+        "const KNIGHT_CENTER_MIDDLEGAME: i32 = 6;",
+        "const KNIGHT_CENTER_MIDDLEGAME: i32 = 4;"
+      ]
+    ],
+    "knight_center_middlegame-8": [
+      [
+        "const KNIGHT_CENTER_MIDDLEGAME: i32 = 6;",
+        "const KNIGHT_CENTER_MIDDLEGAME: i32 = 8;"
+      ]
+    ],
+    "tempo_middlegame-16": [
+      [
+        "const TEMPO_MIDDLEGAME: i32 = 24;",
+        "const TEMPO_MIDDLEGAME: i32 = 16;"
+      ]
+    ],
+    "tempo_middlegame-32": [
+      [
+        "const TEMPO_MIDDLEGAME: i32 = 24;",
+        "const TEMPO_MIDDLEGAME: i32 = 32;"
+      ]
+    ],
+    "space_unit-2": [
+      [
+        "const SPACE_UNIT: i32 = 4;",
+        "const SPACE_UNIT: i32 = 2;"
+      ]
+    ],
+    "space_unit-8": [
+      [
+        "const SPACE_UNIT: i32 = 4;",
+        "const SPACE_UNIT: i32 = 8;"
+      ]
+    ],
+    "queen-mobility-0": [
+      [
+        "(2, 4), (1, 2)",
+        "(2, 4), (0, 2)"
+      ]
+    ],
+    "queen-mobility-2": [
+      [
+        "(2, 4), (1, 2)",
+        "(2, 4), (2, 2)"
+      ]
+    ],
+    "knight-mobility-2": [
+      [
+        "(4, 4), (5, 5)",
+        "(2, 4), (5, 5)"
+      ]
+    ],
+    "knight-mobility-6": [
+      [
+        "(4, 4), (5, 5)",
+        "(6, 4), (5, 5)"
+      ]
+    ],
+    "bishop-mobility-3": [
+      [
+        "(5, 5), (2, 4)",
+        "(3, 5), (2, 4)"
+      ]
+    ],
+    "bishop-mobility-7": [
+      [
+        "(5, 5), (2, 4)",
+        "(7, 5), (2, 4)"
+      ]
+    ],
+    "pawn-advance-4": [
+      [
+        "1 => y * 8 + center * 2,",
+        "1 => y * if endgame { 8 } else { 4 } + center * 2,"
+      ],
+      [
+        "1 => pawns[color] |= 1u64 << square,",
+        "1 => { pawns[color] |= 1u64 << square; let rank = if piece > 0 { square / 8 } else { 7 - square / 8 }; endgame_delta += i32::from(piece.signum()) * rank as i32 * (8 - 4); }"
+      ]
+    ],
+    "pawn-advance-12": [
+      [
+        "1 => y * 8 + center * 2,",
+        "1 => y * if endgame { 8 } else { 12 } + center * 2,"
+      ],
+      [
+        "1 => pawns[color] |= 1u64 << square,",
+        "1 => { pawns[color] |= 1u64 << square; let rank = if piece > 0 { square / 8 } else { 7 - square / 8 }; endgame_delta += i32::from(piece.signum()) * rank as i32 * (8 - 12); }"
+      ]
+    ],
+    "connected-pawn-0": [
+      [
+        "const CONNECTED_PAWN: (i32, i32) = (6, 10);",
+        "const CONNECTED_PAWN: (i32, i32) = (0, 10);"
+      ]
+    ],
+    "connected-pawn-12": [
+      [
+        "const CONNECTED_PAWN: (i32, i32) = (6, 10);",
+        "const CONNECTED_PAWN: (i32, i32) = (12, 10);"
+      ]
+    ],
+    "minor-behind-pawn-0": [
+      [
+        "const MINOR_BEHIND_PAWN: (i32, i32) = (8, 4);",
+        "const MINOR_BEHIND_PAWN: (i32, i32) = (0, 4);"
+      ]
+    ],
+    "minor-behind-pawn-16": [
+      [
+        "const MINOR_BEHIND_PAWN: (i32, i32) = (8, 4);",
+        "const MINOR_BEHIND_PAWN: (i32, i32) = (16, 4);"
+      ]
+    ],
+    "king-safety-half": [
+      [
+        "danger.min(300) * attack_material / 12",
+        "danger.min(300) * attack_material / 24"
+      ]
+    ],
+    "king-safety-double": [
+      [
+        "danger.min(300) * attack_material / 12",
+        "danger.min(300) * attack_material / 6"
+      ]
+    ],
+    "early-queen12": [
+      [
+        "    let (threat_mg, threat_eg) = threats(p, occupied, kings, pawn_attacks, &pressure);",
+        "    let mut early_queen = 0;\n    for color in 0..2 {\n        let home = if color == 1 { 0x66 } else { 0x6600_0000_0000_0000 };\n        let minors = knights[color] | (diagonal[color] & !straight[color]);\n        let undeveloped = (minors & home).count_ones() as i32;\n        let advanced = if color == 1 { !0xffff } else { !0xffff_0000_0000_0000 };\n        let queen = diagonal[color] & straight[color] & advanced;\n        let sign = if color == 1 { -1 } else { 1 };\n        early_queen += sign * queen.count_ones() as i32 * undeveloped * 12;\n    }\n    score += early_queen;\n    endgame_delta -= early_queen;\n    let (threat_mg, threat_eg) = threats(p, occupied, kings, pawn_attacks, &pressure);"
+      ]
+    ]
+  },
+  "engine_sha256": {
+    "current": "bf4a7ba8abf7fe1504c78eae4734e328775043b18838e607cef690b202638952",
+    "knight_center_middlegame-0": "e34b889372590a4fa19845f176be379a056ab7e12f840eba8c878694de915d5b",
+    "knight_center_middlegame-2": "556138403e8dd4c5e7a05223f43632d28e3de9854dfd34fd23061f2095a43888",
+    "knight_center_middlegame-4": "9dced40292577e281b352b669361a205d2d9c702fd5c30470cab63d1352b2cc7",
+    "knight_center_middlegame-8": "dd75118448f2c30251a18258e6ed8e179f11db2dd680168aa9458f2b98be6913",
+    "tempo_middlegame-16": "4aefd02b68fc4c45966ad6eb62d8eb4dda2b9a351749e0af81a2a816700366a2",
+    "tempo_middlegame-32": "21e95d4e6bedcca613a5d0e429be7662a17b27b2a64affbd460d3c225b16e98f",
+    "space_unit-2": "c1e4205123203f4e2bd3920eadb97273d343d8eaa4a3fe725330fef56f4721e6",
+    "space_unit-8": "53b8dcc6aa47764424836e527ee58adc090d65f803de65c063db88d0c8683b32",
+    "queen-mobility-0": "7ab933afe7fc647b23d9b32e2696461a8b117b50f0080326dddc83b5108b6d6b",
+    "queen-mobility-2": "4f363913298a236e1391021530af5a26f704d860b4c01bc6a8b2085ec23ae9f2",
+    "knight-mobility-2": "36faf541abc61c0ab443dd5771814dc1801a3c062ee45245eeca64b37ca3002d",
+    "knight-mobility-6": "411ef0785de7dec395a803c6216a34ecadb35a1ce112028e933864f43c9ed529",
+    "bishop-mobility-3": "2dce6ef840466afcd75da32ebca387a5a69d193b52bc740394985a54145afc78",
+    "bishop-mobility-7": "7ba21ce1019961e48cc1bd118e4a99da1c2db779b76a537500bd9a04246a9b06",
+    "pawn-advance-4": "68e246eba06942b418d60b3777727d6757bda3744d051e0cef94b948e4230002",
+    "pawn-advance-12": "cc442f0858961f0f54d4872f4eb24367fbf8c92206ac036e11e443c1d0f41ace",
+    "connected-pawn-0": "cfe545afb8ac90063682eb6239b690b543ef4a6c96cdbf1c105adaeebb79b549",
+    "connected-pawn-12": "4952b095a0a7b54d3d41b59d1c599154531a48d50183b559beda4505c1e3aa11",
+    "minor-behind-pawn-0": "7bd1c1007bbda53e1aec6ff069d0aa4a3aa8fb6cbf78c84863a8f10a7d2ce7e9",
+    "minor-behind-pawn-16": "e7a45527ebf8f2c2178efffc3d6ab80756ece48371661593fbea2bc9d99638eb",
+    "king-safety-half": "f6c92d4d15b6b069f98dbf579f0aeae201ad8b684a027f80373c1ba570534804",
+    "king-safety-double": "a74763a945f430293ae448bd2de4ce23c9530f47c19dac3de08c41324753ba9f",
+    "early-queen12": "d13555e9138950e6350d04799b624dc09d0ef1cdfb53589aee9c3fd9ae486a53"
+  },
+  "runs": [
+    {
+      "id": "8",
+      "sequence": [
+        "e4",
+        "e5"
+      ],
+      "games": 471796,
+      "reference_cp": 22,
+      "reference_depth": 50,
+      "source_url": "https://www.365chess.com/opening.php?m=2&ms=e4&n=3&ns=3",
+      "snapshot": "0001.json",
+      "family": "e4",
+      "parent": "e4",
+      "alternative": {
+        "score_cp": 22,
+        "depth": 50,
+        "source_url": "https://www.365chess.com/opening.php?m=3&ms=e4.e5&n=5&ns=3.5",
+        "snapshot": "0009.json"
+      },
+      "fen": "rnbqkbnr/pppp1ppp/8/4p3/4P3/8/PPPP1PPP/RNBQKBNR w KQkq e6 0 2",
+      "static_cp": 24,
+      "score_cp": 38,
+      "depth": 6,
+      "best": "g1f3",
+      "nodes": 405610,
+      "hits": 3197,
+      "cache_bytes": 4210688,
+      "cache_limit": 78601344,
+      "variant": "current"
+    },
+    {
+      "id": "12",
+      "sequence": [
+        "e4",
+        "d5"
+      ],
+      "games": 64507,
+      "reference_cp": 55,
+      "reference_depth": 50,
+      "source_url": "https://www.365chess.com/opening.php?m=2&ms=e4&n=3&ns=3",
+      "snapshot": "0001.json",
+      "family": "e4",
+      "parent": "e4",
+      "alternative": {
+        "score_cp": 55,
+        "depth": 50,
+        "source_url": "https://www.365chess.com/opening.php?m=3&ms=e4.d5&n=20&ns=3.20",
+        "snapshot": "0013.json"
+      },
+      "fen": "rnbqkbnr/ppp1pppp/8/3p4/4P3/8/PPPP1PPP/RNBQKBNR w KQkq d6 0 2",
+      "static_cp": 20,
+      "score_cp": -1,
+      "depth": 6,
+      "best": "e4d5",
+      "nodes": 307702,
+      "hits": 2355,
+      "cache_bytes": 4210688,
+      "cache_limit": 78601344,
+      "variant": "current"
+    },
+    {
+      "id": "8",
+      "sequence": [
+        "e4",
+        "e5"
+      ],
+      "games": 471796,
+      "reference_cp": 22,
+      "reference_depth": 50,
+      "source_url": "https://www.365chess.com/opening.php?m=2&ms=e4&n=3&ns=3",
+      "snapshot": "0001.json",
+      "family": "e4",
+      "parent": "e4",
+      "alternative": {
+        "score_cp": 22,
+        "depth": 50,
+        "source_url": "https://www.365chess.com/opening.php?m=3&ms=e4.e5&n=5&ns=3.5",
+        "snapshot": "0009.json"
+      },
+      "fen": "rnbqkbnr/pppp1ppp/8/4p3/4P3/8/PPPP1PPP/RNBQKBNR w KQkq e6 0 2",
+      "static_cp": 24,
+      "score_cp": 29,
+      "depth": 8,
+      "best": "g1f3",
+      "nodes": 7308242,
+      "hits": 76940,
+      "cache_bytes": 25198336,
+      "cache_limit": 78601344,
+      "variant": "current"
+    },
+    {
+      "id": "12",
+      "sequence": [
+        "e4",
+        "d5"
+      ],
+      "games": 64507,
+      "reference_cp": 55,
+      "reference_depth": 50,
+      "source_url": "https://www.365chess.com/opening.php?m=2&ms=e4&n=3&ns=3",
+      "snapshot": "0001.json",
+      "family": "e4",
+      "parent": "e4",
+      "alternative": {
+        "score_cp": 55,
+        "depth": 50,
+        "source_url": "https://www.365chess.com/opening.php?m=3&ms=e4.d5&n=20&ns=3.20",
+        "snapshot": "0013.json"
+      },
+      "fen": "rnbqkbnr/ppp1pppp/8/3p4/4P3/8/PPPP1PPP/RNBQKBNR w KQkq d6 0 2",
+      "static_cp": 20,
+      "score_cp": 15,
+      "depth": 8,
+      "best": "e4d5",
+      "nodes": 4945968,
+      "hits": 43337,
+      "cache_bytes": 16842752,
+      "cache_limit": 78601344,
+      "variant": "current"
+    },
+    {
+      "id": "8",
+      "sequence": [
+        "e4",
+        "e5"
+      ],
+      "games": 471796,
+      "reference_cp": 22,
+      "reference_depth": 50,
+      "source_url": "https://www.365chess.com/opening.php?m=2&ms=e4&n=3&ns=3",
+      "snapshot": "0001.json",
+      "family": "e4",
+      "parent": "e4",
+      "alternative": {
+        "score_cp": 22,
+        "depth": 50,
+        "source_url": "https://www.365chess.com/opening.php?m=3&ms=e4.e5&n=5&ns=3.5",
+        "snapshot": "0009.json"
+      },
+      "fen": "rnbqkbnr/pppp1ppp/8/4p3/4P3/8/PPPP1PPP/RNBQKBNR w KQkq e6 0 2",
+      "static_cp": 24,
+      "score_cp": 24,
+      "depth": 6,
+      "best": "f1c4",
+      "nodes": 394605,
+      "hits": 3394,
+      "cache_bytes": 4210688,
+      "cache_limit": 78601344,
+      "variant": "knight_center_middlegame-0"
+    },
+    {
+      "id": "12",
+      "sequence": [
+        "e4",
+        "d5"
+      ],
+      "games": 64507,
+      "reference_cp": 55,
+      "reference_depth": 50,
+      "source_url": "https://www.365chess.com/opening.php?m=2&ms=e4&n=3&ns=3",
+      "snapshot": "0001.json",
+      "family": "e4",
+      "parent": "e4",
+      "alternative": {
+        "score_cp": 55,
+        "depth": 50,
+        "source_url": "https://www.365chess.com/opening.php?m=3&ms=e4.d5&n=20&ns=3.20",
+        "snapshot": "0013.json"
+      },
+      "fen": "rnbqkbnr/ppp1pppp/8/3p4/4P3/8/PPPP1PPP/RNBQKBNR w KQkq d6 0 2",
+      "static_cp": 20,
+      "score_cp": 22,
+      "depth": 6,
+      "best": "e4e5",
+      "nodes": 236929,
+      "hits": 1185,
+      "cache_bytes": 4210688,
+      "cache_limit": 78601344,
+      "variant": "knight_center_middlegame-0"
+    },
+    {
+      "id": "8",
+      "sequence": [
+        "e4",
+        "e5"
+      ],
+      "games": 471796,
+      "reference_cp": 22,
+      "reference_depth": 50,
+      "source_url": "https://www.365chess.com/opening.php?m=2&ms=e4&n=3&ns=3",
+      "snapshot": "0001.json",
+      "family": "e4",
+      "parent": "e4",
+      "alternative": {
+        "score_cp": 22,
+        "depth": 50,
+        "source_url": "https://www.365chess.com/opening.php?m=3&ms=e4.e5&n=5&ns=3.5",
+        "snapshot": "0009.json"
+      },
+      "fen": "rnbqkbnr/pppp1ppp/8/4p3/4P3/8/PPPP1PPP/RNBQKBNR w KQkq e6 0 2",
+      "static_cp": 24,
+      "score_cp": 16,
+      "depth": 8,
+      "best": "d2d4",
+      "nodes": 8062309,
+      "hits": 57137,
+      "cache_bytes": 25461504,
+      "cache_limit": 78601344,
+      "variant": "knight_center_middlegame-0"
+    },
+    {
+      "id": "12",
+      "sequence": [
+        "e4",
+        "d5"
+      ],
+      "games": 64507,
+      "reference_cp": 55,
+      "reference_depth": 50,
+      "source_url": "https://www.365chess.com/opening.php?m=2&ms=e4&n=3&ns=3",
+      "snapshot": "0001.json",
+      "family": "e4",
+      "parent": "e4",
+      "alternative": {
+        "score_cp": 55,
+        "depth": 50,
+        "source_url": "https://www.365chess.com/opening.php?m=3&ms=e4.d5&n=20&ns=3.20",
+        "snapshot": "0013.json"
+      },
+      "fen": "rnbqkbnr/ppp1pppp/8/3p4/4P3/8/PPPP1PPP/RNBQKBNR w KQkq d6 0 2",
+      "static_cp": 20,
+      "score_cp": 22,
+      "depth": 8,
+      "best": "e4e5",
+      "nodes": 4096607,
+      "hits": 32298,
+      "cache_bytes": 16842752,
+      "cache_limit": 78601344,
+      "variant": "knight_center_middlegame-0"
+    },
+    {
+      "id": "8",
+      "sequence": [
+        "e4",
+        "e5"
+      ],
+      "games": 471796,
+      "reference_cp": 22,
+      "reference_depth": 50,
+      "source_url": "https://www.365chess.com/opening.php?m=2&ms=e4&n=3&ns=3",
+      "snapshot": "0001.json",
+      "family": "e4",
+      "parent": "e4",
+      "alternative": {
+        "score_cp": 22,
+        "depth": 50,
+        "source_url": "https://www.365chess.com/opening.php?m=3&ms=e4.e5&n=5&ns=3.5",
+        "snapshot": "0009.json"
+      },
+      "fen": "rnbqkbnr/pppp1ppp/8/4p3/4P3/8/PPPP1PPP/RNBQKBNR w KQkq e6 0 2",
+      "static_cp": 24,
+      "score_cp": 27,
+      "depth": 6,
+      "best": "f1c4",
+      "nodes": 332850,
+      "hits": 2095,
+      "cache_bytes": 4210688,
+      "cache_limit": 78601344,
+      "variant": "knight_center_middlegame-2"
+    },
+    {
+      "id": "12",
+      "sequence": [
+        "e4",
+        "d5"
+      ],
+      "games": 64507,
+      "reference_cp": 55,
+      "reference_depth": 50,
+      "source_url": "https://www.365chess.com/opening.php?m=2&ms=e4&n=3&ns=3",
+      "snapshot": "0001.json",
+      "family": "e4",
+      "parent": "e4",
+      "alternative": {
+        "score_cp": 55,
+        "depth": 50,
+        "source_url": "https://www.365chess.com/opening.php?m=3&ms=e4.d5&n=20&ns=3.20",
+        "snapshot": "0013.json"
+      },
+      "fen": "rnbqkbnr/ppp1pppp/8/3p4/4P3/8/PPPP1PPP/RNBQKBNR w KQkq d6 0 2",
+      "static_cp": 20,
+      "score_cp": 13,
+      "depth": 6,
+      "best": "e4e5",
+      "nodes": 248516,
+      "hits": 1190,
+      "cache_bytes": 4210688,
+      "cache_limit": 78601344,
+      "variant": "knight_center_middlegame-2"
+    },
+    {
+      "id": "8",
+      "sequence": [
+        "e4",
+        "e5"
+      ],
+      "games": 471796,
+      "reference_cp": 22,
+      "reference_depth": 50,
+      "source_url": "https://www.365chess.com/opening.php?m=2&ms=e4&n=3&ns=3",
+      "snapshot": "0001.json",
+      "family": "e4",
+      "parent": "e4",
+      "alternative": {
+        "score_cp": 22,
+        "depth": 50,
+        "source_url": "https://www.365chess.com/opening.php?m=3&ms=e4.e5&n=5&ns=3.5",
+        "snapshot": "0009.json"
+      },
+      "fen": "rnbqkbnr/pppp1ppp/8/4p3/4P3/8/PPPP1PPP/RNBQKBNR w KQkq e6 0 2",
+      "static_cp": 24,
+      "score_cp": 25,
+      "depth": 8,
+      "best": "g1f3",
+      "nodes": 11299395,
+      "hits": 106496,
+      "cache_bytes": 33159168,
+      "cache_limit": 78601344,
+      "variant": "knight_center_middlegame-2"
+    },
+    {
+      "id": "12",
+      "sequence": [
+        "e4",
+        "d5"
+      ],
+      "games": 64507,
+      "reference_cp": 55,
+      "reference_depth": 50,
+      "source_url": "https://www.365chess.com/opening.php?m=2&ms=e4&n=3&ns=3",
+      "snapshot": "0001.json",
+      "family": "e4",
+      "parent": "e4",
+      "alternative": {
+        "score_cp": 55,
+        "depth": 50,
+        "source_url": "https://www.365chess.com/opening.php?m=3&ms=e4.d5&n=20&ns=3.20",
+        "snapshot": "0013.json"
+      },
+      "fen": "rnbqkbnr/ppp1pppp/8/3p4/4P3/8/PPPP1PPP/RNBQKBNR w KQkq d6 0 2",
+      "static_cp": 20,
+      "score_cp": 22,
+      "depth": 8,
+      "best": "e4e5",
+      "nodes": 4515091,
+      "hits": 35787,
+      "cache_bytes": 16842752,
+      "cache_limit": 78601344,
+      "variant": "knight_center_middlegame-2"
+    },
+    {
+      "id": "8",
+      "sequence": [
+        "e4",
+        "e5"
+      ],
+      "games": 471796,
+      "reference_cp": 22,
+      "reference_depth": 50,
+      "source_url": "https://www.365chess.com/opening.php?m=2&ms=e4&n=3&ns=3",
+      "snapshot": "0001.json",
+      "family": "e4",
+      "parent": "e4",
+      "alternative": {
+        "score_cp": 22,
+        "depth": 50,
+        "source_url": "https://www.365chess.com/opening.php?m=3&ms=e4.e5&n=5&ns=3.5",
+        "snapshot": "0009.json"
+      },
+      "fen": "rnbqkbnr/pppp1ppp/8/4p3/4P3/8/PPPP1PPP/RNBQKBNR w KQkq e6 0 2",
+      "static_cp": 24,
+      "score_cp": 25,
+      "depth": 6,
+      "best": "f1c4",
+      "nodes": 329059,
+      "hits": 1714,
+      "cache_bytes": 4210688,
+      "cache_limit": 78601344,
+      "variant": "knight_center_middlegame-4"
+    },
+    {
+      "id": "12",
+      "sequence": [
+        "e4",
+        "d5"
+      ],
+      "games": 64507,
+      "reference_cp": 55,
+      "reference_depth": 50,
+      "source_url": "https://www.365chess.com/opening.php?m=2&ms=e4&n=3&ns=3",
+      "snapshot": "0001.json",
+      "family": "e4",
+      "parent": "e4",
+      "alternative": {
+        "score_cp": 55,
+        "depth": 50,
+        "source_url": "https://www.365chess.com/opening.php?m=3&ms=e4.d5&n=20&ns=3.20",
+        "snapshot": "0013.json"
+      },
+      "fen": "rnbqkbnr/ppp1pppp/8/3p4/4P3/8/PPPP1PPP/RNBQKBNR w KQkq d6 0 2",
+      "static_cp": 20,
+      "score_cp": 8,
+      "depth": 6,
+      "best": "e4e5",
+      "nodes": 265196,
+      "hits": 1346,
+      "cache_bytes": 4210688,
+      "cache_limit": 78601344,
+      "variant": "knight_center_middlegame-4"
+    },
+    {
+      "id": "8",
+      "sequence": [
+        "e4",
+        "e5"
+      ],
+      "games": 471796,
+      "reference_cp": 22,
+      "reference_depth": 50,
+      "source_url": "https://www.365chess.com/opening.php?m=2&ms=e4&n=3&ns=3",
+      "snapshot": "0001.json",
+      "family": "e4",
+      "parent": "e4",
+      "alternative": {
+        "score_cp": 22,
+        "depth": 50,
+        "source_url": "https://www.365chess.com/opening.php?m=3&ms=e4.e5&n=5&ns=3.5",
+        "snapshot": "0009.json"
+      },
+      "fen": "rnbqkbnr/pppp1ppp/8/4p3/4P3/8/PPPP1PPP/RNBQKBNR w KQkq e6 0 2",
+      "static_cp": 24,
+      "score_cp": 37,
+      "depth": 8,
+      "best": "g1f3",
+      "nodes": 7877164,
+      "hits": 70289,
+      "cache_bytes": 28816896,
+      "cache_limit": 78601344,
+      "variant": "knight_center_middlegame-4"
+    },
+    {
+      "id": "12",
+      "sequence": [
+        "e4",
+        "d5"
+      ],
+      "games": 64507,
+      "reference_cp": 55,
+      "reference_depth": 50,
+      "source_url": "https://www.365chess.com/opening.php?m=2&ms=e4&n=3&ns=3",
+      "snapshot": "0001.json",
+      "family": "e4",
+      "parent": "e4",
+      "alternative": {
+        "score_cp": 55,
+        "depth": 50,
+        "source_url": "https://www.365chess.com/opening.php?m=3&ms=e4.d5&n=20&ns=3.20",
+        "snapshot": "0013.json"
+      },
+      "fen": "rnbqkbnr/ppp1pppp/8/3p4/4P3/8/PPPP1PPP/RNBQKBNR w KQkq d6 0 2",
+      "static_cp": 20,
+      "score_cp": 17,
+      "depth": 8,
+      "best": "e4d5",
+      "nodes": 5739065,
+      "hits": 55140,
+      "cache_bytes": 21053440,
+      "cache_limit": 78601344,
+      "variant": "knight_center_middlegame-4"
+    },
+    {
+      "id": "8",
+      "sequence": [
+        "e4",
+        "e5"
+      ],
+      "games": 471796,
+      "reference_cp": 22,
+      "reference_depth": 50,
+      "source_url": "https://www.365chess.com/opening.php?m=2&ms=e4&n=3&ns=3",
+      "snapshot": "0001.json",
+      "family": "e4",
+      "parent": "e4",
+      "alternative": {
+        "score_cp": 22,
+        "depth": 50,
+        "source_url": "https://www.365chess.com/opening.php?m=3&ms=e4.e5&n=5&ns=3.5",
+        "snapshot": "0009.json"
+      },
+      "fen": "rnbqkbnr/pppp1ppp/8/4p3/4P3/8/PPPP1PPP/RNBQKBNR w KQkq e6 0 2",
+      "static_cp": 24,
+      "score_cp": 43,
+      "depth": 6,
+      "best": "g1f3",
+      "nodes": 266105,
+      "hits": 3351,
+      "cache_bytes": 4210688,
+      "cache_limit": 78601344,
+      "variant": "knight_center_middlegame-8"
+    },
+    {
+      "id": "12",
+      "sequence": [
+        "e4",
+        "d5"
+      ],
+      "games": 64507,
+      "reference_cp": 55,
+      "reference_depth": 50,
+      "source_url": "https://www.365chess.com/opening.php?m=2&ms=e4&n=3&ns=3",
+      "snapshot": "0001.json",
+      "family": "e4",
+      "parent": "e4",
+      "alternative": {
+        "score_cp": 55,
+        "depth": 50,
+        "source_url": "https://www.365chess.com/opening.php?m=3&ms=e4.d5&n=20&ns=3.20",
+        "snapshot": "0013.json"
+      },
+      "fen": "rnbqkbnr/ppp1pppp/8/3p4/4P3/8/PPPP1PPP/RNBQKBNR w KQkq d6 0 2",
+      "static_cp": 20,
+      "score_cp": 8,
+      "depth": 6,
+      "best": "e4e5",
+      "nodes": 274697,
+      "hits": 1952,
+      "cache_bytes": 4210688,
+      "cache_limit": 78601344,
+      "variant": "knight_center_middlegame-8"
+    },
+    {
+      "id": "8",
+      "sequence": [
+        "e4",
+        "e5"
+      ],
+      "games": 471796,
+      "reference_cp": 22,
+      "reference_depth": 50,
+      "source_url": "https://www.365chess.com/opening.php?m=2&ms=e4&n=3&ns=3",
+      "snapshot": "0001.json",
+      "family": "e4",
+      "parent": "e4",
+      "alternative": {
+        "score_cp": 22,
+        "depth": 50,
+        "source_url": "https://www.365chess.com/opening.php?m=3&ms=e4.e5&n=5&ns=3.5",
+        "snapshot": "0009.json"
+      },
+      "fen": "rnbqkbnr/pppp1ppp/8/4p3/4P3/8/PPPP1PPP/RNBQKBNR w KQkq e6 0 2",
+      "static_cp": 24,
+      "score_cp": 24,
+      "depth": 8,
+      "best": "g1f3",
+      "nodes": 5473464,
+      "hits": 66499,
+      "cache_bytes": 18750720,
+      "cache_limit": 78601344,
+      "variant": "knight_center_middlegame-8"
+    },
+    {
+      "id": "12",
+      "sequence": [
+        "e4",
+        "d5"
+      ],
+      "games": 64507,
+      "reference_cp": 55,
+      "reference_depth": 50,
+      "source_url": "https://www.365chess.com/opening.php?m=2&ms=e4&n=3&ns=3",
+      "snapshot": "0001.json",
+      "family": "e4",
+      "parent": "e4",
+      "alternative": {
+        "score_cp": 55,
+        "depth": 50,
+        "source_url": "https://www.365chess.com/opening.php?m=3&ms=e4.d5&n=20&ns=3.20",
+        "snapshot": "0013.json"
+      },
+      "fen": "rnbqkbnr/ppp1pppp/8/3p4/4P3/8/PPPP1PPP/RNBQKBNR w KQkq d6 0 2",
+      "static_cp": 20,
+      "score_cp": 15,
+      "depth": 8,
+      "best": "e4d5",
+      "nodes": 4625452,
+      "hits": 51589,
+      "cache_bytes": 17040128,
+      "cache_limit": 78601344,
+      "variant": "knight_center_middlegame-8"
+    },
+    {
+      "id": "8",
+      "sequence": [
+        "e4",
+        "e5"
+      ],
+      "games": 471796,
+      "reference_cp": 22,
+      "reference_depth": 50,
+      "source_url": "https://www.365chess.com/opening.php?m=2&ms=e4&n=3&ns=3",
+      "snapshot": "0001.json",
+      "family": "e4",
+      "parent": "e4",
+      "alternative": {
+        "score_cp": 22,
+        "depth": 50,
+        "source_url": "https://www.365chess.com/opening.php?m=3&ms=e4.e5&n=5&ns=3.5",
+        "snapshot": "0009.json"
+      },
+      "fen": "rnbqkbnr/pppp1ppp/8/4p3/4P3/8/PPPP1PPP/RNBQKBNR w KQkq e6 0 2",
+      "static_cp": 16,
+      "score_cp": 30,
+      "depth": 6,
+      "best": "g1f3",
+      "nodes": 318040,
+      "hits": 2088,
+      "cache_bytes": 4210688,
+      "cache_limit": 78601344,
+      "variant": "tempo_middlegame-16"
+    },
+    {
+      "id": "12",
+      "sequence": [
+        "e4",
+        "d5"
+      ],
+      "games": 64507,
+      "reference_cp": 55,
+      "reference_depth": 50,
+      "source_url": "https://www.365chess.com/opening.php?m=2&ms=e4&n=3&ns=3",
+      "snapshot": "0001.json",
+      "family": "e4",
+      "parent": "e4",
+      "alternative": {
+        "score_cp": 55,
+        "depth": 50,
+        "source_url": "https://www.365chess.com/opening.php?m=3&ms=e4.d5&n=20&ns=3.20",
+        "snapshot": "0013.json"
+      },
+      "fen": "rnbqkbnr/ppp1pppp/8/3p4/4P3/8/PPPP1PPP/RNBQKBNR w KQkq d6 0 2",
+      "static_cp": 12,
+      "score_cp": 5,
+      "depth": 6,
+      "best": "e4e5",
+      "nodes": 261743,
+      "hits": 1249,
+      "cache_bytes": 4210688,
+      "cache_limit": 78601344,
+      "variant": "tempo_middlegame-16"
+    },
+    {
+      "id": "8",
+      "sequence": [
+        "e4",
+        "e5"
+      ],
+      "games": 471796,
+      "reference_cp": 22,
+      "reference_depth": 50,
+      "source_url": "https://www.365chess.com/opening.php?m=2&ms=e4&n=3&ns=3",
+      "snapshot": "0001.json",
+      "family": "e4",
+      "parent": "e4",
+      "alternative": {
+        "score_cp": 22,
+        "depth": 50,
+        "source_url": "https://www.365chess.com/opening.php?m=3&ms=e4.e5&n=5&ns=3.5",
+        "snapshot": "0009.json"
+      },
+      "fen": "rnbqkbnr/pppp1ppp/8/4p3/4P3/8/PPPP1PPP/RNBQKBNR w KQkq e6 0 2",
+      "static_cp": 16,
+      "score_cp": 21,
+      "depth": 8,
+      "best": "g1f3",
+      "nodes": 7368906,
+      "hits": 78746,
+      "cache_bytes": 25264128,
+      "cache_limit": 78601344,
+      "variant": "tempo_middlegame-16"
+    },
+    {
+      "id": "12",
+      "sequence": [
+        "e4",
+        "d5"
+      ],
+      "games": 64507,
+      "reference_cp": 55,
+      "reference_depth": 50,
+      "source_url": "https://www.365chess.com/opening.php?m=2&ms=e4&n=3&ns=3",
+      "snapshot": "0001.json",
+      "family": "e4",
+      "parent": "e4",
+      "alternative": {
+        "score_cp": 55,
+        "depth": 50,
+        "source_url": "https://www.365chess.com/opening.php?m=3&ms=e4.d5&n=20&ns=3.20",
+        "snapshot": "0013.json"
+      },
+      "fen": "rnbqkbnr/ppp1pppp/8/3p4/4P3/8/PPPP1PPP/RNBQKBNR w KQkq d6 0 2",
+      "static_cp": 12,
+      "score_cp": 7,
+      "depth": 8,
+      "best": "e4d5",
+      "nodes": 5431989,
+      "hits": 48915,
+      "cache_bytes": 20987648,
+      "cache_limit": 78601344,
+      "variant": "tempo_middlegame-16"
+    },
+    {
+      "id": "8",
+      "sequence": [
+        "e4",
+        "e5"
+      ],
+      "games": 471796,
+      "reference_cp": 22,
+      "reference_depth": 50,
+      "source_url": "https://www.365chess.com/opening.php?m=2&ms=e4&n=3&ns=3",
+      "snapshot": "0001.json",
+      "family": "e4",
+      "parent": "e4",
+      "alternative": {
+        "score_cp": 22,
+        "depth": 50,
+        "source_url": "https://www.365chess.com/opening.php?m=3&ms=e4.e5&n=5&ns=3.5",
+        "snapshot": "0009.json"
+      },
+      "fen": "rnbqkbnr/pppp1ppp/8/4p3/4P3/8/PPPP1PPP/RNBQKBNR w KQkq e6 0 2",
+      "static_cp": 32,
+      "score_cp": 43,
+      "depth": 6,
+      "best": "g1f3",
+      "nodes": 386810,
+      "hits": 2956,
+      "cache_bytes": 4210688,
+      "cache_limit": 78601344,
+      "variant": "tempo_middlegame-32"
+    },
+    {
+      "id": "12",
+      "sequence": [
+        "e4",
+        "d5"
+      ],
+      "games": 64507,
+      "reference_cp": 55,
+      "reference_depth": 50,
+      "source_url": "https://www.365chess.com/opening.php?m=2&ms=e4&n=3&ns=3",
+      "snapshot": "0001.json",
+      "family": "e4",
+      "parent": "e4",
+      "alternative": {
+        "score_cp": 55,
+        "depth": 50,
+        "source_url": "https://www.365chess.com/opening.php?m=3&ms=e4.d5&n=20&ns=3.20",
+        "snapshot": "0013.json"
+      },
+      "fen": "rnbqkbnr/ppp1pppp/8/3p4/4P3/8/PPPP1PPP/RNBQKBNR w KQkq d6 0 2",
+      "static_cp": 28,
+      "score_cp": 4,
+      "depth": 6,
+      "best": "e4d5",
+      "nodes": 294057,
+      "hits": 2646,
+      "cache_bytes": 4210688,
+      "cache_limit": 78601344,
+      "variant": "tempo_middlegame-32"
+    },
+    {
+      "id": "8",
+      "sequence": [
+        "e4",
+        "e5"
+      ],
+      "games": 471796,
+      "reference_cp": 22,
+      "reference_depth": 50,
+      "source_url": "https://www.365chess.com/opening.php?m=2&ms=e4&n=3&ns=3",
+      "snapshot": "0001.json",
+      "family": "e4",
+      "parent": "e4",
+      "alternative": {
+        "score_cp": 22,
+        "depth": 50,
+        "source_url": "https://www.365chess.com/opening.php?m=3&ms=e4.e5&n=5&ns=3.5",
+        "snapshot": "0009.json"
+      },
+      "fen": "rnbqkbnr/pppp1ppp/8/4p3/4P3/8/PPPP1PPP/RNBQKBNR w KQkq e6 0 2",
+      "static_cp": 32,
+      "score_cp": 37,
+      "depth": 8,
+      "best": "g1f3",
+      "nodes": 5839764,
+      "hits": 55401,
+      "cache_bytes": 20987648,
+      "cache_limit": 78601344,
+      "variant": "tempo_middlegame-32"
+    },
+    {
+      "id": "12",
+      "sequence": [
+        "e4",
+        "d5"
+      ],
+      "games": 64507,
+      "reference_cp": 55,
+      "reference_depth": 50,
+      "source_url": "https://www.365chess.com/opening.php?m=2&ms=e4&n=3&ns=3",
+      "snapshot": "0001.json",
+      "family": "e4",
+      "parent": "e4",
+      "alternative": {
+        "score_cp": 55,
+        "depth": 50,
+        "source_url": "https://www.365chess.com/opening.php?m=3&ms=e4.d5&n=20&ns=3.20",
+        "snapshot": "0013.json"
+      },
+      "fen": "rnbqkbnr/ppp1pppp/8/3p4/4P3/8/PPPP1PPP/RNBQKBNR w KQkq d6 0 2",
+      "static_cp": 28,
+      "score_cp": 23,
+      "depth": 8,
+      "best": "e4d5",
+      "nodes": 4623697,
+      "hits": 43912,
+      "cache_bytes": 16842752,
+      "cache_limit": 78601344,
+      "variant": "tempo_middlegame-32"
+    },
+    {
+      "id": "8",
+      "sequence": [
+        "e4",
+        "e5"
+      ],
+      "games": 471796,
+      "reference_cp": 22,
+      "reference_depth": 50,
+      "source_url": "https://www.365chess.com/opening.php?m=2&ms=e4&n=3&ns=3",
+      "snapshot": "0001.json",
+      "family": "e4",
+      "parent": "e4",
+      "alternative": {
+        "score_cp": 22,
+        "depth": 50,
+        "source_url": "https://www.365chess.com/opening.php?m=3&ms=e4.e5&n=5&ns=3.5",
+        "snapshot": "0009.json"
+      },
+      "fen": "rnbqkbnr/pppp1ppp/8/4p3/4P3/8/PPPP1PPP/RNBQKBNR w KQkq e6 0 2",
+      "static_cp": 24,
+      "score_cp": 38,
+      "depth": 6,
+      "best": "g1f3",
+      "nodes": 356053,
+      "hits": 2364,
+      "cache_bytes": 4210688,
+      "cache_limit": 78601344,
+      "variant": "space_unit-2"
+    },
+    {
+      "id": "12",
+      "sequence": [
+        "e4",
+        "d5"
+      ],
+      "games": 64507,
+      "reference_cp": 55,
+      "reference_depth": 50,
+      "source_url": "https://www.365chess.com/opening.php?m=2&ms=e4&n=3&ns=3",
+      "snapshot": "0001.json",
+      "family": "e4",
+      "parent": "e4",
+      "alternative": {
+        "score_cp": 55,
+        "depth": 50,
+        "source_url": "https://www.365chess.com/opening.php?m=3&ms=e4.d5&n=20&ns=3.20",
+        "snapshot": "0013.json"
+      },
+      "fen": "rnbqkbnr/ppp1pppp/8/3p4/4P3/8/PPPP1PPP/RNBQKBNR w KQkq d6 0 2",
+      "static_cp": 20,
+      "score_cp": -1,
+      "depth": 6,
+      "best": "e4d5",
+      "nodes": 323251,
+      "hits": 2581,
+      "cache_bytes": 4210688,
+      "cache_limit": 78601344,
+      "variant": "space_unit-2"
+    },
+    {
+      "id": "8",
+      "sequence": [
+        "e4",
+        "e5"
+      ],
+      "games": 471796,
+      "reference_cp": 22,
+      "reference_depth": 50,
+      "source_url": "https://www.365chess.com/opening.php?m=2&ms=e4&n=3&ns=3",
+      "snapshot": "0001.json",
+      "family": "e4",
+      "parent": "e4",
+      "alternative": {
+        "score_cp": 22,
+        "depth": 50,
+        "source_url": "https://www.365chess.com/opening.php?m=3&ms=e4.e5&n=5&ns=3.5",
+        "snapshot": "0009.json"
+      },
+      "fen": "rnbqkbnr/pppp1ppp/8/4p3/4P3/8/PPPP1PPP/RNBQKBNR w KQkq e6 0 2",
+      "static_cp": 24,
+      "score_cp": 24,
+      "depth": 8,
+      "best": "g1f3",
+      "nodes": 7398294,
+      "hits": 66337,
+      "cache_bytes": 25264128,
+      "cache_limit": 78601344,
+      "variant": "space_unit-2"
+    },
+    {
+      "id": "12",
+      "sequence": [
+        "e4",
+        "d5"
+      ],
+      "games": 64507,
+      "reference_cp": 55,
+      "reference_depth": 50,
+      "source_url": "https://www.365chess.com/opening.php?m=2&ms=e4&n=3&ns=3",
+      "snapshot": "0001.json",
+      "family": "e4",
+      "parent": "e4",
+      "alternative": {
+        "score_cp": 55,
+        "depth": 50,
+        "source_url": "https://www.365chess.com/opening.php?m=3&ms=e4.d5&n=20&ns=3.20",
+        "snapshot": "0013.json"
+      },
+      "fen": "rnbqkbnr/ppp1pppp/8/3p4/4P3/8/PPPP1PPP/RNBQKBNR w KQkq d6 0 2",
+      "static_cp": 20,
+      "score_cp": 7,
+      "depth": 8,
+      "best": "e4d5",
+      "nodes": 4773059,
+      "hits": 50580,
+      "cache_bytes": 16842752,
+      "cache_limit": 78601344,
+      "variant": "space_unit-2"
+    },
+    {
+      "id": "8",
+      "sequence": [
+        "e4",
+        "e5"
+      ],
+      "games": 471796,
+      "reference_cp": 22,
+      "reference_depth": 50,
+      "source_url": "https://www.365chess.com/opening.php?m=2&ms=e4&n=3&ns=3",
+      "snapshot": "0001.json",
+      "family": "e4",
+      "parent": "e4",
+      "alternative": {
+        "score_cp": 22,
+        "depth": 50,
+        "source_url": "https://www.365chess.com/opening.php?m=3&ms=e4.e5&n=5&ns=3.5",
+        "snapshot": "0009.json"
+      },
+      "fen": "rnbqkbnr/pppp1ppp/8/4p3/4P3/8/PPPP1PPP/RNBQKBNR w KQkq e6 0 2",
+      "static_cp": 24,
+      "score_cp": 24,
+      "depth": 6,
+      "best": "d2d4",
+      "nodes": 309631,
+      "hits": 1949,
+      "cache_bytes": 4210688,
+      "cache_limit": 78601344,
+      "variant": "space_unit-8"
+    },
+    {
+      "id": "12",
+      "sequence": [
+        "e4",
+        "d5"
+      ],
+      "games": 64507,
+      "reference_cp": 55,
+      "reference_depth": 50,
+      "source_url": "https://www.365chess.com/opening.php?m=2&ms=e4&n=3&ns=3",
+      "snapshot": "0001.json",
+      "family": "e4",
+      "parent": "e4",
+      "alternative": {
+        "score_cp": 55,
+        "depth": 50,
+        "source_url": "https://www.365chess.com/opening.php?m=3&ms=e4.d5&n=20&ns=3.20",
+        "snapshot": "0013.json"
+      },
+      "fen": "rnbqkbnr/ppp1pppp/8/3p4/4P3/8/PPPP1PPP/RNBQKBNR w KQkq d6 0 2",
+      "static_cp": 20,
+      "score_cp": 8,
+      "depth": 6,
+      "best": "e4e5",
+      "nodes": 243891,
+      "hits": 1615,
+      "cache_bytes": 4210688,
+      "cache_limit": 78601344,
+      "variant": "space_unit-8"
+    },
+    {
+      "id": "8",
+      "sequence": [
+        "e4",
+        "e5"
+      ],
+      "games": 471796,
+      "reference_cp": 22,
+      "reference_depth": 50,
+      "source_url": "https://www.365chess.com/opening.php?m=2&ms=e4&n=3&ns=3",
+      "snapshot": "0001.json",
+      "family": "e4",
+      "parent": "e4",
+      "alternative": {
+        "score_cp": 22,
+        "depth": 50,
+        "source_url": "https://www.365chess.com/opening.php?m=3&ms=e4.e5&n=5&ns=3.5",
+        "snapshot": "0009.json"
+      },
+      "fen": "rnbqkbnr/pppp1ppp/8/4p3/4P3/8/PPPP1PPP/RNBQKBNR w KQkq e6 0 2",
+      "static_cp": 24,
+      "score_cp": 47,
+      "depth": 8,
+      "best": "g1f3",
+      "nodes": 9264304,
+      "hits": 100133,
+      "cache_bytes": 31053824,
+      "cache_limit": 78601344,
+      "variant": "space_unit-8"
+    },
+    {
+      "id": "12",
+      "sequence": [
+        "e4",
+        "d5"
+      ],
+      "games": 64507,
+      "reference_cp": 55,
+      "reference_depth": 50,
+      "source_url": "https://www.365chess.com/opening.php?m=2&ms=e4&n=3&ns=3",
+      "snapshot": "0001.json",
+      "family": "e4",
+      "parent": "e4",
+      "alternative": {
+        "score_cp": 55,
+        "depth": 50,
+        "source_url": "https://www.365chess.com/opening.php?m=3&ms=e4.d5&n=20&ns=3.20",
+        "snapshot": "0013.json"
+      },
+      "fen": "rnbqkbnr/ppp1pppp/8/3p4/4P3/8/PPPP1PPP/RNBQKBNR w KQkq d6 0 2",
+      "static_cp": 20,
+      "score_cp": 31,
+      "depth": 8,
+      "best": "e4d5",
+      "nodes": 4797157,
+      "hits": 41662,
+      "cache_bytes": 17040128,
+      "cache_limit": 78601344,
+      "variant": "space_unit-8"
+    },
+    {
+      "id": "8",
+      "sequence": [
+        "e4",
+        "e5"
+      ],
+      "games": 471796,
+      "reference_cp": 22,
+      "reference_depth": 50,
+      "source_url": "https://www.365chess.com/opening.php?m=2&ms=e4&n=3&ns=3",
+      "snapshot": "0001.json",
+      "family": "e4",
+      "parent": "e4",
+      "alternative": {
+        "score_cp": 22,
+        "depth": 50,
+        "source_url": "https://www.365chess.com/opening.php?m=3&ms=e4.e5&n=5&ns=3.5",
+        "snapshot": "0009.json"
+      },
+      "fen": "rnbqkbnr/pppp1ppp/8/4p3/4P3/8/PPPP1PPP/RNBQKBNR w KQkq e6 0 2",
+      "static_cp": 24,
+      "score_cp": 38,
+      "depth": 6,
+      "best": "g1f3",
+      "nodes": 308428,
+      "hits": 1808,
+      "cache_bytes": 4210688,
+      "cache_limit": 78601344,
+      "variant": "queen-mobility-0"
+    },
+    {
+      "id": "12",
+      "sequence": [
+        "e4",
+        "d5"
+      ],
+      "games": 64507,
+      "reference_cp": 55,
+      "reference_depth": 50,
+      "source_url": "https://www.365chess.com/opening.php?m=2&ms=e4&n=3&ns=3",
+      "snapshot": "0001.json",
+      "family": "e4",
+      "parent": "e4",
+      "alternative": {
+        "score_cp": 55,
+        "depth": 50,
+        "source_url": "https://www.365chess.com/opening.php?m=3&ms=e4.d5&n=20&ns=3.20",
+        "snapshot": "0013.json"
+      },
+      "fen": "rnbqkbnr/ppp1pppp/8/3p4/4P3/8/PPPP1PPP/RNBQKBNR w KQkq d6 0 2",
+      "static_cp": 18,
+      "score_cp": 3,
+      "depth": 6,
+      "best": "e4d5",
+      "nodes": 266560,
+      "hits": 1774,
+      "cache_bytes": 4210688,
+      "cache_limit": 78601344,
+      "variant": "queen-mobility-0"
+    },
+    {
+      "id": "8",
+      "sequence": [
+        "e4",
+        "e5"
+      ],
+      "games": 471796,
+      "reference_cp": 22,
+      "reference_depth": 50,
+      "source_url": "https://www.365chess.com/opening.php?m=2&ms=e4&n=3&ns=3",
+      "snapshot": "0001.json",
+      "family": "e4",
+      "parent": "e4",
+      "alternative": {
+        "score_cp": 22,
+        "depth": 50,
+        "source_url": "https://www.365chess.com/opening.php?m=3&ms=e4.e5&n=5&ns=3.5",
+        "snapshot": "0009.json"
+      },
+      "fen": "rnbqkbnr/pppp1ppp/8/4p3/4P3/8/PPPP1PPP/RNBQKBNR w KQkq e6 0 2",
+      "static_cp": 24,
+      "score_cp": 26,
+      "depth": 8,
+      "best": "g1f3",
+      "nodes": 7471538,
+      "hits": 75632,
+      "cache_bytes": 27172096,
+      "cache_limit": 78601344,
+      "variant": "queen-mobility-0"
+    },
+    {
+      "id": "12",
+      "sequence": [
+        "e4",
+        "d5"
+      ],
+      "games": 64507,
+      "reference_cp": 55,
+      "reference_depth": 50,
+      "source_url": "https://www.365chess.com/opening.php?m=2&ms=e4&n=3&ns=3",
+      "snapshot": "0001.json",
+      "family": "e4",
+      "parent": "e4",
+      "alternative": {
+        "score_cp": 55,
+        "depth": 50,
+        "source_url": "https://www.365chess.com/opening.php?m=3&ms=e4.d5&n=20&ns=3.20",
+        "snapshot": "0013.json"
+      },
+      "fen": "rnbqkbnr/ppp1pppp/8/3p4/4P3/8/PPPP1PPP/RNBQKBNR w KQkq d6 0 2",
+      "static_cp": 18,
+      "score_cp": 22,
+      "depth": 8,
+      "best": "e4d5",
+      "nodes": 4746213,
+      "hits": 52602,
+      "cache_bytes": 17171712,
+      "cache_limit": 78601344,
+      "variant": "queen-mobility-0"
+    },
+    {
+      "id": "8",
+      "sequence": [
+        "e4",
+        "e5"
+      ],
+      "games": 471796,
+      "reference_cp": 22,
+      "reference_depth": 50,
+      "source_url": "https://www.365chess.com/opening.php?m=2&ms=e4&n=3&ns=3",
+      "snapshot": "0001.json",
+      "family": "e4",
+      "parent": "e4",
+      "alternative": {
+        "score_cp": 22,
+        "depth": 50,
+        "source_url": "https://www.365chess.com/opening.php?m=3&ms=e4.e5&n=5&ns=3.5",
+        "snapshot": "0009.json"
+      },
+      "fen": "rnbqkbnr/pppp1ppp/8/4p3/4P3/8/PPPP1PPP/RNBQKBNR w KQkq e6 0 2",
+      "static_cp": 24,
+      "score_cp": 35,
+      "depth": 6,
+      "best": "g1f3",
+      "nodes": 377661,
+      "hits": 2858,
+      "cache_bytes": 4210688,
+      "cache_limit": 78601344,
+      "variant": "queen-mobility-2"
+    },
+    {
+      "id": "12",
+      "sequence": [
+        "e4",
+        "d5"
+      ],
+      "games": 64507,
+      "reference_cp": 55,
+      "reference_depth": 50,
+      "source_url": "https://www.365chess.com/opening.php?m=2&ms=e4&n=3&ns=3",
+      "snapshot": "0001.json",
+      "family": "e4",
+      "parent": "e4",
+      "alternative": {
+        "score_cp": 55,
+        "depth": 50,
+        "source_url": "https://www.365chess.com/opening.php?m=3&ms=e4.d5&n=20&ns=3.20",
+        "snapshot": "0013.json"
+      },
+      "fen": "rnbqkbnr/ppp1pppp/8/3p4/4P3/8/PPPP1PPP/RNBQKBNR w KQkq d6 0 2",
+      "static_cp": 22,
+      "score_cp": 5,
+      "depth": 6,
+      "best": "e4e5",
+      "nodes": 254081,
+      "hits": 1341,
+      "cache_bytes": 4210688,
+      "cache_limit": 78601344,
+      "variant": "queen-mobility-2"
+    },
+    {
+      "id": "8",
+      "sequence": [
+        "e4",
+        "e5"
+      ],
+      "games": 471796,
+      "reference_cp": 22,
+      "reference_depth": 50,
+      "source_url": "https://www.365chess.com/opening.php?m=2&ms=e4&n=3&ns=3",
+      "snapshot": "0001.json",
+      "family": "e4",
+      "parent": "e4",
+      "alternative": {
+        "score_cp": 22,
+        "depth": 50,
+        "source_url": "https://www.365chess.com/opening.php?m=3&ms=e4.e5&n=5&ns=3.5",
+        "snapshot": "0009.json"
+      },
+      "fen": "rnbqkbnr/pppp1ppp/8/4p3/4P3/8/PPPP1PPP/RNBQKBNR w KQkq e6 0 2",
+      "static_cp": 24,
+      "score_cp": 32,
+      "depth": 8,
+      "best": "g1f3",
+      "nodes": 6312832,
+      "hits": 53119,
+      "cache_bytes": 21053440,
+      "cache_limit": 78601344,
+      "variant": "queen-mobility-2"
+    },
+    {
+      "id": "12",
+      "sequence": [
+        "e4",
+        "d5"
+      ],
+      "games": 64507,
+      "reference_cp": 55,
+      "reference_depth": 50,
+      "source_url": "https://www.365chess.com/opening.php?m=2&ms=e4&n=3&ns=3",
+      "snapshot": "0001.json",
+      "family": "e4",
+      "parent": "e4",
+      "alternative": {
+        "score_cp": 55,
+        "depth": 50,
+        "source_url": "https://www.365chess.com/opening.php?m=3&ms=e4.d5&n=20&ns=3.20",
+        "snapshot": "0013.json"
+      },
+      "fen": "rnbqkbnr/ppp1pppp/8/3p4/4P3/8/PPPP1PPP/RNBQKBNR w KQkq d6 0 2",
+      "static_cp": 22,
+      "score_cp": 8,
+      "depth": 8,
+      "best": "e4d5",
+      "nodes": 5342683,
+      "hits": 55675,
+      "cache_bytes": 21053440,
+      "cache_limit": 78601344,
+      "variant": "queen-mobility-2"
+    },
+    {
+      "id": "8",
+      "sequence": [
+        "e4",
+        "e5"
+      ],
+      "games": 471796,
+      "reference_cp": 22,
+      "reference_depth": 50,
+      "source_url": "https://www.365chess.com/opening.php?m=2&ms=e4&n=3&ns=3",
+      "snapshot": "0001.json",
+      "family": "e4",
+      "parent": "e4",
+      "alternative": {
+        "score_cp": 22,
+        "depth": 50,
+        "source_url": "https://www.365chess.com/opening.php?m=3&ms=e4.e5&n=5&ns=3.5",
+        "snapshot": "0009.json"
+      },
+      "fen": "rnbqkbnr/pppp1ppp/8/4p3/4P3/8/PPPP1PPP/RNBQKBNR w KQkq e6 0 2",
+      "static_cp": 24,
+      "score_cp": 40,
+      "depth": 6,
+      "best": "g1f3",
+      "nodes": 341399,
+      "hits": 3329,
+      "cache_bytes": 4210688,
+      "cache_limit": 78601344,
+      "variant": "knight-mobility-2"
+    },
+    {
+      "id": "12",
+      "sequence": [
+        "e4",
+        "d5"
+      ],
+      "games": 64507,
+      "reference_cp": 55,
+      "reference_depth": 50,
+      "source_url": "https://www.365chess.com/opening.php?m=2&ms=e4&n=3&ns=3",
+      "snapshot": "0001.json",
+      "family": "e4",
+      "parent": "e4",
+      "alternative": {
+        "score_cp": 55,
+        "depth": 50,
+        "source_url": "https://www.365chess.com/opening.php?m=3&ms=e4.d5&n=20&ns=3.20",
+        "snapshot": "0013.json"
+      },
+      "fen": "rnbqkbnr/ppp1pppp/8/3p4/4P3/8/PPPP1PPP/RNBQKBNR w KQkq d6 0 2",
+      "static_cp": 20,
+      "score_cp": -4,
+      "depth": 6,
+      "best": "e4e5",
+      "nodes": 256970,
+      "hits": 1213,
+      "cache_bytes": 4210688,
+      "cache_limit": 78601344,
+      "variant": "knight-mobility-2"
+    },
+    {
+      "id": "8",
+      "sequence": [
+        "e4",
+        "e5"
+      ],
+      "games": 471796,
+      "reference_cp": 22,
+      "reference_depth": 50,
+      "source_url": "https://www.365chess.com/opening.php?m=2&ms=e4&n=3&ns=3",
+      "snapshot": "0001.json",
+      "family": "e4",
+      "parent": "e4",
+      "alternative": {
+        "score_cp": 22,
+        "depth": 50,
+        "source_url": "https://www.365chess.com/opening.php?m=3&ms=e4.e5&n=5&ns=3.5",
+        "snapshot": "0009.json"
+      },
+      "fen": "rnbqkbnr/pppp1ppp/8/4p3/4P3/8/PPPP1PPP/RNBQKBNR w KQkq e6 0 2",
+      "static_cp": 24,
+      "score_cp": 37,
+      "depth": 8,
+      "best": "g1f3",
+      "nodes": 6080536,
+      "hits": 61482,
+      "cache_bytes": 21053440,
+      "cache_limit": 78601344,
+      "variant": "knight-mobility-2"
+    },
+    {
+      "id": "12",
+      "sequence": [
+        "e4",
+        "d5"
+      ],
+      "games": 64507,
+      "reference_cp": 55,
+      "reference_depth": 50,
+      "source_url": "https://www.365chess.com/opening.php?m=2&ms=e4&n=3&ns=3",
+      "snapshot": "0001.json",
+      "family": "e4",
+      "parent": "e4",
+      "alternative": {
+        "score_cp": 55,
+        "depth": 50,
+        "source_url": "https://www.365chess.com/opening.php?m=3&ms=e4.d5&n=20&ns=3.20",
+        "snapshot": "0013.json"
+      },
+      "fen": "rnbqkbnr/ppp1pppp/8/3p4/4P3/8/PPPP1PPP/RNBQKBNR w KQkq d6 0 2",
+      "static_cp": 20,
+      "score_cp": 27,
+      "depth": 8,
+      "best": "e4d5",
+      "nodes": 5062295,
+      "hits": 39052,
+      "cache_bytes": 17171712,
+      "cache_limit": 78601344,
+      "variant": "knight-mobility-2"
+    },
+    {
+      "id": "8",
+      "sequence": [
+        "e4",
+        "e5"
+      ],
+      "games": 471796,
+      "reference_cp": 22,
+      "reference_depth": 50,
+      "source_url": "https://www.365chess.com/opening.php?m=2&ms=e4&n=3&ns=3",
+      "snapshot": "0001.json",
+      "family": "e4",
+      "parent": "e4",
+      "alternative": {
+        "score_cp": 22,
+        "depth": 50,
+        "source_url": "https://www.365chess.com/opening.php?m=3&ms=e4.e5&n=5&ns=3.5",
+        "snapshot": "0009.json"
+      },
+      "fen": "rnbqkbnr/pppp1ppp/8/4p3/4P3/8/PPPP1PPP/RNBQKBNR w KQkq e6 0 2",
+      "static_cp": 24,
+      "score_cp": 36,
+      "depth": 6,
+      "best": "g1f3",
+      "nodes": 298682,
+      "hits": 2940,
+      "cache_bytes": 4210688,
+      "cache_limit": 78601344,
+      "variant": "knight-mobility-6"
+    },
+    {
+      "id": "12",
+      "sequence": [
+        "e4",
+        "d5"
+      ],
+      "games": 64507,
+      "reference_cp": 55,
+      "reference_depth": 50,
+      "source_url": "https://www.365chess.com/opening.php?m=2&ms=e4&n=3&ns=3",
+      "snapshot": "0001.json",
+      "family": "e4",
+      "parent": "e4",
+      "alternative": {
+        "score_cp": 55,
+        "depth": 50,
+        "source_url": "https://www.365chess.com/opening.php?m=3&ms=e4.d5&n=20&ns=3.20",
+        "snapshot": "0013.json"
+      },
+      "fen": "rnbqkbnr/ppp1pppp/8/3p4/4P3/8/PPPP1PPP/RNBQKBNR w KQkq d6 0 2",
+      "static_cp": 20,
+      "score_cp": 2,
+      "depth": 6,
+      "best": "e4e5",
+      "nodes": 283423,
+      "hits": 1871,
+      "cache_bytes": 4210688,
+      "cache_limit": 78601344,
+      "variant": "knight-mobility-6"
+    },
+    {
+      "id": "8",
+      "sequence": [
+        "e4",
+        "e5"
+      ],
+      "games": 471796,
+      "reference_cp": 22,
+      "reference_depth": 50,
+      "source_url": "https://www.365chess.com/opening.php?m=2&ms=e4&n=3&ns=3",
+      "snapshot": "0001.json",
+      "family": "e4",
+      "parent": "e4",
+      "alternative": {
+        "score_cp": 22,
+        "depth": 50,
+        "source_url": "https://www.365chess.com/opening.php?m=3&ms=e4.e5&n=5&ns=3.5",
+        "snapshot": "0009.json"
+      },
+      "fen": "rnbqkbnr/pppp1ppp/8/4p3/4P3/8/PPPP1PPP/RNBQKBNR w KQkq e6 0 2",
+      "static_cp": 24,
+      "score_cp": 24,
+      "depth": 8,
+      "best": "g1f3",
+      "nodes": 5786503,
+      "hits": 59279,
+      "cache_bytes": 20527104,
+      "cache_limit": 78601344,
+      "variant": "knight-mobility-6"
+    },
+    {
+      "id": "12",
+      "sequence": [
+        "e4",
+        "d5"
+      ],
+      "games": 64507,
+      "reference_cp": 55,
+      "reference_depth": 50,
+      "source_url": "https://www.365chess.com/opening.php?m=2&ms=e4&n=3&ns=3",
+      "snapshot": "0001.json",
+      "family": "e4",
+      "parent": "e4",
+      "alternative": {
+        "score_cp": 55,
+        "depth": 50,
+        "source_url": "https://www.365chess.com/opening.php?m=3&ms=e4.d5&n=20&ns=3.20",
+        "snapshot": "0013.json"
+      },
+      "fen": "rnbqkbnr/ppp1pppp/8/3p4/4P3/8/PPPP1PPP/RNBQKBNR w KQkq d6 0 2",
+      "static_cp": 20,
+      "score_cp": 9,
+      "depth": 8,
+      "best": "e4d5",
+      "nodes": 5069885,
+      "hits": 50642,
+      "cache_bytes": 18487552,
+      "cache_limit": 78601344,
+      "variant": "knight-mobility-6"
+    },
+    {
+      "id": "8",
+      "sequence": [
+        "e4",
+        "e5"
+      ],
+      "games": 471796,
+      "reference_cp": 22,
+      "reference_depth": 50,
+      "source_url": "https://www.365chess.com/opening.php?m=2&ms=e4&n=3&ns=3",
+      "snapshot": "0001.json",
+      "family": "e4",
+      "parent": "e4",
+      "alternative": {
+        "score_cp": 22,
+        "depth": 50,
+        "source_url": "https://www.365chess.com/opening.php?m=3&ms=e4.e5&n=5&ns=3.5",
+        "snapshot": "0009.json"
+      },
+      "fen": "rnbqkbnr/pppp1ppp/8/4p3/4P3/8/PPPP1PPP/RNBQKBNR w KQkq e6 0 2",
+      "static_cp": 24,
+      "score_cp": 38,
+      "depth": 6,
+      "best": "g1f3",
+      "nodes": 282098,
+      "hits": 3286,
+      "cache_bytes": 4210688,
+      "cache_limit": 78601344,
+      "variant": "bishop-mobility-3"
+    },
+    {
+      "id": "12",
+      "sequence": [
+        "e4",
+        "d5"
+      ],
+      "games": 64507,
+      "reference_cp": 55,
+      "reference_depth": 50,
+      "source_url": "https://www.365chess.com/opening.php?m=2&ms=e4&n=3&ns=3",
+      "snapshot": "0001.json",
+      "family": "e4",
+      "parent": "e4",
+      "alternative": {
+        "score_cp": 55,
+        "depth": 50,
+        "source_url": "https://www.365chess.com/opening.php?m=3&ms=e4.d5&n=20&ns=3.20",
+        "snapshot": "0013.json"
+      },
+      "fen": "rnbqkbnr/ppp1pppp/8/3p4/4P3/8/PPPP1PPP/RNBQKBNR w KQkq d6 0 2",
+      "static_cp": 20,
+      "score_cp": -1,
+      "depth": 6,
+      "best": "e4d5",
+      "nodes": 343362,
+      "hits": 2420,
+      "cache_bytes": 4210688,
+      "cache_limit": 78601344,
+      "variant": "bishop-mobility-3"
+    },
+    {
+      "id": "8",
+      "sequence": [
+        "e4",
+        "e5"
+      ],
+      "games": 471796,
+      "reference_cp": 22,
+      "reference_depth": 50,
+      "source_url": "https://www.365chess.com/opening.php?m=2&ms=e4&n=3&ns=3",
+      "snapshot": "0001.json",
+      "family": "e4",
+      "parent": "e4",
+      "alternative": {
+        "score_cp": 22,
+        "depth": 50,
+        "source_url": "https://www.365chess.com/opening.php?m=3&ms=e4.e5&n=5&ns=3.5",
+        "snapshot": "0009.json"
+      },
+      "fen": "rnbqkbnr/pppp1ppp/8/4p3/4P3/8/PPPP1PPP/RNBQKBNR w KQkq e6 0 2",
+      "static_cp": 24,
+      "score_cp": 19,
+      "depth": 8,
+      "best": "g1f3",
+      "nodes": 5936290,
+      "hits": 67121,
+      "cache_bytes": 20921856,
+      "cache_limit": 78601344,
+      "variant": "bishop-mobility-3"
+    },
+    {
+      "id": "12",
+      "sequence": [
+        "e4",
+        "d5"
+      ],
+      "games": 64507,
+      "reference_cp": 55,
+      "reference_depth": 50,
+      "source_url": "https://www.365chess.com/opening.php?m=2&ms=e4&n=3&ns=3",
+      "snapshot": "0001.json",
+      "family": "e4",
+      "parent": "e4",
+      "alternative": {
+        "score_cp": 55,
+        "depth": 50,
+        "source_url": "https://www.365chess.com/opening.php?m=3&ms=e4.d5&n=20&ns=3.20",
+        "snapshot": "0013.json"
+      },
+      "fen": "rnbqkbnr/ppp1pppp/8/3p4/4P3/8/PPPP1PPP/RNBQKBNR w KQkq d6 0 2",
+      "static_cp": 20,
+      "score_cp": 15,
+      "depth": 8,
+      "best": "e4d5",
+      "nodes": 4593181,
+      "hits": 41635,
+      "cache_bytes": 16842752,
+      "cache_limit": 78601344,
+      "variant": "bishop-mobility-3"
+    },
+    {
+      "id": "8",
+      "sequence": [
+        "e4",
+        "e5"
+      ],
+      "games": 471796,
+      "reference_cp": 22,
+      "reference_depth": 50,
+      "source_url": "https://www.365chess.com/opening.php?m=2&ms=e4&n=3&ns=3",
+      "snapshot": "0001.json",
+      "family": "e4",
+      "parent": "e4",
+      "alternative": {
+        "score_cp": 22,
+        "depth": 50,
+        "source_url": "https://www.365chess.com/opening.php?m=3&ms=e4.e5&n=5&ns=3.5",
+        "snapshot": "0009.json"
+      },
+      "fen": "rnbqkbnr/pppp1ppp/8/4p3/4P3/8/PPPP1PPP/RNBQKBNR w KQkq e6 0 2",
+      "static_cp": 24,
+      "score_cp": 37,
+      "depth": 6,
+      "best": "g1f3",
+      "nodes": 413615,
+      "hits": 2530,
+      "cache_bytes": 4210688,
+      "cache_limit": 78601344,
+      "variant": "bishop-mobility-7"
+    },
+    {
+      "id": "12",
+      "sequence": [
+        "e4",
+        "d5"
+      ],
+      "games": 64507,
+      "reference_cp": 55,
+      "reference_depth": 50,
+      "source_url": "https://www.365chess.com/opening.php?m=2&ms=e4&n=3&ns=3",
+      "snapshot": "0001.json",
+      "family": "e4",
+      "parent": "e4",
+      "alternative": {
+        "score_cp": 55,
+        "depth": 50,
+        "source_url": "https://www.365chess.com/opening.php?m=3&ms=e4.d5&n=20&ns=3.20",
+        "snapshot": "0013.json"
+      },
+      "fen": "rnbqkbnr/ppp1pppp/8/3p4/4P3/8/PPPP1PPP/RNBQKBNR w KQkq d6 0 2",
+      "static_cp": 20,
+      "score_cp": 2,
+      "depth": 6,
+      "best": "e4e5",
+      "nodes": 267933,
+      "hits": 1899,
+      "cache_bytes": 4210688,
+      "cache_limit": 78601344,
+      "variant": "bishop-mobility-7"
+    },
+    {
+      "id": "8",
+      "sequence": [
+        "e4",
+        "e5"
+      ],
+      "games": 471796,
+      "reference_cp": 22,
+      "reference_depth": 50,
+      "source_url": "https://www.365chess.com/opening.php?m=2&ms=e4&n=3&ns=3",
+      "snapshot": "0001.json",
+      "family": "e4",
+      "parent": "e4",
+      "alternative": {
+        "score_cp": 22,
+        "depth": 50,
+        "source_url": "https://www.365chess.com/opening.php?m=3&ms=e4.e5&n=5&ns=3.5",
+        "snapshot": "0009.json"
+      },
+      "fen": "rnbqkbnr/pppp1ppp/8/4p3/4P3/8/PPPP1PPP/RNBQKBNR w KQkq e6 0 2",
+      "static_cp": 24,
+      "score_cp": 37,
+      "depth": 8,
+      "best": "g1f3",
+      "nodes": 7613368,
+      "hits": 63871,
+      "cache_bytes": 26974720,
+      "cache_limit": 78601344,
+      "variant": "bishop-mobility-7"
+    },
+    {
+      "id": "12",
+      "sequence": [
+        "e4",
+        "d5"
+      ],
+      "games": 64507,
+      "reference_cp": 55,
+      "reference_depth": 50,
+      "source_url": "https://www.365chess.com/opening.php?m=2&ms=e4&n=3&ns=3",
+      "snapshot": "0001.json",
+      "family": "e4",
+      "parent": "e4",
+      "alternative": {
+        "score_cp": 55,
+        "depth": 50,
+        "source_url": "https://www.365chess.com/opening.php?m=3&ms=e4.d5&n=20&ns=3.20",
+        "snapshot": "0013.json"
+      },
+      "fen": "rnbqkbnr/ppp1pppp/8/3p4/4P3/8/PPPP1PPP/RNBQKBNR w KQkq d6 0 2",
+      "static_cp": 20,
+      "score_cp": 21,
+      "depth": 8,
+      "best": "e4d5",
+      "nodes": 5822289,
+      "hits": 69232,
+      "cache_bytes": 19934976,
+      "cache_limit": 78601344,
+      "variant": "bishop-mobility-7"
+    },
+    {
+      "id": "8",
+      "sequence": [
+        "e4",
+        "e5"
+      ],
+      "games": 471796,
+      "reference_cp": 22,
+      "reference_depth": 50,
+      "source_url": "https://www.365chess.com/opening.php?m=2&ms=e4&n=3&ns=3",
+      "snapshot": "0001.json",
+      "family": "e4",
+      "parent": "e4",
+      "alternative": {
+        "score_cp": 22,
+        "depth": 50,
+        "source_url": "https://www.365chess.com/opening.php?m=3&ms=e4.e5&n=5&ns=3.5",
+        "snapshot": "0009.json"
+      },
+      "fen": "rnbqkbnr/pppp1ppp/8/4p3/4P3/8/PPPP1PPP/RNBQKBNR w KQkq e6 0 2",
+      "static_cp": 24,
+      "score_cp": 38,
+      "depth": 6,
+      "best": "g1f3",
+      "nodes": 349637,
+      "hits": 2568,
+      "cache_bytes": 4210688,
+      "cache_limit": 78601344,
+      "variant": "pawn-advance-4"
+    },
+    {
+      "id": "12",
+      "sequence": [
+        "e4",
+        "d5"
+      ],
+      "games": 64507,
+      "reference_cp": 55,
+      "reference_depth": 50,
+      "source_url": "https://www.365chess.com/opening.php?m=2&ms=e4&n=3&ns=3",
+      "snapshot": "0001.json",
+      "family": "e4",
+      "parent": "e4",
+      "alternative": {
+        "score_cp": 55,
+        "depth": 50,
+        "source_url": "https://www.365chess.com/opening.php?m=3&ms=e4.d5&n=20&ns=3.20",
+        "snapshot": "0013.json"
+      },
+      "fen": "rnbqkbnr/ppp1pppp/8/3p4/4P3/8/PPPP1PPP/RNBQKBNR w KQkq d6 0 2",
+      "static_cp": 20,
+      "score_cp": 0,
+      "depth": 6,
+      "best": "e4e5",
+      "nodes": 373252,
+      "hits": 3324,
+      "cache_bytes": 4210688,
+      "cache_limit": 78601344,
+      "variant": "pawn-advance-4"
+    },
+    {
+      "id": "8",
+      "sequence": [
+        "e4",
+        "e5"
+      ],
+      "games": 471796,
+      "reference_cp": 22,
+      "reference_depth": 50,
+      "source_url": "https://www.365chess.com/opening.php?m=2&ms=e4&n=3&ns=3",
+      "snapshot": "0001.json",
+      "family": "e4",
+      "parent": "e4",
+      "alternative": {
+        "score_cp": 22,
+        "depth": 50,
+        "source_url": "https://www.365chess.com/opening.php?m=3&ms=e4.e5&n=5&ns=3.5",
+        "snapshot": "0009.json"
+      },
+      "fen": "rnbqkbnr/pppp1ppp/8/4p3/4P3/8/PPPP1PPP/RNBQKBNR w KQkq e6 0 2",
+      "static_cp": 24,
+      "score_cp": 24,
+      "depth": 8,
+      "best": "g1f3",
+      "nodes": 7208618,
+      "hits": 68116,
+      "cache_bytes": 25198336,
+      "cache_limit": 78601344,
+      "variant": "pawn-advance-4"
+    },
+    {
+      "id": "12",
+      "sequence": [
+        "e4",
+        "d5"
+      ],
+      "games": 64507,
+      "reference_cp": 55,
+      "reference_depth": 50,
+      "source_url": "https://www.365chess.com/opening.php?m=2&ms=e4&n=3&ns=3",
+      "snapshot": "0001.json",
+      "family": "e4",
+      "parent": "e4",
+      "alternative": {
+        "score_cp": 55,
+        "depth": 50,
+        "source_url": "https://www.365chess.com/opening.php?m=3&ms=e4.d5&n=20&ns=3.20",
+        "snapshot": "0013.json"
+      },
+      "fen": "rnbqkbnr/ppp1pppp/8/3p4/4P3/8/PPPP1PPP/RNBQKBNR w KQkq d6 0 2",
+      "static_cp": 20,
+      "score_cp": 8,
+      "depth": 8,
+      "best": "e4e5",
+      "nodes": 5692623,
+      "hits": 49773,
+      "cache_bytes": 18355968,
+      "cache_limit": 78601344,
+      "variant": "pawn-advance-4"
+    },
+    {
+      "id": "8",
+      "sequence": [
+        "e4",
+        "e5"
+      ],
+      "games": 471796,
+      "reference_cp": 22,
+      "reference_depth": 50,
+      "source_url": "https://www.365chess.com/opening.php?m=2&ms=e4&n=3&ns=3",
+      "snapshot": "0001.json",
+      "family": "e4",
+      "parent": "e4",
+      "alternative": {
+        "score_cp": 22,
+        "depth": 50,
+        "source_url": "https://www.365chess.com/opening.php?m=3&ms=e4.e5&n=5&ns=3.5",
+        "snapshot": "0009.json"
+      },
+      "fen": "rnbqkbnr/pppp1ppp/8/4p3/4P3/8/PPPP1PPP/RNBQKBNR w KQkq e6 0 2",
+      "static_cp": 24,
+      "score_cp": 25,
+      "depth": 6,
+      "best": "g1f3",
+      "nodes": 370608,
+      "hits": 2359,
+      "cache_bytes": 4210688,
+      "cache_limit": 78601344,
+      "variant": "pawn-advance-12"
+    },
+    {
+      "id": "12",
+      "sequence": [
+        "e4",
+        "d5"
+      ],
+      "games": 64507,
+      "reference_cp": 55,
+      "reference_depth": 50,
+      "source_url": "https://www.365chess.com/opening.php?m=2&ms=e4&n=3&ns=3",
+      "snapshot": "0001.json",
+      "family": "e4",
+      "parent": "e4",
+      "alternative": {
+        "score_cp": 55,
+        "depth": 50,
+        "source_url": "https://www.365chess.com/opening.php?m=3&ms=e4.d5&n=20&ns=3.20",
+        "snapshot": "0013.json"
+      },
+      "fen": "rnbqkbnr/ppp1pppp/8/3p4/4P3/8/PPPP1PPP/RNBQKBNR w KQkq d6 0 2",
+      "static_cp": 20,
+      "score_cp": 0,
+      "depth": 6,
+      "best": "e4e5",
+      "nodes": 252231,
+      "hits": 1811,
+      "cache_bytes": 4210688,
+      "cache_limit": 78601344,
+      "variant": "pawn-advance-12"
+    },
+    {
+      "id": "8",
+      "sequence": [
+        "e4",
+        "e5"
+      ],
+      "games": 471796,
+      "reference_cp": 22,
+      "reference_depth": 50,
+      "source_url": "https://www.365chess.com/opening.php?m=2&ms=e4&n=3&ns=3",
+      "snapshot": "0001.json",
+      "family": "e4",
+      "parent": "e4",
+      "alternative": {
+        "score_cp": 22,
+        "depth": 50,
+        "source_url": "https://www.365chess.com/opening.php?m=3&ms=e4.e5&n=5&ns=3.5",
+        "snapshot": "0009.json"
+      },
+      "fen": "rnbqkbnr/pppp1ppp/8/4p3/4P3/8/PPPP1PPP/RNBQKBNR w KQkq e6 0 2",
+      "static_cp": 24,
+      "score_cp": 41,
+      "depth": 8,
+      "best": "g1f3",
+      "nodes": 7262295,
+      "hits": 73448,
+      "cache_bytes": 25329920,
+      "cache_limit": 78601344,
+      "variant": "pawn-advance-12"
+    },
+    {
+      "id": "12",
+      "sequence": [
+        "e4",
+        "d5"
+      ],
+      "games": 64507,
+      "reference_cp": 55,
+      "reference_depth": 50,
+      "source_url": "https://www.365chess.com/opening.php?m=2&ms=e4&n=3&ns=3",
+      "snapshot": "0001.json",
+      "family": "e4",
+      "parent": "e4",
+      "alternative": {
+        "score_cp": 55,
+        "depth": 50,
+        "source_url": "https://www.365chess.com/opening.php?m=3&ms=e4.d5&n=20&ns=3.20",
+        "snapshot": "0013.json"
+      },
+      "fen": "rnbqkbnr/ppp1pppp/8/3p4/4P3/8/PPPP1PPP/RNBQKBNR w KQkq d6 0 2",
+      "static_cp": 20,
+      "score_cp": 23,
+      "depth": 8,
+      "best": "e4d5",
+      "nodes": 4960858,
+      "hits": 48926,
+      "cache_bytes": 17105920,
+      "cache_limit": 78601344,
+      "variant": "pawn-advance-12"
+    },
+    {
+      "id": "8",
+      "sequence": [
+        "e4",
+        "e5"
+      ],
+      "games": 471796,
+      "reference_cp": 22,
+      "reference_depth": 50,
+      "source_url": "https://www.365chess.com/opening.php?m=2&ms=e4&n=3&ns=3",
+      "snapshot": "0001.json",
+      "family": "e4",
+      "parent": "e4",
+      "alternative": {
+        "score_cp": 22,
+        "depth": 50,
+        "source_url": "https://www.365chess.com/opening.php?m=3&ms=e4.e5&n=5&ns=3.5",
+        "snapshot": "0009.json"
+      },
+      "fen": "rnbqkbnr/pppp1ppp/8/4p3/4P3/8/PPPP1PPP/RNBQKBNR w KQkq e6 0 2",
+      "static_cp": 24,
+      "score_cp": 34,
+      "depth": 6,
+      "best": "g1f3",
+      "nodes": 378762,
+      "hits": 2991,
+      "cache_bytes": 4210688,
+      "cache_limit": 78601344,
+      "variant": "connected-pawn-0"
+    },
+    {
+      "id": "12",
+      "sequence": [
+        "e4",
+        "d5"
+      ],
+      "games": 64507,
+      "reference_cp": 55,
+      "reference_depth": 50,
+      "source_url": "https://www.365chess.com/opening.php?m=2&ms=e4&n=3&ns=3",
+      "snapshot": "0001.json",
+      "family": "e4",
+      "parent": "e4",
+      "alternative": {
+        "score_cp": 55,
+        "depth": 50,
+        "source_url": "https://www.365chess.com/opening.php?m=3&ms=e4.d5&n=20&ns=3.20",
+        "snapshot": "0013.json"
+      },
+      "fen": "rnbqkbnr/ppp1pppp/8/3p4/4P3/8/PPPP1PPP/RNBQKBNR w KQkq d6 0 2",
+      "static_cp": 20,
+      "score_cp": 2,
+      "depth": 6,
+      "best": "e4e5",
+      "nodes": 266395,
+      "hits": 1651,
+      "cache_bytes": 4210688,
+      "cache_limit": 78601344,
+      "variant": "connected-pawn-0"
+    },
+    {
+      "id": "8",
+      "sequence": [
+        "e4",
+        "e5"
+      ],
+      "games": 471796,
+      "reference_cp": 22,
+      "reference_depth": 50,
+      "source_url": "https://www.365chess.com/opening.php?m=2&ms=e4&n=3&ns=3",
+      "snapshot": "0001.json",
+      "family": "e4",
+      "parent": "e4",
+      "alternative": {
+        "score_cp": 22,
+        "depth": 50,
+        "source_url": "https://www.365chess.com/opening.php?m=3&ms=e4.e5&n=5&ns=3.5",
+        "snapshot": "0009.json"
+      },
+      "fen": "rnbqkbnr/pppp1ppp/8/4p3/4P3/8/PPPP1PPP/RNBQKBNR w KQkq e6 0 2",
+      "static_cp": 24,
+      "score_cp": 35,
+      "depth": 8,
+      "best": "g1f3",
+      "nodes": 7468528,
+      "hits": 79327,
+      "cache_bytes": 25922048,
+      "cache_limit": 78601344,
+      "variant": "connected-pawn-0"
+    },
+    {
+      "id": "12",
+      "sequence": [
+        "e4",
+        "d5"
+      ],
+      "games": 64507,
+      "reference_cp": 55,
+      "reference_depth": 50,
+      "source_url": "https://www.365chess.com/opening.php?m=2&ms=e4&n=3&ns=3",
+      "snapshot": "0001.json",
+      "family": "e4",
+      "parent": "e4",
+      "alternative": {
+        "score_cp": 55,
+        "depth": 50,
+        "source_url": "https://www.365chess.com/opening.php?m=3&ms=e4.d5&n=20&ns=3.20",
+        "snapshot": "0013.json"
+      },
+      "fen": "rnbqkbnr/ppp1pppp/8/3p4/4P3/8/PPPP1PPP/RNBQKBNR w KQkq d6 0 2",
+      "static_cp": 20,
+      "score_cp": 21,
+      "depth": 8,
+      "best": "e4d5",
+      "nodes": 4872523,
+      "hits": 48083,
+      "cache_bytes": 16908544,
+      "cache_limit": 78601344,
+      "variant": "connected-pawn-0"
+    },
+    {
+      "id": "8",
+      "sequence": [
+        "e4",
+        "e5"
+      ],
+      "games": 471796,
+      "reference_cp": 22,
+      "reference_depth": 50,
+      "source_url": "https://www.365chess.com/opening.php?m=2&ms=e4&n=3&ns=3",
+      "snapshot": "0001.json",
+      "family": "e4",
+      "parent": "e4",
+      "alternative": {
+        "score_cp": 22,
+        "depth": 50,
+        "source_url": "https://www.365chess.com/opening.php?m=3&ms=e4.e5&n=5&ns=3.5",
+        "snapshot": "0009.json"
+      },
+      "fen": "rnbqkbnr/pppp1ppp/8/4p3/4P3/8/PPPP1PPP/RNBQKBNR w KQkq e6 0 2",
+      "static_cp": 24,
+      "score_cp": 41,
+      "depth": 6,
+      "best": "g1f3",
+      "nodes": 474031,
+      "hits": 4121,
+      "cache_bytes": 4210688,
+      "cache_limit": 78601344,
+      "variant": "connected-pawn-12"
+    },
+    {
+      "id": "12",
+      "sequence": [
+        "e4",
+        "d5"
+      ],
+      "games": 64507,
+      "reference_cp": 55,
+      "reference_depth": 50,
+      "source_url": "https://www.365chess.com/opening.php?m=2&ms=e4&n=3&ns=3",
+      "snapshot": "0001.json",
+      "family": "e4",
+      "parent": "e4",
+      "alternative": {
+        "score_cp": 55,
+        "depth": 50,
+        "source_url": "https://www.365chess.com/opening.php?m=3&ms=e4.d5&n=20&ns=3.20",
+        "snapshot": "0013.json"
+      },
+      "fen": "rnbqkbnr/ppp1pppp/8/3p4/4P3/8/PPPP1PPP/RNBQKBNR w KQkq d6 0 2",
+      "static_cp": 20,
+      "score_cp": -1,
+      "depth": 6,
+      "best": "e4d5",
+      "nodes": 344144,
+      "hits": 2431,
+      "cache_bytes": 4210688,
+      "cache_limit": 78601344,
+      "variant": "connected-pawn-12"
+    },
+    {
+      "id": "8",
+      "sequence": [
+        "e4",
+        "e5"
+      ],
+      "games": 471796,
+      "reference_cp": 22,
+      "reference_depth": 50,
+      "source_url": "https://www.365chess.com/opening.php?m=2&ms=e4&n=3&ns=3",
+      "snapshot": "0001.json",
+      "family": "e4",
+      "parent": "e4",
+      "alternative": {
+        "score_cp": 22,
+        "depth": 50,
+        "source_url": "https://www.365chess.com/opening.php?m=3&ms=e4.e5&n=5&ns=3.5",
+        "snapshot": "0009.json"
+      },
+      "fen": "rnbqkbnr/pppp1ppp/8/4p3/4P3/8/PPPP1PPP/RNBQKBNR w KQkq e6 0 2",
+      "static_cp": 24,
+      "score_cp": 25,
+      "depth": 8,
+      "best": "g1f3",
+      "nodes": 6733389,
+      "hits": 54848,
+      "cache_bytes": 22764032,
+      "cache_limit": 78601344,
+      "variant": "connected-pawn-12"
+    },
+    {
+      "id": "12",
+      "sequence": [
+        "e4",
+        "d5"
+      ],
+      "games": 64507,
+      "reference_cp": 55,
+      "reference_depth": 50,
+      "source_url": "https://www.365chess.com/opening.php?m=2&ms=e4&n=3&ns=3",
+      "snapshot": "0001.json",
+      "family": "e4",
+      "parent": "e4",
+      "alternative": {
+        "score_cp": 55,
+        "depth": 50,
+        "source_url": "https://www.365chess.com/opening.php?m=3&ms=e4.d5&n=20&ns=3.20",
+        "snapshot": "0013.json"
+      },
+      "fen": "rnbqkbnr/ppp1pppp/8/3p4/4P3/8/PPPP1PPP/RNBQKBNR w KQkq d6 0 2",
+      "static_cp": 20,
+      "score_cp": 9,
+      "depth": 8,
+      "best": "e4d5",
+      "nodes": 4966959,
+      "hits": 50553,
+      "cache_bytes": 16842752,
+      "cache_limit": 78601344,
+      "variant": "connected-pawn-12"
+    },
+    {
+      "id": "8",
+      "sequence": [
+        "e4",
+        "e5"
+      ],
+      "games": 471796,
+      "reference_cp": 22,
+      "reference_depth": 50,
+      "source_url": "https://www.365chess.com/opening.php?m=2&ms=e4&n=3&ns=3",
+      "snapshot": "0001.json",
+      "family": "e4",
+      "parent": "e4",
+      "alternative": {
+        "score_cp": 22,
+        "depth": 50,
+        "source_url": "https://www.365chess.com/opening.php?m=3&ms=e4.e5&n=5&ns=3.5",
+        "snapshot": "0009.json"
+      },
+      "fen": "rnbqkbnr/pppp1ppp/8/4p3/4P3/8/PPPP1PPP/RNBQKBNR w KQkq e6 0 2",
+      "static_cp": 24,
+      "score_cp": 38,
+      "depth": 6,
+      "best": "g1f3",
+      "nodes": 323076,
+      "hits": 1877,
+      "cache_bytes": 4210688,
+      "cache_limit": 78601344,
+      "variant": "minor-behind-pawn-0"
+    },
+    {
+      "id": "12",
+      "sequence": [
+        "e4",
+        "d5"
+      ],
+      "games": 64507,
+      "reference_cp": 55,
+      "reference_depth": 50,
+      "source_url": "https://www.365chess.com/opening.php?m=2&ms=e4&n=3&ns=3",
+      "snapshot": "0001.json",
+      "family": "e4",
+      "parent": "e4",
+      "alternative": {
+        "score_cp": 55,
+        "depth": 50,
+        "source_url": "https://www.365chess.com/opening.php?m=3&ms=e4.d5&n=20&ns=3.20",
+        "snapshot": "0013.json"
+      },
+      "fen": "rnbqkbnr/ppp1pppp/8/3p4/4P3/8/PPPP1PPP/RNBQKBNR w KQkq d6 0 2",
+      "static_cp": 20,
+      "score_cp": 4,
+      "depth": 6,
+      "best": "e4e5",
+      "nodes": 380858,
+      "hits": 2820,
+      "cache_bytes": 4210688,
+      "cache_limit": 78601344,
+      "variant": "minor-behind-pawn-0"
+    },
+    {
+      "id": "8",
+      "sequence": [
+        "e4",
+        "e5"
+      ],
+      "games": 471796,
+      "reference_cp": 22,
+      "reference_depth": 50,
+      "source_url": "https://www.365chess.com/opening.php?m=2&ms=e4&n=3&ns=3",
+      "snapshot": "0001.json",
+      "family": "e4",
+      "parent": "e4",
+      "alternative": {
+        "score_cp": 22,
+        "depth": 50,
+        "source_url": "https://www.365chess.com/opening.php?m=3&ms=e4.e5&n=5&ns=3.5",
+        "snapshot": "0009.json"
+      },
+      "fen": "rnbqkbnr/pppp1ppp/8/4p3/4P3/8/PPPP1PPP/RNBQKBNR w KQkq e6 0 2",
+      "static_cp": 24,
+      "score_cp": 23,
+      "depth": 8,
+      "best": "g1f3",
+      "nodes": 7661806,
+      "hits": 78240,
+      "cache_bytes": 25922048,
+      "cache_limit": 78601344,
+      "variant": "minor-behind-pawn-0"
+    },
+    {
+      "id": "12",
+      "sequence": [
+        "e4",
+        "d5"
+      ],
+      "games": 64507,
+      "reference_cp": 55,
+      "reference_depth": 50,
+      "source_url": "https://www.365chess.com/opening.php?m=2&ms=e4&n=3&ns=3",
+      "snapshot": "0001.json",
+      "family": "e4",
+      "parent": "e4",
+      "alternative": {
+        "score_cp": 55,
+        "depth": 50,
+        "source_url": "https://www.365chess.com/opening.php?m=3&ms=e4.d5&n=20&ns=3.20",
+        "snapshot": "0013.json"
+      },
+      "fen": "rnbqkbnr/ppp1pppp/8/3p4/4P3/8/PPPP1PPP/RNBQKBNR w KQkq d6 0 2",
+      "static_cp": 20,
+      "score_cp": 15,
+      "depth": 8,
+      "best": "e4d5",
+      "nodes": 5189605,
+      "hits": 52498,
+      "cache_bytes": 18750720,
+      "cache_limit": 78601344,
+      "variant": "minor-behind-pawn-0"
+    },
+    {
+      "id": "8",
+      "sequence": [
+        "e4",
+        "e5"
+      ],
+      "games": 471796,
+      "reference_cp": 22,
+      "reference_depth": 50,
+      "source_url": "https://www.365chess.com/opening.php?m=2&ms=e4&n=3&ns=3",
+      "snapshot": "0001.json",
+      "family": "e4",
+      "parent": "e4",
+      "alternative": {
+        "score_cp": 22,
+        "depth": 50,
+        "source_url": "https://www.365chess.com/opening.php?m=3&ms=e4.e5&n=5&ns=3.5",
+        "snapshot": "0009.json"
+      },
+      "fen": "rnbqkbnr/pppp1ppp/8/4p3/4P3/8/PPPP1PPP/RNBQKBNR w KQkq e6 0 2",
+      "static_cp": 24,
+      "score_cp": 32,
+      "depth": 6,
+      "best": "g1f3",
+      "nodes": 470832,
+      "hits": 4158,
+      "cache_bytes": 4210688,
+      "cache_limit": 78601344,
+      "variant": "minor-behind-pawn-16"
+    },
+    {
+      "id": "12",
+      "sequence": [
+        "e4",
+        "d5"
+      ],
+      "games": 64507,
+      "reference_cp": 55,
+      "reference_depth": 50,
+      "source_url": "https://www.365chess.com/opening.php?m=2&ms=e4&n=3&ns=3",
+      "snapshot": "0001.json",
+      "family": "e4",
+      "parent": "e4",
+      "alternative": {
+        "score_cp": 55,
+        "depth": 50,
+        "source_url": "https://www.365chess.com/opening.php?m=3&ms=e4.d5&n=20&ns=3.20",
+        "snapshot": "0013.json"
+      },
+      "fen": "rnbqkbnr/ppp1pppp/8/3p4/4P3/8/PPPP1PPP/RNBQKBNR w KQkq d6 0 2",
+      "static_cp": 20,
+      "score_cp": 2,
+      "depth": 6,
+      "best": "e4e5",
+      "nodes": 249333,
+      "hits": 1202,
+      "cache_bytes": 4210688,
+      "cache_limit": 78601344,
+      "variant": "minor-behind-pawn-16"
+    },
+    {
+      "id": "8",
+      "sequence": [
+        "e4",
+        "e5"
+      ],
+      "games": 471796,
+      "reference_cp": 22,
+      "reference_depth": 50,
+      "source_url": "https://www.365chess.com/opening.php?m=2&ms=e4&n=3&ns=3",
+      "snapshot": "0001.json",
+      "family": "e4",
+      "parent": "e4",
+      "alternative": {
+        "score_cp": 22,
+        "depth": 50,
+        "source_url": "https://www.365chess.com/opening.php?m=3&ms=e4.e5&n=5&ns=3.5",
+        "snapshot": "0009.json"
+      },
+      "fen": "rnbqkbnr/pppp1ppp/8/4p3/4P3/8/PPPP1PPP/RNBQKBNR w KQkq e6 0 2",
+      "static_cp": 24,
+      "score_cp": 37,
+      "depth": 8,
+      "best": "g1f3",
+      "nodes": 6524897,
+      "hits": 66322,
+      "cache_bytes": 21316608,
+      "cache_limit": 78601344,
+      "variant": "minor-behind-pawn-16"
+    },
+    {
+      "id": "12",
+      "sequence": [
+        "e4",
+        "d5"
+      ],
+      "games": 64507,
+      "reference_cp": 55,
+      "reference_depth": 50,
+      "source_url": "https://www.365chess.com/opening.php?m=2&ms=e4&n=3&ns=3",
+      "snapshot": "0001.json",
+      "family": "e4",
+      "parent": "e4",
+      "alternative": {
+        "score_cp": 55,
+        "depth": 50,
+        "source_url": "https://www.365chess.com/opening.php?m=3&ms=e4.d5&n=20&ns=3.20",
+        "snapshot": "0013.json"
+      },
+      "fen": "rnbqkbnr/ppp1pppp/8/3p4/4P3/8/PPPP1PPP/RNBQKBNR w KQkq d6 0 2",
+      "static_cp": 20,
+      "score_cp": 15,
+      "depth": 8,
+      "best": "e4d5",
+      "nodes": 5004269,
+      "hits": 41527,
+      "cache_bytes": 16908544,
+      "cache_limit": 78601344,
+      "variant": "minor-behind-pawn-16"
+    },
+    {
+      "id": "8",
+      "sequence": [
+        "e4",
+        "e5"
+      ],
+      "games": 471796,
+      "reference_cp": 22,
+      "reference_depth": 50,
+      "source_url": "https://www.365chess.com/opening.php?m=2&ms=e4&n=3&ns=3",
+      "snapshot": "0001.json",
+      "family": "e4",
+      "parent": "e4",
+      "alternative": {
+        "score_cp": 22,
+        "depth": 50,
+        "source_url": "https://www.365chess.com/opening.php?m=3&ms=e4.e5&n=5&ns=3.5",
+        "snapshot": "0009.json"
+      },
+      "fen": "rnbqkbnr/pppp1ppp/8/4p3/4P3/8/PPPP1PPP/RNBQKBNR w KQkq e6 0 2",
+      "static_cp": 24,
+      "score_cp": 35,
+      "depth": 6,
+      "best": "g1f3",
+      "nodes": 434296,
+      "hits": 4368,
+      "cache_bytes": 4210688,
+      "cache_limit": 78601344,
+      "variant": "king-safety-half"
+    },
+    {
+      "id": "12",
+      "sequence": [
+        "e4",
+        "d5"
+      ],
+      "games": 64507,
+      "reference_cp": 55,
+      "reference_depth": 50,
+      "source_url": "https://www.365chess.com/opening.php?m=2&ms=e4&n=3&ns=3",
+      "snapshot": "0001.json",
+      "family": "e4",
+      "parent": "e4",
+      "alternative": {
+        "score_cp": 55,
+        "depth": 50,
+        "source_url": "https://www.365chess.com/opening.php?m=3&ms=e4.d5&n=20&ns=3.20",
+        "snapshot": "0013.json"
+      },
+      "fen": "rnbqkbnr/ppp1pppp/8/3p4/4P3/8/PPPP1PPP/RNBQKBNR w KQkq d6 0 2",
+      "static_cp": 20,
+      "score_cp": 5,
+      "depth": 6,
+      "best": "e4e5",
+      "nodes": 266374,
+      "hits": 1787,
+      "cache_bytes": 4210688,
+      "cache_limit": 78601344,
+      "variant": "king-safety-half"
+    },
+    {
+      "id": "8",
+      "sequence": [
+        "e4",
+        "e5"
+      ],
+      "games": 471796,
+      "reference_cp": 22,
+      "reference_depth": 50,
+      "source_url": "https://www.365chess.com/opening.php?m=2&ms=e4&n=3&ns=3",
+      "snapshot": "0001.json",
+      "family": "e4",
+      "parent": "e4",
+      "alternative": {
+        "score_cp": 22,
+        "depth": 50,
+        "source_url": "https://www.365chess.com/opening.php?m=3&ms=e4.e5&n=5&ns=3.5",
+        "snapshot": "0009.json"
+      },
+      "fen": "rnbqkbnr/pppp1ppp/8/4p3/4P3/8/PPPP1PPP/RNBQKBNR w KQkq e6 0 2",
+      "static_cp": 24,
+      "score_cp": 34,
+      "depth": 8,
+      "best": "g1f3",
+      "nodes": 5509437,
+      "hits": 54546,
+      "cache_bytes": 16974336,
+      "cache_limit": 78601344,
+      "variant": "king-safety-half"
+    },
+    {
+      "id": "12",
+      "sequence": [
+        "e4",
+        "d5"
+      ],
+      "games": 64507,
+      "reference_cp": 55,
+      "reference_depth": 50,
+      "source_url": "https://www.365chess.com/opening.php?m=2&ms=e4&n=3&ns=3",
+      "snapshot": "0001.json",
+      "family": "e4",
+      "parent": "e4",
+      "alternative": {
+        "score_cp": 55,
+        "depth": 50,
+        "source_url": "https://www.365chess.com/opening.php?m=3&ms=e4.d5&n=20&ns=3.20",
+        "snapshot": "0013.json"
+      },
+      "fen": "rnbqkbnr/ppp1pppp/8/3p4/4P3/8/PPPP1PPP/RNBQKBNR w KQkq d6 0 2",
+      "static_cp": 20,
+      "score_cp": 25,
+      "depth": 8,
+      "best": "e4d5",
+      "nodes": 4988755,
+      "hits": 52690,
+      "cache_bytes": 19013888,
+      "cache_limit": 78601344,
+      "variant": "king-safety-half"
+    },
+    {
+      "id": "8",
+      "sequence": [
+        "e4",
+        "e5"
+      ],
+      "games": 471796,
+      "reference_cp": 22,
+      "reference_depth": 50,
+      "source_url": "https://www.365chess.com/opening.php?m=2&ms=e4&n=3&ns=3",
+      "snapshot": "0001.json",
+      "family": "e4",
+      "parent": "e4",
+      "alternative": {
+        "score_cp": 22,
+        "depth": 50,
+        "source_url": "https://www.365chess.com/opening.php?m=3&ms=e4.e5&n=5&ns=3.5",
+        "snapshot": "0009.json"
+      },
+      "fen": "rnbqkbnr/pppp1ppp/8/4p3/4P3/8/PPPP1PPP/RNBQKBNR w KQkq e6 0 2",
+      "static_cp": 24,
+      "score_cp": 37,
+      "depth": 6,
+      "best": "g1f3",
+      "nodes": 339739,
+      "hits": 2144,
+      "cache_bytes": 4210688,
+      "cache_limit": 78601344,
+      "variant": "king-safety-double"
+    },
+    {
+      "id": "12",
+      "sequence": [
+        "e4",
+        "d5"
+      ],
+      "games": 64507,
+      "reference_cp": 55,
+      "reference_depth": 50,
+      "source_url": "https://www.365chess.com/opening.php?m=2&ms=e4&n=3&ns=3",
+      "snapshot": "0001.json",
+      "family": "e4",
+      "parent": "e4",
+      "alternative": {
+        "score_cp": 55,
+        "depth": 50,
+        "source_url": "https://www.365chess.com/opening.php?m=3&ms=e4.d5&n=20&ns=3.20",
+        "snapshot": "0013.json"
+      },
+      "fen": "rnbqkbnr/ppp1pppp/8/3p4/4P3/8/PPPP1PPP/RNBQKBNR w KQkq d6 0 2",
+      "static_cp": 20,
+      "score_cp": -1,
+      "depth": 6,
+      "best": "e4e5",
+      "nodes": 246142,
+      "hits": 1947,
+      "cache_bytes": 4210688,
+      "cache_limit": 78601344,
+      "variant": "king-safety-double"
+    },
+    {
+      "id": "8",
+      "sequence": [
+        "e4",
+        "e5"
+      ],
+      "games": 471796,
+      "reference_cp": 22,
+      "reference_depth": 50,
+      "source_url": "https://www.365chess.com/opening.php?m=2&ms=e4&n=3&ns=3",
+      "snapshot": "0001.json",
+      "family": "e4",
+      "parent": "e4",
+      "alternative": {
+        "score_cp": 22,
+        "depth": 50,
+        "source_url": "https://www.365chess.com/opening.php?m=3&ms=e4.e5&n=5&ns=3.5",
+        "snapshot": "0009.json"
+      },
+      "fen": "rnbqkbnr/pppp1ppp/8/4p3/4P3/8/PPPP1PPP/RNBQKBNR w KQkq e6 0 2",
+      "static_cp": 24,
+      "score_cp": 24,
+      "depth": 8,
+      "best": "g1f3",
+      "nodes": 6446808,
+      "hits": 51411,
+      "cache_bytes": 21053440,
+      "cache_limit": 78601344,
+      "variant": "king-safety-double"
+    },
+    {
+      "id": "12",
+      "sequence": [
+        "e4",
+        "d5"
+      ],
+      "games": 64507,
+      "reference_cp": 55,
+      "reference_depth": 50,
+      "source_url": "https://www.365chess.com/opening.php?m=2&ms=e4&n=3&ns=3",
+      "snapshot": "0001.json",
+      "family": "e4",
+      "parent": "e4",
+      "alternative": {
+        "score_cp": 55,
+        "depth": 50,
+        "source_url": "https://www.365chess.com/opening.php?m=3&ms=e4.d5&n=20&ns=3.20",
+        "snapshot": "0013.json"
+      },
+      "fen": "rnbqkbnr/ppp1pppp/8/3p4/4P3/8/PPPP1PPP/RNBQKBNR w KQkq d6 0 2",
+      "static_cp": 20,
+      "score_cp": 9,
+      "depth": 8,
+      "best": "e4d5",
+      "nodes": 4781292,
+      "hits": 52445,
+      "cache_bytes": 16974336,
+      "cache_limit": 78601344,
+      "variant": "king-safety-double"
+    },
+    {
+      "id": "8",
+      "sequence": [
+        "e4",
+        "e5"
+      ],
+      "games": 471796,
+      "reference_cp": 22,
+      "reference_depth": 50,
+      "source_url": "https://www.365chess.com/opening.php?m=2&ms=e4&n=3&ns=3",
+      "snapshot": "0001.json",
+      "family": "e4",
+      "parent": "e4",
+      "alternative": {
+        "score_cp": 22,
+        "depth": 50,
+        "source_url": "https://www.365chess.com/opening.php?m=3&ms=e4.e5&n=5&ns=3.5",
+        "snapshot": "0009.json"
+      },
+      "fen": "rnbqkbnr/pppp1ppp/8/4p3/4P3/8/PPPP1PPP/RNBQKBNR w KQkq e6 0 2",
+      "static_cp": 24,
+      "score_cp": 24,
+      "depth": 6,
+      "best": "f1c4",
+      "nodes": 302809,
+      "hits": 2275,
+      "cache_bytes": 4210688,
+      "cache_limit": 78601344,
+      "variant": "early-queen12"
+    },
+    {
+      "id": "12",
+      "sequence": [
+        "e4",
+        "d5"
+      ],
+      "games": 64507,
+      "reference_cp": 55,
+      "reference_depth": 50,
+      "source_url": "https://www.365chess.com/opening.php?m=2&ms=e4&n=3&ns=3",
+      "snapshot": "0001.json",
+      "family": "e4",
+      "parent": "e4",
+      "alternative": {
+        "score_cp": 55,
+        "depth": 50,
+        "source_url": "https://www.365chess.com/opening.php?m=3&ms=e4.d5&n=20&ns=3.20",
+        "snapshot": "0013.json"
+      },
+      "fen": "rnbqkbnr/ppp1pppp/8/3p4/4P3/8/PPPP1PPP/RNBQKBNR w KQkq d6 0 2",
+      "static_cp": 20,
+      "score_cp": 29,
+      "depth": 6,
+      "best": "e4d5",
+      "nodes": 218478,
+      "hits": 1257,
+      "cache_bytes": 4210688,
+      "cache_limit": 78601344,
+      "variant": "early-queen12"
+    },
+    {
+      "id": "8",
+      "sequence": [
+        "e4",
+        "e5"
+      ],
+      "games": 471796,
+      "reference_cp": 22,
+      "reference_depth": 50,
+      "source_url": "https://www.365chess.com/opening.php?m=2&ms=e4&n=3&ns=3",
+      "snapshot": "0001.json",
+      "family": "e4",
+      "parent": "e4",
+      "alternative": {
+        "score_cp": 22,
+        "depth": 50,
+        "source_url": "https://www.365chess.com/opening.php?m=3&ms=e4.e5&n=5&ns=3.5",
+        "snapshot": "0009.json"
+      },
+      "fen": "rnbqkbnr/pppp1ppp/8/4p3/4P3/8/PPPP1PPP/RNBQKBNR w KQkq e6 0 2",
+      "static_cp": 24,
+      "score_cp": 29,
+      "depth": 8,
+      "best": "g1f3",
+      "nodes": 6763503,
+      "hits": 67416,
+      "cache_bytes": 24014080,
+      "cache_limit": 78601344,
+      "variant": "early-queen12"
+    },
+    {
+      "id": "12",
+      "sequence": [
+        "e4",
+        "d5"
+      ],
+      "games": 64507,
+      "reference_cp": 55,
+      "reference_depth": 50,
+      "source_url": "https://www.365chess.com/opening.php?m=2&ms=e4&n=3&ns=3",
+      "snapshot": "0001.json",
+      "family": "e4",
+      "parent": "e4",
+      "alternative": {
+        "score_cp": 55,
+        "depth": 50,
+        "source_url": "https://www.365chess.com/opening.php?m=3&ms=e4.d5&n=20&ns=3.20",
+        "snapshot": "0013.json"
+      },
+      "fen": "rnbqkbnr/ppp1pppp/8/3p4/4P3/8/PPPP1PPP/RNBQKBNR w KQkq d6 0 2",
+      "static_cp": 20,
+      "score_cp": 39,
+      "depth": 8,
+      "best": "e4d5",
+      "nodes": 4186250,
+      "hits": 35835,
+      "cache_bytes": 16842752,
+      "cache_limit": 78601344,
+      "variant": "early-queen12"
+    }
+  ],
+  "summaries": [
+    {
+      "variant": "current",
+      "depth": 6,
+      "gold": {
+        "positions": 2,
+        "mae_cp": 36.0,
+        "ordering_agreement": 0.0,
+        "ordered_pairs": 1
+      },
+      "all": {
+        "positions": 2,
+        "mae_cp": 36.0,
+        "ordering_agreement": 0.0,
+        "ordered_pairs": 1
+      },
+      "pair": {
+        "e4 e5": 38,
+        "e4 d5": -1
+      },
+      "d5_minus_e5": -39
+    },
+    {
+      "variant": "current",
+      "depth": 8,
+      "gold": {
+        "positions": 2,
+        "mae_cp": 23.5,
+        "ordering_agreement": 0.0,
+        "ordered_pairs": 1
+      },
+      "all": {
+        "positions": 2,
+        "mae_cp": 23.5,
+        "ordering_agreement": 0.0,
+        "ordered_pairs": 1
+      },
+      "pair": {
+        "e4 e5": 29,
+        "e4 d5": 15
+      },
+      "d5_minus_e5": -14
+    },
+    {
+      "variant": "knight_center_middlegame-0",
+      "depth": 6,
+      "gold": {
+        "positions": 2,
+        "mae_cp": 17.5,
+        "ordering_agreement": 0.0,
+        "ordered_pairs": 1
+      },
+      "all": {
+        "positions": 2,
+        "mae_cp": 17.5,
+        "ordering_agreement": 0.0,
+        "ordered_pairs": 1
+      },
+      "pair": {
+        "e4 e5": 24,
+        "e4 d5": 22
+      },
+      "d5_minus_e5": -2
+    },
+    {
+      "variant": "knight_center_middlegame-0",
+      "depth": 8,
+      "gold": {
+        "positions": 2,
+        "mae_cp": 19.5,
+        "ordering_agreement": 1.0,
+        "ordered_pairs": 1
+      },
+      "all": {
+        "positions": 2,
+        "mae_cp": 19.5,
+        "ordering_agreement": 1.0,
+        "ordered_pairs": 1
+      },
+      "pair": {
+        "e4 e5": 16,
+        "e4 d5": 22
+      },
+      "d5_minus_e5": 6
+    },
+    {
+      "variant": "knight_center_middlegame-2",
+      "depth": 6,
+      "gold": {
+        "positions": 2,
+        "mae_cp": 23.5,
+        "ordering_agreement": 0.0,
+        "ordered_pairs": 1
+      },
+      "all": {
+        "positions": 2,
+        "mae_cp": 23.5,
+        "ordering_agreement": 0.0,
+        "ordered_pairs": 1
+      },
+      "pair": {
+        "e4 e5": 27,
+        "e4 d5": 13
+      },
+      "d5_minus_e5": -14
+    },
+    {
+      "variant": "knight_center_middlegame-2",
+      "depth": 8,
+      "gold": {
+        "positions": 2,
+        "mae_cp": 18.0,
+        "ordering_agreement": 0.0,
+        "ordered_pairs": 1
+      },
+      "all": {
+        "positions": 2,
+        "mae_cp": 18.0,
+        "ordering_agreement": 0.0,
+        "ordered_pairs": 1
+      },
+      "pair": {
+        "e4 e5": 25,
+        "e4 d5": 22
+      },
+      "d5_minus_e5": -3
+    },
+    {
+      "variant": "knight_center_middlegame-4",
+      "depth": 6,
+      "gold": {
+        "positions": 2,
+        "mae_cp": 25.0,
+        "ordering_agreement": 0.0,
+        "ordered_pairs": 1
+      },
+      "all": {
+        "positions": 2,
+        "mae_cp": 25.0,
+        "ordering_agreement": 0.0,
+        "ordered_pairs": 1
+      },
+      "pair": {
+        "e4 e5": 25,
+        "e4 d5": 8
+      },
+      "d5_minus_e5": -17
+    },
+    {
+      "variant": "knight_center_middlegame-4",
+      "depth": 8,
+      "gold": {
+        "positions": 2,
+        "mae_cp": 26.5,
+        "ordering_agreement": 0.0,
+        "ordered_pairs": 1
+      },
+      "all": {
+        "positions": 2,
+        "mae_cp": 26.5,
+        "ordering_agreement": 0.0,
+        "ordered_pairs": 1
+      },
+      "pair": {
+        "e4 e5": 37,
+        "e4 d5": 17
+      },
+      "d5_minus_e5": -20
+    },
+    {
+      "variant": "knight_center_middlegame-8",
+      "depth": 6,
+      "gold": {
+        "positions": 2,
+        "mae_cp": 34.0,
+        "ordering_agreement": 0.0,
+        "ordered_pairs": 1
+      },
+      "all": {
+        "positions": 2,
+        "mae_cp": 34.0,
+        "ordering_agreement": 0.0,
+        "ordered_pairs": 1
+      },
+      "pair": {
+        "e4 e5": 43,
+        "e4 d5": 8
+      },
+      "d5_minus_e5": -35
+    },
+    {
+      "variant": "knight_center_middlegame-8",
+      "depth": 8,
+      "gold": {
+        "positions": 2,
+        "mae_cp": 21.0,
+        "ordering_agreement": 0.0,
+        "ordered_pairs": 1
+      },
+      "all": {
+        "positions": 2,
+        "mae_cp": 21.0,
+        "ordering_agreement": 0.0,
+        "ordered_pairs": 1
+      },
+      "pair": {
+        "e4 e5": 24,
+        "e4 d5": 15
+      },
+      "d5_minus_e5": -9
+    },
+    {
+      "variant": "tempo_middlegame-16",
+      "depth": 6,
+      "gold": {
+        "positions": 2,
+        "mae_cp": 29.0,
+        "ordering_agreement": 0.0,
+        "ordered_pairs": 1
+      },
+      "all": {
+        "positions": 2,
+        "mae_cp": 29.0,
+        "ordering_agreement": 0.0,
+        "ordered_pairs": 1
+      },
+      "pair": {
+        "e4 e5": 30,
+        "e4 d5": 5
+      },
+      "d5_minus_e5": -25
+    },
+    {
+      "variant": "tempo_middlegame-16",
+      "depth": 8,
+      "gold": {
+        "positions": 2,
+        "mae_cp": 24.5,
+        "ordering_agreement": 0.0,
+        "ordered_pairs": 1
+      },
+      "all": {
+        "positions": 2,
+        "mae_cp": 24.5,
+        "ordering_agreement": 0.0,
+        "ordered_pairs": 1
+      },
+      "pair": {
+        "e4 e5": 21,
+        "e4 d5": 7
+      },
+      "d5_minus_e5": -14
+    },
+    {
+      "variant": "tempo_middlegame-32",
+      "depth": 6,
+      "gold": {
+        "positions": 2,
+        "mae_cp": 36.0,
+        "ordering_agreement": 0.0,
+        "ordered_pairs": 1
+      },
+      "all": {
+        "positions": 2,
+        "mae_cp": 36.0,
+        "ordering_agreement": 0.0,
+        "ordered_pairs": 1
+      },
+      "pair": {
+        "e4 e5": 43,
+        "e4 d5": 4
+      },
+      "d5_minus_e5": -39
+    },
+    {
+      "variant": "tempo_middlegame-32",
+      "depth": 8,
+      "gold": {
+        "positions": 2,
+        "mae_cp": 23.5,
+        "ordering_agreement": 0.0,
+        "ordered_pairs": 1
+      },
+      "all": {
+        "positions": 2,
+        "mae_cp": 23.5,
+        "ordering_agreement": 0.0,
+        "ordered_pairs": 1
+      },
+      "pair": {
+        "e4 e5": 37,
+        "e4 d5": 23
+      },
+      "d5_minus_e5": -14
+    },
+    {
+      "variant": "space_unit-2",
+      "depth": 6,
+      "gold": {
+        "positions": 2,
+        "mae_cp": 36.0,
+        "ordering_agreement": 0.0,
+        "ordered_pairs": 1
+      },
+      "all": {
+        "positions": 2,
+        "mae_cp": 36.0,
+        "ordering_agreement": 0.0,
+        "ordered_pairs": 1
+      },
+      "pair": {
+        "e4 e5": 38,
+        "e4 d5": -1
+      },
+      "d5_minus_e5": -39
+    },
+    {
+      "variant": "space_unit-2",
+      "depth": 8,
+      "gold": {
+        "positions": 2,
+        "mae_cp": 25.0,
+        "ordering_agreement": 0.0,
+        "ordered_pairs": 1
+      },
+      "all": {
+        "positions": 2,
+        "mae_cp": 25.0,
+        "ordering_agreement": 0.0,
+        "ordered_pairs": 1
+      },
+      "pair": {
+        "e4 e5": 24,
+        "e4 d5": 7
+      },
+      "d5_minus_e5": -17
+    },
+    {
+      "variant": "space_unit-8",
+      "depth": 6,
+      "gold": {
+        "positions": 2,
+        "mae_cp": 24.5,
+        "ordering_agreement": 0.0,
+        "ordered_pairs": 1
+      },
+      "all": {
+        "positions": 2,
+        "mae_cp": 24.5,
+        "ordering_agreement": 0.0,
+        "ordered_pairs": 1
+      },
+      "pair": {
+        "e4 e5": 24,
+        "e4 d5": 8
+      },
+      "d5_minus_e5": -16
+    },
+    {
+      "variant": "space_unit-8",
+      "depth": 8,
+      "gold": {
+        "positions": 2,
+        "mae_cp": 24.5,
+        "ordering_agreement": 0.0,
+        "ordered_pairs": 1
+      },
+      "all": {
+        "positions": 2,
+        "mae_cp": 24.5,
+        "ordering_agreement": 0.0,
+        "ordered_pairs": 1
+      },
+      "pair": {
+        "e4 e5": 47,
+        "e4 d5": 31
+      },
+      "d5_minus_e5": -16
+    },
+    {
+      "variant": "queen-mobility-0",
+      "depth": 6,
+      "gold": {
+        "positions": 2,
+        "mae_cp": 34.0,
+        "ordering_agreement": 0.0,
+        "ordered_pairs": 1
+      },
+      "all": {
+        "positions": 2,
+        "mae_cp": 34.0,
+        "ordering_agreement": 0.0,
+        "ordered_pairs": 1
+      },
+      "pair": {
+        "e4 e5": 38,
+        "e4 d5": 3
+      },
+      "d5_minus_e5": -35
+    },
+    {
+      "variant": "queen-mobility-0",
+      "depth": 8,
+      "gold": {
+        "positions": 2,
+        "mae_cp": 18.5,
+        "ordering_agreement": 0.0,
+        "ordered_pairs": 1
+      },
+      "all": {
+        "positions": 2,
+        "mae_cp": 18.5,
+        "ordering_agreement": 0.0,
+        "ordered_pairs": 1
+      },
+      "pair": {
+        "e4 e5": 26,
+        "e4 d5": 22
+      },
+      "d5_minus_e5": -4
+    },
+    {
+      "variant": "queen-mobility-2",
+      "depth": 6,
+      "gold": {
+        "positions": 2,
+        "mae_cp": 31.5,
+        "ordering_agreement": 0.0,
+        "ordered_pairs": 1
+      },
+      "all": {
+        "positions": 2,
+        "mae_cp": 31.5,
+        "ordering_agreement": 0.0,
+        "ordered_pairs": 1
+      },
+      "pair": {
+        "e4 e5": 35,
+        "e4 d5": 5
+      },
+      "d5_minus_e5": -30
+    },
+    {
+      "variant": "queen-mobility-2",
+      "depth": 8,
+      "gold": {
+        "positions": 2,
+        "mae_cp": 28.5,
+        "ordering_agreement": 0.0,
+        "ordered_pairs": 1
+      },
+      "all": {
+        "positions": 2,
+        "mae_cp": 28.5,
+        "ordering_agreement": 0.0,
+        "ordered_pairs": 1
+      },
+      "pair": {
+        "e4 e5": 32,
+        "e4 d5": 8
+      },
+      "d5_minus_e5": -24
+    },
+    {
+      "variant": "knight-mobility-2",
+      "depth": 6,
+      "gold": {
+        "positions": 2,
+        "mae_cp": 38.5,
+        "ordering_agreement": 0.0,
+        "ordered_pairs": 1
+      },
+      "all": {
+        "positions": 2,
+        "mae_cp": 38.5,
+        "ordering_agreement": 0.0,
+        "ordered_pairs": 1
+      },
+      "pair": {
+        "e4 e5": 40,
+        "e4 d5": -4
+      },
+      "d5_minus_e5": -44
+    },
+    {
+      "variant": "knight-mobility-2",
+      "depth": 8,
+      "gold": {
+        "positions": 2,
+        "mae_cp": 21.5,
+        "ordering_agreement": 0.0,
+        "ordered_pairs": 1
+      },
+      "all": {
+        "positions": 2,
+        "mae_cp": 21.5,
+        "ordering_agreement": 0.0,
+        "ordered_pairs": 1
+      },
+      "pair": {
+        "e4 e5": 37,
+        "e4 d5": 27
+      },
+      "d5_minus_e5": -10
+    },
+    {
+      "variant": "knight-mobility-6",
+      "depth": 6,
+      "gold": {
+        "positions": 2,
+        "mae_cp": 33.5,
+        "ordering_agreement": 0.0,
+        "ordered_pairs": 1
+      },
+      "all": {
+        "positions": 2,
+        "mae_cp": 33.5,
+        "ordering_agreement": 0.0,
+        "ordered_pairs": 1
+      },
+      "pair": {
+        "e4 e5": 36,
+        "e4 d5": 2
+      },
+      "d5_minus_e5": -34
+    },
+    {
+      "variant": "knight-mobility-6",
+      "depth": 8,
+      "gold": {
+        "positions": 2,
+        "mae_cp": 24.0,
+        "ordering_agreement": 0.0,
+        "ordered_pairs": 1
+      },
+      "all": {
+        "positions": 2,
+        "mae_cp": 24.0,
+        "ordering_agreement": 0.0,
+        "ordered_pairs": 1
+      },
+      "pair": {
+        "e4 e5": 24,
+        "e4 d5": 9
+      },
+      "d5_minus_e5": -15
+    },
+    {
+      "variant": "bishop-mobility-3",
+      "depth": 6,
+      "gold": {
+        "positions": 2,
+        "mae_cp": 36.0,
+        "ordering_agreement": 0.0,
+        "ordered_pairs": 1
+      },
+      "all": {
+        "positions": 2,
+        "mae_cp": 36.0,
+        "ordering_agreement": 0.0,
+        "ordered_pairs": 1
+      },
+      "pair": {
+        "e4 e5": 38,
+        "e4 d5": -1
+      },
+      "d5_minus_e5": -39
+    },
+    {
+      "variant": "bishop-mobility-3",
+      "depth": 8,
+      "gold": {
+        "positions": 2,
+        "mae_cp": 21.5,
+        "ordering_agreement": 0.0,
+        "ordered_pairs": 1
+      },
+      "all": {
+        "positions": 2,
+        "mae_cp": 21.5,
+        "ordering_agreement": 0.0,
+        "ordered_pairs": 1
+      },
+      "pair": {
+        "e4 e5": 19,
+        "e4 d5": 15
+      },
+      "d5_minus_e5": -4
+    },
+    {
+      "variant": "bishop-mobility-7",
+      "depth": 6,
+      "gold": {
+        "positions": 2,
+        "mae_cp": 34.0,
+        "ordering_agreement": 0.0,
+        "ordered_pairs": 1
+      },
+      "all": {
+        "positions": 2,
+        "mae_cp": 34.0,
+        "ordering_agreement": 0.0,
+        "ordered_pairs": 1
+      },
+      "pair": {
+        "e4 e5": 37,
+        "e4 d5": 2
+      },
+      "d5_minus_e5": -35
+    },
+    {
+      "variant": "bishop-mobility-7",
+      "depth": 8,
+      "gold": {
+        "positions": 2,
+        "mae_cp": 24.5,
+        "ordering_agreement": 0.0,
+        "ordered_pairs": 1
+      },
+      "all": {
+        "positions": 2,
+        "mae_cp": 24.5,
+        "ordering_agreement": 0.0,
+        "ordered_pairs": 1
+      },
+      "pair": {
+        "e4 e5": 37,
+        "e4 d5": 21
+      },
+      "d5_minus_e5": -16
+    },
+    {
+      "variant": "pawn-advance-4",
+      "depth": 6,
+      "gold": {
+        "positions": 2,
+        "mae_cp": 35.5,
+        "ordering_agreement": 0.0,
+        "ordered_pairs": 1
+      },
+      "all": {
+        "positions": 2,
+        "mae_cp": 35.5,
+        "ordering_agreement": 0.0,
+        "ordered_pairs": 1
+      },
+      "pair": {
+        "e4 e5": 38,
+        "e4 d5": 0
+      },
+      "d5_minus_e5": -38
+    },
+    {
+      "variant": "pawn-advance-4",
+      "depth": 8,
+      "gold": {
+        "positions": 2,
+        "mae_cp": 24.5,
+        "ordering_agreement": 0.0,
+        "ordered_pairs": 1
+      },
+      "all": {
+        "positions": 2,
+        "mae_cp": 24.5,
+        "ordering_agreement": 0.0,
+        "ordered_pairs": 1
+      },
+      "pair": {
+        "e4 e5": 24,
+        "e4 d5": 8
+      },
+      "d5_minus_e5": -16
+    },
+    {
+      "variant": "pawn-advance-12",
+      "depth": 6,
+      "gold": {
+        "positions": 2,
+        "mae_cp": 29.0,
+        "ordering_agreement": 0.0,
+        "ordered_pairs": 1
+      },
+      "all": {
+        "positions": 2,
+        "mae_cp": 29.0,
+        "ordering_agreement": 0.0,
+        "ordered_pairs": 1
+      },
+      "pair": {
+        "e4 e5": 25,
+        "e4 d5": 0
+      },
+      "d5_minus_e5": -25
+    },
+    {
+      "variant": "pawn-advance-12",
+      "depth": 8,
+      "gold": {
+        "positions": 2,
+        "mae_cp": 25.5,
+        "ordering_agreement": 0.0,
+        "ordered_pairs": 1
+      },
+      "all": {
+        "positions": 2,
+        "mae_cp": 25.5,
+        "ordering_agreement": 0.0,
+        "ordered_pairs": 1
+      },
+      "pair": {
+        "e4 e5": 41,
+        "e4 d5": 23
+      },
+      "d5_minus_e5": -18
+    },
+    {
+      "variant": "connected-pawn-0",
+      "depth": 6,
+      "gold": {
+        "positions": 2,
+        "mae_cp": 32.5,
+        "ordering_agreement": 0.0,
+        "ordered_pairs": 1
+      },
+      "all": {
+        "positions": 2,
+        "mae_cp": 32.5,
+        "ordering_agreement": 0.0,
+        "ordered_pairs": 1
+      },
+      "pair": {
+        "e4 e5": 34,
+        "e4 d5": 2
+      },
+      "d5_minus_e5": -32
+    },
+    {
+      "variant": "connected-pawn-0",
+      "depth": 8,
+      "gold": {
+        "positions": 2,
+        "mae_cp": 23.5,
+        "ordering_agreement": 0.0,
+        "ordered_pairs": 1
+      },
+      "all": {
+        "positions": 2,
+        "mae_cp": 23.5,
+        "ordering_agreement": 0.0,
+        "ordered_pairs": 1
+      },
+      "pair": {
+        "e4 e5": 35,
+        "e4 d5": 21
+      },
+      "d5_minus_e5": -14
+    },
+    {
+      "variant": "connected-pawn-12",
+      "depth": 6,
+      "gold": {
+        "positions": 2,
+        "mae_cp": 37.5,
+        "ordering_agreement": 0.0,
+        "ordered_pairs": 1
+      },
+      "all": {
+        "positions": 2,
+        "mae_cp": 37.5,
+        "ordering_agreement": 0.0,
+        "ordered_pairs": 1
+      },
+      "pair": {
+        "e4 e5": 41,
+        "e4 d5": -1
+      },
+      "d5_minus_e5": -42
+    },
+    {
+      "variant": "connected-pawn-12",
+      "depth": 8,
+      "gold": {
+        "positions": 2,
+        "mae_cp": 24.5,
+        "ordering_agreement": 0.0,
+        "ordered_pairs": 1
+      },
+      "all": {
+        "positions": 2,
+        "mae_cp": 24.5,
+        "ordering_agreement": 0.0,
+        "ordered_pairs": 1
+      },
+      "pair": {
+        "e4 e5": 25,
+        "e4 d5": 9
+      },
+      "d5_minus_e5": -16
+    },
+    {
+      "variant": "minor-behind-pawn-0",
+      "depth": 6,
+      "gold": {
+        "positions": 2,
+        "mae_cp": 33.5,
+        "ordering_agreement": 0.0,
+        "ordered_pairs": 1
+      },
+      "all": {
+        "positions": 2,
+        "mae_cp": 33.5,
+        "ordering_agreement": 0.0,
+        "ordered_pairs": 1
+      },
+      "pair": {
+        "e4 e5": 38,
+        "e4 d5": 4
+      },
+      "d5_minus_e5": -34
+    },
+    {
+      "variant": "minor-behind-pawn-0",
+      "depth": 8,
+      "gold": {
+        "positions": 2,
+        "mae_cp": 20.5,
+        "ordering_agreement": 0.0,
+        "ordered_pairs": 1
+      },
+      "all": {
+        "positions": 2,
+        "mae_cp": 20.5,
+        "ordering_agreement": 0.0,
+        "ordered_pairs": 1
+      },
+      "pair": {
+        "e4 e5": 23,
+        "e4 d5": 15
+      },
+      "d5_minus_e5": -8
+    },
+    {
+      "variant": "minor-behind-pawn-16",
+      "depth": 6,
+      "gold": {
+        "positions": 2,
+        "mae_cp": 31.5,
+        "ordering_agreement": 0.0,
+        "ordered_pairs": 1
+      },
+      "all": {
+        "positions": 2,
+        "mae_cp": 31.5,
+        "ordering_agreement": 0.0,
+        "ordered_pairs": 1
+      },
+      "pair": {
+        "e4 e5": 32,
+        "e4 d5": 2
+      },
+      "d5_minus_e5": -30
+    },
+    {
+      "variant": "minor-behind-pawn-16",
+      "depth": 8,
+      "gold": {
+        "positions": 2,
+        "mae_cp": 27.5,
+        "ordering_agreement": 0.0,
+        "ordered_pairs": 1
+      },
+      "all": {
+        "positions": 2,
+        "mae_cp": 27.5,
+        "ordering_agreement": 0.0,
+        "ordered_pairs": 1
+      },
+      "pair": {
+        "e4 e5": 37,
+        "e4 d5": 15
+      },
+      "d5_minus_e5": -22
+    },
+    {
+      "variant": "king-safety-half",
+      "depth": 6,
+      "gold": {
+        "positions": 2,
+        "mae_cp": 31.5,
+        "ordering_agreement": 0.0,
+        "ordered_pairs": 1
+      },
+      "all": {
+        "positions": 2,
+        "mae_cp": 31.5,
+        "ordering_agreement": 0.0,
+        "ordered_pairs": 1
+      },
+      "pair": {
+        "e4 e5": 35,
+        "e4 d5": 5
+      },
+      "d5_minus_e5": -30
+    },
+    {
+      "variant": "king-safety-half",
+      "depth": 8,
+      "gold": {
+        "positions": 2,
+        "mae_cp": 21.0,
+        "ordering_agreement": 0.0,
+        "ordered_pairs": 1
+      },
+      "all": {
+        "positions": 2,
+        "mae_cp": 21.0,
+        "ordering_agreement": 0.0,
+        "ordered_pairs": 1
+      },
+      "pair": {
+        "e4 e5": 34,
+        "e4 d5": 25
+      },
+      "d5_minus_e5": -9
+    },
+    {
+      "variant": "king-safety-double",
+      "depth": 6,
+      "gold": {
+        "positions": 2,
+        "mae_cp": 35.5,
+        "ordering_agreement": 0.0,
+        "ordered_pairs": 1
+      },
+      "all": {
+        "positions": 2,
+        "mae_cp": 35.5,
+        "ordering_agreement": 0.0,
+        "ordered_pairs": 1
+      },
+      "pair": {
+        "e4 e5": 37,
+        "e4 d5": -1
+      },
+      "d5_minus_e5": -38
+    },
+    {
+      "variant": "king-safety-double",
+      "depth": 8,
+      "gold": {
+        "positions": 2,
+        "mae_cp": 24.0,
+        "ordering_agreement": 0.0,
+        "ordered_pairs": 1
+      },
+      "all": {
+        "positions": 2,
+        "mae_cp": 24.0,
+        "ordering_agreement": 0.0,
+        "ordered_pairs": 1
+      },
+      "pair": {
+        "e4 e5": 24,
+        "e4 d5": 9
+      },
+      "d5_minus_e5": -15
+    },
+    {
+      "variant": "early-queen12",
+      "depth": 6,
+      "gold": {
+        "positions": 2,
+        "mae_cp": 14.0,
+        "ordering_agreement": 1.0,
+        "ordered_pairs": 1
+      },
+      "all": {
+        "positions": 2,
+        "mae_cp": 14.0,
+        "ordering_agreement": 1.0,
+        "ordered_pairs": 1
+      },
+      "pair": {
+        "e4 e5": 24,
+        "e4 d5": 29
+      },
+      "d5_minus_e5": 5
+    },
+    {
+      "variant": "early-queen12",
+      "depth": 8,
+      "gold": {
+        "positions": 2,
+        "mae_cp": 11.5,
+        "ordering_agreement": 1.0,
+        "ordered_pairs": 1
+      },
+      "all": {
+        "positions": 2,
+        "mae_cp": 11.5,
+        "ordering_agreement": 1.0,
+        "ordered_pairs": 1
+      },
+      "pair": {
+        "e4 e5": 29,
+        "e4 d5": 39
+      },
+      "d5_minus_e5": 10
+    }
+  ]
+}

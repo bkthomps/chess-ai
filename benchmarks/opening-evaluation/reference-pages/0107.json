@@ -1,0 +1,104 @@
+{
+  "path": [
+    "d4",
+    "Nf6",
+    "c4",
+    "d6"
+  ],
+  "url": "https://www.365chess.com/opening.php?m=5&ms=d4.Nf6.c4.d6&n=157&ns=7.14.11.157",
+  "ref": "turn102view0",
+  "rows": [
+    {
+      "san": "Nc3",
+      "games": 11873,
+      "link": 33,
+      "score_cp": 56,
+      "depth": 26
+    },
+    {
+      "san": "Nf3",
+      "games": 3969,
+      "link": 34,
+      "score_cp": 50,
+      "depth": 27
+    },
+    {
+      "san": "g3",
+      "games": 234,
+      "link": 35,
+      "score_cp": 6,
+      "depth": 28
+    },
+    {
+      "san": "Bg5",
+      "games": 30,
+      "link": 36,
+      "score_cp": null,
+      "depth": null
+    },
+    {
+      "san": "e3",
+      "games": 17,
+      "link": 37,
+      "score_cp": null,
+      "depth": null
+    },
+    {
+      "san": "f4",
+      "games": 12,
+      "link": 38,
+      "score_cp": null,
+      "depth": null
+    },
+    {
+      "san": "Bf4",
+      "games": 9,
+      "link": 39,
+      "score_cp": 0,
+      "depth": 40
+    },
+    {
+      "san": "f3",
+      "games": 8,
+      "link": 40,
+      "score_cp": null,
+      "depth": null
+    },
+    {
+      "san": "Qc2",
+      "games": 6,
+      "link": 41,
+      "score_cp": null,
+      "depth": null
+    },
+    {
+      "san": "h3",
+      "games": 5,
+      "link": 42,
+      "score_cp": null,
+      "depth": null
+    },
+    {
+      "san": "b3",
+      "games": 3,
+      "link": 43,
+      "score_cp": null,
+      "depth": null
+    },
+    {
+      "san": "e4",
+      "games": 2,
+      "link": 44,
+      "score_cp": -55,
+      "depth": 33
+    },
+    {
+      "san": "d5",
+      "games": 2,
+      "link": 45,
+      "score_cp": 34,
+      "depth": 18
+    }
+  ],
+  "raw": "A53: Old Indian defence - 1. d4 Nf6 2. c4 d6 - Chess Opening explorer (https://www.365chess.com/opening.php?m=5&ms=d4.Nf6.c4.d6&n=157&ns=7.14.11.157)\nciteturn102view0 [wordlim: 200] Crawled: 2 months ago; Content type: text/html; Source: click({\"ref_id\":\"turn48view0\",\"id\":34}); Total lines: 224\nL0: ##### Login 365Chess\nL1: \nL2: 【0†Image: google†d2rnvyacaewvx6.cloudfront.net】Sign in with Google\nL3: \nL4: OR\nL5: \nL6: [Input: Username]\nL7: \nL8: [Input: Password] 【1†Forgot your password?】\nL9: \nL10: [Input]\nL11: \nL12: Not registered? 【2†Sign up】\nL13: \nL14:   * 【3†Search】\nL15:     * 【4†Game Position】\nL16:     * 【5†Chess Games】\nL17:     * 【6†Chess Tournaments】\nL18:     * 【7†Endgames】\nL19:     * 【8†Chess Players】\nL20:   * 【3†Training】\nL21:     * 【9†Openings Trainer】\nL22:     * 【10†Play vs Computer】\nL23:     * 【11†Puzzles】\nL24:     * 【12†Endgames】\nL25: #####\nL26: \nL27: Welcome!\nL28: \nL29: 【3†LOGIN】 | 【2†REGISTER】\nL30: \nL31: Main\nL32: \nL33:   * 【13†Home】\nL34:   * 【14†Opening Explorer】\nL35:   * 【15†Chess Courses】\nL36:   * 【16†ECO Codes】\nL37: \nL38: Search\nL39: \nL40:   * 【4†Position】\nL41:   * 【5†Games】\nL42:   * 【6†Tournaments】\nL43:   * 【7†Endgames】\nL44:   * 【8†Chess Players】\nL45: \nL46: Training\nL47: \nL48:   * 【9†Openings Trainer】\nL49:   * 【10†Play vs Computer】\nL50:   * 【11†Puzzles】\nL51:   * 【12†Endgames】\nL52: \nL53: Resources\nL54: \nL55:   * 【17†Analysis Board】\nL56:   * 【18†Board Editor】\nL57:   * 【19†Chess Openings】\nL58:   * 【20†Blog】\nL59: \nL60: Help\nL61: \nL62:   * 【21†F.A.Q.】\nL63:   * 【22†Contact Us】\nL64:   * 【23†Membership】\nL65: \nL66: Chess Opening Explorer\nL67: With our Opening Explorer you can browse our entire chess database move by move obtaining statistics about the results of each possible continuation.\nL68: The Opening Explorer is a great tool if you want to study chess openings.\nL69: # 【24†A53 Old Indian defence】\nL70: \nL71: [Input]\nL72: \nL73: [Input]\nL74: \nL75: [Input]\nL76: \nL77: [Input]\nL78: \nL79: [Input]\nL80: \nL81: 【14†Top】\nL82: \nL83: Fen: [Input] 【25†Image: Copy Position†d2rnvyacaewvx6.cloudfront.net】\nL84: \nL85: Url: [Input] 【25†Image: Copy Position†d2rnvyacaewvx6.cloudfront.net】\nL86: \nL87: ## Personal notes\nL88: #### Create notes\nL89: \nL90: If you want to create a note in this position you have to log into your account and have a Supporter membership.\nL91: \nL92: 【26†I'm already a Supporter. Log me in now.】\nL93: \nL94: 【27†I'm not a Supporter yet. Tell me more.】\nL95: \nL96: [Button: Close]\nL97: \nL98: Use your Personal notes to store information and comments about this position. Remember, the notes are private. Nobody but you can see them.\nL99: \nL100: Create a note for this position\nL101: ### Related Openings:\nL102: \nL103:   * A53: 【3†Old Indian defence】\nL104:   * A54: 【3†Old Indian, Ukrainian variation】\nL105:   * A55: 【3†Old Indian, main line】\nL106: \nL107: \nL108: \nL109: \nL110: \nL111: 【3†Stop Analysis】\nL112: \nL113: 【3†Start Engine Analysis】\nL114: \nL115: Stored Analysis: +0.35 Depth 45\nL116: \nL117: Opening Explorer Database:  [Select]\nL118: \nL119: Moves List:\nL120: \nL121: 1. 【28†d4】 【29†Nf6】 2. 【30†c4】 【31†d6】\nL122: \nL123: 【32†Game List】\nL124: \nL125: 【3†Save】\nL126: \nL127: 【3†Play】\nL128: \nL129: 【3†Analysis】\nL130: Next Move  | # of Games  | Last Played  | Winnings percentage\nL131: White / Draw / Black  | Engine Eval.\nL132: 【33†3. Nc3】  |  11,873  | 2026  |\nL133: 39 % 30.7 % 30.3 %\nL134:  | +0.56 Dpt 26\nL135: 【34†3. Nf3】  |  3,969  | 2026  |\nL136: 41.1 % 33.3 % 25.6 %\nL137:  | +0.50 Dpt 27\nL138: 【35†3. g3】  |  234  | 2026  |\nL139: 36.8 % 35.9 % 27.4 %\nL140:  | +0.06 Dpt 28\nL141: 【36†3. Bg5】  |  30  | 2023  |\nL142: 26.7 % 26.7 % 46.7 %\nL143:  |\nL144: 【37†3. e3】  |  17  | 2009  |\nL145: 17.6 % 76.5 %\nL146:  |\nL147: 【38†3. f4】  |  12  | 2010  |\nL148: 41.7 % 58.3 %\nL149:  |\nL150: 【39†3. Bf4】  |  9  | 2007  |\nL151: 66.7 % 22.2 %\nL152:  | +0.00 Dpt 40\nL153: 【40†3. f3】  |  8  | 2015  |\nL154: 25 % 25 % 50 %\nL155:  |\nL156: 【41†3. Qc2】  |  6  | 2006  |\nL157: 33.3 % 66.7 %\nL158:  |\nL159: 【42†3. h3】  |  5  | 2006  |\nL160: 40 % 60 %\nL161:  |\nL162: 【43†3. b3】  |  3  | 2006  |\nL163: 100 %\nL164:  |\nL165: 【44†3. e4】  |  2  | 2019  |\nL166: 50 % 50 %\nL167:  | -0.55 Dpt 33\nL168: 【45†3. d5】  |  2  | 2006  |\nL169: 50 % 50 %\nL170:  | +0.34 Dpt 18\nL171: [Input] Hide Engine Analysis\nL172: \nL173: 【46†Download games】\nL174: ### Latest Played Games\nL175: \nL176: Players  | Result  |\nL177: 【47†Prisacaru, S vs Manolache, M】   | ½ - ½  |\nL178: 【48†Gholami Orimi, M vs Sargsyan, S】   | ½ - ½  |\nL179: 【49†Gales, R vs Ciocani, I】   | ½ - ½  |\nL180: 【50†De Jong, L vs Hausrath, D】   | 0 - 1  |\nL181: 【51†Aryan Mehta vs Daakshin, A】   | ½ - ½  |\nL182: ### Top Games by Average ELO\nL183: \nL184: Players  | Result  |\nL185: 【52†Firouzja, A vs Carlsen, M】   | 0 - 1  |\nL186: 【53†Mamedyarov, S vs Rapport, R】   | 0 - 1  |\nL187: 【54†Wojtaszek, R vs Caruana, F】   | 0 - 1  |\nL188: 【55†Karpov, A vs Salov, V】   | ½ - ½  |\nL189: 【56†Caruana, F vs McShane, L】   | 1 - 0  |\nL190: ### Played frequently by\nL191: \nL192: As White  |\nL193: Ivan Farago  | 【57†39 games】\nL194: Rainer Knaak  | 【58†30 games】\nL195: Svetozar Gligoric  | 【59†28 games】\nL196: \nL197: As Black  |\nL198: Lutz Espig  | 【60†89 games】\nL199: Alonso Zapata  | 【61†80 games】\nL200: Ekaterina Kovalevskaya  | 【62†79 games】\nL201: \nL202: #### Opening Explorer Message\nL203: \nL204: This position doesn't exist in the Opening Explorer\nL205: \nL206: [Button: Continue]\nL207: #### Opening Explorer Message\nL208: \nL209: Dear Chessfriend, we're thrilled that you're enjoying this powerful tool!!!\nL210: \nL211: As you know, most of the features in 365Chess are free for everyone, anywhere; we believe in this philosophy and we want to keep it that way.\nL212: To keep the site free for everyone the development of this site relies on the support and contributions of its members. Therefore, we kindly ask you to consider becoming a Supporter. By doing so, you will receive some extra and nice benefits and you will be helping to improve this site.\nL213: \nL214: Thank you in advance for your contribution. You have no idea how much it means to us to have your Support.\nL215: \nL216: [Button: Yes, I want to contribute now]\nL217: \nL218: 【3†Maybe later】\nL219: #### Download PGN\nL220: \nL221: PGN Analysis\nL222: \nL223: [Input]        [Input]\n"
+}

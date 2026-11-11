@@ -1,0 +1,49 @@
+{
+  "path": [
+    "e4",
+    "c5",
+    "c3",
+    "d5",
+    "exd5"
+  ],
+  "url": "https://www.365chess.com/opening.php?m=6&ms=e4.c5.c3.d5.exd5&n=616&ns=3.3.37.226.616",
+  "ref": "turn188view0",
+  "rows": [
+    {
+      "san": "Qxd5",
+      "games": 20716,
+      "link": 34,
+      "score_cp": 0,
+      "depth": 45
+    },
+    {
+      "san": "Nf6",
+      "games": 386,
+      "link": 35,
+      "score_cp": 31,
+      "depth": 40
+    },
+    {
+      "san": "Qd6",
+      "games": 2,
+      "link": 36,
+      "score_cp": null,
+      "depth": null
+    },
+    {
+      "san": "Qd7",
+      "games": 2,
+      "link": 37,
+      "score_cp": null,
+      "depth": null
+    },
+    {
+      "san": "a6",
+      "games": 2,
+      "link": 38,
+      "score_cp": null,
+      "depth": null
+    }
+  ],
+  "raw": "B22: Sicilian, Alapin's variation (2.c3) - 1. e4 c5 2. c3 d5 3. exd5 - Chess Opening explorer (https://www.365chess.com/opening.php?m=6&ms=e4.c5.c3.d5.exd5&n=616&ns=3.3.37.226.616)\nciteturn188view0 [wordlim: 200] Crawled: 3 months ago; Content type: text/html; Source: click({\"ref_id\":\"turn90view0\",\"id\":33}); Total lines: 201\nL0: ##### Login 365Chess\nL1: \nL2: 【0†Image: google†d2rnvyacaewvx6.cloudfront.net】Sign in with Google\nL3: \nL4: OR\nL5: \nL6: [Input: Username]\nL7: \nL8: [Input: Password] 【1†Forgot your password?】\nL9: \nL10: [Input]\nL11: \nL12: Not registered? 【2†Sign up】\nL13: \nL14:   * 【3†Search】\nL15:     * 【4†Game Position】\nL16:     * 【5†Chess Games】\nL17:     * 【6†Chess Tournaments】\nL18:     * 【7†Endgames】\nL19:     * 【8†Chess Players】\nL20:   * 【3†Training】\nL21:     * 【9†Openings Trainer】\nL22:     * 【10†Play vs Computer】\nL23:     * 【11†Puzzles】\nL24:     * 【12†Endgames】\nL25: #####\nL26: \nL27: Welcome!\nL28: \nL29: 【3†LOGIN】 | 【2†REGISTER】\nL30: \nL31: Main\nL32: \nL33:   * 【13†Home】\nL34:   * 【14†Opening Explorer】\nL35:   * 【15†Chess Courses】\nL36:   * 【16†ECO Codes】\nL37: \nL38: Search\nL39: \nL40:   * 【4†Position】\nL41:   * 【5†Games】\nL42:   * 【6†Tournaments】\nL43:   * 【7†Endgames】\nL44:   * 【8†Chess Players】\nL45: \nL46: Training\nL47: \nL48:   * 【9†Openings Trainer】\nL49:   * 【10†Play vs Computer】\nL50:   * 【11†Puzzles】\nL51:   * 【12†Endgames】\nL52: \nL53: Resources\nL54: \nL55:   * 【17†Analysis Board】\nL56:   * 【18†Board Editor】\nL57:   * 【19†Chess Openings】\nL58:   * 【20†Blog】\nL59: \nL60: Help\nL61: \nL62:   * 【21†F.A.Q.】\nL63:   * 【22†Contact Us】\nL64:   * 【23†Membership】\nL65: \nL66: Chess Opening Explorer\nL67: With our Opening Explorer you can browse our entire chess database move by move obtaining statistics about the results of each possible continuation.\nL68: The Opening Explorer is a great tool if you want to study chess openings.\nL69: # 【24†B22 Sicilian, Alapin's variation (2.c3)】\nL70: \nL71: [Input]\nL72: \nL73: [Input]\nL74: \nL75: [Input]\nL76: \nL77: [Input]\nL78: \nL79: [Input]\nL80: \nL81: 【14†Top】\nL82: \nL83: Fen: [Input] 【25†Image: Copy Position†d2rnvyacaewvx6.cloudfront.net】\nL84: \nL85: Url: [Input] 【25†Image: Copy Position†d2rnvyacaewvx6.cloudfront.net】\nL86: \nL87: ## Personal notes\nL88: #### Create notes\nL89: \nL90: If you want to create a note in this position you have to log into your account and have a Supporter membership.\nL91: \nL92: 【26†I'm already a Supporter. Log me in now.】\nL93: \nL94: 【27†I'm not a Supporter yet. Tell me more.】\nL95: \nL96: [Button: Close]\nL97: \nL98: Use your Personal notes to store information and comments about this position. Remember, the notes are private. Nobody but you can see them.\nL99: \nL100: Create a note for this position\nL101: ### Related Openings:\nL102: \nL103:   * B22: 【3†Sicilian, Alapin's variation (2.c3)】\nL104: \nL105: \nL106: \nL107: \nL108: \nL109: 【3†Stop Analysis】\nL110: \nL111: 【3†Start Engine Analysis】\nL112: \nL113: Stored Analysis: +0.09 Depth 40\nL114: \nL115: Opening Explorer Database:  [Select]\nL116: \nL117: Moves List:\nL118: \nL119: 1. 【28†e4】 【29†c5】 2. 【30†c3】 【31†d5】 3. 【32†exd5】\nL120: \nL121: 【33†Game List】\nL122: \nL123: 【3†Save】\nL124: \nL125: 【3†Play】\nL126: \nL127: 【3†Analysis】\nL128: Next Move  | # of Games  | Last Played  | Winnings percentage\nL129: White / Draw / Black  | Engine Eval.\nL130: 【34†3... Qxd5】  |  20,716  | 2026  |\nL131: 34.1 % 36.6 % 29.3 %\nL132:  | +0.00 Dpt 45\nL133: 【35†3... Nf6】  |  386  | 2026  |\nL134: 32.1 % 25.4 % 42.5 %\nL135:  | +0.31 Dpt 40\nL136: 【36†3... Qd6】  |  2  | 2004  |\nL137: 100 %\nL138:  |\nL139: 【37†3... Qd7】  |  2  | 2024  |\nL140: 100 %\nL141:  |\nL142: 【38†3... a6】  |  2  | 1999  |\nL143: 50 % 50 %\nL144:  |\nL145: \nL146: [Input] Hide Engine Analysis\nL147: \nL148: 【39†Download games】\nL149: \nL150: 【40†Sicilian Defense: Full Guide, Main Lines, and Secondary Options】\nL151: ### Latest Played Games\nL152: \nL153: Players  | Result  |\nL154: 【41†Bardyk, A vs Bocharov, D】   | 0 - 1  |\nL155: 【42†Firouzja, A vs Erigaisi Arjun】   | ½ - ½  |\nL156: 【43†Blok, X vs Schoorl, R】   | 1 - 0  |\nL157: 【44†Peng, L vs Georgiadis, N】   | ½ - ½  |\nL158: 【45†Duboue, P vs Degraeve, J】   | 1 - 0  |\nL159: ### Top Games by Average ELO\nL160: \nL161: Players  | Result  |\nL162: 【46†Carlsen, M vs Giri, A】   | ½ - ½  |\nL163: 【47†Carlsen, M vs Gukesh D】   | ½ - ½  |\nL164: 【48†Mamedyarov, S vs Nepomniachtchi, I】   | 0 - 1  |\nL165: 【49†Andreikin, D vs Ding, L】   | ½ - ½  |\nL166: 【50†Nepomniachtchi, I vs Vachier Lagrave, M】   | 0 - 1  |\nL167: ### Played frequently by\nL168: \nL169: As White  |\nL170: Evgeny Sveshnikov  | 【51†104 games】\nL171: Dusko Pavasovic  | 【52†95 games】\nL172: Levente Vajda  | 【53†91 games】\nL173: \nL174: As Black  |\nL175: Miso Cebalo  | 【54†34 games】\nL176: Sergei Tiviakov  | 【55†33 games】\nL177: Csaba Balogh  | 【56†31 games】\nL178: \nL179: #### Opening Explorer Message\nL180: \nL181: This position doesn't exist in the Opening Explorer\nL182: \nL183: [Button: Continue]\nL184: #### Opening Explorer Message\nL185: \nL186: Dear Chessfriend, we're thrilled that you're enjoying this powerful tool!!!\nL187: \nL188: As you know, most of the features in 365Chess are free for everyone, anywhere; we believe in this philosophy and we want to keep it that way.\nL189: To keep the site free for everyone the development of this site relies on the support and contributions of its members. Therefore, we kindly ask you to consider becoming a Supporter. By doing so, you will receive some extra and nice benefits and you will be helping to improve this site.\nL190: \nL191: Thank you in advance for your contribution. You have no idea how much it means to us to have your Support.\nL192: \nL193: [Button: Yes, I want to contribute now]\nL194: \nL195: 【3†Maybe later】\nL196: #### Download PGN\nL197: \nL198: PGN Analysis\nL199: \nL200: [Input]        [Input]\n"
+}

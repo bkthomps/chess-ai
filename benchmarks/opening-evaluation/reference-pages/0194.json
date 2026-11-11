@@ -1,0 +1,98 @@
+{
+  "path": [
+    "d4",
+    "e6",
+    "c4",
+    "Nf6",
+    "Nc3"
+  ],
+  "url": "https://www.365chess.com/opening.php?m=6&ms=d4.e6.c4.Nf6.Nc3&n=38&ns=7.18.84.33.38",
+  "ref": "turn207view0",
+  "rows": [
+    {
+      "san": "Bb4",
+      "games": 87495,
+      "link": 31,
+      "score_cp": 0,
+      "depth": 45
+    },
+    {
+      "san": "d5",
+      "games": 18288,
+      "link": 32,
+      "score_cp": 22,
+      "depth": 50
+    },
+    {
+      "san": "c5",
+      "games": 4045,
+      "link": 33,
+      "score_cp": 17,
+      "depth": 45
+    },
+    {
+      "san": "b6",
+      "games": 1041,
+      "link": 34,
+      "score_cp": 48,
+      "depth": 45
+    },
+    {
+      "san": "Be7",
+      "games": 200,
+      "link": 35,
+      "score_cp": 49,
+      "depth": 45
+    },
+    {
+      "san": "c6",
+      "games": 90,
+      "link": 36,
+      "score_cp": 36,
+      "depth": 45
+    },
+    {
+      "san": "g6",
+      "games": 55,
+      "link": 37,
+      "score_cp": 40,
+      "depth": 45
+    },
+    {
+      "san": "Nc6",
+      "games": 34,
+      "link": 38,
+      "score_cp": 36,
+      "depth": 45
+    },
+    {
+      "san": "d6",
+      "games": 27,
+      "link": 39,
+      "score_cp": 36,
+      "depth": 45
+    },
+    {
+      "san": "h6",
+      "games": 17,
+      "link": 40,
+      "score_cp": 27,
+      "depth": 45
+    },
+    {
+      "san": "a6",
+      "games": 16,
+      "link": 41,
+      "score_cp": 40,
+      "depth": 45
+    },
+    {
+      "san": "Bd6",
+      "games": 3,
+      "link": 42,
+      "score_cp": 40,
+      "depth": 45
+    }
+  ],
+  "raw": "E00: Queen's pawn game - 1. d4 e6 2. c4 Nf6 3. Nc3 - Chess Opening explorer (https://www.365chess.com/opening.php?m=6&ms=d4.e6.c4.Nf6.Nc3&n=38&ns=7.18.84.33.38)\nciteturn207view0 [wordlim: 200] Crawled: 9 months ago; Content type: text/html; Source: click({\"ref_id\":\"turn159view0\",\"id\":32}); Total lines: 299\nL0: \nL1: \nL2: ##### Login 365Chess\nL3: \nL4: 【71†Image: google†www.365chess.com】Sign in with Google\nL5: \nL6: OR\nL7: \nL8: 【0†Forgot your password?】\nL9: \nL10: Not registered? 【1†Sign up】\nL11: \nL12: 【2† 】\nL13: \nL14: 【3† 365Chess.com 】\nL15:   * 【4†Opening Explorer】\nL16:   * 【5†Courses】\nL17:   *  Search\nL18:     * 【6†Game Position】\nL19:     * 【7†Chess Games】\nL20:     * 【8†Chess Tournaments】\nL21:     * 【9†Endgames】\nL22:   *  Training\nL23:     * 【10†Openings Trainer】\nL24:     * 【11†Play vs Computer】\nL25:     * 【12†Puzzles】\nL26:     * 【13†Endgames】\nL27:   * 【14†ECO Codes】\nL28:   *  Resources\nL29:     * 【15†Analysis Board】\nL30:     * 【16†Board Editor】\nL31:     * 【17†Chess Openings】\nL32:     * 【18†Blog】\nL33:   *  Help\nL34:     * 【19†F.A.Q.】\nL35:     * 【20†Contact Us】\nL36:   * 【21†Membership】\nL37: \nL38: Login 【1†Register】\nL39: #####\nL40: \nL41: Welcome!\nL42: \nL43: LOGIN | 【1†REGISTER】\nL44: \nL45: Main\nL46: \nL47:   * 【3†Home】\nL48:   * 【4†Opening Explorer】\nL49:   * 【5†Chess Courses】\nL50:   * 【14†ECO Codes】\nL51: \nL52: Search\nL53: \nL54:   * 【6†Position】\nL55:   * 【7†Games】\nL56:   * 【8†Tournaments】\nL57:   * 【9†Endgames】\nL58: \nL59: Training\nL60: \nL61:   * 【10†Openings Trainer】\nL62:   * 【11†Play vs Computer】\nL63:   * 【12†Puzzles】\nL64:   * 【13†Endgames】\nL65: \nL66: Resources\nL67: \nL68:   * 【15†Analysis Board】\nL69:   * 【16†Board Editor】\nL70:   * 【17†Chess Openings】\nL71:   * 【18†Blog】\nL72: \nL73: Help\nL74: \nL75:   * 【19†F.A.Q.】\nL76:   * 【20†Contact Us】\nL77:   * 【21†Membership】\nL78: \nL79: Chess Opening Explorer\nL80: With our Opening Explorer you can browse our entire chess database move by move obtaining statistics about the results of each possible continuation.\nL81: The Opening Explorer is a great tool if you want to study chess openings.\nL82: \nL83:   * 【3†Search games】\nL84:   * 【6†Search position】\nL85:   * Opening Explorer\nL86: # 【22†E00 Queen's pawn game】\nL87: \nL88: 【23†Settings】\nL89: \nL90: 【23† 】\nL91: \nL92: 【4†Top】\nL93: \nL94: Fen:  【72†Image: Copy Position†www.365chess.com】\nL95: \nL96: Url:  【73†Image: Copy Position†www.365chess.com】\nL97: \nL98: ## Personal notes\nL99: #### Create notes\nL100: \nL101: If you want to create a note in this position you have to log into your account and have a Supporter membership.\nL102: \nL103: 【24†I'm already a Supporter. Log me in now.】\nL104: \nL105: 【25†I'm not a Supporter yet. Tell me more.】\nL106: \nL107: Close\nL108: \nL109: Use your Personal notes to store information and comments about this position. Remember, the notes are private. Nobody but you can see them.\nL110: \nL111: Create a note for this position\nL112: ### Related Openings:\nL113:   * E00: Queen's pawn game\nL114:   * E01: Catalan, closed\nL115:   * E02: Catalan, open, 5.Qa4\nL116:   * E03: Catalan, open, Alekhine variation\nL117:   * E04: Catalan, open, 5.Nf3\nL118:   * E05: Catalan, open, classical line\nL119:   * E06: Catalan, closed, 5.Nf3\nL120:   * E07: Catalan, closed, 6...Nbd7\nL121:   * E08: Catalan, closed, 7.Qc2\nL122:   * E09: Catalan, closed, main line\nL123:   * E10: Queen's pawn game\nL124:   * E11: Bogo-Indian defence\nL125:   * E12: Queen's Indian defence\nL126:   * E13: Queen's Indian, 4.Nc3, main line\nL127:   * E14: Queen's Indian, 4.e3\nL128:   * E15: Queen's Indian, 4.g3\nL129:   * E16: Queen's Indian, Capablanca variation\nL130:   * E17: Queen's Indian, 5.Bg2 Be7\nL131:   * E18: Queen's Indian, old main line, 7.Nc3\nL132:   * E19: Queen's Indian, old main line, 9.Qxc3\nL133:   * E20: Nimzo-Indian defence\nL134:   * E21: Nimzo-Indian, three knights variation\nL135:   * E22: Nimzo-Indian, Spielmann variation\nL136:   * E23: Nimzo-Indian, Spielmann, 4...c5, 5.dc Nc6\nL137:   * E24: Nimzo-Indian, Saemisch variation\nL138:   * E25: Nimzo-Indian, Saemisch variation\nL139:   * E26: Nimzo-Indian, Saemisch variation\nL140:   * E27: Nimzo-Indian, Saemisch variation\nL141:   * E28: Nimzo-Indian, Saemisch variation\nL142:   * E29: Nimzo-Indian, Saemisch, main line\nL143:   * E30: Nimzo-Indian, Leningrad variation\nL144:   * E31: Nimzo-Indian, Leningrad, main line\nL145:   * E32: Nimzo-Indian, classical variation\nL146:   * E33: Nimzo-Indian, classical, 4...Nc6\nL147:   * E34: Nimzo-Indian, classical, Noa variation\nL148:   * E35: Nimzo-Indian, classical, Noa variation, 5.cd ed\nL149:   * E36: Nimzo-Indian, classical, Noa variation, 5.a3\nL150:   * E37: Nimzo-Indian, classical, Noa variation, main line, 7.Qc2\nL151:   * E38: Nimzo-Indian, classical, 4...c5\nL152:   * E39: Nimzo-Indian, classical, Pirc variation\nL153:   * E40: Nimzo-Indian, 4.e3\nL154:   * E41: Nimzo-Indian, 4.e3 c5\nL155:   * E42: Nimzo-Indian, 4.e3 c5, 5.Ne2 (Rubinstein)\nL156:   * E43: Nimzo-Indian, Fischer variation\nL157:   * E44: Nimzo-Indian, Fischer variation, 5.Ne2\nL158:   * E45: Nimzo-Indian, 4.e3, Bronstein (Byrne) variation\nL159:   * E46: Nimzo-Indian, 4.e3 O-O\nL160:   * E47: Nimzo-Indian, 4.e3 O-O, 5.Bd3\nL161:   * E48: Nimzo-Indian, 4.e3 O-O, 5.Bd3 d5\nL162:   * E49: Nimzo-Indian, 4.e3, Botvinnik system\nL163:   * E50: Nimzo-Indian, 4.e3 e8g8, 5.Nf3, without ...d5\nL164:   * E51: Nimzo-Indian, 4.e3 e8g8, 5.Nf3 d7d5\nL165:   * E52: Nimzo-Indian, 4.e3, main line with ...b6\nL166:   * E53: Nimzo-Indian, 4.e3, main line with ...c5\nL167:   * E54: Nimzo-Indian, 4.e3, Gligoric system with 7...dc\nL168:   * E55: Nimzo-Indian, 4.e3, Gligoric system, Bronstein variation\nL169:   * E56: Nimzo-Indian, 4.e3, main line with 7...Nc6\nL170:   * E57: Nimzo-Indian, 4.e3, main line with 8...dc and 9...cd\nL171:   * E58: Nimzo-Indian, 4.e3, main line with 8...Bxc3\nL172:   * E59: Nimzo-Indian, 4.e3, main line\nL173: Stop Analysis\nL174: \nL175: Start Engine Analysis\nL176: \nL177: Stored Analysis: +0.15 Depth 50\nL178: \nL179: Opening Explorer Database:   Big Database Masters Database   【74†Image: help†www.365chess.com】\nL180: \nL181: Moves List:\nL182: \nL183: 1. 【26†d4】 【27†e6】 2. 【28†c4】 【29†Nf6】 3. 【30†Nc3】\nL184: \nL185: Game List\nL186: \nL187: Save\nL188: \nL189: Play Position\nL190: \nL191: Play\nL192: \nL193: Analysis Board\nL194: \nL195: Analysis\nL196: Next Move # of Games Last Played Winnings percentage\nL197: White / Draw / Black Engine Eval.\nL198: 【31†3... Bb4】   87,495 2026 33.3 %  37.3 %  29.5 %\nL199: +0.00 Dpt 45\nL200: 【32†3... d5】   18,288 2026 39.9 %  36.2 %  23.9 %\nL201: +0.22 Dpt 50\nL202: 【33†3... c5】   4,045 2026 43.1 %  24.5 %  32.4 %\nL203: +0.17 Dpt 45\nL204: 【34†3... b6】   1,041 2024 52.4 %  20.9 %  26.6 %\nL205: +0.48 Dpt 45\nL206: 【35†3... Be7】   200 2022 61 %  25 %\nL207: +0.49 Dpt 45\nL208: 【36†3... c6】   90 2022 57.8 %  20 %  22.2 %\nL209: +0.36 Dpt 45\nL210: 【37†3... g6】   55 2024 65.5 %  18.2 %  16.4 %\nL211: +0.40 Dpt 45\nL212: 【38†3... Nc6】   34 2025 73.5 %  17.6 %\nL213: +0.36 Dpt 45\nL214: 【39†3... d6】   27 2016 55.6 %  33.3 %\nL215: +0.36 Dpt 45\nL216: 【40†3... h6】   17 2018 70.6 %  17.6 %\nL217: +0.27 Dpt 45\nL218: 【41†3... a6】   16 2007 50 %  25 %  25 %\nL219: +0.40 Dpt 45\nL220: 【42†3... Bd6】   3 2017 100 %\nL221: +0.40 Dpt 45\nL222: 3... Ng8   【43†½-½】, 【44†Aleksandrov】 (2619) vs. 【45† Neiksans】 (2596)\nL223: Hide Engine Analysis\nL224: ### Recent games\nL225: \nL226: Players Result\nL227: 【46†Fedoseev, V vs Keymer, V】  1 - 0 【75†Image: Open Game†www.365chess.com】\nL228: 【47†Madhesh Kumar S vs Hari Ganesh T】  0 - 1 【76†Image: Open Game†www.365chess.com】\nL229: 【48†Melnikov, F vs Kornienko, K】  ½ - ½ 【77†Image: Open Game†www.365chess.com】\nL230: 【49†Sahakyan, A vs Lashkin, J】  ½ - ½ 【78†Image: Open Game†www.365chess.com】\nL231: 【50†Naumovich, Y vs Zarubitski, V】  0 - 1 【79†Image: Open Game†www.365chess.com】\nL232: ### Top Games by Average ELO\nL233: \nL234: Players Result\nL235: 【51†Carlsen, M vs Caruana, F】  1 - 0 【80†Image: Open Game†www.365chess.com】\nL236: 【52†Carlsen, M vs Ding, L】  ½ - ½ 【81†Image: Open Game†www.365chess.com】\nL237: 【53†Carlsen, M vs Ding, L】  ½ - ½ 【82†Image: Open Game†www.365chess.com】\nL238: 【54†Radjabov, T vs Carlsen, M】  0 - 1 【83†Image: Open Game†www.365chess.com】\nL239: 【55†Carlsen, M vs Caruana, F】  1 - 0 【84†Image: Open Game†www.365chess.com】\nL240: ### Played frequently by\nL241: \nL242: As White\nL243: Svetozar Gligoric【56†420 games】\nL244: Aleksej Aleksandrov【57†300 games】\nL245: Viktor Korchnoi【58†243 games】\nL246: As Black\nL247: Ivan Farago【59†179 games】\nL248: Viktor Korchnoi【60†177 games】\nL249: Anatoly Karpov【61†169 games】\nL250: \nL251: #### Opening Explorer Message\nL252: \nL253: This position doesn't exist in the Opening Explorer\nL254: \nL255: Continue\nL256: \nL257: #### Download PGN\nL258: \nL259: PGN Analysis\nL260: \nL261: ### Browse\nL262: \nL263:   * 【3†Home】\nL264:   * 【7†Chess Games】\nL265:   * 【6†Search Position】\nL266:   * 【8†Tournaments】\nL267:   * 【4†Opening Explorer】\nL268:   * 【14†ECO Codes】\nL269: ### Training\nL270: \nL271:   * 【10†Openings Trainer】\nL272:   * 【12†Puzzles & Tactics】\nL273:   * 【13†Endgames Training】\nL274:   * 【11†Play vs Computer】\nL275:   * 【5†Courses】\nL276: \nL277: ### Players & Tools\nL278: \nL279:   * 【62†Players by Rating】\nL280:   * 【63†Women by Rating】\nL281:   * 【64†Players by # Games】\nL282:   * 【65†Players A-Z】\nL283:   * 【15†Analysis Board】\nL284:   * 【16†Board Editor】\nL285: ### Company\nL286: \nL287:   * 【66†Membership】\nL288:   * 【19†F.A.Q.】\nL289:   * 【20†Contact Us】\nL290:   * 【18†Blog】\nL291:   * 【67†Terms of Service】\nL292:   * 【68†Privacy Policy】\nL293: \nL294: 【69† @365Chess on X †twitter.com】\nL295: \nL296: 【85†Image: 365Chess logo†www.365chess.com】\nL297: \nL298: 【70† Back to top ↑ 】\n"
+}

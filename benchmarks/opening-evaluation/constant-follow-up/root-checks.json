@@ -1,0 +1,258 @@
+{
+  "baseline_revision": "bdb77b1c4af864b24b9dd81a4906110ef970b129",
+  "baseline_engine_sha256": "bf4a7ba8abf7fe1504c78eae4734e328775043b18838e607cef690b202638952",
+  "compiler": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+  "flags": [
+    "--edition=2021",
+    "-C",
+    "opt-level=3",
+    "-C",
+    "codegen-units=1",
+    "-C",
+    "lto=fat"
+  ],
+  "platform": "macOS-26.5.1-arm64-arm-64bit",
+  "threads": 1,
+  "total_memory_budget": 100000000,
+  "scope": "roots",
+  "references": [
+    {
+      "id": "start",
+      "sequence": []
+    },
+    {
+      "id": "e4",
+      "sequence": [
+        "e4"
+      ]
+    },
+    {
+      "id": "d4",
+      "sequence": [
+        "d4"
+      ]
+    }
+  ],
+  "shared_sha256": {
+    "chess": "d29bf74343b3e225500ab9f40085898f050baf6079c5d2cdbd5246bc3978167a",
+    "tables": "33170ea449259320b74a4dad812b49dcff609a0914cff3a61e2b29db34eb4186",
+    "cache": "873372bdbdb4643fb66cd15e94081a5edf0b1aa7734f2c00b0cf8d4082a53cc6",
+    "ordering": "5302eff4f2d61c58ec1f02d8907b82b6a68c49e5f3df377f89ebc2398a5644ab"
+  },
+  "changes": {
+    "current": [],
+    "early-queen16": [
+      [
+        "    let (threat_mg, threat_eg) = threats(p, occupied, kings, pawn_attacks, &pressure);",
+        "    let mut early_queen = 0;\n    for color in 0..2 {\n        let home = if color == 1 { 0x66 } else { 0x6600_0000_0000_0000 };\n        let minors = knights[color] | (diagonal[color] & !straight[color]);\n        let undeveloped = (minors & home).count_ones() as i32;\n        let advanced = if color == 1 { !0xffff } else { !0xffff_0000_0000_0000 };\n        let queen = diagonal[color] & straight[color] & advanced;\n        let sign = if color == 1 { -1 } else { 1 };\n        early_queen += sign * queen.count_ones() as i32 * undeveloped * 16;\n    }\n    score += early_queen;\n    endgame_delta -= early_queen;\n    let (threat_mg, threat_eg) = threats(p, occupied, kings, pawn_attacks, &pressure);"
+      ]
+    ],
+    "early-queen24": [
+      [
+        "    let (threat_mg, threat_eg) = threats(p, occupied, kings, pawn_attacks, &pressure);",
+        "    let mut early_queen = 0;\n    for color in 0..2 {\n        let home = if color == 1 { 0x66 } else { 0x6600_0000_0000_0000 };\n        let minors = knights[color] | (diagonal[color] & !straight[color]);\n        let undeveloped = (minors & home).count_ones() as i32;\n        let advanced = if color == 1 { !0xffff } else { !0xffff_0000_0000_0000 };\n        let queen = diagonal[color] & straight[color] & advanced;\n        let sign = if color == 1 { -1 } else { 1 };\n        early_queen += sign * queen.count_ones() as i32 * undeveloped * 24;\n    }\n    score += early_queen;\n    endgame_delta -= early_queen;\n    let (threat_mg, threat_eg) = threats(p, occupied, kings, pawn_attacks, &pressure);"
+      ]
+    ]
+  },
+  "engine_sha256": {
+    "current": "bf4a7ba8abf7fe1504c78eae4734e328775043b18838e607cef690b202638952",
+    "early-queen16": "df465d35274a732ed50f4a92a076817a7b3658071b628857feb0ae784075e21f",
+    "early-queen24": "27df0ed8d3abd326e6c2b7d4ffc25279b379857f6fe03d53c0023c3de47a9502"
+  },
+  "runs": [
+    {
+      "id": "start",
+      "sequence": [],
+      "fen": "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+      "static_cp": 24,
+      "score_cp": 13,
+      "depth": 7,
+      "best": "d2d4",
+      "nodes": 599958,
+      "hits": 5525,
+      "cache_bytes": 4210688,
+      "cache_limit": 78601344,
+      "variant": "current"
+    },
+    {
+      "id": "e4",
+      "sequence": [
+        "e4"
+      ],
+      "fen": "rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b KQkq e3 0 1",
+      "static_cp": 30,
+      "score_cp": -1,
+      "depth": 7,
+      "best": "d7d5",
+      "nodes": 752406,
+      "hits": 5523,
+      "cache_bytes": 4210688,
+      "cache_limit": 78601344,
+      "variant": "current"
+    },
+    {
+      "id": "d4",
+      "sequence": [
+        "d4"
+      ],
+      "fen": "rnbqkbnr/pppppppp/8/8/3P4/8/PPP1PPPP/RNBQKBNR b KQkq d3 0 1",
+      "static_cp": 28,
+      "score_cp": 24,
+      "depth": 7,
+      "best": "d7d5",
+      "nodes": 655390,
+      "hits": 5396,
+      "cache_bytes": 4210688,
+      "cache_limit": 78601344,
+      "variant": "current"
+    },
+    {
+      "id": "start",
+      "sequence": [],
+      "fen": "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+      "static_cp": 24,
+      "score_cp": 23,
+      "depth": 7,
+      "best": "e2e4",
+      "nodes": 543751,
+      "hits": 3817,
+      "cache_bytes": 4210688,
+      "cache_limit": 78601344,
+      "variant": "early-queen16"
+    },
+    {
+      "id": "e4",
+      "sequence": [
+        "e4"
+      ],
+      "fen": "rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b KQkq e3 0 1",
+      "static_cp": 30,
+      "score_cp": 24,
+      "depth": 7,
+      "best": "e7e5",
+      "nodes": 663233,
+      "hits": 6397,
+      "cache_bytes": 4210688,
+      "cache_limit": 78601344,
+      "variant": "early-queen16"
+    },
+    {
+      "id": "d4",
+      "sequence": [
+        "d4"
+      ],
+      "fen": "rnbqkbnr/pppppppp/8/8/3P4/8/PPP1PPPP/RNBQKBNR b KQkq d3 0 1",
+      "static_cp": 28,
+      "score_cp": 24,
+      "depth": 7,
+      "best": "d7d5",
+      "nodes": 650709,
+      "hits": 5228,
+      "cache_bytes": 4210688,
+      "cache_limit": 78601344,
+      "variant": "early-queen16"
+    },
+    {
+      "id": "start",
+      "sequence": [],
+      "fen": "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+      "static_cp": 24,
+      "score_cp": 23,
+      "depth": 7,
+      "best": "e2e4",
+      "nodes": 565748,
+      "hits": 3275,
+      "cache_bytes": 4210688,
+      "cache_limit": 78601344,
+      "variant": "early-queen24"
+    },
+    {
+      "id": "e4",
+      "sequence": [
+        "e4"
+      ],
+      "fen": "rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b KQkq e3 0 1",
+      "static_cp": 30,
+      "score_cp": 24,
+      "depth": 7,
+      "best": "e7e5",
+      "nodes": 686394,
+      "hits": 6338,
+      "cache_bytes": 4210688,
+      "cache_limit": 78601344,
+      "variant": "early-queen24"
+    },
+    {
+      "id": "d4",
+      "sequence": [
+        "d4"
+      ],
+      "fen": "rnbqkbnr/pppppppp/8/8/3P4/8/PPP1PPPP/RNBQKBNR b KQkq d3 0 1",
+      "static_cp": 28,
+      "score_cp": 24,
+      "depth": 7,
+      "best": "d7d5",
+      "nodes": 675732,
+      "hits": 4664,
+      "cache_bytes": 4210688,
+      "cache_limit": 78601344,
+      "variant": "early-queen24"
+    }
+  ],
+  "summaries": [
+    {
+      "variant": "current",
+      "depth": 7,
+      "roots": {
+        "start": {
+          "score_cp": 13,
+          "best": "d2d4"
+        },
+        "e4": {
+          "score_cp": -1,
+          "best": "d7d5"
+        },
+        "d4": {
+          "score_cp": 24,
+          "best": "d7d5"
+        }
+      }
+    },
+    {
+      "variant": "early-queen16",
+      "depth": 7,
+      "roots": {
+        "start": {
+          "score_cp": 23,
+          "best": "e2e4"
+        },
+        "e4": {
+          "score_cp": 24,
+          "best": "e7e5"
+        },
+        "d4": {
+          "score_cp": 24,
+          "best": "d7d5"
+        }
+      }
+    },
+    {
+      "variant": "early-queen24",
+      "depth": 7,
+      "roots": {
+        "start": {
+          "score_cp": 23,
+          "best": "e2e4"
+        },
+        "e4": {
+          "score_cp": 24,
+          "best": "e7e5"
+        },
+        "d4": {
+          "score_cp": 24,
+          "best": "d7d5"
+        }
+      }
+    }
+  ]
+}

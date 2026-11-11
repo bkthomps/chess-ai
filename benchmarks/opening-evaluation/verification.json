@@ -1,0 +1,25 @@
+{
+  "application_candidate_comparisons": 138,
+  "matching_fields": [
+    "fen",
+    "static_cp",
+    "score_cp",
+    "best",
+    "nodes",
+    "hits",
+    "cache_bytes",
+    "cache_limit"
+  ],
+  "application_engine_sha256": "bf4a7ba8abf7fe1504c78eae4734e328775043b18838e607cef690b202638952",
+  "candidate_engine_sha256": "0403df6b5e7d2e2d792a4955cf27d9787f37e147329b2e0119b4997288e48ef4",
+  "checks": {
+    "cargo_fmt": "passed",
+    "cargo_test_offline": "passed",
+    "cargo_clippy_all_targets_offline_warnings_denied": "passed",
+    "cargo_build_release_offline": "passed",
+    "http_smoke": "passed",
+    "ui_smoke": "passed",
+    "reference_cutoff_and_ancestry": "passed",
+    "report_local_links": "passed"
+  }
+}

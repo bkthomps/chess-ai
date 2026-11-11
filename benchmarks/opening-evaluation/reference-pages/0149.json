@@ -1,0 +1,132 @@
+{
+  "path": [
+    "d4",
+    "e6",
+    "c4",
+    "Nf6"
+  ],
+  "url": "https://www.365chess.com/opening.php?m=5&ms=d4.e6.c4.Nf6&n=33&ns=7.18.84.33",
+  "ref": "turn159view0",
+  "rows": [
+    {
+      "san": "Nc3",
+      "games": 110454,
+      "link": 32,
+      "score_cp": 22,
+      "depth": 22
+    },
+    {
+      "san": "Nf3",
+      "games": 100790,
+      "link": 33,
+      "score_cp": 31,
+      "depth": 24
+    },
+    {
+      "san": "g3",
+      "games": 22154,
+      "link": 34,
+      "score_cp": 0,
+      "depth": 45
+    },
+    {
+      "san": "a3",
+      "games": 1084,
+      "link": 35,
+      "score_cp": 0,
+      "depth": 45
+    },
+    {
+      "san": "Bg5",
+      "games": 952,
+      "link": 36,
+      "score_cp": 0,
+      "depth": 45
+    },
+    {
+      "san": "Bf4",
+      "games": 271,
+      "link": 37,
+      "score_cp": 0,
+      "depth": 45
+    },
+    {
+      "san": "e3",
+      "games": 187,
+      "link": 38,
+      "score_cp": 0,
+      "depth": 45
+    },
+    {
+      "san": "Qc2",
+      "games": 39,
+      "link": 39,
+      "score_cp": 0,
+      "depth": 45
+    },
+    {
+      "san": "f3",
+      "games": 21,
+      "link": 40,
+      "score_cp": -31,
+      "depth": 45
+    },
+    {
+      "san": "d5",
+      "games": 16,
+      "link": 41,
+      "score_cp": -13,
+      "depth": 45
+    },
+    {
+      "san": "Nd2",
+      "games": 10,
+      "link": 42,
+      "score_cp": 0,
+      "depth": 45
+    },
+    {
+      "san": "g4",
+      "games": 7,
+      "link": 43,
+      "score_cp": -27,
+      "depth": 45
+    },
+    {
+      "san": "c5",
+      "games": 3,
+      "link": 44,
+      "score_cp": -27,
+      "depth": 45
+    },
+    {
+      "san": "b3",
+      "games": 3,
+      "link": 45,
+      "score_cp": 0,
+      "depth": 45
+    },
+    {
+      "san": "h3",
+      "games": 2,
+      "link": 46,
+      "score_cp": 0,
+      "depth": 45
+    },
+    {
+      "san": "Qb3",
+      "games": 2,
+      "link": 47,
+      "score_cp": -13,
+      "depth": 45
+    },
+    {
+      "san": "Bd2",
+      "games": 2,
+      "link": 48,
+      "score_cp": 0,
+      "depth": 45
+    }
+  ],
+  "raw": "E00: Queen's pawn game - 1. d4 e6 2. c4 Nf6 - Chess Opening explorer (https://www.365chess.com/opening.php?m=5&ms=d4.e6.c4.Nf6&n=33&ns=7.18.84.33)\nciteturn159view0 [wordlim: 200] Crawled: 2 months ago; Content type: text/html; Source: click({\"ref_id\":\"turn70view0\",\"id\":28}); Total lines: 295\nL0: ##### Login 365Chess\nL1: \nL2: 【0†Image: google†d2rnvyacaewvx6.cloudfront.net】Sign in with Google\nL3: \nL4: OR\nL5: \nL6: [Input: Username]\nL7: \nL8: [Input: Password] 【1†Forgot your password?】\nL9: \nL10: [Input]\nL11: \nL12: Not registered? 【2†Sign up】\nL13: \nL14:   * 【3†Search】\nL15:     * 【4†Game Position】\nL16:     * 【5†Chess Games】\nL17:     * 【6†Chess Tournaments】\nL18:     * 【7†Endgames】\nL19:     * 【8†Chess Players】\nL20:   * 【3†Training】\nL21:     * 【9†Openings Trainer】\nL22:     * 【10†Play vs Computer】\nL23:     * 【11†Puzzles】\nL24:     * 【12†Endgames】\nL25: #####\nL26: \nL27: Welcome!\nL28: \nL29: 【3†LOGIN】 | 【2†REGISTER】\nL30: \nL31: Main\nL32: \nL33:   * 【13†Home】\nL34:   * 【14†Opening Explorer】\nL35:   * 【15†Chess Courses】\nL36:   * 【16†ECO Codes】\nL37: \nL38: Search\nL39: \nL40:   * 【4†Position】\nL41:   * 【5†Games】\nL42:   * 【6†Tournaments】\nL43:   * 【7†Endgames】\nL44:   * 【8†Chess Players】\nL45: \nL46: Training\nL47: \nL48:   * 【9†Openings Trainer】\nL49:   * 【10†Play vs Computer】\nL50:   * 【11†Puzzles】\nL51:   * 【12†Endgames】\nL52: \nL53: Resources\nL54: \nL55:   * 【17†Analysis Board】\nL56:   * 【18†Board Editor】\nL57:   * 【19†Chess Openings】\nL58:   * 【20†Blog】\nL59: \nL60: Help\nL61: \nL62:   * 【21†F.A.Q.】\nL63:   * 【22†Contact Us】\nL64:   * 【23†Membership】\nL65: \nL66: Chess Opening Explorer\nL67: With our Opening Explorer you can browse our entire chess database move by move obtaining statistics about the results of each possible continuation.\nL68: The Opening Explorer is a great tool if you want to study chess openings.\nL69: # 【24†E00 Queen's pawn game】\nL70: \nL71: [Input]\nL72: \nL73: [Input]\nL74: \nL75: [Input]\nL76: \nL77: [Input]\nL78: \nL79: [Input]\nL80: \nL81: 【14†Top】\nL82: \nL83: Fen: [Input] 【25†Image: Copy Position†d2rnvyacaewvx6.cloudfront.net】\nL84: \nL85: Url: [Input] 【25†Image: Copy Position†d2rnvyacaewvx6.cloudfront.net】\nL86: \nL87: ## Personal notes\nL88: #### Create notes\nL89: \nL90: If you want to create a note in this position you have to log into your account and have a Supporter membership.\nL91: \nL92: 【26†I'm already a Supporter. Log me in now.】\nL93: \nL94: 【27†I'm not a Supporter yet. Tell me more.】\nL95: \nL96: [Button: Close]\nL97: \nL98: Use your Personal notes to store information and comments about this position. Remember, the notes are private. Nobody but you can see them.\nL99: \nL100: Create a note for this position\nL101: ### Related Openings:\nL102:   * E00: 【3†Queen's pawn game】\nL103:   * E01: 【3†Catalan, closed】\nL104:   * E02: 【3†Catalan, open, 5.Qa4】\nL105:   * E03: 【3†Catalan, open, Alekhine variation】\nL106:   * E04: 【3†Catalan, open, 5.Nf3】\nL107:   * E05: 【3†Catalan, open, classical line】\nL108:   * E06: 【3†Catalan, closed, 5.Nf3】\nL109:   * E07: 【3†Catalan, closed, 6...Nbd7】\nL110:   * E08: 【3†Catalan, closed, 7.Qc2】\nL111:   * E09: 【3†Catalan, closed, main line】\nL112:   * E10: 【3†Queen's pawn game】\nL113:   * E11: 【3†Bogo-Indian defence】\nL114:   * E12: 【3†Queen's Indian defence】\nL115:   * E13: 【3†Queen's Indian, 4.Nc3, main line】\nL116:   * E14: 【3†Queen's Indian, 4.e3】\nL117:   * E15: 【3†Queen's Indian, 4.g3】\nL118:   * E16: 【3†Queen's Indian, Capablanca variation】\nL119:   * E17: 【3†Queen's Indian, 5.Bg2 Be7】\nL120:   * E18: 【3†Queen's Indian, old main line, 7.Nc3】\nL121:   * E19: 【3†Queen's Indian, old main line, 9.Qxc3】\nL122:   * E20: 【3†Nimzo-Indian defence】\nL123:   * E21: 【3†Nimzo-Indian, three knights variation】\nL124:   * E22: 【3†Nimzo-Indian, Spielmann variation】\nL125:   * E23: 【3†Nimzo-Indian, Spielmann, 4...c5, 5.dc Nc6】\nL126:   * E24: 【3†Nimzo-Indian, Saemisch variation】\nL127:   * E25: 【3†Nimzo-Indian, Saemisch variation】\nL128:   * E26: 【3†Nimzo-Indian, Saemisch variation】\nL129:   * E27: 【3†Nimzo-Indian, Saemisch variation】\nL130:   * E28: 【3†Nimzo-Indian, Saemisch variation】\nL131:   * E29: 【3†Nimzo-Indian, Saemisch, main line】\nL132:   * E30: 【3†Nimzo-Indian, Leningrad variation】\nL133:   * E31: 【3†Nimzo-Indian, Leningrad, main line】\nL134:   * E32: 【3†Nimzo-Indian, classical variation】\nL135:   * E33: 【3†Nimzo-Indian, classical, 4...Nc6】\nL136:   * E34: 【3†Nimzo-Indian, classical, Noa variation】\nL137:   * E35: 【3†Nimzo-Indian, classical, Noa variation, 5.cd ed】\nL138:   * E36: 【3†Nimzo-Indian, classical, Noa variation, 5.a3】\nL139:   * E37: 【3†Nimzo-Indian, classical, Noa variation, main line, 7.Qc2】\nL140:   * E38: 【3†Nimzo-Indian, classical, 4...c5】\nL141:   * E39: 【3†Nimzo-Indian, classical, Pirc variation】\nL142:   * E40: 【3†Nimzo-Indian, 4.e3】\nL143:   * E41: 【3†Nimzo-Indian, 4.e3 c5】\nL144:   * E42: 【3†Nimzo-Indian, 4.e3 c5, 5.Ne2 (Rubinstein)】\nL145:   * E43: 【3†Nimzo-Indian, Fischer variation】\nL146:   * E44: 【3†Nimzo-Indian, Fischer variation, 5.Ne2】\nL147:   * E45: 【3†Nimzo-Indian, 4.e3, Bronstein (Byrne) variation】\nL148:   * E46: 【3†Nimzo-Indian, 4.e3 O-O】\nL149:   * E47: 【3†Nimzo-Indian, 4.e3 O-O, 5.Bd3】\nL150:   * E48: 【3†Nimzo-Indian, 4.e3 O-O, 5.Bd3 d5】\nL151:   * E49: 【3†Nimzo-Indian, 4.e3, Botvinnik system】\nL152:   * E50: 【3†Nimzo-Indian, 4.e3 e8g8, 5.Nf3, without ...d5】\nL153:   * E51: 【3†Nimzo-Indian, 4.e3 e8g8, 5.Nf3 d7d5】\nL154:   * E52: 【3†Nimzo-Indian, 4.e3, main line with ...b6】\nL155:   * E53: 【3†Nimzo-Indian, 4.e3, main line with ...c5】\nL156:   * E54: 【3†Nimzo-Indian, 4.e3, Gligoric system with 7...dc】\nL157:   * E55: 【3†Nimzo-Indian, 4.e3, Gligoric system, Bronstein variation】\nL158:   * E56: 【3†Nimzo-Indian, 4.e3, main line with 7...Nc6】\nL159:   * E57: 【3†Nimzo-Indian, 4.e3, main line with 8...dc and 9...cd】\nL160:   * E58: 【3†Nimzo-Indian, 4.e3, main line with 8...Bxc3】\nL161:   * E59: 【3†Nimzo-Indian, 4.e3, main line】\nL162: \nL163: \nL164: \nL165: \nL166: 【3†Stop Analysis】\nL167: \nL168: 【3†Start Engine Analysis】\nL169: \nL170: Stored Analysis: +0.27 Depth 25\nL171: \nL172: Opening Explorer Database:  [Select]\nL173: \nL174: Moves List:\nL175: \nL176: 1. 【28†d4】 【29†e6】 2. 【30†c4】 【31†Nf6】\nL177: \nL178: 【3†Game List】\nL179: \nL180: 【3†Save】\nL181: \nL182: 【3†Play】\nL183: \nL184: 【3†Analysis】\nL185: Next Move  | # of Games  | Last Played  | Winnings percentage\nL186: White / Draw / Black  | Engine Eval.\nL187: 【32†3. Nc3】  |  110,454  | 2026  |\nL188: 34.9 % 36.5 % 28.7 %\nL189:  | +0.22 Dpt 22\nL190: 【33†3. Nf3】  |  100,790  | 2026  |\nL191: 33.2 % 42.9 % 24 %\nL192:  | +0.31 Dpt 24\nL193: 【34†3. g3】  |  22,154  | 2026  |\nL194: 34.2 % 40 % 25.8 %\nL195:  | +0.00 Dpt 45\nL196: 【35†3. a3】  |  1,084  | 2026  |\nL197: 34 % 24.8 % 41.1 %\nL198:  | +0.00 Dpt 45\nL199: 【36†3. Bg5】  |  952  | 2026  |\nL200: 32.7 % 26.6 % 40.8 %\nL201:  | +0.00 Dpt 45\nL202: 【37†3. Bf4】  |  271  | 2026  |\nL203: 39.1 % 38.7 % 22.1 %\nL204:  | +0.00 Dpt 45\nL205: 【38†3. e3】  |  187  | 2026  |\nL206: 26.7 % 20.3 % 52.9 %\nL207:  | +0.00 Dpt 45\nL208: 【39†3. Qc2】  |  39  | 2024  |\nL209: 28.2 % 35.9 % 35.9 %\nL210:  | +0.00 Dpt 45\nL211: 【40†3. f3】  |  21  | 2021  |\nL212: 23.8 % 38.1 % 38.1 %\nL213:  | -0.31 Dpt 45\nL214: 【41†3. d5】  |  16  | 2013  |\nL215: 25 % 25 % 50 %\nL216:  | -0.13 Dpt 45\nL217: 【42†3. Nd2】  |  10  | 2015  |\nL218: 30 % 20 % 50 %\nL219:  | +0.00 Dpt 45\nL220: 【43†3. g4】  |  7  | 2024  |\nL221: 28.6 % 28.6 % 42.9 %\nL222:  | -0.27 Dpt 45\nL223: 【44†3. c5】  |  3  | 2005  |\nL224: 33.3 % 66.7 %\nL225:  | -0.27 Dpt 45\nL226: 【45†3. b3】  |  3  | 2008  |\nL227: 66.7 % 33.3 %\nL228:  | +0.00 Dpt 45\nL229: 【46†3. h3】  |  2  | 1999  |\nL230: 100 %\nL231:  | +0.00 Dpt 45\nL232: 【47†3. Qb3】  |  2  | 2003  |\nL233: 100 %\nL234:  | -0.13 Dpt 45\nL235: 【48†3. Bd2】  |  2  | 2010  |\nL236: 50 % 50 %\nL237:  | +0.00 Dpt 45\nL238: 【3†3. h4】  |  【49†0-1】, 【50†Hegedus】 (2030) vs. 【51†Comp Rebel 9】\nL239: 【3†3. Qd3】  |  【52†1-0】, 【53†Pedersen】 vs. 【54†Liland】\nL240: 【3†3. e4】  |  【55†0-1】, 【56†Pumpler】 vs. 【57†Hofmann】\nL241: 【3†3. Qa4】  |  【58†½-½】, 【59†Kopecek】 vs. 【60†Zavodny】\nL242: [Input] Hide Engine Analysis\nL243: \nL244: 【61†Download games】\nL245: ### Latest Played Games\nL246: \nL247: Players  | Result  |\nL248: 【62†Harshavardhan G B vs Nemegeer, A】   | 1 - 0  |\nL249: 【63†Sonis, F vs Uzdemir, A】   | 0 - 1  |\nL250: 【64†Rohith Krishna S vs Flom, G】   | ½ - ½  |\nL251: 【65†Peyrer, K vs Baselmans, L】   | ½ - ½  |\nL252: 【66†Delgado Romero, M vs Ticona Rocabado, L】   | 0 - 1  |\nL253: ### Top Games by Average ELO\nL254: \nL255: Players  | Result  |\nL256: 【67†Carlsen, M vs Caruana, F】   | ½ - ½  |\nL257: 【68†Carlsen, M vs Aronian, L】   | 1 - 0  |\nL258: 【69†Carlsen, M vs Caruana, F】   | ½ - ½  |\nL259: 【70†Carlsen, M vs Caruana, F】   | 1 - 0  |\nL260: 【71†Ding, L vs Carlsen, M】   | ½ - ½  |\nL261: ### Played frequently by\nL262: \nL263: As White  |\nL264: Ivan Farago  | 【72†564 games】\nL265: Svetozar Gligoric  | 【73†492 games】\nL266: Loek Van Wely  | 【74†471 games】\nL267: \nL268: As Black  |\nL269: Anatoly Karpov  | 【75†468 games】\nL270: Viktor Korchnoi  | 【76†458 games】\nL271: Ivan Farago  | 【77†413 games】\nL272: \nL273: #### Opening Explorer Message\nL274: \nL275: This position doesn't exist in the Opening Explorer\nL276: \nL277: [Button: Continue]\nL278: #### Opening Explorer Message\nL279: \nL280: Dear Chessfriend, we're thrilled that you're enjoying this powerful tool!!!\nL281: \nL282: As you know, most of the features in 365Chess are free for everyone, anywhere; we believe in this philosophy and we want to keep it that way.\nL283: To keep the site free for everyone the development of this site relies on the support and contributions of its members. Therefore, we kindly ask you to consider becoming a Supporter. By doing so, you will receive some extra and nice benefits and you will be helping to improve this site.\nL284: \nL285: Thank you in advance for your contribution. You have no idea how much it means to us to have your Support.\nL286: \nL287: [Button: Yes, I want to contribute now]\nL288: \nL289: 【3†Maybe later】\nL290: #### Download PGN\nL291: \nL292: PGN Analysis\nL293: \nL294: [Input]        [Input]\n"
+}

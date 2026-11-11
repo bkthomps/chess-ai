@@ -1,0 +1,132 @@
+{
+  "path": [
+    "e4",
+    "e5",
+    "Nc3",
+    "Nf6"
+  ],
+  "url": "https://www.365chess.com/opening.php?m=5&ms=e4.e5.Nc3.Nf6&n=42&ns=3.5.55.42",
+  "ref": "turn86view0",
+  "rows": [
+    {
+      "san": "f4",
+      "games": 4249,
+      "link": 33,
+      "score_cp": -6,
+      "depth": 50
+    },
+    {
+      "san": "Bc4",
+      "games": 3760,
+      "link": 34,
+      "score_cp": 0,
+      "depth": 40
+    },
+    {
+      "san": "g3",
+      "games": 2977,
+      "link": 35,
+      "score_cp": 0,
+      "depth": 40
+    },
+    {
+      "san": "Nf3",
+      "games": 2734,
+      "link": 36,
+      "score_cp": 14,
+      "depth": 41
+    },
+    {
+      "san": "d4",
+      "games": 269,
+      "link": 37,
+      "score_cp": -17,
+      "depth": 26
+    },
+    {
+      "san": "d3",
+      "games": 174,
+      "link": 38,
+      "score_cp": -15,
+      "depth": 40
+    },
+    {
+      "san": "a3",
+      "games": 83,
+      "link": 39,
+      "score_cp": 0,
+      "depth": 30
+    },
+    {
+      "san": "Bb5",
+      "games": 16,
+      "link": 40,
+      "score_cp": -13,
+      "depth": 20
+    },
+    {
+      "san": "b3",
+      "games": 14,
+      "link": 41,
+      "score_cp": -48,
+      "depth": 38
+    },
+    {
+      "san": "Nge2",
+      "games": 14,
+      "link": 42,
+      "score_cp": -17,
+      "depth": 36
+    },
+    {
+      "san": "Be2",
+      "games": 13,
+      "link": 43,
+      "score_cp": -2,
+      "depth": 30
+    },
+    {
+      "san": "f3",
+      "games": 7,
+      "link": 44,
+      "score_cp": -80,
+      "depth": 22
+    },
+    {
+      "san": "Bd3",
+      "games": 5,
+      "link": 45,
+      "score_cp": -43,
+      "depth": 18
+    },
+    {
+      "san": "Nd5",
+      "games": 5,
+      "link": 46,
+      "score_cp": null,
+      "depth": null
+    },
+    {
+      "san": "h3",
+      "games": 5,
+      "link": 47,
+      "score_cp": -9,
+      "depth": 22
+    },
+    {
+      "san": "Qf3",
+      "games": 3,
+      "link": 48,
+      "score_cp": -50,
+      "depth": 34
+    },
+    {
+      "san": "Qe2",
+      "games": 2,
+      "link": 49,
+      "score_cp": null,
+      "depth": null
+    }
+  ],
+  "raw": "C26: Vienna, Falkbeer variation - 1. e4 e5 2. Nc3 Nf6 - Chess Opening explorer (https://www.365chess.com/opening.php?m=5&ms=e4.e5.Nc3.Nf6&n=42&ns=3.5.55.42)\nciteturn86view0 [wordlim: 200] Crawled: last month; Content type: text/html; Source: click({\"ref_id\":\"turn56view0\",\"id\":32}); Total lines: 239\nL0: ##### Login 365Chess\nL1: \nL2: 【0†Image: google†d2rnvyacaewvx6.cloudfront.net】Sign in with Google\nL3: \nL4: OR\nL5: \nL6: [Input: Username]\nL7: \nL8: [Input: Password] 【1†Forgot your password?】\nL9: \nL10: [Input]\nL11: \nL12: Not registered? 【2†Sign up】\nL13: \nL14:   * 【3†Search】\nL15:     * 【4†Game Position】\nL16:     * 【5†Chess Games】\nL17:     * 【6†Chess Tournaments】\nL18:     * 【7†Endgames】\nL19:     * 【8†Chess Players】\nL20:   * 【3†Training】\nL21:     * 【9†Openings Trainer】\nL22:     * 【10†Play vs Computer】\nL23:     * 【11†Puzzles】\nL24:     * 【12†Endgames】\nL25: #####\nL26: \nL27: Welcome!\nL28: \nL29: 【3†LOGIN】 | 【2†REGISTER】\nL30: \nL31: Main\nL32: \nL33:   * 【13†Home】\nL34:   * 【14†Opening Explorer】\nL35:   * 【15†Chess Courses】\nL36:   * 【16†ECO Codes】\nL37: \nL38: Search\nL39: \nL40:   * 【4†Position】\nL41:   * 【5†Games】\nL42:   * 【6†Tournaments】\nL43:   * 【7†Endgames】\nL44:   * 【8†Chess Players】\nL45: \nL46: Training\nL47: \nL48:   * 【9†Openings Trainer】\nL49:   * 【10†Play vs Computer】\nL50:   * 【11†Puzzles】\nL51:   * 【12†Endgames】\nL52: \nL53: Resources\nL54: \nL55:   * 【17†Analysis Board】\nL56:   * 【18†Board Editor】\nL57:   * 【19†Chess Openings】\nL58:   * 【20†Blog】\nL59: \nL60: Help\nL61: \nL62:   * 【21†F.A.Q.】\nL63:   * 【22†Contact Us】\nL64:   * 【23†Membership】\nL65: \nL66: Chess Opening Explorer\nL67: With our Opening Explorer you can browse our entire chess database move by move obtaining statistics about the results of each possible continuation.\nL68: The Opening Explorer is a great tool if you want to study chess openings.\nL69: # 【24†C26 Vienna, Falkbeer variation】\nL70: \nL71: [Input]\nL72: \nL73: [Input]\nL74: \nL75: [Input]\nL76: \nL77: [Input]\nL78: \nL79: [Input]\nL80: \nL81: 【14†Top】\nL82: \nL83: Fen: [Input] 【25†Image: Copy Position†d2rnvyacaewvx6.cloudfront.net】\nL84: \nL85: Url: [Input] 【25†Image: Copy Position†d2rnvyacaewvx6.cloudfront.net】\nL86: \nL87: ## Personal notes\nL88: #### Create notes\nL89: \nL90: If you want to create a note in this position you have to log into your account and have a Supporter membership.\nL91: \nL92: 【26†I'm already a Supporter. Log me in now.】\nL93: \nL94: 【27†I'm not a Supporter yet. Tell me more.】\nL95: \nL96: [Button: Close]\nL97: \nL98: Use your Personal notes to store information and comments about this position. Remember, the notes are private. Nobody but you can see them.\nL99: \nL100: Create a note for this position\nL101: ### Related Openings:\nL102: \nL103:   * C26: 【3†Vienna, Falkbeer variation】\nL104:   * C27: 【3†Vienna game】\nL105:   * C28: 【3†Vienna game】\nL106:   * C29: 【3†Vienna gambit】\nL107: \nL108: \nL109: \nL110: \nL111: \nL112: 【3†Stop Analysis】\nL113: \nL114: 【3†Start Engine Analysis】\nL115: \nL116: Stored Analysis: +0.12 Depth 50\nL117: \nL118: Opening Explorer Database:  [Select]\nL119: \nL120: Moves List:\nL121: \nL122: 1. 【28†e4】 【29†e5】 2. 【30†Nc3】 【31†Nf6】\nL123: \nL124: 【32†Game List】\nL125: \nL126: 【3†Save】\nL127: \nL128: 【3†Play】\nL129: \nL130: 【3†Analysis】\nL131: Next Move  | # of Games  | Last Played  | Winnings percentage\nL132: White / Draw / Black  | Engine Eval.\nL133: 【33†3. f4】  |  4,249  | 2026  |\nL134: 46.2 % 22.9 % 30.9 %\nL135:  | -0.06 Dpt 50\nL136: 【34†3. Bc4】  |  3,760  | 2026  |\nL137: 40.8 % 25.9 % 33.3 %\nL138:  | +0.00 Dpt 40\nL139: 【35†3. g3】  |  2,977  | 2026  |\nL140: 41.2 % 31.5 % 27.2 %\nL141:  | +0.00 Dpt 40\nL142: 【36†3. Nf3】  |  2,734  | 2026  |\nL143: 30.5 % 31.6 % 37.9 %\nL144:  | +0.14 Dpt 41\nL145: 【37†3. d4】  |  269  | 2026  |\nL146: 38.3 % 29.7 % 32 %\nL147:  | -0.17 Dpt 26\nL148: 【38†3. d3】  |  174  | 2026  |\nL149: 26.4 % 22.4 % 51.1 %\nL150:  | -0.15 Dpt 40\nL151: 【39†3. a3】  |  83  | 2026  |\nL152: 41 % 28.9 % 30.1 %\nL153:  | +0.00 Dpt 30\nL154: 【40†3. Bb5】  |  16  | 2022  |\nL155: 81.3 %\nL156:  | -0.13 Dpt 20\nL157: 【41†3. b3】  |  14  | 2007  |\nL158: 21.4 % 71.4 %\nL159:  | -0.48 Dpt 38\nL160: 【42†3. Nge2】  |  14  | 2016  |\nL161: 28.6 % 57.1 %\nL162:  | -0.17 Dpt 36\nL163: 【43†3. Be2】  |  13  | 2023  |\nL164: 15.4 % 15.4 % 69.2 %\nL165:  | -0.02 Dpt 30\nL166: 【44†3. f3】  |  7  | 2024  |\nL167: 71.4 %\nL168:  | -0.80 Dpt 22\nL169: 【45†3. Bd3】  |  5  | 2022  |\nL170: 40 % 60 %\nL171:  | -0.43 Dpt 18\nL172: 【46†3. Nd5】  |  5  | 2002  |\nL173: 20 % 80 %\nL174:  |\nL175: 【47†3. h3】  |  5  | 2025  |\nL176: 40 % 20 % 40 %\nL177:  | -0.09 Dpt 22\nL178: 【48†3. Qf3】  |  3  | 2004  |\nL179: 33.3 % 66.7 %\nL180:  | -0.50 Dpt 34\nL181: 【49†3. Qe2】  |  2  | 2004  |\nL182: 50 % 50 %\nL183:  |\nL184: 【3†3. Nh3】  |  【50†0-1】, 【51†Truan】 vs. 【52†Gonzalez Lopez】\nL185: 【3†3. a4】  |  【53†0-1】, 【54†Basarici】 vs. 【55†Lengler】\nL186: [Input] Hide Engine Analysis\nL187: \nL188: 【56†Download games】\nL189: ### Latest Played Games\nL190: \nL191: Players  | Result  |\nL192: 【57†Caruana, F vs Praggnanandhaa R】   | ½ - ½  |\nL193: 【58†Zielonka, A vs Turcsanyi, V】   | ½ - ½  |\nL194: 【59†Divya, D vs Tan, Z】   | 0 - 1  |\nL195: 【60†Rozen, E vs Daaevik Wadhawan】   | 0 - 1  |\nL196: 【61†Aditya Mittal vs Samunenkov, I】   | 1 - 0  |\nL197: ### Top Games by Average ELO\nL198: \nL199: Players  | Result  |\nL200: 【62†Caruana, F vs Anand, V】   | ½ - ½  |\nL201: 【63†Firouzja, A vs Carlsen, M】   | 1 - 0  |\nL202: 【64†Andreikin, D vs Carlsen, M】   | 0 - 1  |\nL203: 【65†Nakamura, H vs Firouzja, A】   | ½ - ½  |\nL204: 【66†Nakamura, H vs Firouzja, A】   | 1 - 0  |\nL205: ### Played frequently by\nL206: \nL207: As White  |\nL208: Jacques Mieses  | 【67†71 games】\nL209: Jana Krivec  | 【68†53 games】\nL210: Alexander Alekhine  | 【69†40 games】\nL211: \nL212: As Black  |\nL213: Evgeni Janev  | 【70†22 games】\nL214: Jorge Szmetan  | 【71†21 games】\nL215: Frank James Marshall  | 【72†19 games】\nL216: \nL217: #### Opening Explorer Message\nL218: \nL219: This position doesn't exist in the Opening Explorer\nL220: \nL221: [Button: Continue]\nL222: #### Opening Explorer Message\nL223: \nL224: Dear Chessfriend, we're thrilled that you're enjoying this powerful tool!!!\nL225: \nL226: As you know, most of the features in 365Chess are free for everyone, anywhere; we believe in this philosophy and we want to keep it that way.\nL227: To keep the site free for everyone the development of this site relies on the support and contributions of its members. Therefore, we kindly ask you to consider becoming a Supporter. By doing so, you will receive some extra and nice benefits and you will be helping to improve this site.\nL228: \nL229: Thank you in advance for your contribution. You have no idea how much it means to us to have your Support.\nL230: \nL231: [Button: Yes, I want to contribute now]\nL232: \nL233: 【3†Maybe later】\nL234: #### Download PGN\nL235: \nL236: PGN Analysis\nL237: \nL238: [Input]        [Input]\n"
+}

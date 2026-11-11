@@ -1,0 +1,766 @@
+{
+  "baseline_revision": "bdb77b1c4af864b24b9dd81a4906110ef970b129",
+  "baseline_engine_sha256": "bf4a7ba8abf7fe1504c78eae4734e328775043b18838e607cef690b202638952",
+  "compiler": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+  "flags": [
+    "--edition=2021",
+    "-C",
+    "opt-level=3",
+    "-C",
+    "codegen-units=1",
+    "-C",
+    "lto=fat"
+  ],
+  "platform": "macOS-26.5.1-arm64-arm-64bit",
+  "threads": 1,
+  "total_memory_budget": 100000000,
+  "scope": "pair",
+  "references": [
+    {
+      "id": "8",
+      "sequence": [
+        "e4",
+        "e5"
+      ],
+      "games": 471796,
+      "reference_cp": 22,
+      "reference_depth": 50,
+      "source_url": "https://www.365chess.com/opening.php?m=2&ms=e4&n=3&ns=3",
+      "snapshot": "0001.json",
+      "family": "e4",
+      "parent": "e4",
+      "alternative": {
+        "score_cp": 22,
+        "depth": 50,
+        "source_url": "https://www.365chess.com/opening.php?m=3&ms=e4.e5&n=5&ns=3.5",
+        "snapshot": "0009.json"
+      }
+    },
+    {
+      "id": "12",
+      "sequence": [
+        "e4",
+        "d5"
+      ],
+      "games": 64507,
+      "reference_cp": 55,
+      "reference_depth": 50,
+      "source_url": "https://www.365chess.com/opening.php?m=2&ms=e4&n=3&ns=3",
+      "snapshot": "0001.json",
+      "family": "e4",
+      "parent": "e4",
+      "alternative": {
+        "score_cp": 55,
+        "depth": 50,
+        "source_url": "https://www.365chess.com/opening.php?m=3&ms=e4.d5&n=20&ns=3.20",
+        "snapshot": "0013.json"
+      }
+    }
+  ],
+  "shared_sha256": {
+    "chess": "d29bf74343b3e225500ab9f40085898f050baf6079c5d2cdbd5246bc3978167a",
+    "tables": "33170ea449259320b74a4dad812b49dcff609a0914cff3a61e2b29db34eb4186",
+    "cache": "873372bdbdb4643fb66cd15e94081a5edf0b1aa7734f2c00b0cf8d4082a53cc6",
+    "ordering": "5302eff4f2d61c58ec1f02d8907b82b6a68c49e5f3df377f89ebc2398a5644ab"
+  },
+  "changes": {
+    "pawn-push-threat-8": [
+      [
+        "fn threats(",
+        "\nfn experimental_push_threats(\n    occupied: [u64; 2], pawns: [u64; 2], kings: [usize; 2],\n    pawn_attacks: [u64; 2], pressure: &Pressure,\n) -> i32 {\n    let empty = !(occupied[0] | occupied[1]);\n    let mut counts = [0i32; 2];\n    for color in 0..2 {\n        let first = if color == 1 { pawns[color] << 8 } else { pawns[color] >> 8 } & empty;\n        let second = if color == 1 {\n            (first & (0xffu64 << 16)) << 8\n        } else {\n            (first & (0xffu64 << 40)) >> 8\n        } & empty;\n        let safe = (first | second) & !pawn_attacks[1 - color]\n            & (!pressure.all[1 - color] | pressure.all[color]);\n        let mut candidates = [0; 2];\n        candidates[color] = safe;\n        let targets = mobility::pawn_attacks(candidates)[color]\n            & occupied[1 - color] & !pawns[1 - color]\n            & !(1u64 << kings[1 - color]);\n        counts[color] = targets.count_ones() as i32;\n    }\n    (counts[1] - counts[0]) * 8\n}\n\nfn threats("
+      ],
+      [
+        "let (threat_mg, threat_eg) = threats(p, occupied, kings, pawn_attacks, &pressure);",
+        "let (threat_base, threat_eg) = threats(p, occupied, kings, pawn_attacks, &pressure);\n    let threat_mg = threat_base + experimental_push_threats(occupied, pawns, kings, pawn_attacks, &pressure);"
+      ]
+    ],
+    "pawn-push-threat-16": [
+      [
+        "fn threats(",
+        "\nfn experimental_push_threats(\n    occupied: [u64; 2], pawns: [u64; 2], kings: [usize; 2],\n    pawn_attacks: [u64; 2], pressure: &Pressure,\n) -> i32 {\n    let empty = !(occupied[0] | occupied[1]);\n    let mut counts = [0i32; 2];\n    for color in 0..2 {\n        let first = if color == 1 { pawns[color] << 8 } else { pawns[color] >> 8 } & empty;\n        let second = if color == 1 {\n            (first & (0xffu64 << 16)) << 8\n        } else {\n            (first & (0xffu64 << 40)) >> 8\n        } & empty;\n        let safe = (first | second) & !pawn_attacks[1 - color]\n            & (!pressure.all[1 - color] | pressure.all[color]);\n        let mut candidates = [0; 2];\n        candidates[color] = safe;\n        let targets = mobility::pawn_attacks(candidates)[color]\n            & occupied[1 - color] & !pawns[1 - color]\n            & !(1u64 << kings[1 - color]);\n        counts[color] = targets.count_ones() as i32;\n    }\n    (counts[1] - counts[0]) * 16\n}\n\nfn threats("
+      ],
+      [
+        "let (threat_mg, threat_eg) = threats(p, occupied, kings, pawn_attacks, &pressure);",
+        "let (threat_base, threat_eg) = threats(p, occupied, kings, pawn_attacks, &pressure);\n    let threat_mg = threat_base + experimental_push_threats(occupied, pawns, kings, pawn_attacks, &pressure);"
+      ]
+    ],
+    "pawn-push-threat-24": [
+      [
+        "fn threats(",
+        "\nfn experimental_push_threats(\n    occupied: [u64; 2], pawns: [u64; 2], kings: [usize; 2],\n    pawn_attacks: [u64; 2], pressure: &Pressure,\n) -> i32 {\n    let empty = !(occupied[0] | occupied[1]);\n    let mut counts = [0i32; 2];\n    for color in 0..2 {\n        let first = if color == 1 { pawns[color] << 8 } else { pawns[color] >> 8 } & empty;\n        let second = if color == 1 {\n            (first & (0xffu64 << 16)) << 8\n        } else {\n            (first & (0xffu64 << 40)) >> 8\n        } & empty;\n        let safe = (first | second) & !pawn_attacks[1 - color]\n            & (!pressure.all[1 - color] | pressure.all[color]);\n        let mut candidates = [0; 2];\n        candidates[color] = safe;\n        let targets = mobility::pawn_attacks(candidates)[color]\n            & occupied[1 - color] & !pawns[1 - color]\n            & !(1u64 << kings[1 - color]);\n        counts[color] = targets.count_ones() as i32;\n    }\n    (counts[1] - counts[0]) * 24\n}\n\nfn threats("
+      ],
+      [
+        "let (threat_mg, threat_eg) = threats(p, occupied, kings, pawn_attacks, &pressure);",
+        "let (threat_base, threat_eg) = threats(p, occupied, kings, pawn_attacks, &pressure);\n    let threat_mg = threat_base + experimental_push_threats(occupied, pawns, kings, pawn_attacks, &pressure);"
+      ]
+    ],
+    "pawn-push-threat-32": [
+      [
+        "fn threats(",
+        "\nfn experimental_push_threats(\n    occupied: [u64; 2], pawns: [u64; 2], kings: [usize; 2],\n    pawn_attacks: [u64; 2], pressure: &Pressure,\n) -> i32 {\n    let empty = !(occupied[0] | occupied[1]);\n    let mut counts = [0i32; 2];\n    for color in 0..2 {\n        let first = if color == 1 { pawns[color] << 8 } else { pawns[color] >> 8 } & empty;\n        let second = if color == 1 {\n            (first & (0xffu64 << 16)) << 8\n        } else {\n            (first & (0xffu64 << 40)) >> 8\n        } & empty;\n        let safe = (first | second) & !pawn_attacks[1 - color]\n            & (!pressure.all[1 - color] | pressure.all[color]);\n        let mut candidates = [0; 2];\n        candidates[color] = safe;\n        let targets = mobility::pawn_attacks(candidates)[color]\n            & occupied[1 - color] & !pawns[1 - color]\n            & !(1u64 << kings[1 - color]);\n        counts[color] = targets.count_ones() as i32;\n    }\n    (counts[1] - counts[0]) * 32\n}\n\nfn threats("
+      ],
+      [
+        "let (threat_mg, threat_eg) = threats(p, occupied, kings, pawn_attacks, &pressure);",
+        "let (threat_base, threat_eg) = threats(p, occupied, kings, pawn_attacks, &pressure);\n    let threat_mg = threat_base + experimental_push_threats(occupied, pawns, kings, pawn_attacks, &pressure);"
+      ]
+    ]
+  },
+  "engine_sha256": {
+    "pawn-push-threat-8": "a495ab5db055684a306644fe0778d0d1bb82571f971476024f5a68b8230c3fb6",
+    "pawn-push-threat-16": "bfdd34e8ceb9b6b51383b8fd5a1d529ae59ae0dec60aadd8b9248e0f4bb8f63b",
+    "pawn-push-threat-24": "7e6e5789364c9d3358b897f69ce8b8f52823ea312bebb8de5d21420d9623e5d8",
+    "pawn-push-threat-32": "6ec820cc5bc1ef1d954011bf7547b90dd012c69407d217ed52de84f7ab795acc"
+  },
+  "runs": [
+    {
+      "id": "8",
+      "sequence": [
+        "e4",
+        "e5"
+      ],
+      "games": 471796,
+      "reference_cp": 22,
+      "reference_depth": 50,
+      "source_url": "https://www.365chess.com/opening.php?m=2&ms=e4&n=3&ns=3",
+      "snapshot": "0001.json",
+      "family": "e4",
+      "parent": "e4",
+      "alternative": {
+        "score_cp": 22,
+        "depth": 50,
+        "source_url": "https://www.365chess.com/opening.php?m=3&ms=e4.e5&n=5&ns=3.5",
+        "snapshot": "0009.json"
+      },
+      "fen": "rnbqkbnr/pppp1ppp/8/4p3/4P3/8/PPPP1PPP/RNBQKBNR w KQkq e6 0 2",
+      "static_cp": 24,
+      "score_cp": 33,
+      "depth": 6,
+      "best": "g1f3",
+      "nodes": 411897,
+      "hits": 3067,
+      "cache_bytes": 4210688,
+      "cache_limit": 78601344,
+      "variant": "pawn-push-threat-8"
+    },
+    {
+      "id": "12",
+      "sequence": [
+        "e4",
+        "d5"
+      ],
+      "games": 64507,
+      "reference_cp": 55,
+      "reference_depth": 50,
+      "source_url": "https://www.365chess.com/opening.php?m=2&ms=e4&n=3&ns=3",
+      "snapshot": "0001.json",
+      "family": "e4",
+      "parent": "e4",
+      "alternative": {
+        "score_cp": 55,
+        "depth": 50,
+        "source_url": "https://www.365chess.com/opening.php?m=3&ms=e4.d5&n=20&ns=3.20",
+        "snapshot": "0013.json"
+      },
+      "fen": "rnbqkbnr/ppp1pppp/8/3p4/4P3/8/PPPP1PPP/RNBQKBNR w KQkq d6 0 2",
+      "static_cp": 20,
+      "score_cp": 1,
+      "depth": 6,
+      "best": "e4d5",
+      "nodes": 358762,
+      "hits": 3038,
+      "cache_bytes": 4210688,
+      "cache_limit": 78601344,
+      "variant": "pawn-push-threat-8"
+    },
+    {
+      "id": "8",
+      "sequence": [
+        "e4",
+        "e5"
+      ],
+      "games": 471796,
+      "reference_cp": 22,
+      "reference_depth": 50,
+      "source_url": "https://www.365chess.com/opening.php?m=2&ms=e4&n=3&ns=3",
+      "snapshot": "0001.json",
+      "family": "e4",
+      "parent": "e4",
+      "alternative": {
+        "score_cp": 22,
+        "depth": 50,
+        "source_url": "https://www.365chess.com/opening.php?m=3&ms=e4.e5&n=5&ns=3.5",
+        "snapshot": "0009.json"
+      },
+      "fen": "rnbqkbnr/pppp1ppp/8/4p3/4P3/8/PPPP1PPP/RNBQKBNR w KQkq e6 0 2",
+      "static_cp": 24,
+      "score_cp": 33,
+      "depth": 8,
+      "best": "g1f3",
+      "nodes": 6976590,
+      "hits": 64196,
+      "cache_bytes": 24672000,
+      "cache_limit": 78601344,
+      "variant": "pawn-push-threat-8"
+    },
+    {
+      "id": "12",
+      "sequence": [
+        "e4",
+        "d5"
+      ],
+      "games": 64507,
+      "reference_cp": 55,
+      "reference_depth": 50,
+      "source_url": "https://www.365chess.com/opening.php?m=2&ms=e4&n=3&ns=3",
+      "snapshot": "0001.json",
+      "family": "e4",
+      "parent": "e4",
+      "alternative": {
+        "score_cp": 55,
+        "depth": 50,
+        "source_url": "https://www.365chess.com/opening.php?m=3&ms=e4.d5&n=20&ns=3.20",
+        "snapshot": "0013.json"
+      },
+      "fen": "rnbqkbnr/ppp1pppp/8/3p4/4P3/8/PPPP1PPP/RNBQKBNR w KQkq d6 0 2",
+      "static_cp": 20,
+      "score_cp": 31,
+      "depth": 8,
+      "best": "e4d5",
+      "nodes": 5074218,
+      "hits": 56341,
+      "cache_bytes": 16842752,
+      "cache_limit": 78601344,
+      "variant": "pawn-push-threat-8"
+    },
+    {
+      "id": "8",
+      "sequence": [
+        "e4",
+        "e5"
+      ],
+      "games": 471796,
+      "reference_cp": 22,
+      "reference_depth": 50,
+      "source_url": "https://www.365chess.com/opening.php?m=2&ms=e4&n=3&ns=3",
+      "snapshot": "0001.json",
+      "family": "e4",
+      "parent": "e4",
+      "alternative": {
+        "score_cp": 22,
+        "depth": 50,
+        "source_url": "https://www.365chess.com/opening.php?m=3&ms=e4.e5&n=5&ns=3.5",
+        "snapshot": "0009.json"
+      },
+      "fen": "rnbqkbnr/pppp1ppp/8/4p3/4P3/8/PPPP1PPP/RNBQKBNR w KQkq e6 0 2",
+      "static_cp": 24,
+      "score_cp": 31,
+      "depth": 6,
+      "best": "g1f3",
+      "nodes": 370363,
+      "hits": 3358,
+      "cache_bytes": 4210688,
+      "cache_limit": 78601344,
+      "variant": "pawn-push-threat-16"
+    },
+    {
+      "id": "12",
+      "sequence": [
+        "e4",
+        "d5"
+      ],
+      "games": 64507,
+      "reference_cp": 55,
+      "reference_depth": 50,
+      "source_url": "https://www.365chess.com/opening.php?m=2&ms=e4&n=3&ns=3",
+      "snapshot": "0001.json",
+      "family": "e4",
+      "parent": "e4",
+      "alternative": {
+        "score_cp": 55,
+        "depth": 50,
+        "source_url": "https://www.365chess.com/opening.php?m=3&ms=e4.d5&n=20&ns=3.20",
+        "snapshot": "0013.json"
+      },
+      "fen": "rnbqkbnr/ppp1pppp/8/3p4/4P3/8/PPPP1PPP/RNBQKBNR w KQkq d6 0 2",
+      "static_cp": 20,
+      "score_cp": 4,
+      "depth": 6,
+      "best": "e4d5",
+      "nodes": 345812,
+      "hits": 2649,
+      "cache_bytes": 4210688,
+      "cache_limit": 78601344,
+      "variant": "pawn-push-threat-16"
+    },
+    {
+      "id": "8",
+      "sequence": [
+        "e4",
+        "e5"
+      ],
+      "games": 471796,
+      "reference_cp": 22,
+      "reference_depth": 50,
+      "source_url": "https://www.365chess.com/opening.php?m=2&ms=e4&n=3&ns=3",
+      "snapshot": "0001.json",
+      "family": "e4",
+      "parent": "e4",
+      "alternative": {
+        "score_cp": 22,
+        "depth": 50,
+        "source_url": "https://www.365chess.com/opening.php?m=3&ms=e4.e5&n=5&ns=3.5",
+        "snapshot": "0009.json"
+      },
+      "fen": "rnbqkbnr/pppp1ppp/8/4p3/4P3/8/PPPP1PPP/RNBQKBNR w KQkq e6 0 2",
+      "static_cp": 24,
+      "score_cp": 39,
+      "depth": 8,
+      "best": "g1f3",
+      "nodes": 6218831,
+      "hits": 61571,
+      "cache_bytes": 21053440,
+      "cache_limit": 78601344,
+      "variant": "pawn-push-threat-16"
+    },
+    {
+      "id": "12",
+      "sequence": [
+        "e4",
+        "d5"
+      ],
+      "games": 64507,
+      "reference_cp": 55,
+      "reference_depth": 50,
+      "source_url": "https://www.365chess.com/opening.php?m=2&ms=e4&n=3&ns=3",
+      "snapshot": "0001.json",
+      "family": "e4",
+      "parent": "e4",
+      "alternative": {
+        "score_cp": 55,
+        "depth": 50,
+        "source_url": "https://www.365chess.com/opening.php?m=3&ms=e4.d5&n=20&ns=3.20",
+        "snapshot": "0013.json"
+      },
+      "fen": "rnbqkbnr/ppp1pppp/8/3p4/4P3/8/PPPP1PPP/RNBQKBNR w KQkq d6 0 2",
+      "static_cp": 20,
+      "score_cp": 40,
+      "depth": 8,
+      "best": "e4d5",
+      "nodes": 4542499,
+      "hits": 44009,
+      "cache_bytes": 16842752,
+      "cache_limit": 78601344,
+      "variant": "pawn-push-threat-16"
+    },
+    {
+      "id": "8",
+      "sequence": [
+        "e4",
+        "e5"
+      ],
+      "games": 471796,
+      "reference_cp": 22,
+      "reference_depth": 50,
+      "source_url": "https://www.365chess.com/opening.php?m=2&ms=e4&n=3&ns=3",
+      "snapshot": "0001.json",
+      "family": "e4",
+      "parent": "e4",
+      "alternative": {
+        "score_cp": 22,
+        "depth": 50,
+        "source_url": "https://www.365chess.com/opening.php?m=3&ms=e4.e5&n=5&ns=3.5",
+        "snapshot": "0009.json"
+      },
+      "fen": "rnbqkbnr/pppp1ppp/8/4p3/4P3/8/PPPP1PPP/RNBQKBNR w KQkq e6 0 2",
+      "static_cp": 24,
+      "score_cp": 31,
+      "depth": 6,
+      "best": "g1f3",
+      "nodes": 341164,
+      "hits": 3669,
+      "cache_bytes": 4210688,
+      "cache_limit": 78601344,
+      "variant": "pawn-push-threat-24"
+    },
+    {
+      "id": "12",
+      "sequence": [
+        "e4",
+        "d5"
+      ],
+      "games": 64507,
+      "reference_cp": 55,
+      "reference_depth": 50,
+      "source_url": "https://www.365chess.com/opening.php?m=2&ms=e4&n=3&ns=3",
+      "snapshot": "0001.json",
+      "family": "e4",
+      "parent": "e4",
+      "alternative": {
+        "score_cp": 55,
+        "depth": 50,
+        "source_url": "https://www.365chess.com/opening.php?m=3&ms=e4.d5&n=20&ns=3.20",
+        "snapshot": "0013.json"
+      },
+      "fen": "rnbqkbnr/ppp1pppp/8/3p4/4P3/8/PPPP1PPP/RNBQKBNR w KQkq d6 0 2",
+      "static_cp": 20,
+      "score_cp": 11,
+      "depth": 6,
+      "best": "e4d5",
+      "nodes": 302381,
+      "hits": 2523,
+      "cache_bytes": 4210688,
+      "cache_limit": 78601344,
+      "variant": "pawn-push-threat-24"
+    },
+    {
+      "id": "8",
+      "sequence": [
+        "e4",
+        "e5"
+      ],
+      "games": 471796,
+      "reference_cp": 22,
+      "reference_depth": 50,
+      "source_url": "https://www.365chess.com/opening.php?m=2&ms=e4&n=3&ns=3",
+      "snapshot": "0001.json",
+      "family": "e4",
+      "parent": "e4",
+      "alternative": {
+        "score_cp": 22,
+        "depth": 50,
+        "source_url": "https://www.365chess.com/opening.php?m=3&ms=e4.e5&n=5&ns=3.5",
+        "snapshot": "0009.json"
+      },
+      "fen": "rnbqkbnr/pppp1ppp/8/4p3/4P3/8/PPPP1PPP/RNBQKBNR w KQkq e6 0 2",
+      "static_cp": 24,
+      "score_cp": 46,
+      "depth": 8,
+      "best": "g1f3",
+      "nodes": 5809365,
+      "hits": 71732,
+      "cache_bytes": 21053440,
+      "cache_limit": 78601344,
+      "variant": "pawn-push-threat-24"
+    },
+    {
+      "id": "12",
+      "sequence": [
+        "e4",
+        "d5"
+      ],
+      "games": 64507,
+      "reference_cp": 55,
+      "reference_depth": 50,
+      "source_url": "https://www.365chess.com/opening.php?m=2&ms=e4&n=3&ns=3",
+      "snapshot": "0001.json",
+      "family": "e4",
+      "parent": "e4",
+      "alternative": {
+        "score_cp": 55,
+        "depth": 50,
+        "source_url": "https://www.365chess.com/opening.php?m=3&ms=e4.d5&n=20&ns=3.20",
+        "snapshot": "0013.json"
+      },
+      "fen": "rnbqkbnr/ppp1pppp/8/3p4/4P3/8/PPPP1PPP/RNBQKBNR w KQkq d6 0 2",
+      "static_cp": 20,
+      "score_cp": 41,
+      "depth": 8,
+      "best": "e4d5",
+      "nodes": 4181232,
+      "hits": 40161,
+      "cache_bytes": 16842752,
+      "cache_limit": 78601344,
+      "variant": "pawn-push-threat-24"
+    },
+    {
+      "id": "8",
+      "sequence": [
+        "e4",
+        "e5"
+      ],
+      "games": 471796,
+      "reference_cp": 22,
+      "reference_depth": 50,
+      "source_url": "https://www.365chess.com/opening.php?m=2&ms=e4&n=3&ns=3",
+      "snapshot": "0001.json",
+      "family": "e4",
+      "parent": "e4",
+      "alternative": {
+        "score_cp": 22,
+        "depth": 50,
+        "source_url": "https://www.365chess.com/opening.php?m=3&ms=e4.e5&n=5&ns=3.5",
+        "snapshot": "0009.json"
+      },
+      "fen": "rnbqkbnr/pppp1ppp/8/4p3/4P3/8/PPPP1PPP/RNBQKBNR w KQkq e6 0 2",
+      "static_cp": 24,
+      "score_cp": 26,
+      "depth": 6,
+      "best": "g1f3",
+      "nodes": 353512,
+      "hits": 4125,
+      "cache_bytes": 4210688,
+      "cache_limit": 78601344,
+      "variant": "pawn-push-threat-32"
+    },
+    {
+      "id": "12",
+      "sequence": [
+        "e4",
+        "d5"
+      ],
+      "games": 64507,
+      "reference_cp": 55,
+      "reference_depth": 50,
+      "source_url": "https://www.365chess.com/opening.php?m=2&ms=e4&n=3&ns=3",
+      "snapshot": "0001.json",
+      "family": "e4",
+      "parent": "e4",
+      "alternative": {
+        "score_cp": 55,
+        "depth": 50,
+        "source_url": "https://www.365chess.com/opening.php?m=3&ms=e4.d5&n=20&ns=3.20",
+        "snapshot": "0013.json"
+      },
+      "fen": "rnbqkbnr/ppp1pppp/8/3p4/4P3/8/PPPP1PPP/RNBQKBNR w KQkq d6 0 2",
+      "static_cp": 20,
+      "score_cp": 6,
+      "depth": 6,
+      "best": "e4d5",
+      "nodes": 242503,
+      "hits": 1914,
+      "cache_bytes": 4210688,
+      "cache_limit": 78601344,
+      "variant": "pawn-push-threat-32"
+    },
+    {
+      "id": "8",
+      "sequence": [
+        "e4",
+        "e5"
+      ],
+      "games": 471796,
+      "reference_cp": 22,
+      "reference_depth": 50,
+      "source_url": "https://www.365chess.com/opening.php?m=2&ms=e4&n=3&ns=3",
+      "snapshot": "0001.json",
+      "family": "e4",
+      "parent": "e4",
+      "alternative": {
+        "score_cp": 22,
+        "depth": 50,
+        "source_url": "https://www.365chess.com/opening.php?m=3&ms=e4.e5&n=5&ns=3.5",
+        "snapshot": "0009.json"
+      },
+      "fen": "rnbqkbnr/pppp1ppp/8/4p3/4P3/8/PPPP1PPP/RNBQKBNR w KQkq e6 0 2",
+      "static_cp": 24,
+      "score_cp": 43,
+      "depth": 8,
+      "best": "g1f3",
+      "nodes": 5687818,
+      "hits": 67645,
+      "cache_bytes": 21053440,
+      "cache_limit": 78601344,
+      "variant": "pawn-push-threat-32"
+    },
+    {
+      "id": "12",
+      "sequence": [
+        "e4",
+        "d5"
+      ],
+      "games": 64507,
+      "reference_cp": 55,
+      "reference_depth": 50,
+      "source_url": "https://www.365chess.com/opening.php?m=2&ms=e4&n=3&ns=3",
+      "snapshot": "0001.json",
+      "family": "e4",
+      "parent": "e4",
+      "alternative": {
+        "score_cp": 55,
+        "depth": 50,
+        "source_url": "https://www.365chess.com/opening.php?m=3&ms=e4.d5&n=20&ns=3.20",
+        "snapshot": "0013.json"
+      },
+      "fen": "rnbqkbnr/ppp1pppp/8/3p4/4P3/8/PPPP1PPP/RNBQKBNR w KQkq d6 0 2",
+      "static_cp": 20,
+      "score_cp": 38,
+      "depth": 8,
+      "best": "e4d5",
+      "nodes": 4108050,
+      "hits": 39820,
+      "cache_bytes": 16842752,
+      "cache_limit": 78601344,
+      "variant": "pawn-push-threat-32"
+    }
+  ],
+  "summaries": [
+    {
+      "variant": "pawn-push-threat-8",
+      "depth": 6,
+      "gold": {
+        "positions": 2,
+        "mae_cp": 32.5,
+        "ordering_agreement": 0.0,
+        "ordered_pairs": 1
+      },
+      "all": {
+        "positions": 2,
+        "mae_cp": 32.5,
+        "ordering_agreement": 0.0,
+        "ordered_pairs": 1
+      },
+      "pair": {
+        "e4 e5": 33,
+        "e4 d5": 1
+      },
+      "d5_minus_e5": -32
+    },
+    {
+      "variant": "pawn-push-threat-8",
+      "depth": 8,
+      "gold": {
+        "positions": 2,
+        "mae_cp": 17.5,
+        "ordering_agreement": 0.0,
+        "ordered_pairs": 1
+      },
+      "all": {
+        "positions": 2,
+        "mae_cp": 17.5,
+        "ordering_agreement": 0.0,
+        "ordered_pairs": 1
+      },
+      "pair": {
+        "e4 e5": 33,
+        "e4 d5": 31
+      },
+      "d5_minus_e5": -2
+    },
+    {
+      "variant": "pawn-push-threat-16",
+      "depth": 6,
+      "gold": {
+        "positions": 2,
+        "mae_cp": 30.0,
+        "ordering_agreement": 0.0,
+        "ordered_pairs": 1
+      },
+      "all": {
+        "positions": 2,
+        "mae_cp": 30.0,
+        "ordering_agreement": 0.0,
+        "ordered_pairs": 1
+      },
+      "pair": {
+        "e4 e5": 31,
+        "e4 d5": 4
+      },
+      "d5_minus_e5": -27
+    },
+    {
+      "variant": "pawn-push-threat-16",
+      "depth": 8,
+      "gold": {
+        "positions": 2,
+        "mae_cp": 16.0,
+        "ordering_agreement": 1.0,
+        "ordered_pairs": 1
+      },
+      "all": {
+        "positions": 2,
+        "mae_cp": 16.0,
+        "ordering_agreement": 1.0,
+        "ordered_pairs": 1
+      },
+      "pair": {
+        "e4 e5": 39,
+        "e4 d5": 40
+      },
+      "d5_minus_e5": 1
+    },
+    {
+      "variant": "pawn-push-threat-24",
+      "depth": 6,
+      "gold": {
+        "positions": 2,
+        "mae_cp": 26.5,
+        "ordering_agreement": 0.0,
+        "ordered_pairs": 1
+      },
+      "all": {
+        "positions": 2,
+        "mae_cp": 26.5,
+        "ordering_agreement": 0.0,
+        "ordered_pairs": 1
+      },
+      "pair": {
+        "e4 e5": 31,
+        "e4 d5": 11
+      },
+      "d5_minus_e5": -20
+    },
+    {
+      "variant": "pawn-push-threat-24",
+      "depth": 8,
+      "gold": {
+        "positions": 2,
+        "mae_cp": 19.0,
+        "ordering_agreement": 0.0,
+        "ordered_pairs": 1
+      },
+      "all": {
+        "positions": 2,
+        "mae_cp": 19.0,
+        "ordering_agreement": 0.0,
+        "ordered_pairs": 1
+      },
+      "pair": {
+        "e4 e5": 46,
+        "e4 d5": 41
+      },
+      "d5_minus_e5": -5
+    },
+    {
+      "variant": "pawn-push-threat-32",
+      "depth": 6,
+      "gold": {
+        "positions": 2,
+        "mae_cp": 26.5,
+        "ordering_agreement": 0.0,
+        "ordered_pairs": 1
+      },
+      "all": {
+        "positions": 2,
+        "mae_cp": 26.5,
+        "ordering_agreement": 0.0,
+        "ordered_pairs": 1
+      },
+      "pair": {
+        "e4 e5": 26,
+        "e4 d5": 6
+      },
+      "d5_minus_e5": -20
+    },
+    {
+      "variant": "pawn-push-threat-32",
+      "depth": 8,
+      "gold": {
+        "positions": 2,
+        "mae_cp": 19.0,
+        "ordering_agreement": 0.0,
+        "ordered_pairs": 1
+      },
+      "all": {
+        "positions": 2,
+        "mae_cp": 19.0,
+        "ordering_agreement": 0.0,
+        "ordered_pairs": 1
+      },
+      "pair": {
+        "e4 e5": 43,
+        "e4 d5": 38
+      },
+      "d5_minus_e5": -5
+    }
+  ]
+}

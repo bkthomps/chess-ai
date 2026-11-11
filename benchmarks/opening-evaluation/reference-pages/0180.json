@@ -1,0 +1,98 @@
+{
+  "path": [
+    "e4",
+    "c5",
+    "d4",
+    "cxd4",
+    "c3"
+  ],
+  "url": "https://www.365chess.com/opening.php?m=6&ms=e4.c5.d4.cxd4.c3&n=182&ns=3.3.52.94.182",
+  "ref": "turn197view0",
+  "rows": [
+    {
+      "san": "dxc3",
+      "games": 5496,
+      "link": 34,
+      "score_cp": -25,
+      "depth": 40
+    },
+    {
+      "san": "Nf6",
+      "games": 1789,
+      "link": 35,
+      "score_cp": 17,
+      "depth": 40
+    },
+    {
+      "san": "d3",
+      "games": 1420,
+      "link": 36,
+      "score_cp": 68,
+      "depth": 40
+    },
+    {
+      "san": "d5",
+      "games": 758,
+      "link": 37,
+      "score_cp": 22,
+      "depth": 40
+    },
+    {
+      "san": "g6",
+      "games": 175,
+      "link": 38,
+      "score_cp": 49,
+      "depth": 40
+    },
+    {
+      "san": "Nc6",
+      "games": 152,
+      "link": 39,
+      "score_cp": 62,
+      "depth": 28
+    },
+    {
+      "san": "d6",
+      "games": 149,
+      "link": 40,
+      "score_cp": 52,
+      "depth": 30
+    },
+    {
+      "san": "e6",
+      "games": 101,
+      "link": 41,
+      "score_cp": 44,
+      "depth": 24
+    },
+    {
+      "san": "e5",
+      "games": 96,
+      "link": 42,
+      "score_cp": 13,
+      "depth": 34
+    },
+    {
+      "san": "Qa5",
+      "games": 36,
+      "link": 43,
+      "score_cp": 67,
+      "depth": 20
+    },
+    {
+      "san": "a6",
+      "games": 11,
+      "link": 44,
+      "score_cp": null,
+      "depth": null
+    },
+    {
+      "san": "b6",
+      "games": 5,
+      "link": 45,
+      "score_cp": null,
+      "depth": null
+    }
+  ],
+  "raw": "B21: Sicilian, Smith-Morra gambit, 2...cxd4 3.c3 - 1. e4 c5 2. d4 cxd4 3. c3 - Chess Opening explorer (https://www.365chess.com/opening.php?m=6&ms=e4.c5.d4.cxd4.c3&n=182&ns=3.3.52.94.182)\nciteturn197view0 [wordlim: 200] Crawled: 2 months ago; Content type: text/html; Source: click({\"ref_id\":\"turn87view0\",\"id\":33}); Total lines: 223\nL0: ##### Login 365Chess\nL1: \nL2: 【0†Image: google†d2rnvyacaewvx6.cloudfront.net】Sign in with Google\nL3: \nL4: OR\nL5: \nL6: [Input: Username]\nL7: \nL8: [Input: Password] 【1†Forgot your password?】\nL9: \nL10: [Input]\nL11: \nL12: Not registered? 【2†Sign up】\nL13: \nL14:   * 【3†Search】\nL15:     * 【4†Game Position】\nL16:     * 【5†Chess Games】\nL17:     * 【6†Chess Tournaments】\nL18:     * 【7†Endgames】\nL19:     * 【8†Chess Players】\nL20:   * 【3†Training】\nL21:     * 【9†Openings Trainer】\nL22:     * 【10†Play vs Computer】\nL23:     * 【11†Puzzles】\nL24:     * 【12†Endgames】\nL25: #####\nL26: \nL27: Welcome!\nL28: \nL29: 【3†LOGIN】 | 【2†REGISTER】\nL30: \nL31: Main\nL32: \nL33:   * 【13†Home】\nL34:   * 【14†Opening Explorer】\nL35:   * 【15†Chess Courses】\nL36:   * 【16†ECO Codes】\nL37: \nL38: Search\nL39: \nL40:   * 【4†Position】\nL41:   * 【5†Games】\nL42:   * 【6†Tournaments】\nL43:   * 【7†Endgames】\nL44:   * 【8†Chess Players】\nL45: \nL46: Training\nL47: \nL48:   * 【9†Openings Trainer】\nL49:   * 【10†Play vs Computer】\nL50:   * 【11†Puzzles】\nL51:   * 【12†Endgames】\nL52: \nL53: Resources\nL54: \nL55:   * 【17†Analysis Board】\nL56:   * 【18†Board Editor】\nL57:   * 【19†Chess Openings】\nL58:   * 【20†Blog】\nL59: \nL60: Help\nL61: \nL62:   * 【21†F.A.Q.】\nL63:   * 【22†Contact Us】\nL64:   * 【23†Membership】\nL65: \nL66: Chess Opening Explorer\nL67: With our Opening Explorer you can browse our entire chess database move by move obtaining statistics about the results of each possible continuation.\nL68: The Opening Explorer is a great tool if you want to study chess openings.\nL69: # 【24†B21 Sicilian, Smith-Morra gambit, 2...cxd4 3.c3】\nL70: \nL71: [Input]\nL72: \nL73: [Input]\nL74: \nL75: [Input]\nL76: \nL77: [Input]\nL78: \nL79: [Input]\nL80: \nL81: 【14†Top】\nL82: \nL83: Fen: [Input] 【25†Image: Copy Position†d2rnvyacaewvx6.cloudfront.net】\nL84: \nL85: Url: [Input] 【25†Image: Copy Position†d2rnvyacaewvx6.cloudfront.net】\nL86: \nL87: ## Personal notes\nL88: #### Create notes\nL89: \nL90: If you want to create a note in this position you have to log into your account and have a Supporter membership.\nL91: \nL92: 【26†I'm already a Supporter. Log me in now.】\nL93: \nL94: 【27†I'm not a Supporter yet. Tell me more.】\nL95: \nL96: [Button: Close]\nL97: \nL98: Use your Personal notes to store information and comments about this position. Remember, the notes are private. Nobody but you can see them.\nL99: \nL100: Create a note for this position\nL101: ### Related Openings:\nL102: \nL103:   * B21: 【3†Sicilian, Smith-Morra gambit, 2...cxd4 3.c3】\nL104: \nL105: \nL106: \nL107: \nL108: \nL109: 【3†Stop Analysis】\nL110: \nL111: 【3†Start Engine Analysis】\nL112: \nL113: Stored Analysis: -0.13 Depth 45\nL114: \nL115: Opening Explorer Database:  [Select]\nL116: \nL117: Moves List:\nL118: \nL119: 1. 【28†e4】 【29†c5】 2. 【30†d4】 【31†cxd4】 3. 【32†c3】\nL120: \nL121: 【33†Game List】\nL122: \nL123: 【3†Save】\nL124: \nL125: 【3†Play】\nL126: \nL127: 【3†Analysis】\nL128: Next Move  | # of Games  | Last Played  | Winnings percentage\nL129: White / Draw / Black  | Engine Eval.\nL130: 【34†3... dxc3】  |  5,496  | 2026  |\nL131: 37.4 % 20.3 % 42.3 %\nL132:  | -0.25 Dpt 40\nL133: 【35†3... Nf6】  |  1,789  | 2026  |\nL134: 26.9 % 27.3 % 45.8 %\nL135:  | +0.17 Dpt 40\nL136: 【36†3... d3】  |  1,420  | 2025  |\nL137: 33.2 % 27.4 % 39.4 %\nL138:  | +0.68 Dpt 40\nL139: 【37†3... d5】  |  758  | 2026  |\nL140: 34.4 % 29 % 36.5 %\nL141:  | +0.22 Dpt 40\nL142: 【38†3... g6】  |  175  | 2026  |\nL143: 25.1 % 24 % 50.9 %\nL144:  | +0.49 Dpt 40\nL145: 【39†3... Nc6】  |  152  | 2026  |\nL146: 52 % 20.4 % 27.6 %\nL147:  | +0.62 Dpt 28\nL148: 【40†3... d6】  |  149  | 2026  |\nL149: 49 % 30.9 % 20.1 %\nL150:  | +0.52 Dpt 30\nL151: 【41†3... e6】  |  101  | 2026  |\nL152: 50.5 % 24.8 % 24.8 %\nL153:  | +0.44 Dpt 24\nL154: 【42†3... e5】  |  96  | 2025  |\nL155: 47.9 % 22.9 % 29.2 %\nL156:  | +0.13 Dpt 34\nL157: 【43†3... Qa5】  |  36  | 2019  |\nL158: 27.8 % 58.3 %\nL159:  | +0.67 Dpt 20\nL160: 【44†3... a6】  |  11  | 2025  |\nL161: 36.4 % 36.4 % 27.3 %\nL162:  |\nL163: 【45†3... b6】  |  5  | 2007  |\nL164: 60 % 40 %\nL165:  |\nL166: 【3†3... Na6】  |  【46†0-1】, 【47†Baur】 vs. 【48†Stahr】 (2175)\nL167: 【3†3... Qc7】  |  【49†½-½】, 【50†Zapata】 (1900) vs. 【51†Larsen】 (1930)\nL168: [Input] Hide Engine Analysis\nL169: \nL170: 【52†Download games】\nL171: \nL172: 【53†Sicilian Defense: Full Guide, Main Lines, and Secondary Options】\nL173: ### Latest Played Games\nL174: \nL175: Players  | Result  |\nL176: 【54†Assylov, M vs Yilmaz, B】   | ½ - ½  |\nL177: 【55†Montes Molina, I vs Motylev, A】   | 0 - 1  |\nL178: 【56†Elier, A vs Celik, H】   | 0 - 1  |\nL179: 【57†Herrygers, R vs Sprangers, R】   | 0 - 1  |\nL180: 【58†Mehmedov, A vs Cramling Bellon, A】   | 0 - 1  |\nL181: ### Top Games by Average ELO\nL182: \nL183: Players  | Result  |\nL184: 【59†Nakamura, H vs Vachier Lagrave, M】   | 1 - 0  |\nL185: 【60†Pantsulaia, L vs Jobava, B】   | ½ - ½  |\nL186: 【61†Pechac, J vs Lupulescu, C】   | ½ - ½  |\nL187: 【62†Esserman, M vs Anand, V】   | ½ - ½  |\nL188: 【63†Berg, E vs Khairullin, I】   | ½ - ½  |\nL189: ### Played frequently by\nL190: \nL191: As White  |\nL192: Mladen Zelic  | 【64†99 games】\nL193: Thomas Lochte  | 【65†72 games】\nL194: Wolfgang Kripp  | 【66†46 games】\nL195: \nL196: As Black  |\nL197: Vjekoslav Biliskov  | 【67†8 games】\nL198: Rainer Siegmund  | 【68†7 games】\nL199: Anja Jehle  | 【69†6 games】\nL200: \nL201: #### Opening Explorer Message\nL202: \nL203: This position doesn't exist in the Opening Explorer\nL204: \nL205: [Button: Continue]\nL206: #### Opening Explorer Message\nL207: \nL208: Dear Chessfriend, we're thrilled that you're enjoying this powerful tool!!!\nL209: \nL210: As you know, most of the features in 365Chess are free for everyone, anywhere; we believe in this philosophy and we want to keep it that way.\nL211: To keep the site free for everyone the development of this site relies on the support and contributions of its members. Therefore, we kindly ask you to consider becoming a Supporter. By doing so, you will receive some extra and nice benefits and you will be helping to improve this site.\nL212: \nL213: Thank you in advance for your contribution. You have no idea how much it means to us to have your Support.\nL214: \nL215: [Button: Yes, I want to contribute now]\nL216: \nL217: 【3†Maybe later】\nL218: #### Download PGN\nL219: \nL220: PGN Analysis\nL221: \nL222: [Input]        [Input]\n"
+}

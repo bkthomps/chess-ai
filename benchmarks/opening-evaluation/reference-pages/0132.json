@@ -1,0 +1,63 @@
+{
+  "path": [
+    "d4",
+    "Nf6",
+    "c4",
+    "g6",
+    "Nf3"
+  ],
+  "url": "https://www.365chess.com/opening.php?m=6&ms=d4.Nf6.c4.g6.Nf3&n=76&ns=7.14.11.15.76",
+  "ref": "turn132view0",
+  "rows": [
+    {
+      "san": "Bg7",
+      "games": 43251,
+      "link": 31,
+      "score_cp": 23,
+      "depth": 40
+    },
+    {
+      "san": "c5",
+      "games": 2125,
+      "link": 32,
+      "score_cp": 56,
+      "depth": 40
+    },
+    {
+      "san": "d6",
+      "games": 638,
+      "link": 33,
+      "score_cp": 27,
+      "depth": 38
+    },
+    {
+      "san": "d5",
+      "games": 433,
+      "link": 34,
+      "score_cp": 59,
+      "depth": 30
+    },
+    {
+      "san": "c6",
+      "games": 104,
+      "link": 35,
+      "score_cp": 53,
+      "depth": 39
+    },
+    {
+      "san": "e6",
+      "games": 19,
+      "link": 36,
+      "score_cp": null,
+      "depth": null
+    },
+    {
+      "san": "b6",
+      "games": 18,
+      "link": 37,
+      "score_cp": null,
+      "depth": null
+    }
+  ],
+  "raw": "E60: King's Indian, 3.Nf3 - 1. d4 Nf6 2. c4 g6 3. Nf3 - Chess Opening explorer (https://www.365chess.com/opening.php?m=6&ms=d4.Nf6.c4.g6.Nf3&n=76&ns=7.14.11.15.76)\nciteturn132view0 [wordlim: 200] Crawled: last year; Content type: text/html; Source: click({\"ref_id\":\"turn110view0\",\"id\":34}); Total lines: 232\nL0: \nL1: \nL2: ##### Login 365Chess\nL3: \nL4: 【67†Image: google†www.365chess.com】Sign in with Google\nL5: \nL6: OR\nL7: \nL8: 【0†Forgot your password?】\nL9: \nL10: Not registered? 【1†Sign up】\nL11: \nL12: 【2† 】\nL13: \nL14: 【3† 365Chess.com 】\nL15:   * 【4†Opening Explorer】\nL16:   * 【5†Courses】\nL17:   *  Search\nL18:     * 【6†Game Position】\nL19:     * 【7†Chess Games】\nL20:     * 【8†Chess Tournaments】\nL21:     * 【9†Endgames】\nL22:   *  Training\nL23:     * 【10†Openings Trainer】\nL24:     * 【11†Play vs Computer】\nL25:     * 【12†Puzzles】\nL26:     * 【13†Endgames】\nL27:   * 【14†ECO Codes】\nL28:   *  Resources\nL29:     * 【15†Analysis Board】\nL30:     * 【16†Board Editor】\nL31:     * 【17†Chess Openings】\nL32:     * 【18†Blog】\nL33:   *  Help\nL34:     * 【19†F.A.Q.】\nL35:     * 【20†Contact Us】\nL36:   * 【21†Membership】\nL37: \nL38: Login 【1†Register】\nL39: #####\nL40: \nL41: Welcome!\nL42: \nL43: LOGIN | 【1†REGISTER】\nL44: \nL45: Main\nL46: \nL47:   * 【3†Home】\nL48:   * 【4†Opening Explorer】\nL49:   * 【5†Chess Courses】\nL50:   * 【14†ECO Codes】\nL51: \nL52: Search\nL53: \nL54:   * 【6†Position】\nL55:   * 【7†Games】\nL56:   * 【8†Tournaments】\nL57:   * 【9†Endgames】\nL58: \nL59: Training\nL60: \nL61:   * 【10†Openings Trainer】\nL62:   * 【11†Play vs Computer】\nL63:   * 【12†Puzzles】\nL64:   * 【13†Endgames】\nL65: \nL66: Resources\nL67: \nL68:   * 【15†Analysis Board】\nL69:   * 【16†Board Editor】\nL70:   * 【17†Chess Openings】\nL71:   * 【18†Blog】\nL72: \nL73: Help\nL74: \nL75:   * 【19†F.A.Q.】\nL76:   * 【20†Contact Us】\nL77:   * 【21†Membership】\nL78: \nL79: Chess Opening Explorer\nL80: With our Opening Explorer you can browse our entire chess database move by move obtaining statistics about the results of each possible continuation.\nL81: The Opening Explorer is a great tool if you want to study chess openings.\nL82: \nL83:   * 【3†Search games】\nL84:   * 【6†Search position】\nL85:   * Opening Explorer\nL86: # 【22†E60 King's Indian, 3.Nf3】\nL87: \nL88: 【23†Settings】\nL89: \nL90: 【23† 】\nL91: \nL92: 【4†Top】\nL93: \nL94: Fen:  【68†Image: Copy Position†www.365chess.com】\nL95: \nL96: Url:  【69†Image: Copy Position†www.365chess.com】\nL97: \nL98: ## Personal notes\nL99: #### Create notes\nL100: \nL101: If you want to create a note in this position you have to log into your account and have a Supporter membership.\nL102: \nL103: 【24†I'm already a Supporter. Log me in now.】\nL104: \nL105: 【25†I'm not a Supporter yet. Tell me more.】\nL106: \nL107: Close\nL108: \nL109: Use your Personal notes to store information and comments about this position. Remember, the notes are private. Nobody but you can see them.\nL110: \nL111: Create a note for this position\nL112: ### Related Openings:\nL113: \nL114:   * E60: King's Indian, 3.Nf3\nL115: \nL116: Stop Analysis\nL117: \nL118: Start Engine Analysis\nL119: \nL120: Stored Analysis: +0.19 Depth 50\nL121: \nL122: Opening Explorer Database:   Big Database Masters Database   【70†Image: help†www.365chess.com】\nL123: \nL124: Moves List:\nL125: \nL126: 1. 【26†d4】 【27†Nf6】 2. 【28†c4】 【29†g6】 3. 【30†Nf3】\nL127: \nL128: Game List\nL129: \nL130: Save\nL131: \nL132: Play Position\nL133: \nL134: Play\nL135: \nL136: Analysis Board\nL137: \nL138: Analysis\nL139: Next Move # of Games Last Played Winnings percentage\nL140: White / Draw / Black Engine Eval.\nL141: 【31†3... Bg7】   43,251 2025 37.6 %  34.6 %  27.8 %\nL142: +0.23 Dpt 40\nL143: 【32†3... c5】   2,125 2025 42.7 %  29.7 %  27.6 %\nL144: +0.56 Dpt 40\nL145: 【33†3... d6】   638 2025 45.5 %  27.1 %  27.4 %\nL146: +0.27 Dpt 38\nL147: 【34†3... d5】   433 2025 51.3 %  25.6 %  23.1 %\nL148: +0.59 Dpt 30\nL149: 【35†3... c6】   104 2025 39.4 %  34.6 %  26 %\nL150: +0.53 Dpt 39\nL151: 【36†3... e6】   19 2024 68.4 %  21.1 %\nL152: 【37†3... b6】   18 2025 44.4 %  33.3 %  22.2 %\nL153: 3... b5   【38†1-0】, 【39†Mueller】 (2132) vs. 【40† Hardt】\nL154: Hide Engine Analysis\nL155: \nL156: 【41†King's Indian Defense Guide】\nL157: ### Recent games\nL158: \nL159: Players Result\nL160: 【42†Maghsoodloo, P vs Krause, B】  1 - 0 【71†Image: Open Game†www.365chess.com】\nL161: 【43†Fiorito, F vs Martinez Duany, L】  1 - 0 【72†Image: Open Game†www.365chess.com】\nL162: 【44†Zhakshylykov, E vs Milikow, E】  ½ - ½ 【73†Image: Open Game†www.365chess.com】\nL163: 【45†Kjartansson, G vs Apol, L】  1 - 0 【74†Image: Open Game†www.365chess.com】\nL164: 【46†Haubro, M vs Vasli, A】  ½ - ½ 【75†Image: Open Game†www.365chess.com】\nL165: ### Top Games by Average ELO\nL166: \nL167: Players Result\nL168: 【47†Carlsen, M vs Gelfand, B】  1 - 0 【76†Image: Open Game†www.365chess.com】\nL169: 【48†Mamedyarov, S vs Carlsen, M】  ½ - ½ 【77†Image: Open Game†www.365chess.com】\nL170: 【49†Carlsen, M vs Aronian, L】  ½ - ½ 【78†Image: Open Game†www.365chess.com】\nL171: 【50†Mamedyarov, S vs Carlsen, M】  ½ - ½ 【79†Image: Open Game†www.365chess.com】\nL172: 【51†Carlsen, M vs Nakamura, H】  ½ - ½ 【80†Image: Open Game†www.365chess.com】\nL173: ### Played frequently by\nL174: \nL175: As White\nL176: Predrag Nikolic【52†134 games】\nL177: Vyacheslav Ikonnikov【53†126 games】\nL178: Ognjen Cvitan【54†125 games】\nL179: As Black\nL180: Ilia Smirin【55†85 games】\nL181: Wolfgang Uhlmann【56†68 games】\nL182: Lubomir Ftacnik【57†65 games】\nL183: \nL184: #### Opening Explorer Message\nL185: \nL186: This position doesn't exist in the Opening Explorer\nL187: \nL188: Continue\nL189: \nL190: #### Download PGN\nL191: \nL192: PGN Analysis\nL193: \nL194: ### Browse\nL195: \nL196:   * 【3†Home】\nL197:   * 【7†Chess Games】\nL198:   * 【6†Search Position】\nL199:   * 【8†Tournaments】\nL200:   * 【4†Opening Explorer】\nL201:   * 【14†ECO Codes】\nL202: ### Training\nL203: \nL204:   * 【10†Openings Trainer】\nL205:   * 【12†Puzzles & Tactics】\nL206:   * 【13†Endgames Training】\nL207:   * 【11†Play vs Computer】\nL208:   * 【5†Courses】\nL209: \nL210: ### Players & Tools\nL211: \nL212:   * 【58†Players by Rating】\nL213:   * 【59†Women by Rating】\nL214:   * 【60†Players by # Games】\nL215:   * 【61†Players A-Z】\nL216:   * 【15†Analysis Board】\nL217:   * 【16†Board Editor】\nL218: ### Company\nL219: \nL220:   * 【62†Membership】\nL221:   * 【19†F.A.Q.】\nL222:   * 【20†Contact Us】\nL223:   * 【18†Blog】\nL224:   * 【63†Terms of Service】\nL225:   * 【64†Privacy Policy】\nL226: \nL227: 【65† @365Chess on X †twitter.com】\nL228: \nL229: 【81†Image: 365Chess logo†www.365chess.com】\nL230: \nL231: 【66† Back to top ↑ 】\n"
+}

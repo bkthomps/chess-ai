@@ -1,0 +1,76 @@
+{
+  "path": [
+    "e4",
+    "c5",
+    "c3",
+    "d5"
+  ],
+  "url": "https://www.365chess.com/opening.php?m=5&ms=e4.c5.c3.d5&n=226&ns=3.3.37.226",
+  "ref": "turn90view0",
+  "rows": [
+    {
+      "san": "exd5",
+      "games": 21120,
+      "link": 33,
+      "score_cp": 9,
+      "depth": 40
+    },
+    {
+      "san": "e5",
+      "games": 241,
+      "link": 34,
+      "score_cp": -12,
+      "depth": 38
+    },
+    {
+      "san": "d3",
+      "games": 125,
+      "link": 35,
+      "score_cp": -49,
+      "depth": 20
+    },
+    {
+      "san": "d4",
+      "games": 29,
+      "link": 36,
+      "score_cp": -36,
+      "depth": 22
+    },
+    {
+      "san": "f3",
+      "games": 26,
+      "link": 37,
+      "score_cp": -68,
+      "depth": 22
+    },
+    {
+      "san": "Bb5+",
+      "games": 23,
+      "link": 38,
+      "score_cp": 0,
+      "depth": 20
+    },
+    {
+      "san": "Nf3",
+      "games": 22,
+      "link": 39,
+      "score_cp": null,
+      "depth": null
+    },
+    {
+      "san": "Bd3",
+      "games": 6,
+      "link": 40,
+      "score_cp": -16,
+      "depth": 22
+    },
+    {
+      "san": "Qc2",
+      "games": 4,
+      "link": 41,
+      "score_cp": null,
+      "depth": null
+    }
+  ],
+  "raw": "B22: Sicilian, Alapin's variation (2.c3) - 1. e4 c5 2. c3 d5 - Chess Opening explorer (https://www.365chess.com/opening.php?m=5&ms=e4.c5.c3.d5&n=226&ns=3.3.37.226)\nciteturn90view0 [wordlim: 200] Crawled: 2 months ago; Content type: text/html; Source: click({\"ref_id\":\"turn47view0\",\"id\":31}); Total lines: 213\nL0: ##### Login 365Chess\nL1: \nL2: 【0†Image: google†d2rnvyacaewvx6.cloudfront.net】Sign in with Google\nL3: \nL4: OR\nL5: \nL6: [Input: Username]\nL7: \nL8: [Input: Password] 【1†Forgot your password?】\nL9: \nL10: [Input]\nL11: \nL12: Not registered? 【2†Sign up】\nL13: \nL14:   * 【3†Search】\nL15:     * 【4†Game Position】\nL16:     * 【5†Chess Games】\nL17:     * 【6†Chess Tournaments】\nL18:     * 【7†Endgames】\nL19:     * 【8†Chess Players】\nL20:   * 【3†Training】\nL21:     * 【9†Openings Trainer】\nL22:     * 【10†Play vs Computer】\nL23:     * 【11†Puzzles】\nL24:     * 【12†Endgames】\nL25: #####\nL26: \nL27: Welcome!\nL28: \nL29: 【3†LOGIN】 | 【2†REGISTER】\nL30: \nL31: Main\nL32: \nL33:   * 【13†Home】\nL34:   * 【14†Opening Explorer】\nL35:   * 【15†Chess Courses】\nL36:   * 【16†ECO Codes】\nL37: \nL38: Search\nL39: \nL40:   * 【4†Position】\nL41:   * 【5†Games】\nL42:   * 【6†Tournaments】\nL43:   * 【7†Endgames】\nL44:   * 【8†Chess Players】\nL45: \nL46: Training\nL47: \nL48:   * 【9†Openings Trainer】\nL49:   * 【10†Play vs Computer】\nL50:   * 【11†Puzzles】\nL51:   * 【12†Endgames】\nL52: \nL53: Resources\nL54: \nL55:   * 【17†Analysis Board】\nL56:   * 【18†Board Editor】\nL57:   * 【19†Chess Openings】\nL58:   * 【20†Blog】\nL59: \nL60: Help\nL61: \nL62:   * 【21†F.A.Q.】\nL63:   * 【22†Contact Us】\nL64:   * 【23†Membership】\nL65: \nL66: Chess Opening Explorer\nL67: With our Opening Explorer you can browse our entire chess database move by move obtaining statistics about the results of each possible continuation.\nL68: The Opening Explorer is a great tool if you want to study chess openings.\nL69: # 【24†B22 Sicilian, Alapin's variation (2.c3)】\nL70: \nL71: [Input]\nL72: \nL73: [Input]\nL74: \nL75: [Input]\nL76: \nL77: [Input]\nL78: \nL79: [Input]\nL80: \nL81: 【14†Top】\nL82: \nL83: Fen: [Input] 【25†Image: Copy Position†d2rnvyacaewvx6.cloudfront.net】\nL84: \nL85: Url: [Input] 【25†Image: Copy Position†d2rnvyacaewvx6.cloudfront.net】\nL86: \nL87: ## Personal notes\nL88: #### Create notes\nL89: \nL90: If you want to create a note in this position you have to log into your account and have a Supporter membership.\nL91: \nL92: 【26†I'm already a Supporter. Log me in now.】\nL93: \nL94: 【27†I'm not a Supporter yet. Tell me more.】\nL95: \nL96: [Button: Close]\nL97: \nL98: Use your Personal notes to store information and comments about this position. Remember, the notes are private. Nobody but you can see them.\nL99: \nL100: Create a note for this position\nL101: ### Related Openings:\nL102: \nL103:   * B22: 【3†Sicilian, Alapin's variation (2.c3)】\nL104: \nL105: \nL106: \nL107: \nL108: \nL109: 【3†Stop Analysis】\nL110: \nL111: 【3†Start Engine Analysis】\nL112: \nL113: Stored Analysis: +0.00 Depth 45\nL114: \nL115: Opening Explorer Database:  [Select]\nL116: \nL117: Moves List:\nL118: \nL119: 1. 【28†e4】 【29†c5】 2. 【30†c3】 【31†d5】\nL120: \nL121: 【32†Game List】\nL122: \nL123: 【3†Save】\nL124: \nL125: 【3†Play】\nL126: \nL127: 【3†Analysis】\nL128: Next Move  | # of Games  | Last Played  | Winnings percentage\nL129: White / Draw / Black  | Engine Eval.\nL130: 【33†3. exd5】  |  21,120  | 2026  |\nL131: 34 % 36.4 % 29.5 %\nL132:  | +0.09 Dpt 40\nL133: 【34†3. e5】  |  241  | 2024  |\nL134: 22.4 % 19.9 % 57.7 %\nL135:  | -0.12 Dpt 38\nL136: 【35†3. d3】  |  125  | 2026  |\nL137: 24.8 % 32.8 % 42.4 %\nL138:  | -0.49 Dpt 20\nL139: 【36†3. d4】  |  29  | 2007  |\nL140: 20.7 % 27.6 % 51.7 %\nL141:  | -0.36 Dpt 22\nL142: 【37†3. f3】  |  26  | 2022  |\nL143: 42.3 % 53.8 %\nL144:  | -0.68 Dpt 22\nL145: 【38†3. Bb5+】  |  23  | 2025  |\nL146: 21.7 % 26.1 % 52.2 %\nL147:  | +0.00 Dpt 20\nL148: 【39†3. Nf3】  |  22  | 2018  |\nL149: 77.3 %\nL150:  |\nL151: 【40†3. Bd3】  |  6  | 2007  |\nL152: 16.7 % 16.7 % 66.7 %\nL153:  | -0.16 Dpt 22\nL154: 【41†3. Qc2】  |  4  | 2005  |\nL155: 25 % 25 % 50 %\nL156:  |\nL157: 【3†3. Qa4+】  |  【42†0-1】, 【43†Ciria Sanchez】 vs. 【44†Fluvia Poyatos】 (2474)\nL158: [Input] Hide Engine Analysis\nL159: \nL160: 【45†Download games】\nL161: \nL162: 【46†Sicilian Defense: Full Guide, Main Lines, and Secondary Options】\nL163: ### Latest Played Games\nL164: \nL165: Players  | Result  |\nL166: 【47†Webster, D vs Besou, H】   | ½ - ½  |\nL167: 【48†Bock, J vs Munkhdalai, A】   | 0 - 1  |\nL168: 【49†Mohota, N vs Lymar, V】   | 0 - 1  |\nL169: 【50†Santos Ruiz, M vs Ladron de Guevara Pinto, P】   | 1 - 0  |\nL170: 【51†Bascunana Sanchez, P vs Fedorovsky, M】   | 0 - 1  |\nL171: ### Top Games by Average ELO\nL172: \nL173: Players  | Result  |\nL174: 【52†Carlsen, M vs Giri, A】   | ½ - ½  |\nL175: 【53†Carlsen, M vs Gukesh D】   | ½ - ½  |\nL176: 【54†Mamedyarov, S vs Nepomniachtchi, I】   | 0 - 1  |\nL177: 【55†Andreikin, D vs Ding, L】   | ½ - ½  |\nL178: 【56†Nepomniachtchi, I vs Vachier Lagrave, M】   | 0 - 1  |\nL179: ### Played frequently by\nL180: \nL181: As White  |\nL182: Evgeny Sveshnikov  | 【57†104 games】\nL183: Dusko Pavasovic  | 【58†95 games】\nL184: Levente Vajda  | 【59†91 games】\nL185: \nL186: As Black  |\nL187: Miso Cebalo  | 【60†35 games】\nL188: Sergei Tiviakov  | 【61†34 games】\nL189: Csaba Balogh  | 【62†31 games】\nL190: \nL191: #### Opening Explorer Message\nL192: \nL193: This position doesn't exist in the Opening Explorer\nL194: \nL195: [Button: Continue]\nL196: #### Opening Explorer Message\nL197: \nL198: Dear Chessfriend, we're thrilled that you're enjoying this powerful tool!!!\nL199: \nL200: As you know, most of the features in 365Chess are free for everyone, anywhere; we believe in this philosophy and we want to keep it that way.\nL201: To keep the site free for everyone the development of this site relies on the support and contributions of its members. Therefore, we kindly ask you to consider becoming a Supporter. By doing so, you will receive some extra and nice benefits and you will be helping to improve this site.\nL202: \nL203: Thank you in advance for your contribution. You have no idea how much it means to us to have your Support.\nL204: \nL205: [Button: Yes, I want to contribute now]\nL206: \nL207: 【3†Maybe later】\nL208: #### Download PGN\nL209: \nL210: PGN Analysis\nL211: \nL212: [Input]        [Input]\n"
+}

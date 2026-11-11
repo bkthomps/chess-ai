@@ -1,0 +1,54 @@
+{
+  "path": [
+    "e4",
+    "Nf6",
+    "e5"
+  ],
+  "url": "https://www.365chess.com/opening.php?m=4&ms=e4.Nf6.e5&n=42&ns=3.11.42",
+  "ref": "turn54view0",
+  "rows": [
+    {
+      "san": "Nd5",
+      "games": 30648,
+      "link": 31,
+      "score_cp": 65,
+      "depth": 50
+    },
+    {
+      "san": "Ng8",
+      "games": 262,
+      "link": 32,
+      "score_cp": 88,
+      "depth": 40
+    },
+    {
+      "san": "Ne4",
+      "games": 44,
+      "link": 33,
+      "score_cp": 68,
+      "depth": 42
+    },
+    {
+      "san": "Ng4",
+      "games": 6,
+      "link": 34,
+      "score_cp": null,
+      "depth": null
+    },
+    {
+      "san": "Nh5",
+      "games": 2,
+      "link": 35,
+      "score_cp": 361,
+      "depth": 37
+    },
+    {
+      "san": "d6",
+      "games": 2,
+      "link": 36,
+      "score_cp": null,
+      "depth": null
+    }
+  ],
+  "raw": "B02: Alekhine's defence - 1. e4 Nf6 2. e5 - Chess Opening explorer (https://www.365chess.com/opening.php?m=4&ms=e4.Nf6.e5&n=42&ns=3.11.42)\nciteturn54view0 [wordlim: 200] Crawled: last month; Content type: text/html; Source: click({\"ref_id\":\"turn22view0\",\"id\":30}); Total lines: 209\nL0: ##### Login 365Chess\nL1: \nL2: 【0†Image: google†d2rnvyacaewvx6.cloudfront.net】Sign in with Google\nL3: \nL4: OR\nL5: \nL6: [Input: Username]\nL7: \nL8: [Input: Password] 【1†Forgot your password?】\nL9: \nL10: [Input]\nL11: \nL12: Not registered? 【2†Sign up】\nL13: \nL14:   * 【3†Search】\nL15:     * 【4†Game Position】\nL16:     * 【5†Chess Games】\nL17:     * 【6†Chess Tournaments】\nL18:     * 【7†Endgames】\nL19:     * 【8†Chess Players】\nL20:   * 【3†Training】\nL21:     * 【9†Openings Trainer】\nL22:     * 【10†Play vs Computer】\nL23:     * 【11†Puzzles】\nL24:     * 【12†Endgames】\nL25: #####\nL26: \nL27: Welcome!\nL28: \nL29: 【3†LOGIN】 | 【2†REGISTER】\nL30: \nL31: Main\nL32: \nL33:   * 【13†Home】\nL34:   * 【14†Opening Explorer】\nL35:   * 【15†Chess Courses】\nL36:   * 【16†ECO Codes】\nL37: \nL38: Search\nL39: \nL40:   * 【4†Position】\nL41:   * 【5†Games】\nL42:   * 【6†Tournaments】\nL43:   * 【7†Endgames】\nL44:   * 【8†Chess Players】\nL45: \nL46: Training\nL47: \nL48:   * 【9†Openings Trainer】\nL49:   * 【10†Play vs Computer】\nL50:   * 【11†Puzzles】\nL51:   * 【12†Endgames】\nL52: \nL53: Resources\nL54: \nL55:   * 【17†Analysis Board】\nL56:   * 【18†Board Editor】\nL57:   * 【19†Chess Openings】\nL58:   * 【20†Blog】\nL59: \nL60: Help\nL61: \nL62:   * 【21†F.A.Q.】\nL63:   * 【22†Contact Us】\nL64:   * 【23†Membership】\nL65: \nL66: Chess Opening Explorer\nL67: With our Opening Explorer you can browse our entire chess database move by move obtaining statistics about the results of each possible continuation.\nL68: The Opening Explorer is a great tool if you want to study chess openings.\nL69: # 【24†B02 Alekhine's defence】\nL70: \nL71: [Input]\nL72: \nL73: [Input]\nL74: \nL75: [Input]\nL76: \nL77: [Input]\nL78: \nL79: [Input]\nL80: \nL81: 【14†Top】\nL82: \nL83: Fen: [Input] 【25†Image: Copy Position†d2rnvyacaewvx6.cloudfront.net】\nL84: \nL85: Url: [Input] 【25†Image: Copy Position†d2rnvyacaewvx6.cloudfront.net】\nL86: \nL87: ## Personal notes\nL88: #### Create notes\nL89: \nL90: If you want to create a note in this position you have to log into your account and have a Supporter membership.\nL91: \nL92: 【26†I'm already a Supporter. Log me in now.】\nL93: \nL94: 【27†I'm not a Supporter yet. Tell me more.】\nL95: \nL96: [Button: Close]\nL97: \nL98: Use your Personal notes to store information and comments about this position. Remember, the notes are private. Nobody but you can see them.\nL99: \nL100: Create a note for this position\nL101: ### Related Openings:\nL102: \nL103:   * B02: 【3†Alekhine's defence】\nL104:   * B03: 【3†Alekhine's defence】\nL105:   * B04: 【3†Alekhine's defence, modern variation】\nL106:   * B05: 【3†Alekhine's defence, modern variation, 4...Bg4】\nL107: \nL108: \nL109: \nL110: \nL111: \nL112: 【3†Stop Analysis】\nL113: \nL114: 【3†Start Engine Analysis】\nL115: \nL116: Stored Analysis: +0.62 Depth 50\nL117: \nL118: Opening Explorer Database:  [Select]\nL119: \nL120: Moves List:\nL121: \nL122: 1. 【28†e4】 【29†Nf6】 2. 【30†e5】\nL123: \nL124: 【3†Game List】\nL125: \nL126: 【3†Save】\nL127: \nL128: 【3†Play】\nL129: \nL130: 【3†Analysis】\nL131: Next Move  | # of Games  | Last Played  | Winnings percentage\nL132: White / Draw / Black  | Engine Eval.\nL133: 【31†2... Nd5】  |  30,648  | 2026  |\nL134: 39.6 % 29.7 % 30.7 %\nL135:  | +0.65 Dpt 50\nL136: 【32†2... Ng8】  |  262  | 2026  |\nL137: 51.9 % 19.8 % 28.2 %\nL138:  | +0.88 Dpt 40\nL139: 【33†2... Ne4】  |  44  | 2026  |\nL140: 40.9 % 29.5 % 29.5 %\nL141:  | +0.68 Dpt 42\nL142: 【34†2... Ng4】  |  6  | 2007  |\nL143: 83.3 % 16.7 %\nL144:  |\nL145: 【35†2... Nh5】  |  2  | 2005  |\nL146: 100 %\nL147:  | +3.61 Dpt 37\nL148: 【36†2... d6】  |  2  | 2012  |\nL149: 50 % 50 %\nL150:  |\nL151: 【3†2... g6】  |  【37†1-0】, 【38†Groot】 vs. 【39†Mueller】 (2305)\nL152: 【3†2... e6】  |  【40†1-0】, 【41†Bueker】 (1888) vs. 【42†Primeau】 (1540)\nL153: 【3†2... Nc6】  |  【43†1-0】, 【44†Staley】 (489) vs. 【45†Gnewuch】 (228)\nL154: [Input] Hide Engine Analysis\nL155: \nL156: 【46†Download games】\nL157: \nL158: 【24†Alekhine's Defense Guide】\nL159: ### Latest Played Games\nL160: \nL161: Players  | Result  |\nL162: 【47†Jain Kashish Manoj vs Korpa, B】   | ½ - ½  |\nL163: 【48†Rapport, J vs Tsaruk, M】   | ½ - ½  |\nL164: 【49†Karolczuk, I vs Lyrberg, P】   | 1 - 0  |\nL165: 【50†Harshit Ranjan Sahu vs Varga, Z】   | 1 - 0  |\nL166: 【51†Kilic, E vs Yavuz, E】   | ½ - ½  |\nL167: ### Top Games by Average ELO\nL168: \nL169: Players  | Result  |\nL170: 【52†Carlsen, M vs Firouzja, A】   | ½ - ½  |\nL171: 【53†Carlsen, M vs Rapport, R】   | 1 - 0  |\nL172: 【54†Erigaisi Arjun vs Abdusattorov, N】   | ½ - ½  |\nL173: 【55†Anand, V vs Nakamura, H】   | 1 - 0  |\nL174: 【56†Caruana, F vs Harikrishna, P】   | 1 - 0  |\nL175: ### Played frequently by\nL176: \nL177: As White  |\nL178: Gyula Sax  | 【57†32 games】\nL179: Evgeny Sveshnikov  | 【58†30 games】\nL180: Lothar Vogt  | 【59†30 games】\nL181: \nL182: As Black  |\nL183: Zoltan Varga  | 【60†184 games】\nL184: Alexander Baburin  | 【61†157 games】\nL185: Vladimir Bagirov  | 【62†143 games】\nL186: \nL187: #### Opening Explorer Message\nL188: \nL189: This position doesn't exist in the Opening Explorer\nL190: \nL191: [Button: Continue]\nL192: #### Opening Explorer Message\nL193: \nL194: Dear Chessfriend, we're thrilled that you're enjoying this powerful tool!!!\nL195: \nL196: As you know, most of the features in 365Chess are free for everyone, anywhere; we believe in this philosophy and we want to keep it that way.\nL197: To keep the site free for everyone the development of this site relies on the support and contributions of its members. Therefore, we kindly ask you to consider becoming a Supporter. By doing so, you will receive some extra and nice benefits and you will be helping to improve this site.\nL198: \nL199: Thank you in advance for your contribution. You have no idea how much it means to us to have your Support.\nL200: \nL201: [Button: Yes, I want to contribute now]\nL202: \nL203: 【3†Maybe later】\nL204: #### Download PGN\nL205: \nL206: PGN Analysis\nL207: \nL208: [Input]        [Input]\n"
+}

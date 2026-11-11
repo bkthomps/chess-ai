@@ -1,0 +1,138 @@
+{
+  "path": [
+    "c4",
+    "e5",
+    "Nc3"
+  ],
+  "url": "https://www.365chess.com/opening.php?m=4&ms=c4.e5.Nc3&n=62&ns=15.112.62",
+  "ref": "turn63view0",
+  "rows": [
+    {
+      "san": "Nf6",
+      "games": 20521,
+      "link": 31,
+      "score_cp": 10,
+      "depth": 47
+    },
+    {
+      "san": "Nc6",
+      "games": 12181,
+      "link": 32,
+      "score_cp": 37,
+      "depth": 43
+    },
+    {
+      "san": "Bb4",
+      "games": 3923,
+      "link": 33,
+      "score_cp": 8,
+      "depth": 45
+    },
+    {
+      "san": "d6",
+      "games": 3645,
+      "link": 34,
+      "score_cp": 42,
+      "depth": 22
+    },
+    {
+      "san": "f5",
+      "games": 1270,
+      "link": 35,
+      "score_cp": 27,
+      "depth": 32
+    },
+    {
+      "san": "g6",
+      "games": 468,
+      "link": 36,
+      "score_cp": 48,
+      "depth": 30
+    },
+    {
+      "san": "Bc5",
+      "games": 354,
+      "link": 37,
+      "score_cp": 63,
+      "depth": 22
+    },
+    {
+      "san": "c5",
+      "games": 215,
+      "link": 38,
+      "score_cp": 27,
+      "depth": 35
+    },
+    {
+      "san": "c6",
+      "games": 187,
+      "link": 39,
+      "score_cp": 107,
+      "depth": 25
+    },
+    {
+      "san": "b6",
+      "games": 72,
+      "link": 40,
+      "score_cp": 49,
+      "depth": 29
+    },
+    {
+      "san": "Ne7",
+      "games": 16,
+      "link": 41,
+      "score_cp": 15,
+      "depth": 20
+    },
+    {
+      "san": "Be7",
+      "games": 15,
+      "link": 42,
+      "score_cp": 33,
+      "depth": 23
+    },
+    {
+      "san": "a6",
+      "games": 7,
+      "link": 43,
+      "score_cp": 34,
+      "depth": 20
+    },
+    {
+      "san": "d5",
+      "games": 2,
+      "link": 44,
+      "score_cp": 85,
+      "depth": 20
+    },
+    {
+      "san": "Qf6",
+      "games": 2,
+      "link": 45,
+      "score_cp": 96,
+      "depth": 20
+    },
+    {
+      "san": "Bd6",
+      "games": 2,
+      "link": 46,
+      "score_cp": 51,
+      "depth": 23
+    },
+    {
+      "san": "Qh4",
+      "games": 2,
+      "link": 47,
+      "score_cp": 106,
+      "depth": 20
+    },
+    {
+      "san": "f6",
+      "games": 2,
+      "link": 48,
+      "score_cp": 65,
+      "depth": 20
+    }
+  ],
+  "raw": "A21: English opening - 1. c4 e5 2. Nc3 - Chess Opening explorer (https://www.365chess.com/opening.php?m=4&ms=c4.e5.Nc3&n=62&ns=15.112.62)\nciteturn63view0 [wordlim: 200] Crawled: last month; Content type: text/html; Source: click({\"ref_id\":\"turn23view0\",\"id\":30}); Total lines: 270\nL0: ##### Login 365Chess\nL1: \nL2: 【0†Image: google†d2rnvyacaewvx6.cloudfront.net】Sign in with Google\nL3: \nL4: OR\nL5: \nL6: [Input: Username]\nL7: \nL8: [Input: Password] 【1†Forgot your password?】\nL9: \nL10: [Input]\nL11: \nL12: Not registered? 【2†Sign up】\nL13: \nL14:   * 【3†Search】\nL15:     * 【4†Game Position】\nL16:     * 【5†Chess Games】\nL17:     * 【6†Chess Tournaments】\nL18:     * 【7†Endgames】\nL19:     * 【8†Chess Players】\nL20:   * 【3†Training】\nL21:     * 【9†Openings Trainer】\nL22:     * 【10†Play vs Computer】\nL23:     * 【11†Puzzles】\nL24:     * 【12†Endgames】\nL25: #####\nL26: \nL27: Welcome!\nL28: \nL29: 【3†LOGIN】 | 【2†REGISTER】\nL30: \nL31: Main\nL32: \nL33:   * 【13†Home】\nL34:   * 【14†Opening Explorer】\nL35:   * 【15†Chess Courses】\nL36:   * 【16†ECO Codes】\nL37: \nL38: Search\nL39: \nL40:   * 【4†Position】\nL41:   * 【5†Games】\nL42:   * 【6†Tournaments】\nL43:   * 【7†Endgames】\nL44:   * 【8†Chess Players】\nL45: \nL46: Training\nL47: \nL48:   * 【9†Openings Trainer】\nL49:   * 【10†Play vs Computer】\nL50:   * 【11†Puzzles】\nL51:   * 【12†Endgames】\nL52: \nL53: Resources\nL54: \nL55:   * 【17†Analysis Board】\nL56:   * 【18†Board Editor】\nL57:   * 【19†Chess Openings】\nL58:   * 【20†Blog】\nL59: \nL60: Help\nL61: \nL62:   * 【21†F.A.Q.】\nL63:   * 【22†Contact Us】\nL64:   * 【23†Membership】\nL65: \nL66: Chess Opening Explorer\nL67: With our Opening Explorer you can browse our entire chess database move by move obtaining statistics about the results of each possible continuation.\nL68: The Opening Explorer is a great tool if you want to study chess openings.\nL69: # 【24†A21 English opening】\nL70: \nL71: [Input]\nL72: \nL73: [Input]\nL74: \nL75: [Input]\nL76: \nL77: [Input]\nL78: \nL79: [Input]\nL80: \nL81: 【14†Top】\nL82: \nL83: Fen: [Input] 【25†Image: Copy Position†d2rnvyacaewvx6.cloudfront.net】\nL84: \nL85: Url: [Input] 【25†Image: Copy Position†d2rnvyacaewvx6.cloudfront.net】\nL86: \nL87: ## Personal notes\nL88: #### Create notes\nL89: \nL90: If you want to create a note in this position you have to log into your account and have a Supporter membership.\nL91: \nL92: 【26†I'm already a Supporter. Log me in now.】\nL93: \nL94: 【27†I'm not a Supporter yet. Tell me more.】\nL95: \nL96: [Button: Close]\nL97: \nL98: Use your Personal notes to store information and comments about this position. Remember, the notes are private. Nobody but you can see them.\nL99: \nL100: Create a note for this position\nL101: ### Related Openings:\nL102: \nL103:   * A21: 【3†English opening】\nL104:   * A22: 【3†English opening】\nL105:   * A23: 【3†English, Bremen system, Keres variation】\nL106:   * A24: 【3†English, Bremen system with ...g6】\nL107:   * A25: 【3†English, Sicilian reversed】\nL108:   * A26: 【3†English, closed system】\nL109:   * A27: 【3†English, three knights system】\nL110:   * A28: 【3†English, four knights system】\nL111:   * A29: 【3†English, four knights, kingside fianchetto】\nL112: \nL113: \nL114: \nL115: \nL116: \nL117: 【3†Stop Analysis】\nL118: \nL119: 【3†Start Engine Analysis】\nL120: \nL121: Stored Analysis: +0.00 Depth 43\nL122: Opening Explorer Database:  [Select]\nL123: \nL124: Moves List:\nL125: \nL126: 1. 【28†c4】 【29†e5】 2. 【30†Nc3】\nL127: \nL128: 【3†Game List】\nL129: \nL130: 【3†Save】\nL131: \nL132: 【3†Play】\nL133: \nL134: 【3†Analysis】\nL135: Next Move  | # of Games  | Last Played  | Winnings percentage\nL136: White / Draw / Black  | Engine Eval.\nL137: 【31†2... Nf6】  |  20,521  | 2026  |\nL138: 38.6 % 31.8 % 29.6 %\nL139:  | +0.10 Dpt 47\nL140: 【32†2... Nc6】  |  12,181  | 2026  |\nL141: 37.9 % 31.2 % 30.9 %\nL142:  | +0.37 Dpt 43\nL143: 【33†2... Bb4】  |  3,923  | 2026  |\nL144: 30.9 % 32.6 % 36.6 %\nL145:  | +0.08 Dpt 45\nL146: 【34†2... d6】  |  3,645  | 2026  |\nL147: 35.6 % 31.4 % 32.9 %\nL148:  | +0.42 Dpt 22\nL149: 【35†2... f5】  |  1,270  | 2025  |\nL150: 40.1 % 25 % 34.9 %\nL151:  | +0.27 Dpt 32\nL152: 【36†2... g6】  |  468  | 2026  |\nL153: 44.2 % 25.6 % 30.1 %\nL154:  | +0.48 Dpt 30\nL155: 【37†2... Bc5】  |  354  | 2024  |\nL156: 60.5 % 15.8 % 23.7 %\nL157:  | +0.63 Dpt 22\nL158: 【38†2... c5】  |  215  | 2026  |\nL159: 44.7 % 30.7 % 24.7 %\nL160:  | +0.27 Dpt 35\nL161: 【39†2... c6】  |  187  | 2018  |\nL162: 56.7 % 19.3 % 24.1 %\nL163:  | +1.07 Dpt 25\nL164: 【40†2... b6】  |  72  | 2024  |\nL165: 63.9 % 15.3 % 20.8 %\nL166:  | +0.49 Dpt 29\nL167: 【41†2... Ne7】  |  16  | 2007  |\nL168: 31.3 % 37.5 % 31.3 %\nL169:  | +0.15 Dpt 20\nL170: 【42†2... Be7】  |  15  | 2026  |\nL171: 60 % 26.7 %\nL172:  | +0.33 Dpt 23\nL173: 【43†2... a6】  |  7  | 2024  |\nL174: 100 %\nL175:  | +0.34 Dpt 20\nL176: 【44†2... d5】  |  2  | 2003  |\nL177: 100 %\nL178:  | +0.85 Dpt 20\nL179: 【45†2... Qf6】  |  2  | 2007  |\nL180: 100 %\nL181:  | +0.96 Dpt 20\nL182: 【46†2... Bd6】  |  2  | 2004  |\nL183: 100 %\nL184:  | +0.51 Dpt 23\nL185: 【47†2... Qh4】  |  2  | 2005  |\nL186: 100 %\nL187:  | +1.06 Dpt 20\nL188: 【48†2... f6】  |  2  | 2007  |\nL189: 50 % 50 %\nL190:  | +0.65 Dpt 20\nL191: 【3†2... Nh6】  |  【49†1-0】, 【50†Karpov】 (2710) vs. 【51†Lecoq】\nL192: 【3†2... h6】  |  【52†1-0】, 【53†Viens】 (1340) vs. 【54†Robitaille】 (976)\nL193: 【3†2... Na6】  |  【55†1-0】, 【56†Le Basnier】 (1730) vs. 【57†Bouget】 (1099)\nL194: [Input] Hide Engine Analysis\nL195: \nL196: 【58†Download games】\nL197: \nL198: 【59†English Opening (1.c4): Complete Guide & Variations】\nL199: ### Latest Played Games\nL200: \nL201: Players  | Result  |\nL202: 【60†Fomevor, C vs Ali, L】   | 0 - 1  |\nL203: 【61†Gubin, D vs Ammar, S】   | 1 - 0  |\nL204: 【62†Queipo Caballero, G vs Costalonga, R】   | ½ - ½  |\nL205: 【63†Mulenga, P vs Draskovic, L】   | 0 - 1  |\nL206: 【64†Waqar, M vs Kate, T】   | 1 - 0  |\nL207: ### Top Games by Average ELO\nL208: \nL209: Players  | Result  |\nL210: 【65†Carlsen, M vs Caruana, F】   | ½ - ½  |\nL211: 【66†Carlsen, M vs Ding, L】   | ½ - ½  |\nL212: 【67†Carlsen, M vs Caruana, F】   | ½ - ½  |\nL213: 【68†Carlsen, M vs Caruana, F】   | 1 - 0  |\nL214: 【69†Carlsen, M vs Caruana, F】   | ½ - ½  |\nL215: ### Played frequently by\nL216: \nL217: As White  |\nL218: Normunds Miezis  | 【70†204 games】\nL219: Wolfgang Uhlmann  | 【71†191 games】\nL220: Colin Anderson McNab  | 【72†118 games】\nL221: \nL222: As Black  |\nL223: Jan H Timman  | 【73†62 games】\nL224: Oleg M Romanishin  | 【74†59 games】\nL225: Vassily Smyslov  | 【75†56 games】\nL226: \nL227: #### Opening Explorer Message\nL228: \nL229: This position doesn't exist in the Opening Explorer\nL230: \nL231: [Button: Continue]\nL232: #### Opening Explorer Message\nL233: \nL234: Dear Chessfriend, we're thrilled that you're enjoying this powerful tool!!!\nL235: \nL236: As you know, most of the features in 365Chess are free for everyone, anywhere; we believe in this philosophy and we want to keep it that way.\nL237: To keep the site free for everyone the development of this site relies on the support and contributions of its members. Therefore, we kindly ask you to consider becoming a Supporter. By doing so, you will receive some extra and nice benefits and you will be helping to improve this site.\nL238: \nL239: Thank you in advance for your contribution. You have no idea how much it means to us to have your Support.\nL240: \nL241: [Button: Yes, I want to contribute now]\nL242: \nL243: 【3†Maybe later】\nL244: #### Download PGN\nL245: \nL246: PGN Analysis\nL247: \nL248: [Input]        [Input]\nL249: \nL250: 【13†365Chess】\nL251: \nL252: Chess games database online — more than 4.4 million games, updated every week.\nL253: \nL254: #### Database\nL255: \nL256: 【5†Chess games】 【4†Search position】 【6†Tournaments】 【14†Opening Explorer】 【16†ECO codes】\nL257: \nL258: #### Training\nL259: \nL260: 【9†Openings Trainer】 【11†Puzzles & tactics】 【12†Endgames training】 【10†Play vs computer】 【15†Courses】\nL261: \nL262: #### Players & tools\nL263: \nL264: 【76†Players by rating】 【77†Women by rating】 【8†Players A–Z】 【17†Analysis Board】 【18†Board Editor】\nL265: #### 365Chess\nL266: \nL267: 【27†Membership】 【21†FAQ】 【22†Contact】 【20†Blog】 【78†Terms of service】 【79†Privacy policy】\nL268: \nL269: © 2026 365Chess.com 【80†Follow @365chess on X†twitter.com】\n"
+}

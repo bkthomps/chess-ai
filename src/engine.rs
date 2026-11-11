@@ -1519,6 +1519,12 @@ fn sort_moves(moves: &mut [Move], priority: impl Fn(Move) -> i32) {
         moves[target] = m;
     }
 }
+// Calibrated against the recorded opening reference set. Keep the original
+// endgame knight centralization; the opening data cannot tune endgame play.
+const KNIGHT_CENTER_MIDDLEGAME: i32 = 6;
+const KNIGHT_CENTER_ENDGAME: i32 = 10;
+const TEMPO_MIDDLEGAME: i32 = 24;
+
 const fn square_score(pc: i8, s: usize, endgame: bool) -> i16 {
     if pc == 0 {
         return 0;
@@ -1528,7 +1534,14 @@ const fn square_score(pc: i8, s: usize, endgame: bool) -> i16 {
     let center = 6 - (2 * x - 7).abs() - (2 * y - 7).abs();
     let positional = match pc.abs() {
         1 => y * 8 + center * 2,
-        2 => center * 10,
+        2 => {
+            center
+                * if endgame {
+                    KNIGHT_CENTER_ENDGAME
+                } else {
+                    KNIGHT_CENTER_MIDDLEGAME
+                }
+        }
         3 => center * 5,
         4 => {
             if y == 6 {
@@ -1562,11 +1575,11 @@ const fn evaluation_table() -> [[i16; 64]; 13] {
     }
     scores
 }
-const fn king_deltas() -> [[i16; 64]; 2] {
+const fn phase_deltas(kind: i8) -> [[i16; 64]; 2] {
     let mut scores = [[0; 64]; 2];
     let mut color = 0;
     while color < 2 {
-        let piece = if color == 1 { 6 } else { -6 };
+        let piece = if color == 1 { kind } else { -kind };
         let mut square = 0;
         while square < 64 {
             scores[color][square] =
@@ -1582,7 +1595,8 @@ const FULL_PHASE: i32 = 24;
 const PHASE_WEIGHTS: [i32; 7] = [0, 0, 1, 1, 2, 4, 0];
 
 static SQUARE_SCORES: [[i16; 64]; 13] = evaluation_table();
-static KING_ENDGAME_DELTAS: [[i16; 64]; 2] = king_deltas();
+static KING_ENDGAME_DELTAS: [[i16; 64]; 2] = phase_deltas(6);
+static KNIGHT_ENDGAME_DELTAS: [[i16; 64]; 2] = phase_deltas(2);
 
 // Pawn-safe room on files c-f, ranks 2-4 (White) / 5-7 (Black).
 // Each square counts once, plus once if up to three ranks behind a friendly
@@ -1775,6 +1789,43 @@ fn piece_pawn_relationships(
     total
 }
 
+// Middlegame cost for central queen activity before the home minors develop.
+// Cubic file exposure falls steeply toward the edges; a flank queen is not
+// charged the blanket development penalty. The normal phase blend removes
+// this term in the endgame. These are position features, not opening rules.
+const QUEEN_DEVELOPMENT_WEIGHT: i32 = 24;
+const QUEEN_FILE_EXPOSURE: [i32; 8] = [0, 1, 8, 27, 27, 8, 1, 0];
+
+fn queen_development(knights: [u64; 2], diagonal: [u64; 2], straight: [u64; 2]) -> i32 {
+    let mut total = 0;
+    for color in 0..2 {
+        let home = if color == 1 {
+            0x66
+        } else {
+            0x6600_0000_0000_0000
+        };
+        let minors = knights[color] | (diagonal[color] & !straight[color]);
+        let undeveloped = (minors & home).count_ones() as i32;
+        if undeveloped == 0 {
+            continue;
+        }
+        let advanced = if color == 1 {
+            !0xffff
+        } else {
+            !0xffff_0000_0000_0000
+        };
+        let mut queens = diagonal[color] & straight[color] & advanced;
+        while queens != 0 {
+            let square = queens.trailing_zeros() as usize;
+            queens &= queens - 1;
+            let penalty =
+                undeveloped * QUEEN_DEVELOPMENT_WEIGHT * QUEEN_FILE_EXPOSURE[square % 8] / 27;
+            total += if color == 1 { -penalty } else { penalty };
+        }
+    }
+    total
+}
+
 // Static tactical guidance, not a proof of a profitable exchange. Weights
 // are original and untuned; each target receives its largest applicable term.
 const HANGING: [(i32, i32); 7] = [
@@ -1952,7 +2003,7 @@ fn king_safety(
     total
 }
 
-// Per-thread static evaluations. Validate the full key and all piece squares;
+// Per-thread static evaluations. Validate the full key, turn, and piece squares;
 // clocks/history remain exclusively the responsibility of search draw handling.
 const EVALUATION_CACHE_ENTRIES: usize = 4096;
 #[derive(Clone)]
@@ -1960,6 +2011,9 @@ struct EvaluationEntry {
     key: u64,
     squares: [i8; 64],
     white_score: i32,
+    // Initiative depends on the turn even under a forced full-hash collision.
+    // This byte occupies existing padding, preserving the entry's RAM cost.
+    white: bool,
 }
 const EVALUATION_CACHE_BYTES: usize =
     EVALUATION_CACHE_ENTRIES * std::mem::size_of::<EvaluationEntry>();
@@ -1973,7 +2027,8 @@ impl Default for EvaluationCache {
                 EvaluationEntry {
                     key: 0,
                     squares: [0; 64],
-                    white_score: 0
+                    white_score: 0,
+                    white: false,
                 };
                 EVALUATION_CACHE_ENTRIES
             ],
@@ -1983,12 +2038,13 @@ impl Default for EvaluationCache {
 impl EvaluationCache {
     fn get(&mut self, p: &Position) -> i32 {
         let entry = &mut self.entries[p.hash as usize & (EVALUATION_CACHE_ENTRIES - 1)];
-        if entry.key != p.hash || entry.squares != p.squares {
+        if entry.key != p.hash || entry.white != p.white || entry.squares != p.squares {
             let score = evaluate(p);
             *entry = EvaluationEntry {
                 key: p.hash,
                 squares: p.squares,
                 white_score: if p.white { score } else { -score },
+                white: p.white,
             };
         }
         if p.white {
@@ -2018,7 +2074,10 @@ fn evaluate(p: &Position) -> i32 {
         occupied[color] |= 1u64 << square;
         match piece.abs() {
             1 => pawns[color] |= 1u64 << square,
-            2 => knights[color] |= 1u64 << square,
+            2 => {
+                knights[color] |= 1u64 << square;
+                endgame_delta += i32::from(KNIGHT_ENDGAME_DELTAS[color][square]);
+            }
             3 => {
                 bishops[usize::from(piece < 0)] += 1;
                 diagonal[color] |= 1u64 << square;
@@ -2045,6 +2104,9 @@ fn evaluate(p: &Position) -> i32 {
             piece_pawn_relationships(pawns, pawn_attacks, knights, diagonal, straight);
         score += piece_mg;
         endgame_delta += piece_eg - piece_mg;
+        let development = queen_development(knights, diagonal, straight);
+        score += development;
+        endgame_delta -= development;
         let space = central_space(occupied, pawns, pawn_attacks);
         score += space;
         endgame_delta -= space; // Space is a middlegame-only term.
@@ -2082,10 +2144,13 @@ fn evaluate(p: &Position) -> i32 {
     if bishops[1] >= 2 {
         score -= 30;
     }
+    // Side-to-move initiative reduces the opening's odd/even horizon swing.
+    // It fades with material and does not modify terminal/draw scores.
+    let tempo = TEMPO_MIDDLEGAME * phase.min(FULL_PHASE) / FULL_PHASE;
     if p.white {
-        score
+        score + tempo
     } else {
-        -score
+        -score + tempo
     }
 }
 
@@ -2115,10 +2180,81 @@ mod tests {
                 + threat_mg
                 + safety
                 + (78 + eg - mg + threat_eg - threat_mg - safety) * (24 - phase) / 24;
-            assert_eq!(evaluate(&p), combined, "{fen}");
+            assert_eq!(evaluate(&p), combined + phase, "{fen}");
             p.white = false;
-            assert_eq!(evaluate(&p), -combined);
+            assert_eq!(evaluate(&p), -combined + phase);
         }
+    }
+
+    #[test]
+    fn initiative_respects_turn_cache_identity_and_material_phase() {
+        assert_eq!(std::mem::size_of::<EvaluationEntry>(), 80);
+        for (board, twice_tempo) in [
+            ("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR", 48),
+            ("r2qk3/8/8/8/8/8/8/R2QK3", 24),
+            ("4k3/8/8/8/8/8/8/4K3", 0),
+            // Promotions cannot push initiative above the starting value.
+            ("rqbqkbqr/8/8/8/8/8/8/RQBQKBQR", 48),
+        ] {
+            let white = Position::from_fen(&format!("{board} w - - 0 1")).unwrap();
+            let black = Position::from_fen(&format!("{board} b - - 0 1")).unwrap();
+            assert_eq!(evaluate(&white) + evaluate(&black), twice_tempo);
+            assert_ne!(white.hash, black.hash);
+            let mut cache = EvaluationCache::default();
+            for p in [&white, &black, &white, &black] {
+                assert_eq!(cache.get(p), reference_evaluate(p));
+            }
+        }
+        assert_eq!(evaluate(&Position::default()), 24);
+        // The knight's old endgame endpoint is retained even though its
+        // middlegame center incentive is reduced.
+        assert_eq!(square_score(2, 27, false), 344);
+        assert_eq!(square_score(2, 27, true), 360);
+        assert_eq!(square_score(-2, 35, false), -344);
+        assert_eq!(square_score(-2, 35, true), -360);
+    }
+
+    #[test]
+    fn queen_development_distinguishes_central_and_flank_activity() {
+        let home_knights = (1u64 << 1) | (1u64 << 6);
+        let home_bishops = (1u64 << 2) | (1u64 << 5);
+        // Home and second-rank queens are exempt. Advanced queen exposure
+        // grows toward the central files, without penalizing a flank queen
+        // as heavily as one in the center.
+        for (square, expected) in [(3, 0), (11, 0), (16, 0), (17, -3), (18, -28), (19, -96)] {
+            let queen = 1u64 << square;
+            assert_eq!(
+                queen_development([0, home_knights], [0, home_bishops | queen], [0, queen]),
+                expected,
+            );
+            assert_eq!(
+                queen_development(
+                    [home_knights.swap_bytes(), 0],
+                    [(home_bishops | queen).swap_bytes(), 0],
+                    [queen.swap_bytes(), 0],
+                ),
+                -expected,
+            );
+        }
+        let central_queen = 1u64 << 19;
+        assert_eq!(
+            queen_development([0, 0], [0, central_queen], [0, central_queen]),
+            0,
+        );
+        // Only the queen's own home minors contribute; a moved knight and
+        // opposing undeveloped pieces cannot manufacture a development cost.
+        assert_eq!(
+            queen_development(
+                [home_knights.swap_bytes(), 1u64 << 18],
+                [home_bishops.swap_bytes(), central_queen],
+                [0, central_queen],
+            ),
+            0,
+        );
+        assert_eq!(
+            queen_development([0, 1u64 << 1], [0, central_queen], [0, central_queen]),
+            -24,
+        );
     }
 
     #[test]
@@ -2607,7 +2743,20 @@ mod tests {
                     mirrored.squares[s ^ 56] = -pc;
                 }
                 // Evaluation ignores the stale hash/rights in this mirrored copy.
-                assert_eq!(evaluate(&mirrored), -evaluate(&p));
+                let material_phase = p
+                    .squares
+                    .iter()
+                    .map(|pc| match pc.abs() {
+                        2 | 3 => 1,
+                        4 => 2,
+                        5 => 4,
+                        _ => 0,
+                    })
+                    .sum::<i32>()
+                    .min(24);
+                // The placement terms invert; initiative stays with the side
+                // to move in both copies.
+                assert_eq!(evaluate(&mirrored) + evaluate(&p), 2 * material_phase);
                 assert_eq!(
                     search.buffers.evaluation.get(&mirrored),
                     reference_evaluate(&mirrored)
@@ -3532,9 +3681,10 @@ mod tests {
     // Arithmetic reference independent of the compiled score tables.
     fn reference_evaluate(p: &Position) -> i32 {
         let mut phase = 0;
-        let mut king_delta = 0;
+        let mut phase_delta = 0;
         let mut score = 0;
         let mut bishops = [0, 0];
+        let mut home_minors = [0; 2];
         for (s, &pc) in p.squares.iter().enumerate() {
             if pc == 0 {
                 continue;
@@ -3542,9 +3692,15 @@ mod tests {
             let x = (s % 8) as i32;
             let y = if pc > 0 { s / 8 } else { 7 - s / 8 } as i32;
             let center = 6 - (2 * x - 7).abs() - (2 * y - 7).abs();
+            if matches!(pc.abs(), 2 | 3) && y == 0 && matches!(x, 1 | 2 | 5 | 6) {
+                home_minors[usize::from(pc < 0)] += 1;
+            }
             let positional = match pc.abs() {
                 1 => y * 8 + center * 2,
-                2 => center * 10,
+                2 => {
+                    phase_delta += i32::from(pc.signum()) * center * 4;
+                    center * 6
+                }
                 3 => {
                     bishops[usize::from(pc < 0)] += 1;
                     center * 5
@@ -3559,7 +3715,7 @@ mod tests {
                 5 => center * 2,
                 6 => {
                     let middle = -center * 5 + if y == 0 && (x == 6 || x == 2) { 35 } else { 0 };
-                    king_delta += i32::from(pc.signum()) * (center * 8 - middle);
+                    phase_delta += i32::from(pc.signum()) * (center * 8 - middle);
                     middle
                 }
                 _ => 0,
@@ -3572,13 +3728,28 @@ mod tests {
             };
             score += pc.signum() as i32 * (value(pc) + positional);
         }
+        let mut development = 0;
+        for (square, &pc) in p.squares.iter().enumerate() {
+            let rank = if pc > 0 { square / 8 } else { 7 - square / 8 };
+            if pc.abs() == 5 && rank >= 2 {
+                let file = square % 8;
+                let exposure = file.min(7 - file) as i32;
+                development -= i32::from(pc.signum())
+                    * home_minors[usize::from(pc < 0)]
+                    * 24
+                    * exposure.pow(3)
+                    / 27;
+            }
+        }
+        score += development;
+        phase_delta -= development;
         let (mg, eg) = mobility::tests::reference_scores(p);
         let space = reference_space(p);
         let (pawn_mg, pawn_eg) = reference_pawn_structure(p);
         let (piece_mg, piece_eg) = reference_piece_pawn_relationships(p);
         let ((threat_mg, threat_eg), safety) = reference_tactical_terms(p);
         score += mg + space + pawn_mg + piece_mg + threat_mg + safety;
-        score += (king_delta + eg - mg - space + pawn_eg - pawn_mg + piece_eg - piece_mg
+        score += (phase_delta + eg - mg - space + pawn_eg - pawn_mg + piece_eg - piece_mg
             + threat_eg
             - threat_mg
             - safety)
@@ -3591,9 +3762,9 @@ mod tests {
             score -= 30;
         }
         if p.white {
-            score
+            score + phase.min(24)
         } else {
-            -score
+            -score + phase.min(24)
         }
     }
 

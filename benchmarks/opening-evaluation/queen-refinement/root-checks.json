@@ -1,0 +1,180 @@
+{
+  "baseline_revision": "bdb77b1c4af864b24b9dd81a4906110ef970b129",
+  "baseline_engine_sha256": "bf4a7ba8abf7fe1504c78eae4734e328775043b18838e607cef690b202638952",
+  "compiler": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+  "flags": [
+    "--edition=2021",
+    "-C",
+    "opt-level=3",
+    "-C",
+    "codegen-units=1",
+    "-C",
+    "lto=fat"
+  ],
+  "platform": "macOS-26.5.1-arm64-arm-64bit",
+  "threads": 1,
+  "total_memory_budget": 100000000,
+  "scope": "roots",
+  "references": [
+    {
+      "id": "start",
+      "sequence": []
+    },
+    {
+      "id": "e4",
+      "sequence": [
+        "e4"
+      ]
+    },
+    {
+      "id": "d4",
+      "sequence": [
+        "d4"
+      ]
+    }
+  ],
+  "shared_sha256": {
+    "chess": "d29bf74343b3e225500ab9f40085898f050baf6079c5d2cdbd5246bc3978167a",
+    "tables": "33170ea449259320b74a4dad812b49dcff609a0914cff3a61e2b29db34eb4186",
+    "cache": "873372bdbdb4643fb66cd15e94081a5edf0b1aa7734f2c00b0cf8d4082a53cc6",
+    "ordering": "5302eff4f2d61c58ec1f02d8907b82b6a68c49e5f3df377f89ebc2398a5644ab"
+  },
+  "changes": {
+    "application": []
+  },
+  "engine_sha256": {
+    "application": "09c32cf85b3c8a36d8f8b901bf5a5de4aec1194950f19db6080df8be56bcbefa"
+  },
+  "runs": [
+    {
+      "id": "start",
+      "sequence": [],
+      "fen": "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+      "static_cp": 24,
+      "score_cp": 23,
+      "depth": 7,
+      "best": "e2e4",
+      "nodes": 575455,
+      "hits": 3215,
+      "cache_bytes": 4210688,
+      "cache_limit": 78601344,
+      "variant": "application"
+    },
+    {
+      "id": "e4",
+      "sequence": [
+        "e4"
+      ],
+      "fen": "rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b KQkq e3 0 1",
+      "static_cp": 30,
+      "score_cp": 24,
+      "depth": 7,
+      "best": "e7e5",
+      "nodes": 647026,
+      "hits": 6390,
+      "cache_bytes": 4210688,
+      "cache_limit": 78601344,
+      "variant": "application"
+    },
+    {
+      "id": "d4",
+      "sequence": [
+        "d4"
+      ],
+      "fen": "rnbqkbnr/pppppppp/8/8/3P4/8/PPP1PPPP/RNBQKBNR b KQkq d3 0 1",
+      "static_cp": 28,
+      "score_cp": 24,
+      "depth": 7,
+      "best": "d7d5",
+      "nodes": 677304,
+      "hits": 4645,
+      "cache_bytes": 4210688,
+      "cache_limit": 78601344,
+      "variant": "application"
+    },
+    {
+      "id": "start",
+      "sequence": [],
+      "fen": "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+      "static_cp": 24,
+      "score_cp": 24,
+      "depth": 9,
+      "best": "e2e4",
+      "nodes": 9497341,
+      "hits": 148351,
+      "cache_bytes": 21053440,
+      "cache_limit": 78601344,
+      "variant": "application"
+    },
+    {
+      "id": "e4",
+      "sequence": [
+        "e4"
+      ],
+      "fen": "rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b KQkq e3 0 1",
+      "static_cp": 30,
+      "score_cp": 21,
+      "depth": 9,
+      "best": "e7e5",
+      "nodes": 11979178,
+      "hits": 122256,
+      "cache_bytes": 33619712,
+      "cache_limit": 78601344,
+      "variant": "application"
+    },
+    {
+      "id": "d4",
+      "sequence": [
+        "d4"
+      ],
+      "fen": "rnbqkbnr/pppppppp/8/8/3P4/8/PPP1PPPP/RNBQKBNR b KQkq d3 0 1",
+      "static_cp": 28,
+      "score_cp": 21,
+      "depth": 9,
+      "best": "d7d5",
+      "nodes": 14567416,
+      "hits": 198465,
+      "cache_bytes": 37896192,
+      "cache_limit": 78601344,
+      "variant": "application"
+    }
+  ],
+  "summaries": [
+    {
+      "variant": "application",
+      "depth": 7,
+      "roots": {
+        "start": {
+          "score_cp": 23,
+          "best": "e2e4"
+        },
+        "e4": {
+          "score_cp": 24,
+          "best": "e7e5"
+        },
+        "d4": {
+          "score_cp": 24,
+          "best": "d7d5"
+        }
+      }
+    },
+    {
+      "variant": "application",
+      "depth": 9,
+      "roots": {
+        "start": {
+          "score_cp": 24,
+          "best": "e2e4"
+        },
+        "e4": {
+          "score_cp": 21,
+          "best": "e7e5"
+        },
+        "d4": {
+          "score_cp": 21,
+          "best": "d7d5"
+        }
+      }
+    }
+  ]
+}

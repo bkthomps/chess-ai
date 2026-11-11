@@ -1,0 +1,70 @@
+{
+  "path": [
+    "d4",
+    "Nf6",
+    "Nf3",
+    "g6",
+    "Bg5"
+  ],
+  "url": "https://www.365chess.com/opening.php?m=6&ms=d4.Nf6.Nf3.g6.Bg5&n=63&ns=7.14.20.48.63",
+  "ref": "turn151view0",
+  "rows": [
+    {
+      "san": "Bg7",
+      "games": 10771,
+      "link": 31,
+      "score_cp": 0,
+      "depth": 40
+    },
+    {
+      "san": "Ne4",
+      "games": 572,
+      "link": 32,
+      "score_cp": 37,
+      "depth": 20
+    },
+    {
+      "san": "d5",
+      "games": 101,
+      "link": 33,
+      "score_cp": 41,
+      "depth": 18
+    },
+    {
+      "san": "h6",
+      "games": 20,
+      "link": 34,
+      "score_cp": null,
+      "depth": null
+    },
+    {
+      "san": "d6",
+      "games": 20,
+      "link": 35,
+      "score_cp": null,
+      "depth": null
+    },
+    {
+      "san": "c5",
+      "games": 12,
+      "link": 36,
+      "score_cp": null,
+      "depth": null
+    },
+    {
+      "san": "c6",
+      "games": 6,
+      "link": 37,
+      "score_cp": null,
+      "depth": null
+    },
+    {
+      "san": "b6",
+      "games": 3,
+      "link": 38,
+      "score_cp": null,
+      "depth": null
+    }
+  ],
+  "raw": "A48: King's Indian, Torre attack - 1. d4 Nf6 2. Nf3 g6 3. Bg5 - Chess Opening explorer (https://www.365chess.com/opening.php?m=6&ms=d4.Nf6.Nf3.g6.Bg5&n=63&ns=7.14.20.48.63)\nciteturn151view0 [wordlim: 200] Crawled: 1.5 years ago; Content type: text/html; Source: click({\"ref_id\":\"turn109view0\",\"id\":34}); Total lines: 221\nL0: \nL1: \nL2: ##### Login 365Chess\nL3: \nL4: 【71†Image: google†www.365chess.com】Sign in with Google\nL5: \nL6: OR\nL7: \nL8: 【0†Forgot your password?】\nL9: \nL10: Not registered? 【1†Sign up】\nL11: \nL12: 【2† 365Chess.com 】\nL13:   * 【3†Opening Explorer】\nL14:   * 【4†Courses】\nL15:   *  Search\nL16:     * 【5†Game Position】\nL17:     * 【6†Chess Games】\nL18:     * 【7†Chess Tournaments】\nL19:     * 【8†Endgames】\nL20:   *  Training\nL21:     * 【9†Openings Trainer】\nL22:     * 【10†Play vs Computer】\nL23:     * 【11†Puzzles】\nL24:     * 【12†Endgames】\nL25:   * 【13†ECO Codes】\nL26:   *  Resources\nL27:     * 【14†Analysis Board】\nL28:     * 【15†Board Editor】\nL29:     * 【16†Chess Openings】\nL30:     * 【17†Blog】\nL31:   *  Help\nL32:     * 【18†F.A.Q.】\nL33:     * 【19†Contact Us】\nL34:   * 【20†Membership】\nL35: \nL36: Login 【1†Register】\nL37: #####\nL38: \nL39: Welcome!\nL40: \nL41: LOGIN | 【1†REGISTER】\nL42: \nL43: Main\nL44: \nL45:   * 【2†Home】\nL46:   * 【3†Opening Explorer】\nL47:   * 【4†Chess Courses】\nL48:   * 【13†ECO Codes】\nL49: \nL50: Search\nL51: \nL52:   * 【5†Position】\nL53:   * 【6†Games】\nL54:   * 【7†Tournaments】\nL55:   * 【8†Endgames】\nL56: \nL57: Training\nL58: \nL59:   * 【9†Openings Trainer】\nL60:   * 【10†Play vs Computer】\nL61:   * 【11†Puzzles】\nL62:   * 【12†Endgames】\nL63: \nL64: Resources\nL65: \nL66:   * 【14†Analysis Board】\nL67:   * 【15†Board Editor】\nL68:   * 【16†Chess Openings】\nL69:   * 【17†Blog】\nL70: \nL71: Help\nL72: \nL73:   * 【18†F.A.Q.】\nL74:   * 【19†Contact Us】\nL75:   * 【20†Membership】\nL76: \nL77: Chess Opening Explorer\nL78: With our Opening Explorer you can browse our entire chess database move by move obtaining statistics about the results of each possible continuation.\nL79: The Opening Explorer is a great tool if you want to study chess openings.\nL80: \nL81:   * 【2†Search games】\nL82:   * 【5†Search position】\nL83:   * Opening Explorer\nL84: # 【21†A48 King's Indian, Torre attack】\nL85: \nL86: 【72†Image: Download PGN†www.365chess.com】\nL87: \nL88: 【22†Settings】\nL89: \nL90: 【3†Top】\nL91: \nL92: Fen:  【73†Image: Copy Position†www.365chess.com】\nL93: \nL94: Url:  【74†Image: Copy Position†www.365chess.com】\nL95: \nL96: ## Personal notes\nL97: #### Create notes\nL98: \nL99: If you want to create a note in this position you have to log into your account and have a Supporter membership.\nL100: \nL101: 【23†I'm already a Supporter. Log me in now.】\nL102: \nL103: 【24†I'm not a Supporter yet. Tell me more.】\nL104: \nL105: Close\nL106: \nL107: Use your Personal notes to store information and comments about this position. Remember, the notes are private. Nobody but you can see them.\nL108: \nL109: Create a note for this position\nL110: ### Related Openings:\nL111: \nL112:   * A48: King's Indian, Torre attack\nL113: \nL114: Stop Analysis\nL115: \nL116: Start Engine Analysis\nL117: \nL118: Stored Analysis: +0.00 Depth 40\nL119: \nL120: Opening Explorer Database:   Big Database Masters Database   【75†Image: help†www.365chess.com】\nL121: \nL122: Moves List:\nL123: \nL124: 1. 【25†d4】 【26†Nf6】 2. 【27†Nf3】 【28†g6】 3. 【29†Bg5】\nL125: \nL126: 【30†Game List】\nL127: \nL128: Save\nL129: \nL130: Play Position\nL131: \nL132: Play\nL133: \nL134: Analysis Board\nL135: \nL136: Analysis\nL137: Next Move # of Games Last Played Winnings percentage\nL138: White / Draw / Black Engine Eval.\nL139: 【31†3... Bg7】   10,771 2025 32.8 %  36.1 %  31.1 %\nL140: +0.00 Dpt 40\nL141: 【32†3... Ne4】   572 2025 39 %  32.3 %  28.7 %\nL142: +0.37 Dpt 20\nL143: 【33†3... d5】   101 2025 38.6 %  36.6 %  24.8 %\nL144: +0.41 Dpt 18\nL145: 【34†3... h6】   20 2005 55 %  25 %  20 %\nL146: 【35†3... d6】   20 2025 65 %  25 %\nL147: 【36†3... c5】   12 2007 41.7 %  50 %\nL148: 【37†3... c6】   6 2003 50 %  33.3 %  16.7 %\nL149: 【38†3... b6】   3 2017 33.3 %  66.7 %\nL150: 3... Nd5   【39†1-0】, 【40†Constable】 vs. 【41† Rush】\nL151: 3... e6   【42†1-0】, 【43†Marques】 vs. 【44† Bolzoni】\nL152: Hide Engine Analysis\nL153: \nL154: 【45†Download games】\nL155: ### Recent games\nL156: \nL157: Players Result\nL158: 【46†Gormally, D vs Safarov, D】  1 - 0 【76†Image: Open Game†www.365chess.com】\nL159: 【47†Camacho Collados, M vs Lauda, A】  1 - 0 【77†Image: Open Game†www.365chess.com】\nL160: 【48†Pavan Karthikeya Varma Gunturi vs Kavin Vijayakumar】  ½ - ½ 【78†Image: Open Game†www.365chess.com】\nL161: 【49†Wild, A vs Meddouri-Bernard, E】  0 - 1 【79†Image: Open Game†www.365chess.com】\nL162: 【50†Balacek, T vs Simunek, F】  ½ - ½ 【80†Image: Open Game†www.365chess.com】\nL163: ### Top Games by Average ELO\nL164: \nL165: Players Result\nL166: 【51†Carlsen, M vs Giri, A】  1 - 0 【81†Image: Open Game†www.365chess.com】\nL167: 【52†Kramnik, V vs Vachier Lagrave, M】  1 - 0 【82†Image: Open Game†www.365chess.com】\nL168: 【53†Kramnik, V vs Vachier Lagrave, M】  0 - 1 【83†Image: Open Game†www.365chess.com】\nL169: 【54†Kramnik, V vs Vachier Lagrave, M】  1 - 0 【84†Image: Open Game†www.365chess.com】\nL170: 【55†Kramnik, V vs Giri, A】  ½ - ½ 【85†Image: Open Game†www.365chess.com】\nL171: ### Played frequently by\nL172: \nL173: As White\nL174: Evgenij Piankov【56†68 games】\nL175: Vlatko Kovacevic【57†67 games】\nL176: Laszlo Eperjesi【58†60 games】\nL177: As Black\nL178: Zdenko Kozul【59†27 games】\nL179: Lubomir Ftacnik【60†27 games】\nL180: Wolfgang Uhlmann【61†21 games】\nL181: \nL182: #### Opening Explorer Message\nL183: \nL184: This position doesn't exist in the Opening Explorer\nL185: \nL186: Continue\nL187: #### Download PGN\nL188: \nL189: PGN Analysis\nL190: \nL191:   * 【2†Home】\nL192:   * 【6†Chess Games】\nL193:   * 【5†Search Game Position】\nL194:   * 【7†Chess Tournaments】\nL195:   * 【3†Chess Opening Explorer】\nL196:   * 【13†ECO Codes】\nL197: \nL198:   * 【4†Courses】\nL199:   * 【9†Openings Trainer】\nL200:   * 【10†Play Computer】\nL201:   * 【11†Chess Puzzles and Tactics】\nL202:   * 【8†Search Endgames】\nL203:   * 【12†Endgames Training】\nL204:   * 【62†Players by rating】\nL205:   * 【63†Women Players by rating】\nL206:   * 【64†Players by number of games】\nL207:   * 【65†Chess players list】\nL208:   * 【14†Analysis Board】\nL209:   * 【15†Board Editor】\nL210:   * 【66† @365Chess†twitter.com】\nL211: \nL212:   * 【67†Terms of Service】\nL213:   * 【68†Privacy Policy】\nL214:   * 【18†F.A.Q.】\nL215:   * 【19†Contact Us】\nL216:   * 【69†Membership】\nL217:   * 【17†Blog】\nL218:   * 【70† Facebook†www.facebook.com】\nL219: \nL220: © 2007 - 2025 | 365Chess.com\n"
+}

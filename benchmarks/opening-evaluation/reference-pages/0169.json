@@ -1,0 +1,62 @@
+{
+  "path": [
+    "c4",
+    "c5",
+    "Nf3",
+    "Nf6"
+  ],
+  "url": "https://www.365chess.com/opening.php?m=5&ms=c4.c5.Nf3.Nf6&n=88&ns=15.26.2.88",
+  "ref": "turn187view0",
+  "rows": [
+    {
+      "san": "Nc3",
+      "games": 16118,
+      "link": 32,
+      "score_cp": 37,
+      "depth": 25
+    },
+    {
+      "san": "g3",
+      "games": 6350,
+      "link": 33,
+      "score_cp": 17,
+      "depth": 38
+    },
+    {
+      "san": "d4",
+      "games": 1731,
+      "link": 34,
+      "score_cp": 0,
+      "depth": 43
+    },
+    {
+      "san": "b3",
+      "games": 545,
+      "link": 35,
+      "score_cp": 15,
+      "depth": 30
+    },
+    {
+      "san": "e3",
+      "games": 361,
+      "link": 36,
+      "score_cp": 15,
+      "depth": 30
+    },
+    {
+      "san": "d3",
+      "games": 19,
+      "link": 37,
+      "score_cp": null,
+      "depth": null
+    },
+    {
+      "san": "b4",
+      "games": 3,
+      "link": 38,
+      "score_cp": null,
+      "depth": null
+    }
+  ],
+  "raw": "A30: English, symmetrical variation - 1. c4 c5 2. Nf3 Nf6 - Chess Opening explorer (https://www.365chess.com/opening.php?m=5&ms=c4.c5.Nf3.Nf6&n=88&ns=15.26.2.88)\nciteturn187view0 [wordlim: 200] Crawled: 2 months ago; Content type: text/html; Source: click({\"ref_id\":\"turn92view0\",\"id\":32}); Total lines: 213\nL0: ##### Login 365Chess\nL1: \nL2: 【0†Image: google†d2rnvyacaewvx6.cloudfront.net】Sign in with Google\nL3: \nL4: OR\nL5: \nL6: [Input: Username]\nL7: \nL8: [Input: Password] 【1†Forgot your password?】\nL9: \nL10: [Input]\nL11: \nL12: Not registered? 【2†Sign up】\nL13: \nL14:   * 【3†Search】\nL15:     * 【4†Game Position】\nL16:     * 【5†Chess Games】\nL17:     * 【6†Chess Tournaments】\nL18:     * 【7†Endgames】\nL19:     * 【8†Chess Players】\nL20:   * 【3†Training】\nL21:     * 【9†Openings Trainer】\nL22:     * 【10†Play vs Computer】\nL23:     * 【11†Puzzles】\nL24:     * 【12†Endgames】\nL25: #####\nL26: \nL27: Welcome!\nL28: \nL29: 【3†LOGIN】 | 【2†REGISTER】\nL30: \nL31: Main\nL32: \nL33:   * 【13†Home】\nL34:   * 【14†Opening Explorer】\nL35:   * 【15†Chess Courses】\nL36:   * 【16†ECO Codes】\nL37: \nL38: Search\nL39: \nL40:   * 【4†Position】\nL41:   * 【5†Games】\nL42:   * 【6†Tournaments】\nL43:   * 【7†Endgames】\nL44:   * 【8†Chess Players】\nL45: \nL46: Training\nL47: \nL48:   * 【9†Openings Trainer】\nL49:   * 【10†Play vs Computer】\nL50:   * 【11†Puzzles】\nL51:   * 【12†Endgames】\nL52: \nL53: Resources\nL54: \nL55:   * 【17†Analysis Board】\nL56:   * 【18†Board Editor】\nL57:   * 【19†Chess Openings】\nL58:   * 【20†Blog】\nL59: \nL60: Help\nL61: \nL62:   * 【21†F.A.Q.】\nL63:   * 【22†Contact Us】\nL64:   * 【23†Membership】\nL65: \nL66: Chess Opening Explorer\nL67: With our Opening Explorer you can browse our entire chess database move by move obtaining statistics about the results of each possible continuation.\nL68: The Opening Explorer is a great tool if you want to study chess openings.\nL69: # 【24†A30 English, symmetrical variation】\nL70: \nL71: [Input]\nL72: \nL73: [Input]\nL74: \nL75: [Input]\nL76: \nL77: [Input]\nL78: \nL79: [Input]\nL80: \nL81: 【14†Top】\nL82: \nL83: Fen: [Input] 【25†Image: Copy Position†d2rnvyacaewvx6.cloudfront.net】\nL84: \nL85: Url: [Input] 【25†Image: Copy Position†d2rnvyacaewvx6.cloudfront.net】\nL86: \nL87: ## Personal notes\nL88: #### Create notes\nL89: \nL90: If you want to create a note in this position you have to log into your account and have a Supporter membership.\nL91: \nL92: 【26†I'm already a Supporter. Log me in now.】\nL93: \nL94: 【27†I'm not a Supporter yet. Tell me more.】\nL95: \nL96: [Button: Close]\nL97: \nL98: Use your Personal notes to store information and comments about this position. Remember, the notes are private. Nobody but you can see them.\nL99: \nL100: Create a note for this position\nL101: ### Related Openings:\nL102: \nL103:   * A30: 【3†English, symmetrical variation】\nL104:   * A31: 【3†English, symmetrical, Benoni formation】\nL105:   * A32: 【3†English, symmetrical variation】\nL106:   * A33: 【3†English, symmetrical variation】\nL107:   * A34: 【3†English, symmetrical variation】\nL108:   * A35: 【3†English, symmetrical variation】\nL109:   * A36: 【3†English, symmetrical variation】\nL110:   * A37: 【3†English, symmetrical variation】\nL111:   * A38: 【3†English, symmetrical variation】\nL112:   * A39: 【3†English, symmetrical, main line with d4】\nL113: \nL114: \nL115: \nL116: \nL117: \nL118: 【3†Stop Analysis】\nL119: 【3†Start Engine Analysis】\nL120: \nL121: Opening Explorer Database:  [Select]\nL122: \nL123: Moves List:\nL124: \nL125: 1. 【28†c4】 【29†c5】 2. 【30†Nf3】 【31†Nf6】\nL126: \nL127: 【3†Game List】\nL128: \nL129: 【3†Save】\nL130: \nL131: 【3†Play】\nL132: \nL133: 【3†Analysis】\nL134: Next Move  | # of Games  | Last Played  | Winnings percentage\nL135: White / Draw / Black  | Engine Eval.\nL136: 【32†3. Nc3】  |  16,118  | 2026  |\nL137: 37.4 % 42.6 % 20 %\nL138:  | +0.37 Dpt 25\nL139: 【33†3. g3】  |  6,350  | 2026  |\nL140: 33.8 % 44.7 % 21.5 %\nL141:  | +0.17 Dpt 38\nL142: 【34†3. d4】  |  1,731  | 2026  |\nL143: 39.5 % 38.6 % 21.9 %\nL144:  | +0.00 Dpt 43\nL145: 【35†3. b3】  |  545  | 2026  |\nL146: 31.9 % 42 % 26.1 %\nL147:  | +0.15 Dpt 30\nL148: 【36†3. e3】  |  361  | 2026  |\nL149: 34.9 % 39.6 % 25.5 %\nL150:  | +0.15 Dpt 30\nL151: 【37†3. d3】  |  19  | 2022  |\nL152: 26.3 % 36.8 % 36.8 %\nL153:  |\nL154: 【38†3. b4】  |  3  | 2005  |\nL155: 33.3 % 66.7 %\nL156:  |\nL157: 【3†3. h3】  |  【39†½-½】, 【40†Habibi】 (2255) vs. 【41†Blasko】 (2255)\nL158: [Input] Hide Engine Analysis\nL159: \nL160: 【42†Download games】\nL161: \nL162: 【43†The English Opening】\nL163: ### Latest Played Games\nL164: \nL165: Players  | Result  |\nL166: 【44†Gubin, D vs Onica, V】   | 1 - 0  |\nL167: 【45†Muthaiah, A vs Moreto Quintana, A】   | 1 - 0  |\nL168: 【46†Sammed Jaykumar, S vs De Jong, L】   | 1 - 0  |\nL169: 【47†Muradli, M vs Can, I】   | ½ - ½  |\nL170: 【48†Cornette, M vs Daulyte-Cornette, D】   | ½ - ½  |\nL171: ### Top Games by Average ELO\nL172: \nL173: Players  | Result  |\nL174: 【49†Carlsen, M vs Topalov, V】   | ½ - ½  |\nL175: 【50†Vachier Lagrave, M vs Carlsen, M】   | 1 - 0  |\nL176: 【51†Carlsen, M vs Giri, A】   | ½ - ½  |\nL177: 【52†Kasparov, G vs Kramnik, V】   | ½ - ½  |\nL178: 【53†Kasparov, G vs Kramnik, V】   | ½ - ½  |\nL179: ### Played frequently by\nL180: \nL181: As White  |\nL182: Ulf Andersson  | 【54†127 games】\nL183: Viktor Korchnoi  | 【55†96 games】\nL184: Wolfgang Uhlmann  | 【56†86 games】\nL185: \nL186: As Black  |\nL187: Lubomir Ftacnik  | 【57†115 games】\nL188: Peter Leko  | 【58†93 games】\nL189: Semen I Dvoirys  | 【59†87 games】\nL190: \nL191: #### Opening Explorer Message\nL192: \nL193: This position doesn't exist in the Opening Explorer\nL194: \nL195: [Button: Continue]\nL196: #### Opening Explorer Message\nL197: \nL198: Dear Chessfriend, we're thrilled that you're enjoying this powerful tool!!!\nL199: \nL200: As you know, most of the features in 365Chess are free for everyone, anywhere; we believe in this philosophy and we want to keep it that way.\nL201: To keep the site free for everyone the development of this site relies on the support and contributions of its members. Therefore, we kindly ask you to consider becoming a Supporter. By doing so, you will receive some extra and nice benefits and you will be helping to improve this site.\nL202: \nL203: Thank you in advance for your contribution. You have no idea how much it means to us to have your Support.\nL204: \nL205: [Button: Yes, I want to contribute now]\nL206: \nL207: 【3†Maybe later】\nL208: #### Download PGN\nL209: \nL210: PGN Analysis\nL211: \nL212: [Input]        [Input]\n"
+}

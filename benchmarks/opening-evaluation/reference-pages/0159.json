@@ -1,0 +1,104 @@
+{
+  "path": [
+    "Nf3",
+    "d5",
+    "d4",
+    "c6"
+  ],
+  "url": "https://www.365chess.com/opening.php?m=5&ms=Nf3.d5.d4.c6&n=97&ns=1.85.10.97",
+  "ref": "turn163view0",
+  "rows": [
+    {
+      "san": "c4",
+      "games": 5950,
+      "link": 31,
+      "score_cp": 4,
+      "depth": 45
+    },
+    {
+      "san": "e3",
+      "games": 1861,
+      "link": 32,
+      "score_cp": 34,
+      "depth": 26
+    },
+    {
+      "san": "Bf4",
+      "games": 1647,
+      "link": 33,
+      "score_cp": 8,
+      "depth": 45
+    },
+    {
+      "san": "g3",
+      "games": 1087,
+      "link": 34,
+      "score_cp": 17,
+      "depth": 18
+    },
+    {
+      "san": "c3",
+      "games": 633,
+      "link": 35,
+      "score_cp": 10,
+      "depth": 28
+    },
+    {
+      "san": "Bg5",
+      "games": 280,
+      "link": 36,
+      "score_cp": 0,
+      "depth": 25
+    },
+    {
+      "san": "Nbd2",
+      "games": 134,
+      "link": 37,
+      "score_cp": 11,
+      "depth": 25
+    },
+    {
+      "san": "Nc3",
+      "games": 61,
+      "link": 38,
+      "score_cp": 5,
+      "depth": 29
+    },
+    {
+      "san": "b3",
+      "games": 38,
+      "link": 39,
+      "score_cp": null,
+      "depth": null
+    },
+    {
+      "san": "h3",
+      "games": 19,
+      "link": 40,
+      "score_cp": 0,
+      "depth": 45
+    },
+    {
+      "san": "a4",
+      "games": 5,
+      "link": 41,
+      "score_cp": null,
+      "depth": null
+    },
+    {
+      "san": "Bd2",
+      "games": 3,
+      "link": 42,
+      "score_cp": null,
+      "depth": null
+    },
+    {
+      "san": "a3",
+      "games": 2,
+      "link": 43,
+      "score_cp": 25,
+      "depth": 20
+    }
+  ],
+  "raw": "D02: Queen's pawn game - 1. Nf3 d5 2. d4 c6  - Chess Opening explorer (https://www.365chess.com/opening.php?m=5&ms=Nf3.d5.d4.c6&n=97&ns=1.85.10.97)\nciteturn163view0 [wordlim: 200] Crawled: 1.1 years ago; Content type: text/html; Source: click({\"ref_id\":\"turn73view0\",\"id\":30}); Total lines: 247\nL0: \nL1: \nL2: ##### Login 365Chess\nL3: \nL4: 【71†Image: google†www.365chess.com】Sign in with Google\nL5: \nL6: OR\nL7: \nL8: 【0†Forgot your password?】\nL9: \nL10: Not registered? 【1†Sign up】\nL11: \nL12: 【2† 】\nL13: \nL14: 【3† 365Chess.com 】\nL15:   * 【4†Opening Explorer】\nL16:   * 【5†Courses】\nL17:   *  Search\nL18:     * 【6†Game Position】\nL19:     * 【7†Chess Games】\nL20:     * 【8†Chess Tournaments】\nL21:     * 【9†Endgames】\nL22:   *  Training\nL23:     * 【10†Openings Trainer】\nL24:     * 【11†Play vs Computer】\nL25:     * 【12†Puzzles】\nL26:     * 【13†Endgames】\nL27:   * 【14†ECO Codes】\nL28:   *  Resources\nL29:     * 【15†Analysis Board】\nL30:     * 【16†Board Editor】\nL31:     * 【17†Chess Openings】\nL32:     * 【18†Blog】\nL33:   *  Help\nL34:     * 【19†F.A.Q.】\nL35:     * 【20†Contact Us】\nL36:   * 【21†Membership】\nL37: \nL38: Login 【1†Register】\nL39: #####\nL40: \nL41: Welcome!\nL42: \nL43: LOGIN | 【1†REGISTER】\nL44: \nL45: Main\nL46: \nL47:   * 【3†Home】\nL48:   * 【4†Opening Explorer】\nL49:   * 【5†Chess Courses】\nL50:   * 【14†ECO Codes】\nL51: \nL52: Search\nL53: \nL54:   * 【6†Position】\nL55:   * 【7†Games】\nL56:   * 【8†Tournaments】\nL57:   * 【9†Endgames】\nL58: \nL59: Training\nL60: \nL61:   * 【10†Openings Trainer】\nL62:   * 【11†Play vs Computer】\nL63:   * 【12†Puzzles】\nL64:   * 【13†Endgames】\nL65: \nL66: Resources\nL67: \nL68:   * 【15†Analysis Board】\nL69:   * 【16†Board Editor】\nL70:   * 【17†Chess Openings】\nL71:   * 【18†Blog】\nL72: \nL73: Help\nL74: \nL75:   * 【19†F.A.Q.】\nL76:   * 【20†Contact Us】\nL77:   * 【21†Membership】\nL78: \nL79: Chess Opening Explorer\nL80: With our Opening Explorer you can browse our entire chess database move by move obtaining statistics about the results of each possible continuation.\nL81: The Opening Explorer is a great tool if you want to study chess openings.\nL82: \nL83:   * 【3†Search games】\nL84:   * 【6†Search position】\nL85:   * Opening Explorer\nL86: # 【22†D02 Queen's pawn game】\nL87: \nL88: 【23†Settings】\nL89: \nL90: 【23† 】\nL91: \nL92: 【4†Top】\nL93: \nL94: Fen:  【72†Image: Copy Position†www.365chess.com】\nL95: \nL96: Url:  【73†Image: Copy Position†www.365chess.com】\nL97: \nL98: ## Personal notes\nL99: #### Create notes\nL100: \nL101: If you want to create a note in this position you have to log into your account and have a Supporter membership.\nL102: \nL103: 【24†I'm already a Supporter. Log me in now.】\nL104: \nL105: 【25†I'm not a Supporter yet. Tell me more.】\nL106: \nL107: Close\nL108: \nL109: Use your Personal notes to store information and comments about this position. Remember, the notes are private. Nobody but you can see them.\nL110: \nL111: Create a note for this position\nL112: ### Related Openings:\nL113: \nL114:   * D02: Queen's pawn game\nL115:   * D03: Torre attack (Tartakower variation)\nL116:   * D04: Queen's pawn game\nL117:   * D05: Queen's pawn game\nL118: \nL119: Stop Analysis\nL120: \nL121: Start Engine Analysis\nL122: \nL123: Stored Analysis: +0.13 Depth 45\nL124: \nL125: Opening Explorer Database:   Big Database Masters Database   【74†Image: help†www.365chess.com】\nL126: \nL127: Moves List:\nL128: \nL129: 1. 【26†Nf3】 【27†d5】 2. 【28†d4】 【29†c6】\nL130: \nL131: 【30†Game List】\nL132: \nL133: Save\nL134: \nL135: Play Position\nL136: \nL137: Play\nL138: \nL139: Analysis Board\nL140: \nL141: Analysis\nL142: Next Move # of Games Last Played Winnings percentage\nL143: White / Draw / Black Engine Eval.\nL144: 【31†3. c4】   5,950 2025 37.7 %  36 %  26.3 %\nL145: +0.04 Dpt 45\nL146: 【32†3. e3】   1,861 2024 29.8 %  34.1 %  36.1 %\nL147: +0.34 Dpt 26\nL148: 【33†3. Bf4】   1,647 2025 35.5 %  35.8 %  28.7 %\nL149: +0.08 Dpt 45\nL150: 【34†3. g3】   1,087 2025 31.6 %  35.4 %  32.9 %\nL151: +0.17 Dpt 18\nL152: 【35†3. c3】   633 2024 25.4 %  38.5 %  36 %\nL153: +0.10 Dpt 28\nL154: 【36†3. Bg5】   280 2023 37.9 %  29.6 %  32.5 %\nL155: +0.00 Dpt 25\nL156: 【37†3. Nbd2】   134 2022 39.6 %  30.6 %  29.9 %\nL157: +0.11 Dpt 25\nL158: 【38†3. Nc3】   61 2024 26.2 %  23 %  50.8 %\nL159: +0.05 Dpt 29\nL160: 【39†3. b3】   38 2018 15.8 %  21.1 %  63.2 %\nL161: 【40†3. h3】   19 2007 26.3 %  31.6 %  42.1 %\nL162: +0.00 Dpt 45\nL163: 【41†3. a4】   5 2005 40 %  60 %\nL164: 【42†3. Bd2】   3 2005 33.3 %  33.3 %  33.3 %\nL165: 【43†3. a3】   2 2016 50 %  50 %\nL166: +0.25 Dpt 20\nL167: Hide Engine Analysis\nL168: \nL169: 【44†Download games】\nL170: \nL171: 【45†London System Opening Complete Guide】\nL172: ### Recent games\nL173: \nL174: Players Result\nL175: 【46†Patuzzo, F vs Lustenberger, D】  1 - 0 【75†Image: Open Game†www.365chess.com】\nL176: 【47†Dragnev, V vs Krasenkow, M】  ½ - ½ 【76†Image: Open Game†www.365chess.com】\nL177: 【48†Moe, A vs Knudsen, M】  ½ - ½ 【77†Image: Open Game†www.365chess.com】\nL178: 【49†Zurkowski, A vs Savitha, S】  0 - 1 【78†Image: Open Game†www.365chess.com】\nL179: 【50†Theodorou, N vs Ivanchuk, V】  0 - 1 【79†Image: Open Game†www.365chess.com】\nL180: ### Top Games by Average ELO\nL181: \nL182: Players Result\nL183: 【51†Topalov, V vs Nakamura, H】  ½ - ½ 【80†Image: Open Game†www.365chess.com】\nL184: 【52†Gelfand, B vs Ivanchuk, V】  ½ - ½ 【81†Image: Open Game†www.365chess.com】\nL185: 【53†Kramnik, V vs Shirov, A】  ½ - ½ 【82†Image: Open Game†www.365chess.com】\nL186: 【54†Kramnik, V vs Shirov, A】  1 - 0 【83†Image: Open Game†www.365chess.com】\nL187: 【55†Grischuk, A vs Shirov, A】  ½ - ½ 【84†Image: Open Game†www.365chess.com】\nL188: ### Played frequently by\nL189: \nL190: As White\nL191: Pia Cramling【56†36 games】\nL192: Aleksander Wojtkiewicz【57†25 games】\nL193: Vyacheslav Ikonnikov【58†23 games】\nL194: As Black\nL195: Zoltan Varga【59†64 games】\nL196: Vladimir Burmakin【60†53 games】\nL197: Antoaneta Stefanova【61†33 games】\nL198: \nL199: #### Opening Explorer Message\nL200: \nL201: This position doesn't exist in the Opening Explorer\nL202: \nL203: Continue\nL204: \nL205: #### Download PGN\nL206: \nL207: PGN Analysis\nL208: ### Browse\nL209: \nL210:   * 【3†Home】\nL211:   * 【7†Chess Games】\nL212:   * 【6†Search Position】\nL213:   * 【8†Tournaments】\nL214:   * 【4†Opening Explorer】\nL215:   * 【14†ECO Codes】\nL216: \nL217: ### Training\nL218: \nL219:   * 【10†Openings Trainer】\nL220:   * 【12†Puzzles & Tactics】\nL221:   * 【13†Endgames Training】\nL222:   * 【11†Play vs Computer】\nL223:   * 【5†Courses】\nL224: \nL225: ### Players & Tools\nL226: \nL227:   * 【62†Players by Rating】\nL228:   * 【63†Women by Rating】\nL229:   * 【64†Players by # Games】\nL230:   * 【65†Players A-Z】\nL231:   * 【15†Analysis Board】\nL232:   * 【16†Board Editor】\nL233: ### Company\nL234: \nL235:   * 【66†Membership】\nL236:   * 【19†F.A.Q.】\nL237:   * 【20†Contact Us】\nL238:   * 【18†Blog】\nL239:   * 【67†Terms of Service】\nL240:   * 【68†Privacy Policy】\nL241: \nL242: 【69† @365Chess on X †twitter.com】\nL243: \nL244: 【85†Image: 365Chess logo†www.365chess.com】\nL245: \nL246: 【70† Back to top ↑ 】\n"
+}

@@ -1,0 +1,91 @@
+{
+  "path": [
+    "d4",
+    "Nf6",
+    "Nf3",
+    "e6",
+    "Bg5"
+  ],
+  "url": "https://www.365chess.com/opening.php?m=6&ms=d4.Nf6.Nf3.e6.Bg5&n=171&ns=7.14.20.19.171",
+  "ref": "turn142view0",
+  "rows": [
+    {
+      "san": "c5",
+      "games": 3991,
+      "link": 34,
+      "score_cp": 0,
+      "depth": 34
+    },
+    {
+      "san": "h6",
+      "games": 2835,
+      "link": 35,
+      "score_cp": 42,
+      "depth": 30
+    },
+    {
+      "san": "Be7",
+      "games": 2215,
+      "link": 36,
+      "score_cp": 0,
+      "depth": 18
+    },
+    {
+      "san": "d5",
+      "games": 1961,
+      "link": 37,
+      "score_cp": 0,
+      "depth": 29
+    },
+    {
+      "san": "b6",
+      "games": 344,
+      "link": 38,
+      "score_cp": 8,
+      "depth": 20
+    },
+    {
+      "san": "d6",
+      "games": 19,
+      "link": 39,
+      "score_cp": null,
+      "depth": null
+    },
+    {
+      "san": "Bb4+",
+      "games": 12,
+      "link": 40,
+      "score_cp": null,
+      "depth": null
+    },
+    {
+      "san": "Nc6",
+      "games": 8,
+      "link": 41,
+      "score_cp": null,
+      "depth": null
+    },
+    {
+      "san": "c6",
+      "games": 4,
+      "link": 42,
+      "score_cp": null,
+      "depth": null
+    },
+    {
+      "san": "b5",
+      "games": 2,
+      "link": 43,
+      "score_cp": null,
+      "depth": null
+    },
+    {
+      "san": "g6",
+      "games": 2,
+      "link": 44,
+      "score_cp": null,
+      "depth": null
+    }
+  ],
+  "raw": "A46: Queen's pawn, Torre attack - 1. d4 Nf6 2. Nf3 e6 3. Bg5 - Chess Opening explorer (https://www.365chess.com/opening.php?m=6&ms=d4.Nf6.Nf3.e6.Bg5&n=171&ns=7.14.20.19.171)\nciteturn142view0 [wordlim: 200] Crawled: 2 weeks ago; Content type: text/html; Source: click({\"ref_id\":\"turn104view0\",\"id\":33}); Total lines: 238\nL0: ##### Login 365Chess\nL1: \nL2: 【0†Image: google†d2rnvyacaewvx6.cloudfront.net】Sign in with Google\nL3: \nL4: OR\nL5: \nL6: [Input: Username]\nL7: \nL8: [Input: Password] 【1†Forgot your password?】\nL9: \nL10: [Input]\nL11: \nL12: Not registered? 【2†Sign up】\nL13: \nL14:   * 【3†Search】\nL15:     * 【4†Game Position】\nL16:     * 【5†Chess Games】\nL17:     * 【6†Chess Tournaments】\nL18:     * 【7†Endgames】\nL19:     * 【8†Chess Players】\nL20:   * 【3†Training】\nL21:     * 【9†Openings Trainer】\nL22:     * 【10†Play vs Computer】\nL23:     * 【11†Puzzles】\nL24:     * 【12†Endgames】\nL25: #####\nL26: \nL27: Welcome!\nL28: \nL29: 【3†LOGIN】 | 【2†REGISTER】\nL30: \nL31: Main\nL32: \nL33:   * 【13†Home】\nL34:   * 【14†Opening Explorer】\nL35:   * 【15†Chess Courses】\nL36:   * 【16†ECO Codes】\nL37: \nL38: Search\nL39: \nL40:   * 【4†Position】\nL41:   * 【5†Games】\nL42:   * 【6†Tournaments】\nL43:   * 【7†Endgames】\nL44:   * 【8†Chess Players】\nL45: \nL46: Training\nL47: \nL48:   * 【9†Openings Trainer】\nL49:   * 【10†Play vs Computer】\nL50:   * 【11†Puzzles】\nL51:   * 【12†Endgames】\nL52: \nL53: Resources\nL54: \nL55:   * 【17†Analysis Board】\nL56:   * 【18†Board Editor】\nL57:   * 【19†Chess Openings】\nL58:   * 【20†Blog】\nL59: \nL60: Help\nL61: \nL62:   * 【21†F.A.Q.】\nL63:   * 【22†Contact Us】\nL64:   * 【23†Membership】\nL65: \nL66: Chess Opening Explorer\nL67: With our Opening Explorer you can browse our entire chess database move by move obtaining statistics about the results of each possible continuation.\nL68: The Opening Explorer is a great tool if you want to study chess openings.\nL69: # 【24†A46 Queen's pawn, Torre attack】\nL70: \nL71: [Input]\nL72: \nL73: [Input]\nL74: \nL75: [Input]\nL76: \nL77: [Input]\nL78: \nL79: [Input]\nL80: \nL81: 【14†Top】\nL82: \nL83: Fen: [Input] 【25†Image: Copy Position†d2rnvyacaewvx6.cloudfront.net】\nL84: \nL85: Url: [Input] 【25†Image: Copy Position†d2rnvyacaewvx6.cloudfront.net】\nL86: \nL87: ## Personal notes\nL88: #### Create notes\nL89: \nL90: If you want to create a note in this position you have to log into your account and have a Supporter membership.\nL91: \nL92: 【26†I'm already a Supporter. Log me in now.】\nL93: \nL94: 【27†I'm not a Supporter yet. Tell me more.】\nL95: \nL96: [Button: Close]\nL97: \nL98: Use your Personal notes to store information and comments about this position. Remember, the notes are private. Nobody but you can see them.\nL99: \nL100: Create a note for this position\nL101: ### Related Openings:\nL102: \nL103:   * A46: 【3†Queen's pawn, Torre attack】\nL104: \nL105: \nL106: \nL107: \nL108: \nL109: 【3†Stop Analysis】\nL110: \nL111: 【3†Start Engine Analysis】\nL112: \nL113: Stored Analysis: +0.00 Depth 43\nL114: \nL115: Opening Explorer Database:  [Select]\nL116: \nL117: Moves List:\nL118: \nL119: 1. 【28†d4】 【29†Nf6】 2. 【30†Nf3】 【31†e6】 3. 【32†Bg5】\nL120: \nL121: 【33†Game List】\nL122: \nL123: 【3†Save】\nL124: \nL125: 【3†Play】\nL126: \nL127: 【3†Analysis】\nL128: Next Move  | # of Games  | Last Played  | Winnings percentage\nL129: White / Draw / Black  | Engine Eval.\nL130: 【34†3... c5】  |  3,991  | 2026  |\nL131: 28.9 % 38.6 % 32.5 %\nL132:  | +0.00 Dpt 34\nL133: 【35†3... h6】  |  2,835  | 2026  |\nL134: 27.5 % 34.2 % 38.3 %\nL135:  | +0.42 Dpt 30\nL136: 【36†3... Be7】  |  2,215  | 2026  |\nL137: 42.4 % 29.6 % 28 %\nL138:  | +0.00 Dpt 18\nL139: 【37†3... d5】  |  1,961  | 2026  |\nL140: 41.9 % 33.5 % 24.6 %\nL141:  | +0.00 Dpt 29\nL142: 【38†3... b6】  |  344  | 2026  |\nL143: 37.5 % 29.4 % 33.1 %\nL144:  | +0.08 Dpt 20\nL145: 【39†3... d6】  |  19  | 2023  |\nL146: 42.1 % 15.8 % 42.1 %\nL147:  |\nL148: 【40†3... Bb4+】  |  12  | 2007  |\nL149: 83.3 %\nL150:  |\nL151: 【41†3... Nc6】  |  8  | 2025  |\nL152: 62.5 % 25 %\nL153:  |\nL154: 【42†3... c6】  |  4  | 2026  |\nL155: 50 % 50 %\nL156:  |\nL157: 【43†3... b5】  |  2  | 2004  |\nL158: 50 % 50 %\nL159:  |\nL160: 【44†3... g6】  |  2  | 2005  |\nL161: 50 % 50 %\nL162:  |\nL163: 【3†3... a6】  |  【45†½-½】, 【46†Lapshun】 (2442) vs. 【47†Yudasin】 (2522)\nL164: [Input] Hide Engine Analysis\nL165: \nL166: 【48†Download games】\nL167: ### Latest Played Games\nL168: \nL169: Players  | Result  |\nL170: 【49†Indjic, A vs Perunovic, M】   | ½ - ½  |\nL171: 【50†Al Qudaimi, B vs Mwale Joseph】   | 1 - 0  |\nL172: 【51†Al Zendani, Z vs Amer, K】   | 1 - 0  |\nL173: 【52†Pidluznij, G vs Vykouk, J】   | ½ - ½  |\nL174: 【53†Maerevoet, S vs Tran, T】   | ½ - ½  |\nL175: ### Top Games by Average ELO\nL176: \nL177: Players  | Result  |\nL178: 【54†Harikrishna, P vs Caruana, F】   | 0 - 1  |\nL179: 【55†Carlsen, M vs Korobov, A】   | 1 - 0  |\nL180: 【56†So, W vs Keymer, V】   | 1 - 0  |\nL181: 【57†Carlsen, M vs Abdusattorov, N】   | ½ - ½  |\nL182: 【58†Carlsen, M vs Dubov, D】   | 1 - 0  |\nL183: ### Played frequently by\nL184: \nL185: As White  |\nL186: Werner Hug  | 【59†42 games】\nL187: Nana Dzagnidze  | 【60†34 games】\nL188: Eduard Meduna  | 【61†34 games】\nL189: \nL190: As Black  |\nL191: Anatoly Karpov  | 【62†25 games】\nL192: Ivan Farago  | 【63†20 games】\nL193: Aleksandr Veingold  | 【64†15 games】\nL194: \nL195: #### Opening Explorer Message\nL196: \nL197: This position doesn't exist in the Opening Explorer\nL198: \nL199: [Button: Continue]\nL200: #### Opening Explorer Message\nL201: \nL202: Dear Chessfriend, we're thrilled that you're enjoying this powerful tool!!!\nL203: \nL204: As you know, most of the features in 365Chess are free for everyone, anywhere; we believe in this philosophy and we want to keep it that way.\nL205: To keep the site free for everyone the development of this site relies on the support and contributions of its members. Therefore, we kindly ask you to consider becoming a Supporter. By doing so, you will receive some extra and nice benefits and you will be helping to improve this site.\nL206: \nL207: Thank you in advance for your contribution. You have no idea how much it means to us to have your Support.\nL208: \nL209: [Button: Yes, I want to contribute now]\nL210: \nL211: 【3†Maybe later】\nL212: #### Download PGN\nL213: \nL214: PGN Analysis\nL215: \nL216: [Input]        [Input]\nL217: \nL218: 【13†365Chess】\nL219: \nL220: Chess games database online — more than 4.4 million games, updated every week.\nL221: \nL222: #### Database\nL223: \nL224: 【5†Chess games】 【4†Search position】 【6†Tournaments】 【14†Opening Explorer】 【16†ECO codes】\nL225: \nL226: #### Training\nL227: \nL228: 【9†Openings Trainer】 【11†Puzzles & tactics】 【12†Endgames training】 【10†Play vs computer】 【15†Courses】\nL229: \nL230: #### Players & tools\nL231: \nL232: 【65†Players by rating】 【66†Women by rating】 【8†Players A–Z】 【17†Analysis Board】 【18†Board Editor】\nL233: #### 365Chess\nL234: \nL235: 【27†Membership】 【21†FAQ】 【22†Contact】 【20†Blog】 【67†Terms of service】 【68†Privacy policy】\nL236: \nL237: © 2026 365Chess.com 【69†Follow @365chess on X†twitter.com】\n"
+}

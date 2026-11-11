@@ -1,0 +1,91 @@
+{
+  "path": [
+    "d4",
+    "Nf6",
+    "c4",
+    "c5",
+    "d5"
+  ],
+  "url": "https://www.365chess.com/opening.php?m=6&ms=d4.Nf6.c4.c5.d5&n=107&ns=7.14.11.69.107",
+  "ref": "turn135view0",
+  "rows": [
+    {
+      "san": "b5",
+      "games": 23700,
+      "link": 33,
+      "score_cp": 31,
+      "depth": 45
+    },
+    {
+      "san": "e6",
+      "games": 12652,
+      "link": 34,
+      "score_cp": 72,
+      "depth": 18
+    },
+    {
+      "san": "e5",
+      "games": 4446,
+      "link": 35,
+      "score_cp": 112,
+      "depth": 40
+    },
+    {
+      "san": "g6",
+      "games": 4072,
+      "link": 36,
+      "score_cp": 66,
+      "depth": 40
+    },
+    {
+      "san": "d6",
+      "games": 2851,
+      "link": 37,
+      "score_cp": 75,
+      "depth": 25
+    },
+    {
+      "san": "a6",
+      "games": 459,
+      "link": 38,
+      "score_cp": 82,
+      "depth": 40
+    },
+    {
+      "san": "Ne4",
+      "games": 309,
+      "link": 39,
+      "score_cp": 153,
+      "depth": 28
+    },
+    {
+      "san": "Na6",
+      "games": 3,
+      "link": 40,
+      "score_cp": 101,
+      "depth": 23
+    },
+    {
+      "san": "Qa5+",
+      "games": 3,
+      "link": 41,
+      "score_cp": 147,
+      "depth": 27
+    },
+    {
+      "san": "h6",
+      "games": 2,
+      "link": 42,
+      "score_cp": null,
+      "depth": null
+    },
+    {
+      "san": "b6",
+      "games": 2,
+      "link": 43,
+      "score_cp": 134,
+      "depth": 29
+    }
+  ],
+  "raw": "A56: Benoni defence - 1. d4 Nf6 2. c4 c5 3. d5 - Chess Opening explorer (https://www.365chess.com/opening.php?m=6&ms=d4.Nf6.c4.c5.d5&n=107&ns=7.14.11.69.107)\nciteturn135view0 [wordlim: 200] Crawled: 2 weeks ago; Content type: text/html; Source: click({\"ref_id\":\"turn114view0\",\"id\":32}); Total lines: 261\nL0: ##### Login 365Chess\nL1: \nL2: 【0†Image: google†d2rnvyacaewvx6.cloudfront.net】Sign in with Google\nL3: \nL4: OR\nL5: \nL6: [Input: Username]\nL7: \nL8: [Input: Password] 【1†Forgot your password?】\nL9: \nL10: [Input]\nL11: \nL12: Not registered? 【2†Sign up】\nL13: \nL14:   * 【3†Search】\nL15:     * 【4†Game Position】\nL16:     * 【5†Chess Games】\nL17:     * 【6†Chess Tournaments】\nL18:     * 【7†Endgames】\nL19:     * 【8†Chess Players】\nL20:   * 【3†Training】\nL21:     * 【9†Openings Trainer】\nL22:     * 【10†Play vs Computer】\nL23:     * 【11†Puzzles】\nL24:     * 【12†Endgames】\nL25: #####\nL26: \nL27: Welcome!\nL28: \nL29: 【3†LOGIN】 | 【2†REGISTER】\nL30: \nL31: Main\nL32: \nL33:   * 【13†Home】\nL34:   * 【14†Opening Explorer】\nL35:   * 【15†Chess Courses】\nL36:   * 【16†ECO Codes】\nL37: \nL38: Search\nL39: \nL40:   * 【4†Position】\nL41:   * 【5†Games】\nL42:   * 【6†Tournaments】\nL43:   * 【7†Endgames】\nL44:   * 【8†Chess Players】\nL45: \nL46: Training\nL47: \nL48:   * 【9†Openings Trainer】\nL49:   * 【10†Play vs Computer】\nL50:   * 【11†Puzzles】\nL51:   * 【12†Endgames】\nL52: \nL53: Resources\nL54: \nL55:   * 【17†Analysis Board】\nL56:   * 【18†Board Editor】\nL57:   * 【19†Chess Openings】\nL58:   * 【20†Blog】\nL59: \nL60: Help\nL61: \nL62:   * 【21†F.A.Q.】\nL63:   * 【22†Contact Us】\nL64:   * 【23†Membership】\nL65: \nL66: Chess Opening Explorer\nL67: With our Opening Explorer you can browse our entire chess database move by move obtaining statistics about the results of each possible continuation.\nL68: The Opening Explorer is a great tool if you want to study chess openings.\nL69: # 【24†A56 Benoni defence】\nL70: \nL71: [Input]\nL72: \nL73: [Input]\nL74: \nL75: [Input]\nL76: \nL77: [Input]\nL78: \nL79: [Input]\nL80: \nL81: 【14†Top】\nL82: \nL83: Fen: [Input] 【25†Image: Copy Position†d2rnvyacaewvx6.cloudfront.net】\nL84: \nL85: Url: [Input] 【25†Image: Copy Position†d2rnvyacaewvx6.cloudfront.net】\nL86: \nL87: ## Personal notes\nL88: #### Create notes\nL89: \nL90: If you want to create a note in this position you have to log into your account and have a Supporter membership.\nL91: \nL92: 【26†I'm already a Supporter. Log me in now.】\nL93: \nL94: 【27†I'm not a Supporter yet. Tell me more.】\nL95: \nL96: [Button: Close]\nL97: \nL98: Use your Personal notes to store information and comments about this position. Remember, the notes are private. Nobody but you can see them.\nL99: \nL100: Create a note for this position\nL101: ### Related Openings:\nL102:   * A56: 【3†Benoni defence】\nL103:   * A57: 【3†Benko gambit】\nL104:   * A58: 【3†Benko gambit accepted】\nL105:   * A59: 【3†Benko gambit, 7.e4】\nL106:   * A60: 【3†Benoni defence】\nL107:   * A61: 【3†Benoni defence】\nL108:   * A62: 【3†Benoni, fianchetto variation】\nL109:   * A63: 【3†Benoni, fianchetto, 9...Nbd7】\nL110:   * A64: 【3†Benoni, fianchetto, 11...Re8】\nL111:   * A65: 【3†Benoni, 6.e4】\nL112:   * A66: 【3†Benoni, pawn storm variation】\nL113:   * A67: 【3†Benoni, Taimanov variation】\nL114:   * A68: 【3†Benoni, four pawns attack】\nL115:   * A69: 【3†Benoni, four pawns attack, main line】\nL116:   * A70: 【3†Benoni, classical with e4 and Nf3】\nL117:   * A71: 【3†Benoni, classical, 8.Bg5】\nL118:   * A72: 【3†Benoni, classical without 9.O-O】\nL119:   * A73: 【3†Benoni, classical, 9.O-O】\nL120:   * A74: 【3†Benoni, classical, 9...a6, 10.a4】\nL121:   * A75: 【3†Benoni, classical with ...a6 and 10...Bg4】\nL122:   * A76: 【3†Benoni, classical, 9...Re8】\nL123:   * A77: 【3†Benoni, classical, 9...Re8, 10.Nd2】\nL124:   * A78: 【3†Benoni, classical with ...Re8 and ...Na6】\nL125:   * A79: 【3†Benoni, classical, 11.f3】\nL126: \nL127: \nL128: \nL129: \nL130: 【3†Stop Analysis】\nL131: \nL132: 【3†Start Engine Analysis】\nL133: \nL134: Stored Analysis: +0.32 Depth 40\nL135: \nL136: Opening Explorer Database:  [Select]\nL137: \nL138: Moves List:\nL139: \nL140: 1. 【28†d4】 【29†Nf6】 2. 【30†c4】 【31†c5】 3. 【32†d5】\nL141: \nL142: 【3†Game List】\nL143: \nL144: 【3†Save】\nL145: \nL146: 【3†Play】\nL147: \nL148: 【3†Analysis】\nL149: Next Move  | # of Games  | Last Played  | Winnings percentage\nL150: White / Draw / Black  | Engine Eval.\nL151: 【33†3... b5】  |  23,700  | 2026  |\nL152: 39.6 % 27.9 % 32.5 %\nL153:  | +0.31 Dpt 45\nL154: 【34†3... e6】  |  12,652  | 2026  |\nL155: 42.4 % 24.6 % 33 %\nL156:  | +0.72 Dpt 18\nL157: 【35†3... e5】  |  4,446  | 2026  |\nL158: 40.5 % 30 % 29.4 %\nL159:  | +1.12 Dpt 40\nL160: 【36†3... g6】  |  4,072  | 2026  |\nL161: 37 % 30.5 % 32.6 %\nL162:  | +0.66 Dpt 40\nL163: 【37†3... d6】  |  2,851  | 2026  |\nL164: 42 % 29.7 % 28.3 %\nL165:  | +0.75 Dpt 25\nL166: 【38†3... a6】  |  459  | 2026  |\nL167: 42.9 % 25.7 % 31.4 %\nL168:  | +0.82 Dpt 40\nL169: 【39†3... Ne4】  |  309  | 2026  |\nL170: 44.7 % 25.2 % 30.1 %\nL171:  | +1.53 Dpt 28\nL172: 【40†3... Na6】  |  3  | 2003  |\nL173: 33.3 % 33.3 % 33.3 %\nL174:  | +1.01 Dpt 23\nL175: 【41†3... Qa5+】  |  3  | 2005  |\nL176: 66.7 % 33.3 %\nL177:  | +1.47 Dpt 27\nL178: 【42†3... h6】  |  2  | 2000  |\nL179: 100 %\nL180:  |\nL181: 【43†3... b6】  |  2  | 2006  |\nL182: 100 %\nL183:  | +1.34 Dpt 29\nL184: 【3†3... Qb6】  |  【44†1-0】, 【45†Pedersen】 vs. 【46†Pedersen】\nL185: [Input] Hide Engine Analysis\nL186: \nL187: 【47†Download games】\nL188: \nL189: 【24†Benoni Defense Guide】\nL190: ### Latest Played Games\nL191: \nL192: Players  | Result  |\nL193: 【48†Schmakel, S vs Padhya, S】   | ½ - ½  |\nL194: 【49†Garcia Ortega, N vs Avila Bautista, R】   | ½ - ½  |\nL195: 【50†Battey, A vs Avila Bautista, R】   | 1 - 0  |\nL196: 【51†Garcia Ortega, N vs Quesada Perez, L】   | 0 - 1  |\nL197: 【52†Nkwanyane Nolwazi vs Chinkulkitniwat, P】   | 0 - 1  |\nL198: ### Top Games by Average ELO\nL199: \nL200: Players  | Result  |\nL201: 【53†So, W vs Carlsen, M】   | ½ - ½  |\nL202: 【54†Yu, Y vs Carlsen, M】   | 0 - 1  |\nL203: 【55†Ding, L vs Carlsen, M】   | 0 - 1  |\nL204: 【56†Ding, L vs Carlsen, M】   | 0 - 1  |\nL205: 【57†Ding, L vs Aronian, L】   | ½ - ½  |\nL206: ### Played frequently by\nL207: \nL208: As White  |\nL209: Ivan Farago  | 【58†127 games】\nL210: Svetozar Gligoric  | 【59†94 games】\nL211: Glenn C Flear  | 【60†73 games】\nL212: \nL213: As Black  |\nL214: Dragoljub Velimirovic  | 【61†138 games】\nL215: Florin Gheorghiu  | 【62†112 games】\nL216: Pavel Simacek  | 【63†107 games】\nL217: \nL218: #### Opening Explorer Message\nL219: \nL220: This position doesn't exist in the Opening Explorer\nL221: \nL222: [Button: Continue]\nL223: #### Opening Explorer Message\nL224: \nL225: Dear Chessfriend, we're thrilled that you're enjoying this powerful tool!!!\nL226: \nL227: As you know, most of the features in 365Chess are free for everyone, anywhere; we believe in this philosophy and we want to keep it that way.\nL228: To keep the site free for everyone the development of this site relies on the support and contributions of its members. Therefore, we kindly ask you to consider becoming a Supporter. By doing so, you will receive some extra and nice benefits and you will be helping to improve this site.\nL229: \nL230: Thank you in advance for your contribution. You have no idea how much it means to us to have your Support.\nL231: \nL232: [Button: Yes, I want to contribute now]\nL233: \nL234: 【3†Maybe later】\nL235: #### Download PGN\nL236: \nL237: PGN Analysis\nL238: \nL239: [Input]        [Input]\nL240: \nL241: 【13†365Chess】\nL242: \nL243: Chess games database online — more than 4.4 million games, updated every week.\nL244: \nL245: #### Database\nL246: \nL247: 【5†Chess games】 【4†Search position】 【6†Tournaments】 【14†Opening Explorer】 【16†ECO codes】\nL248: \nL249: #### Training\nL250: \nL251: 【9†Openings Trainer】 【11†Puzzles & tactics】 【12†Endgames training】 【10†Play vs computer】 【15†Courses】\nL252: \nL253: #### Players & tools\nL254: \nL255: 【64†Players by rating】 【65†Women by rating】 【8†Players A–Z】 【17†Analysis Board】 【18†Board Editor】\nL256: #### 365Chess\nL257: \nL258: 【27†Membership】 【21†FAQ】 【22†Contact】 【20†Blog】 【66†Terms of service】 【67†Privacy policy】\nL259: \nL260: © 2026 365Chess.com 【68†Follow @365chess on X†twitter.com】\n"
+}

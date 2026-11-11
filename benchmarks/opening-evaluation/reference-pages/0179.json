@@ -1,0 +1,35 @@
+{
+  "path": [
+    "e4",
+    "c5",
+    "c3",
+    "Nf6",
+    "e5"
+  ],
+  "url": "https://www.365chess.com/opening.php?m=6&ms=e4.c5.c3.Nf6.e5&n=101&ns=3.3.37.65.101",
+  "ref": "turn196view0",
+  "rows": [
+    {
+      "san": "Nd5",
+      "games": 20238,
+      "link": 34,
+      "score_cp": 21,
+      "depth": 43
+    },
+    {
+      "san": "Ng8",
+      "games": 15,
+      "link": 35,
+      "score_cp": 85,
+      "depth": 40
+    },
+    {
+      "san": "Ne4",
+      "games": 2,
+      "link": 36,
+      "score_cp": 259,
+      "depth": 22
+    }
+  ],
+  "raw": "B22: Sicilian, Alapin's variation (2.c3) - 1. e4 c5 2. c3 Nf6 3. e5 - Chess Opening explorer (https://www.365chess.com/opening.php?m=6&ms=e4.c5.c3.Nf6.e5&n=101&ns=3.3.37.65.101)\nciteturn196view0 [wordlim: 200] Crawled: 2 months ago; Content type: text/html; Source: click({\"ref_id\":\"turn91view0\",\"id\":33}); Total lines: 195\nL0: ##### Login 365Chess\nL1: \nL2: 【0†Image: google†d2rnvyacaewvx6.cloudfront.net】Sign in with Google\nL3: \nL4: OR\nL5: \nL6: [Input: Username]\nL7: \nL8: [Input: Password] 【1†Forgot your password?】\nL9: \nL10: [Input]\nL11: \nL12: Not registered? 【2†Sign up】\nL13: \nL14:   * 【3†Search】\nL15:     * 【4†Game Position】\nL16:     * 【5†Chess Games】\nL17:     * 【6†Chess Tournaments】\nL18:     * 【7†Endgames】\nL19:     * 【8†Chess Players】\nL20:   * 【3†Training】\nL21:     * 【9†Openings Trainer】\nL22:     * 【10†Play vs Computer】\nL23:     * 【11†Puzzles】\nL24:     * 【12†Endgames】\nL25: #####\nL26: \nL27: Welcome!\nL28: \nL29: 【3†LOGIN】 | 【2†REGISTER】\nL30: \nL31: Main\nL32: \nL33:   * 【13†Home】\nL34:   * 【14†Opening Explorer】\nL35:   * 【15†Chess Courses】\nL36:   * 【16†ECO Codes】\nL37: \nL38: Search\nL39: \nL40:   * 【4†Position】\nL41:   * 【5†Games】\nL42:   * 【6†Tournaments】\nL43:   * 【7†Endgames】\nL44:   * 【8†Chess Players】\nL45: \nL46: Training\nL47: \nL48:   * 【9†Openings Trainer】\nL49:   * 【10†Play vs Computer】\nL50:   * 【11†Puzzles】\nL51:   * 【12†Endgames】\nL52: \nL53: Resources\nL54: \nL55:   * 【17†Analysis Board】\nL56:   * 【18†Board Editor】\nL57:   * 【19†Chess Openings】\nL58:   * 【20†Blog】\nL59: \nL60: Help\nL61: \nL62:   * 【21†F.A.Q.】\nL63:   * 【22†Contact Us】\nL64:   * 【23†Membership】\nL65: \nL66: Chess Opening Explorer\nL67: With our Opening Explorer you can browse our entire chess database move by move obtaining statistics about the results of each possible continuation.\nL68: The Opening Explorer is a great tool if you want to study chess openings.\nL69: # 【24†B22 Sicilian, Alapin's variation (2.c3)】\nL70: \nL71: [Input]\nL72: \nL73: [Input]\nL74: \nL75: [Input]\nL76: \nL77: [Input]\nL78: \nL79: [Input]\nL80: \nL81: 【14†Top】\nL82: \nL83: Fen: [Input] 【25†Image: Copy Position†d2rnvyacaewvx6.cloudfront.net】\nL84: \nL85: Url: [Input] 【25†Image: Copy Position†d2rnvyacaewvx6.cloudfront.net】\nL86: \nL87: ## Personal notes\nL88: #### Create notes\nL89: \nL90: If you want to create a note in this position you have to log into your account and have a Supporter membership.\nL91: \nL92: 【26†I'm already a Supporter. Log me in now.】\nL93: \nL94: 【27†I'm not a Supporter yet. Tell me more.】\nL95: \nL96: [Button: Close]\nL97: \nL98: Use your Personal notes to store information and comments about this position. Remember, the notes are private. Nobody but you can see them.\nL99: \nL100: Create a note for this position\nL101: ### Related Openings:\nL102: \nL103:   * B22: 【3†Sicilian, Alapin's variation (2.c3)】\nL104: \nL105: \nL106: \nL107: \nL108: \nL109: 【3†Stop Analysis】\nL110: \nL111: 【3†Start Engine Analysis】\nL112: \nL113: Stored Analysis: +0.00 Depth 40\nL114: \nL115: Opening Explorer Database:  [Select]\nL116: \nL117: Moves List:\nL118: \nL119: 1. 【28†e4】 【29†c5】 2. 【30†c3】 【31†Nf6】 3. 【32†e5】\nL120: \nL121: 【33†Game List】\nL122: \nL123: 【3†Save】\nL124: \nL125: 【3†Play】\nL126: \nL127: 【3†Analysis】\nL128: Next Move  | # of Games  | Last Played  | Winnings percentage\nL129: White / Draw / Black  | Engine Eval.\nL130: 【34†3... Nd5】  |  20,238  | 2026  |\nL131: 31.2 % 34.8 % 34 %\nL132:  | +0.21 Dpt 43\nL133: 【35†3... Ng8】  |  15  | 2010  |\nL134: 66.7 % 20 %\nL135:  | +0.85 Dpt 40\nL136: 【36†3... Ne4】  |  2  | 2004  |\nL137: 100 %\nL138:  | +2.59 Dpt 22\nL139: \nL140: [Input] Hide Engine Analysis\nL141: \nL142: 【37†Download games】\nL143: \nL144: 【38†Sicilian Defense: Full Guide, Main Lines, and Secondary Options】\nL145: ### Latest Played Games\nL146: \nL147: Players  | Result  |\nL148: 【39†Annaberdiev, M vs Vykouk, J】   | ½ - ½  |\nL149: 【40†Camlar, A vs Uzdemir, A】   | 1 - 0  |\nL150: 【41†Savitha, S vs Kourkoulos Arditis, S】   | 0 - 1  |\nL151: 【42†Flores Quillas, D vs Nissinen, N】   | ½ - ½  |\nL152: 【43†Fernandez Hernandez, A vs Flores Quillas, D】   | ½ - ½  |\nL153: ### Top Games by Average ELO\nL154: \nL155: Players  | Result  |\nL156: 【44†Carlsen, M vs Nepomniachtchi, I】   | 1 - 0  |\nL157: 【45†Carlsen, M vs Firouzja, A】   | 1 - 0  |\nL158: 【46†Carlsen, M vs So, W】   | ½ - ½  |\nL159: 【47†Nakamura, H vs Vachier Lagrave, M】   | ½ - ½  |\nL160: 【48†Carlsen, M vs Niemann, H】   | ½ - ½  |\nL161: ### Played frequently by\nL162: \nL163: As White  |\nL164: Evgeny Sveshnikov  | 【49†167 games】\nL165: Drazen Sermek  | 【50†115 games】\nL166: Michele Godena  | 【51†107 games】\nL167: \nL168: As Black  |\nL169: Zdenko Kozul  | 【52†64 games】\nL170: Ognjen Cvitan  | 【53†37 games】\nL171: Loek Van Wely  | 【54†36 games】\nL172: \nL173: #### Opening Explorer Message\nL174: \nL175: This position doesn't exist in the Opening Explorer\nL176: \nL177: [Button: Continue]\nL178: #### Opening Explorer Message\nL179: \nL180: Dear Chessfriend, we're thrilled that you're enjoying this powerful tool!!!\nL181: \nL182: As you know, most of the features in 365Chess are free for everyone, anywhere; we believe in this philosophy and we want to keep it that way.\nL183: To keep the site free for everyone the development of this site relies on the support and contributions of its members. Therefore, we kindly ask you to consider becoming a Supporter. By doing so, you will receive some extra and nice benefits and you will be helping to improve this site.\nL184: \nL185: Thank you in advance for your contribution. You have no idea how much it means to us to have your Support.\nL186: \nL187: [Button: Yes, I want to contribute now]\nL188: \nL189: 【3†Maybe later】\nL190: #### Download PGN\nL191: \nL192: PGN Analysis\nL193: \nL194: [Input]        [Input]\n"
+}

@@ -1,0 +1,62 @@
+{
+  "path": [
+    "e4",
+    "c5",
+    "d4",
+    "cxd4"
+  ],
+  "url": "https://www.365chess.com/opening.php?m=5&ms=e4.c5.d4.cxd4&n=94&ns=3.3.52.94",
+  "ref": "turn87view0",
+  "rows": [
+    {
+      "san": "c3",
+      "games": 10189,
+      "link": 33,
+      "score_cp": -13,
+      "depth": 45
+    },
+    {
+      "san": "Nf3",
+      "games": 1356,
+      "link": 34,
+      "score_cp": 6,
+      "depth": 49
+    },
+    {
+      "san": "Qxd4",
+      "games": 771,
+      "link": 35,
+      "score_cp": -1,
+      "depth": 35
+    },
+    {
+      "san": "Bc4",
+      "games": 53,
+      "link": 36,
+      "score_cp": null,
+      "depth": null
+    },
+    {
+      "san": "f4",
+      "games": 46,
+      "link": 37,
+      "score_cp": -46,
+      "depth": 26
+    },
+    {
+      "san": "Bd3",
+      "games": 8,
+      "link": 38,
+      "score_cp": -80,
+      "depth": 35
+    },
+    {
+      "san": "c4",
+      "games": 2,
+      "link": 39,
+      "score_cp": null,
+      "depth": null
+    }
+  ],
+  "raw": "B21: Sicilian, Smith-Morra gambit - 1. e4 c5 2. d4 cxd4 - Chess Opening explorer (https://www.365chess.com/opening.php?m=5&ms=e4.c5.d4.cxd4&n=94&ns=3.3.52.94)\nciteturn87view0 [wordlim: 200] Crawled: 3 months ago; Content type: text/html; Source: click({\"ref_id\":\"turn49view0\",\"id\":32}); Total lines: 206\nL0: ##### Login 365Chess\nL1: \nL2: 【0†Image: google†d2rnvyacaewvx6.cloudfront.net】Sign in with Google\nL3: \nL4: OR\nL5: \nL6: [Input: Username]\nL7: \nL8: [Input: Password] 【1†Forgot your password?】\nL9: \nL10: [Input]\nL11: \nL12: Not registered? 【2†Sign up】\nL13: \nL14:   * 【3†Search】\nL15:     * 【4†Game Position】\nL16:     * 【5†Chess Games】\nL17:     * 【6†Chess Tournaments】\nL18:     * 【7†Endgames】\nL19:     * 【8†Chess Players】\nL20:   * 【3†Training】\nL21:     * 【9†Openings Trainer】\nL22:     * 【10†Play vs Computer】\nL23:     * 【11†Puzzles】\nL24:     * 【12†Endgames】\nL25: #####\nL26: \nL27: Welcome!\nL28: \nL29: 【3†LOGIN】 | 【2†REGISTER】\nL30: \nL31: Main\nL32: \nL33:   * 【13†Home】\nL34:   * 【14†Opening Explorer】\nL35:   * 【15†Chess Courses】\nL36:   * 【16†ECO Codes】\nL37: \nL38: Search\nL39: \nL40:   * 【4†Position】\nL41:   * 【5†Games】\nL42:   * 【6†Tournaments】\nL43:   * 【7†Endgames】\nL44:   * 【8†Chess Players】\nL45: \nL46: Training\nL47: \nL48:   * 【9†Openings Trainer】\nL49:   * 【10†Play vs Computer】\nL50:   * 【11†Puzzles】\nL51:   * 【12†Endgames】\nL52: \nL53: Resources\nL54: \nL55:   * 【17†Analysis Board】\nL56:   * 【18†Board Editor】\nL57:   * 【19†Chess Openings】\nL58:   * 【20†Blog】\nL59: \nL60: Help\nL61: \nL62:   * 【21†F.A.Q.】\nL63:   * 【22†Contact Us】\nL64:   * 【23†Membership】\nL65: \nL66: Chess Opening Explorer\nL67: With our Opening Explorer you can browse our entire chess database move by move obtaining statistics about the results of each possible continuation.\nL68: The Opening Explorer is a great tool if you want to study chess openings.\nL69: # 【24†B21 Sicilian, Smith-Morra gambit】\nL70: \nL71: [Input]\nL72: \nL73: [Input]\nL74: \nL75: [Input]\nL76: \nL77: [Input]\nL78: \nL79: [Input]\nL80: \nL81: 【14†Top】\nL82: \nL83: Fen: [Input] 【25†Image: Copy Position†d2rnvyacaewvx6.cloudfront.net】\nL84: \nL85: Url: [Input] 【25†Image: Copy Position†d2rnvyacaewvx6.cloudfront.net】\nL86: \nL87: ## Personal notes\nL88: #### Create notes\nL89: \nL90: If you want to create a note in this position you have to log into your account and have a Supporter membership.\nL91: \nL92: 【26†I'm already a Supporter. Log me in now.】\nL93: \nL94: 【27†I'm not a Supporter yet. Tell me more.】\nL95: \nL96: [Button: Close]\nL97: \nL98: Use your Personal notes to store information and comments about this position. Remember, the notes are private. Nobody but you can see them.\nL99: \nL100: Create a note for this position\nL101: ### Related Openings:\nL102: \nL103:   * B21: 【3†Sicilian, Smith-Morra gambit】\nL104: \nL105: \nL106: \nL107: \nL108: \nL109: 【3†Stop Analysis】\nL110: \nL111: 【3†Start Engine Analysis】\nL112: \nL113: Stored Analysis: +0.00 Depth 45\nL114: \nL115: Opening Explorer Database:  [Select]\nL116: \nL117: Moves List:\nL118: \nL119: 1. 【28†e4】 【29†c5】 2. 【30†d4】 【31†cxd4】\nL120: \nL121: 【32†Game List】\nL122: \nL123: 【3†Save】\nL124: \nL125: 【3†Play】\nL126: \nL127: 【3†Analysis】\nL128: Next Move  | # of Games  | Last Played  | Winnings percentage\nL129: White / Draw / Black  | Engine Eval.\nL130: 【33†3. c3】  |  10,189  | 2026  |\nL131: 35.1 % 23.5 % 41.4 %\nL132:  | -0.13 Dpt 45\nL133: 【34†3. Nf3】  |  1,356  | 2026  |\nL134: 37.1 % 21.3 % 41.6 %\nL135:  | +0.06 Dpt 49\nL136: 【35†3. Qxd4】  |  771  | 2026  |\nL137: 21.3 % 16.5 % 62.3 %\nL138:  | -0.01 Dpt 35\nL139: 【36†3. Bc4】  |  53  | 2007  |\nL140: 26.4 % 22.6 % 50.9 %\nL141:  |\nL142: 【37†3. f4】  |  46  | 2007  |\nL143: 37 % 19.6 % 43.5 %\nL144:  | -0.46 Dpt 26\nL145: 【38†3. Bd3】  |  8  | 2004  |\nL146: 62.5 % 37.5 %\nL147:  | -0.80 Dpt 35\nL148: 【39†3. c4】  |  2  | 1998  |\nL149: 50 % 50 %\nL150:  |\nL151: [Input] Hide Engine Analysis\nL152: \nL153: 【40†Download games】\nL154: \nL155: 【41†Sicilian Defense: Full Guide, Main Lines, and Secondary Options】\nL156: ### Latest Played Games\nL157: \nL158: Players  | Result  |\nL159: 【42†Roelandt, J vs Bruggink, T】   | ½ - ½  |\nL160: 【43†Montes Molina, I vs Motylev, A】   | 0 - 1  |\nL161: 【44†Alizada, P vs Garayev, K】   | ½ - ½  |\nL162: 【45†Alizada, P vs Davidov, S】   | 1 - 0  |\nL163: 【46†Skvortsov, A vs Ersoz, T】   | ½ - ½  |\nL164: ### Top Games by Average ELO\nL165: \nL166: Players  | Result  |\nL167: 【47†Nakamura, H vs Vachier Lagrave, M】   | 1 - 0  |\nL168: 【48†Fedoseev, V vs Korobov, A】   | 0 - 1  |\nL169: 【49†Pantsulaia, L vs Jobava, B】   | ½ - ½  |\nL170: 【50†Pechac, J vs Lupulescu, C】   | ½ - ½  |\nL171: 【51†Nakamura, H vs Postny, E】   | 1 - 0  |\nL172: ### Played frequently by\nL173: \nL174: As White  |\nL175: Mladen Zelic  | 【52†99 games】\nL176: Thomas Lochte  | 【53†72 games】\nL177: Wolfgang Kripp  | 【54†46 games】\nL178: \nL179: As Black  |\nL180: Vjekoslav Biliskov  | 【55†8 games】\nL181: Howard Staunton  | 【56†8 games】\nL182: Rainer Siegmund  | 【57†7 games】\nL183: \nL184: #### Opening Explorer Message\nL185: \nL186: This position doesn't exist in the Opening Explorer\nL187: \nL188: [Button: Continue]\nL189: #### Opening Explorer Message\nL190: \nL191: Dear Chessfriend, we're thrilled that you're enjoying this powerful tool!!!\nL192: \nL193: As you know, most of the features in 365Chess are free for everyone, anywhere; we believe in this philosophy and we want to keep it that way.\nL194: To keep the site free for everyone the development of this site relies on the support and contributions of its members. Therefore, we kindly ask you to consider becoming a Supporter. By doing so, you will receive some extra and nice benefits and you will be helping to improve this site.\nL195: \nL196: Thank you in advance for your contribution. You have no idea how much it means to us to have your Support.\nL197: \nL198: [Button: Yes, I want to contribute now]\nL199: \nL200: 【3†Maybe later】\nL201: #### Download PGN\nL202: \nL203: PGN Analysis\nL204: \nL205: [Input]        [Input]\n"
+}

@@ -1,0 +1,42 @@
+{
+  "path": [
+    "d4",
+    "d5",
+    "c4",
+    "c6",
+    "cxd5"
+  ],
+  "url": "https://www.365chess.com/opening.php?m=6&ms=d4.d5.c4.c6.cxd5&n=43&ns=7.8.23.36.43",
+  "ref": "turn212view0",
+  "rows": [
+    {
+      "san": "cxd5",
+      "games": 11849,
+      "link": 34,
+      "score_cp": 14,
+      "depth": 36
+    },
+    {
+      "san": "Qxd5",
+      "games": 36,
+      "link": 35,
+      "score_cp": 134,
+      "depth": 20
+    },
+    {
+      "san": "Nf6",
+      "games": 3,
+      "link": 36,
+      "score_cp": 64,
+      "depth": 35
+    },
+    {
+      "san": "Qa5+",
+      "games": 2,
+      "link": 37,
+      "score_cp": 160,
+      "depth": 18
+    }
+  ],
+  "raw": "D10: Queen's Gambit Declined Slav defence, exchange variation - 1. d4 d5 2. c4 c6 3. cxd5 - Chess Opening explorer (https://www.365chess.com/opening.php?m=6&ms=d4.d5.c4.c6.cxd5&n=43&ns=7.8.23.36.43)\nciteturn212view0 [wordlim: 200] Crawled: 2 months ago; Content type: text/html; Source: click({\"ref_id\":\"turn156view0\",\"id\":34}); Total lines: 198\nL0: ##### Login 365Chess\nL1: \nL2: 【0†Image: google†d2rnvyacaewvx6.cloudfront.net】Sign in with Google\nL3: \nL4: OR\nL5: \nL6: [Input: Username]\nL7: \nL8: [Input: Password] 【1†Forgot your password?】\nL9: \nL10: [Input]\nL11: \nL12: Not registered? 【2†Sign up】\nL13: \nL14:   * 【3†Search】\nL15:     * 【4†Game Position】\nL16:     * 【5†Chess Games】\nL17:     * 【6†Chess Tournaments】\nL18:     * 【7†Endgames】\nL19:     * 【8†Chess Players】\nL20:   * 【3†Training】\nL21:     * 【9†Openings Trainer】\nL22:     * 【10†Play vs Computer】\nL23:     * 【11†Puzzles】\nL24:     * 【12†Endgames】\nL25: #####\nL26: \nL27: Welcome!\nL28: \nL29: 【3†LOGIN】 | 【2†REGISTER】\nL30: \nL31: Main\nL32: \nL33:   * 【13†Home】\nL34:   * 【14†Opening Explorer】\nL35:   * 【15†Chess Courses】\nL36:   * 【16†ECO Codes】\nL37: \nL38: Search\nL39: \nL40:   * 【4†Position】\nL41:   * 【5†Games】\nL42:   * 【6†Tournaments】\nL43:   * 【7†Endgames】\nL44:   * 【8†Chess Players】\nL45: \nL46: Training\nL47: \nL48:   * 【9†Openings Trainer】\nL49:   * 【10†Play vs Computer】\nL50:   * 【11†Puzzles】\nL51:   * 【12†Endgames】\nL52: \nL53: Resources\nL54: \nL55:   * 【17†Analysis Board】\nL56:   * 【18†Board Editor】\nL57:   * 【19†Chess Openings】\nL58:   * 【20†Blog】\nL59: \nL60: Help\nL61: \nL62:   * 【21†F.A.Q.】\nL63:   * 【22†Contact Us】\nL64:   * 【23†Membership】\nL65: \nL66: Chess Opening Explorer\nL67: With our Opening Explorer you can browse our entire chess database move by move obtaining statistics about the results of each possible continuation.\nL68: The Opening Explorer is a great tool if you want to study chess openings.\nL69: # 【24†D10 Queen's Gambit Declined Slav defence, exchange variation】\nL70: \nL71: [Input]\nL72: \nL73: [Input]\nL74: \nL75: [Input]\nL76: \nL77: [Input]\nL78: \nL79: [Input]\nL80: \nL81: 【14†Top】\nL82: \nL83: Fen: [Input] 【25†Image: Copy Position†d2rnvyacaewvx6.cloudfront.net】\nL84: \nL85: Url: [Input] 【25†Image: Copy Position†d2rnvyacaewvx6.cloudfront.net】\nL86: \nL87: ## Personal notes\nL88: #### Create notes\nL89: \nL90: If you want to create a note in this position you have to log into your account and have a Supporter membership.\nL91: \nL92: 【26†I'm already a Supporter. Log me in now.】\nL93: \nL94: 【27†I'm not a Supporter yet. Tell me more.】\nL95: \nL96: [Button: Close]\nL97: \nL98: Use your Personal notes to store information and comments about this position. Remember, the notes are private. Nobody but you can see them.\nL99: \nL100: Create a note for this position\nL101: ### Related Openings:\nL102: \nL103:   * D10: 【3†Queen's Gambit Declined Slav defence, exchange variation】\nL104: \nL105: \nL106: \nL107: \nL108: \nL109: 【3†Stop Analysis】\nL110: \nL111: 【3†Start Engine Analysis】\nL112: \nL113: Stored Analysis: +0.15 Depth 20\nL114: \nL115: Opening Explorer Database:  [Select]\nL116: \nL117: Moves List:\nL118: \nL119: 1. 【28†d4】 【29†d5】 2. 【30†c4】 【31†c6】 3. 【32†cxd5】\nL120: \nL121: 【33†Game List】\nL122: \nL123: 【3†Save】\nL124: \nL125: 【3†Play】\nL126: \nL127: 【3†Analysis】\nL128: Next Move  | # of Games  | Last Played  | Winnings percentage\nL129: White / Draw / Black  | Engine Eval.\nL130: 【34†3... cxd5】  |  11,849  | 2026  |\nL131: 24.8 % 54.3 % 20.9 %\nL132:  | +0.14 Dpt 36\nL133: 【35†3... Qxd5】  |  36  | 2023  |\nL134: 33.3 % 38.9 % 27.8 %\nL135:  | +1.34 Dpt 20\nL136: 【36†3... Nf6】  |  3  | 2026  |\nL137: 66.7 % 33.3 %\nL138:  | +0.64 Dpt 35\nL139: 【37†3... Qa5+】  |  2  | 2005  |\nL140: 50 % 50 %\nL141:  | +1.60 Dpt 18\nL142: \nL143: [Input] Hide Engine Analysis\nL144: \nL145: 【38†Download games】\nL146: \nL147: 【39†Slav Defense Guide】\nL148: ### Latest Played Games\nL149: \nL150: Players  | Result  |\nL151: 【40†Jval Saurin Patel vs Mattenberger, M】   | ½ - ½  |\nL152: 【41†Ternault, M vs Povilaitis, T】   | 0 - 1  |\nL153: 【42†Jihan Tejas Shah vs Nakonechnyi, O】   | 1 - 0  |\nL154: 【43†Janosi, B vs Yohan Yadav Tarala】   | 0 - 1  |\nL155: 【44†Spizharny, M vs Novikau, M】   | 1 - 0  |\nL156: ### Top Games by Average ELO\nL157: \nL158: Players  | Result  |\nL159: 【45†So, W vs Carlsen, M】   | 1 - 0  |\nL160: 【46†So, W vs Carlsen, M】   | ½ - ½  |\nL161: 【47†Grischuk, A vs Carlsen, M】   | ½ - ½  |\nL162: 【48†Aronian, L vs Nakamura, H】   | 1 - 0  |\nL163: 【49†Caruana, F vs Duda, J】   | 1 - 0  |\nL164: ### Played frequently by\nL165: \nL166: As White  |\nL167: Igor Naumkin  | 【50†41 games】\nL168: Monika Socko  | 【51†33 games】\nL169: Antoaneta Stefanova  | 【52†32 games】\nL170: \nL171: As Black  |\nL172: Aleksey Dreev  | 【53†43 games】\nL173: Antoaneta Stefanova  | 【54†34 games】\nL174: Valentina Gunina  | 【55†25 games】\nL175: \nL176: #### Opening Explorer Message\nL177: \nL178: This position doesn't exist in the Opening Explorer\nL179: \nL180: [Button: Continue]\nL181: #### Opening Explorer Message\nL182: \nL183: Dear Chessfriend, we're thrilled that you're enjoying this powerful tool!!!\nL184: \nL185: As you know, most of the features in 365Chess are free for everyone, anywhere; we believe in this philosophy and we want to keep it that way.\nL186: To keep the site free for everyone the development of this site relies on the support and contributions of its members. Therefore, we kindly ask you to consider becoming a Supporter. By doing so, you will receive some extra and nice benefits and you will be helping to improve this site.\nL187: \nL188: Thank you in advance for your contribution. You have no idea how much it means to us to have your Support.\nL189: \nL190: [Button: Yes, I want to contribute now]\nL191: \nL192: 【3†Maybe later】\nL193: #### Download PGN\nL194: \nL195: PGN Analysis\nL196: \nL197: [Input]        [Input]\n"
+}

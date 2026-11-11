@@ -1,0 +1,111 @@
+{
+  "path": [
+    "e4",
+    "d6",
+    "d4",
+    "Nf6"
+  ],
+  "url": "https://www.365chess.com/opening.php?m=5&ms=e4.d6.d4.Nf6&n=52&ns=3.51.29.52",
+  "ref": "turn113view0",
+  "rows": [
+    {
+      "san": "Nc3",
+      "games": 59118,
+      "link": 32,
+      "score_cp": 54,
+      "depth": 30
+    },
+    {
+      "san": "Bd3",
+      "games": 3841,
+      "link": 33,
+      "score_cp": 15,
+      "depth": 33
+    },
+    {
+      "san": "f3",
+      "games": 2636,
+      "link": 34,
+      "score_cp": 13,
+      "depth": 33
+    },
+    {
+      "san": "Nd2",
+      "games": 392,
+      "link": 35,
+      "score_cp": 38,
+      "depth": 18
+    },
+    {
+      "san": "Bc4",
+      "games": 78,
+      "link": 36,
+      "score_cp": 0,
+      "depth": 38
+    },
+    {
+      "san": "Nf3",
+      "games": 47,
+      "link": 37,
+      "score_cp": -40,
+      "depth": 27
+    },
+    {
+      "san": "e5",
+      "games": 13,
+      "link": 38,
+      "score_cp": -150,
+      "depth": 28
+    },
+    {
+      "san": "Bg5",
+      "games": 8,
+      "link": 39,
+      "score_cp": -52,
+      "depth": 22
+    },
+    {
+      "san": "f4",
+      "games": 6,
+      "link": 40,
+      "score_cp": -134,
+      "depth": 24
+    },
+    {
+      "san": "Be3",
+      "games": 4,
+      "link": 41,
+      "score_cp": -61,
+      "depth": 20
+    },
+    {
+      "san": "Bb5+",
+      "games": 4,
+      "link": 42,
+      "score_cp": null,
+      "depth": null
+    },
+    {
+      "san": "Qd3",
+      "games": 2,
+      "link": 43,
+      "score_cp": 29,
+      "depth": 24
+    },
+    {
+      "san": "c4",
+      "games": 2,
+      "link": 44,
+      "score_cp": -55,
+      "depth": 33
+    },
+    {
+      "san": "c3",
+      "games": 2,
+      "link": 45,
+      "score_cp": -91,
+      "depth": 18
+    }
+  ],
+  "raw": "B00: King's pawn opening - 1. e4 d6 2. d4 Nf6 - Chess Opening explorer (https://www.365chess.com/opening.php?m=5&ms=e4.d6.d4.Nf6&n=52&ns=3.51.29.52)\nciteturn113view0 [wordlim: 200] Crawled: last month; Content type: text/html; Source: click({\"ref_id\":\"turn52view0\",\"id\":31}); Total lines: 428\nL0: ##### Login 365Chess\nL1: \nL2: 【0†Image: google†d2rnvyacaewvx6.cloudfront.net】Sign in with Google\nL3: \nL4: OR\nL5: \nL6: [Input: Username]\nL7: \nL8: [Input: Password] 【1†Forgot your password?】\nL9: \nL10: [Input]\nL11: \nL12: Not registered? 【2†Sign up】\nL13: \nL14:   * 【3†Search】\nL15:     * 【4†Game Position】\nL16:     * 【5†Chess Games】\nL17:     * 【6†Chess Tournaments】\nL18:     * 【7†Endgames】\nL19:     * 【8†Chess Players】\nL20:   * 【3†Training】\nL21:     * 【9†Openings Trainer】\nL22:     * 【10†Play vs Computer】\nL23:     * 【11†Puzzles】\nL24:     * 【12†Endgames】\nL25: #####\nL26: \nL27: Welcome!\nL28: \nL29: 【3†LOGIN】 | 【2†REGISTER】\nL30: \nL31: Main\nL32: \nL33:   * 【13†Home】\nL34:   * 【14†Opening Explorer】\nL35:   * 【15†Chess Courses】\nL36:   * 【16†ECO Codes】\nL37: \nL38: Search\nL39: \nL40:   * 【4†Position】\nL41:   * 【5†Games】\nL42:   * 【6†Tournaments】\nL43:   * 【7†Endgames】\nL44:   * 【8†Chess Players】\nL45: \nL46: Training\nL47: \nL48:   * 【9†Openings Trainer】\nL49:   * 【10†Play vs Computer】\nL50:   * 【11†Puzzles】\nL51:   * 【12†Endgames】\nL52: \nL53: Resources\nL54: \nL55:   * 【17†Analysis Board】\nL56:   * 【18†Board Editor】\nL57:   * 【19†Chess Openings】\nL58:   * 【20†Blog】\nL59: \nL60: Help\nL61: \nL62:   * 【21†F.A.Q.】\nL63:   * 【22†Contact Us】\nL64:   * 【23†Membership】\nL65: \nL66: Chess Opening Explorer\nL67: With our Opening Explorer you can browse our entire chess database move by move obtaining statistics about the results of each possible continuation.\nL68: The Opening Explorer is a great tool if you want to study chess openings.\nL69: # 【24†B00 King's pawn opening】\nL70: \nL71: [Input]\nL72: \nL73: [Input]\nL74: \nL75: [Input]\nL76: \nL77: [Input]\nL78: \nL79: [Input]\nL80: \nL81: 【14†Top】\nL82: \nL83: Fen: [Input] 【25†Image: Copy Position†d2rnvyacaewvx6.cloudfront.net】\nL84: \nL85: Url: [Input] 【25†Image: Copy Position†d2rnvyacaewvx6.cloudfront.net】\nL86: \nL87: ## Personal notes\nL88: #### Create notes\nL89: \nL90: If you want to create a note in this position you have to log into your account and have a Supporter membership.\nL91: \nL92: 【26†I'm already a Supporter. Log me in now.】\nL93: \nL94: 【27†I'm not a Supporter yet. Tell me more.】\nL95: \nL96: [Button: Close]\nL97: \nL98: Use your Personal notes to store information and comments about this position. Remember, the notes are private. Nobody but you can see them.\nL99: \nL100: Create a note for this position\nL101: ### Related Openings:\nL102:   * A41: 【3†Robatsch defence, Rossolimo variation】\nL103:   * B00: 【3†King's pawn opening】\nL104:   * B01: 【3†Scandinavian (centre counter) defence】\nL105:   * B02: 【3†Alekhine's defence】\nL106:   * B03: 【3†Alekhine's defence】\nL107:   * B04: 【3†Alekhine's defence, modern variation】\nL108:   * B05: 【3†Alekhine's defence, modern variation, 4...Bg4】\nL109:   * B06: 【3†Robatsch (modern) defence】\nL110:   * B07: 【3†Pirc defence】\nL111:   * B08: 【3†Pirc, classical (two knights) system】\nL112:   * B09: 【3†Pirc, Austrian attack】\nL113:   * B10: 【3†Caro-Kann defence】\nL114:   * B11: 【3†Caro-Kann, two knights, 3...Bg4】\nL115:   * B12: 【3†Caro-Kann defence】\nL116:   * B13: 【3†Caro-Kann, exchange variation】\nL117:   * B14: 【3†Caro-Kann, Panov-Botvinnik attack, 5...e6】\nL118:   * B15: 【3†Caro-Kann defence】\nL119:   * B16: 【3†Caro-Kann, Bronstein-Larsen variation】\nL120:   * B17: 【3†Caro-Kann, Steinitz variation】\nL121:   * B18: 【3†Caro-Kann, classical variation】\nL122:   * B19: 【3†Caro-Kann, classical, 7...Nd7】\nL123:   * B20: 【3†Sicilian defence】\nL124:   * B21: 【3†Sicilian, Grand Prix attack】\nL125:   * B22: 【3†Sicilian, Alapin's variation (2.c3)】\nL126:   * B23: 【3†Sicilian, closed】\nL127:   * B24: 【3†Sicilian, closed】\nL128:   * B25: 【3†Sicilian, closed】\nL129:   * B26: 【3†Sicilian, closed, 6.Be3】\nL130:   * B27: 【3†Sicilian defence】\nL131:   * B28: 【3†Sicilian, O'Kelly variation】\nL132:   * B29: 【3†Sicilian, Nimzovich-Rubinstein variation】\nL133:   * B30: 【3†Sicilian defence】\nL134:   * B31: 【3†Sicilian, Nyezhmetdinov-Rossolimo attack (with ...g6, without ...d6)】\nL135:   * B32: 【3†Sicilian defence】\nL136:   * B33: 【3†Sicilian defence】\nL137:   * B34: 【3†Sicilian, accelerated fianchetto, exchange variation】\nL138:   * B35: 【3†Sicilian, accelerated fianchetto, modern variation with Bc4】\nL139:   * B36: 【3†Sicilian, accelerated fianchetto, Maroczy bind】\nL140:   * B37: 【3†Sicilian, accelerated fianchetto, Maroczy bind, 5...Bg7】\nL141:   * B38: 【3†Sicilian, accelerated fianchetto, Maroczy bind, 6.Be3】\nL142:   * B39: 【3†Sicilian, accelerated fianchetto, Breyer variation】\nL143:   * B40: 【3†Sicilian defence】\nL144:   * B41: 【3†Sicilian, Kan variation】\nL145:   * B42: 【3†Sicilian, Kan, 5.Bd3】\nL146:   * B43: 【3†Sicilian, Kan, 5.Nc3】\nL147:   * B44: 【3†Sicilian defence】\nL148:   * B45: 【3†Sicilian, Taimanov variation】\nL149:   * B46: 【3†Sicilian, Taimanov variation】\nL150:   * B47: 【3†Sicilian, Taimanov (Bastrikov) variation】\nL151:   * B48: 【3†Sicilian, Taimanov variation】\nL152:   * B49: 【3†Sicilian, Taimanov variation】\nL153:   * B50: 【3†Sicilian】\nL154:   * B51: 【3†Sicilian, Canal-Sokolsky (Nimzovich-Rossolimo, Moscow) attack】\nL155:   * B52: 【3†Sicilian, Canal-Sokolsky attack, 3...Bd7】\nL156:   * B53: 【3†Sicilian, Chekhover variation】\nL157:   * B54: 【3†Sicilian】\nL158:   * B55: 【3†Sicilian, Prins variation, Venice attack】\nL159:   * B56: 【3†Sicilian】\nL160:   * B57: 【3†Sicilian, Sozin, not Scheveningen】\nL161:   * B58: 【3†Sicilian, classical】\nL162:   * B59: 【3†Sicilian, Boleslavsky variation, 7.Nb3】\nL163:   * B60: 【3†Sicilian, Richter-Rauzer】\nL164:   * B61: 【3†Sicilian, Richter-Rauzer, Larsen variation, 7.Qd2】\nL165:   * B62: 【3†Sicilian, Richter-Rauzer, 6...e6】\nL166:   * B63: 【3†Sicilian, Richter-Rauzer, Rauzer attack】\nL167:   * B64: 【3†Sicilian, Richter-Rauzer, Rauzer attack, 7...Be7 defence, 9.f4】\nL168:   * B65: 【3†Sicilian, Richter-Rauzer, Rauzer attack, 7...Be7 defence, 9...Nxd4】\nL169:   * B66: 【3†Sicilian, Richter-Rauzer, Rauzer attack, 7...a6】\nL170:   * B67: 【3†Sicilian, Richter-Rauzer, Rauzer attack, 7...a6 defence, 8...Bd7】\nL171:   * B68: 【3†Sicilian, Richter-Rauzer, Rauzer attack, 7...a6 defence, 9...Be7】\nL172:   * B69: 【3†Sicilian, Richter-Rauzer, Rauzer attack, 7...a6 defence, 11.Bxf6】\nL173:   * B70: 【3†Sicilian, dragon variation】\nL174:   * B71: 【3†Sicilian, dragon, Levenfish variation】\nL175:   * B72: 【3†Sicilian, dragon, 6.Be3】\nL176:   * B73: 【3†Sicilian, dragon, classical, 8.O-O】\nL177:   * B74: 【3†Sicilian, dragon, classical, 9.Nb3】\nL178:   * B75: 【3†Sicilian, dragon, Yugoslav attack】\nL179:   * B76: 【3†Sicilian, dragon, Yugoslav attack, 7...O-O】\nL180:   * B77: 【3†Sicilian, dragon, Yugoslav attack, 9.Bc4】\nL181:   * B78: 【3†Sicilian, dragon, Yugoslav attack, 10.O-O-O】\nL182:   * B79: 【3†Sicilian, dragon, Yugoslav attack, 12.h4】\nL183:   * B80: 【3†Sicilian, Scheveningen variation】\nL184:   * B81: 【3†Sicilian, Scheveningen, Keres attack】\nL185:   * B82: 【3†Sicilian, Scheveningen, 6.f4】\nL186:   * B83: 【3†Sicilian, Scheveningen, 6.Be2】\nL187:   * B84: 【3†Sicilian, Scheveningen (Paulsen), classical variation】\nL188:   * B85: 【3†Sicilian, Scheveningen, classical variation with ...Qc7 and ...Nc6】\nL189:   * B86: 【3†Sicilian, Sozin attack】\nL190:   * B87: 【3†Sicilian, Sozin with ...a6 and ...b5】\nL191:   * B88: 【3†Sicilian, Sozin, Leonhardt variation】\nL192:   * B89: 【3†Sicilian, Sozin, 7.Be3】\nL193:   * B90: 【3†Sicilian, Najdorf】\nL194:   * B91: 【3†Sicilian, Najdorf, Zagreb (fianchetto) variation】\nL195:   * B92: 【3†Sicilian, Najdorf, Opovcensky variation】\nL196:   * B93: 【3†Sicilian, Najdorf, 6.f4】\nL197:   * B94: 【3†Sicilian, Najdorf, 6.Bg5】\nL198:   * B95: 【3†Sicilian, Najdorf, 6...e6】\nL199:   * B96: 【3†Sicilian, Najdorf, 7.f4】\nL200:   * B97: 【3†Sicilian, Najdorf, 7...Qb6】\nL201:   * B98: 【3†Sicilian, Najdorf, 7...Be7】\nL202:   * B99: 【3†Sicilian, Najdorf, 7...Be7 main line】\nL203:   * C00: 【3†French defence】\nL204:   * C01: 【3†French, exchange variation】\nL205:   * C02: 【3†French, advance variation】\nL206:   * C03: 【3†French, Tarrasch】\nL207:   * C04: 【3†French, Tarrasch, Guimard main line】\nL208:   * C05: 【3†French, Tarrasch, closed variation】\nL209:   * C06: 【3†French, Tarrasch, closed variation, main line】\nL210:   * C07: 【3†French, Tarrasch, open variation】\nL211:   * C08: 【3†French, Tarrasch, open, 4.ed ed】\nL212:   * C09: 【3†French, Tarrasch, open variation, main line】\nL213:   * C10: 【3†French, Paulsen variation】\nL214:   * C11: 【3†French defence】\nL215:   * C12: 【3†French, MacCutcheon variation】\nL216:   * C13: 【3†French, classical】\nL217:   * C14: 【3†French, classical variation】\nL218:   * C15: 【3†French, Winawer (Nimzovich) variation】\nL219:   * C16: 【3†French, Winawer, advance variation】\nL220:   * C17: 【3†French, Winawer, advance variation】\nL221:   * C18: 【3†French, Winawer, advance variation】\nL222:   * C19: 【3†French, Winawer, advance, 6...Ne7】\nL223:   * C20: 【3†King's pawn game】\nL224:   * C21: 【3†Centre game】\nL225:   * C22: 【3†Centre game】\nL226:   * C23: 【3†Bishop's opening】\nL227:   * C24: 【3†Bishop's opening, Berlin defence】\nL228:   * C25: 【3†Vienna game】\nL229:   * C26: 【3†Vienna, Falkbeer variation】\nL230:   * C27: 【3†Vienna game】\nL231:   * C28: 【3†Vienna game】\nL232:   * C29: 【3†Vienna gambit】\nL233:   * C30: 【3†King's gambit】\nL234:   * C31: 【3†King's Gambit Declined, Falkbeer counter-gambit】\nL235:   * C32: 【3†King's Gambit Declined, Falkbeer, 5.de】\nL236:   * C33: 【3†King's gambit accepted】\nL237:   * C34: 【3†King's Gambit Accepted】\nL238:   * C35: 【3†King's Gambit Accepted, Cunningham defence】\nL239:   * C36: 【3†King's Gambit Accepted, Abbazia defence (classical defence, modern defence[!])】\nL240:   * C37: 【3†King's Gambit Accepted, Quaade gambit】\nL241:   * C38: 【3†King's Gambit Accepted】\nL242:   * C39: 【3†King's Gambit Accepted】\nL243:   * C40: 【3†King's knight opening】\nL244:   * C41: 【3†Philidor's defence】\nL245:   * C42: 【3†Petrov's defence】\nL246:   * C43: 【3†Petrov, modern (Steinitz) attack】\nL247:   * C44: 【3†King's pawn game】\nL248:   * C45: 【3†Scotch game】\nL249:   * C46: 【3†Three knights game】\nL250:   * C47: 【3†Four knights, Scotch variation】\nL251:   * C48: 【3†Four knights, Spanish variation】\nL252:   * C49: 【3†Four knights, double Ruy Lopez】\nL253:   * C50: 【3†Italian Game】\nL254:   * C51: 【3†Evans gambit declined】\nL255:   * C52: 【3†Evans gambit】\nL256:   * C53: 【3†Giuoco Piano】\nL257:   * C54: 【3†Giuoco Piano】\nL258:   * C55: 【3†Two knights defence】\nL259:   * C56: 【3†Two knights defence】\nL260:   * C57: 【3†Two knights defence】\nL261:   * C58: 【3†two knights defence】\nL262:   * C59: 【3†Two knights defence】\nL263:   * C60: 【3†Ruy Lopez (Spanish opening)】\nL264:   * C61: 【3†Ruy Lopez, Bird's defence】\nL265:   * C62: 【3†Ruy Lopez, old Steinitz defence】\nL266:   * C63: 【3†Ruy Lopez, Schliemann defence】\nL267:   * C64: 【3†Ruy Lopez, classical (Cordel) defence】\nL268:   * C65: 【3†Ruy Lopez, Berlin defence】\nL269:   * C66: 【3†Ruy Lopez, Berlin defence, 4.O-O, d6】\nL270:   * C67: 【3†Ruy Lopez, Berlin defence, open variation】\nL271:   * C68: 【3†Ruy Lopez, exchange variation】\nL272:   * C69: 【3†Ruy Lopez, exchange variation, 5.O-O】\nL273:   * C70: 【3†Ruy Lopez】\nL274:   * C71: 【3†Ruy Lopez, modern Steinitz defence】\nL275:   * C72: 【3†Ruy Lopez, modern Steinitz defence, 5.O-O】\nL276:   * C73: 【3†Ruy Lopez, modern Steinitz defence, Richter variation】\nL277:   * C74: 【3†Ruy Lopez, modern Steinitz defence】\nL278:   * C75: 【3†Ruy Lopez, modern Steinitz defence】\nL279:   * C76: 【3†Ruy Lopez, modern Steinitz defence, fianchetto (Bronstein) variation】\nL280:   * C77: 【3†Ruy Lopez, Morphy defence】\nL281:   * C78: 【3†Ruy Lopez, 5.O-O】\nL282:   * C79: 【3†Ruy Lopez, Steinitz defence deferred (Russian defence)】\nL283:   * C80: 【3†Ruy Lopez, open (Tarrasch) defence】\nL284:   * C81: 【3†Ruy Lopez, open, Howell attack】\nL285:   * C82: 【3†Ruy Lopez, open, 9.c3】\nL286:   * C83: 【3†Ruy Lopez, open, classical defence】\nL287:   * C84: 【3†Ruy Lopez, closed defence】\nL288:   * C85: 【3†Ruy Lopez, Exchange variation doubly deferred (DERLD)】\nL289:   * C86: 【3†Ruy Lopez, Worrall attack】\nL290:   * C87: 【3†Ruy Lopez, closed, Averbach variation】\nL291:   * C88: 【3†Ruy Lopez, closed】\nL292:   * C89: 【3†Ruy Lopez, Marshall counter-attack】\nL293:   * C90: 【3†Ruy Lopez, closed (with ...d6)】\nL294:   * C91: 【3†Ruy Lopez, closed, 9.d4】\nL295:   * C92: 【3†Ruy Lopez, closed, 9.h3】\nL296:   * C93: 【3†Ruy Lopez, closed, Smyslov defence】\nL297:   * C94: 【3†Ruy Lopez, closed, Breyer defence】\nL298:   * C95: 【3†Ruy Lopez, closed, Breyer, 10.d4】\nL299:   * C96: 【3†Ruy Lopez, closed (8...Na5)】\nL300:   * C97: 【3†Ruy Lopez, closed, Chigorin defence】\nL301:   * C98: 【3†Ruy Lopez, closed, Chigorin, 12...Nc6】\nL302:   * C99: 【3†Ruy Lopez, closed, Chigorin, 12...c5d4】\nL303: \nL304: \nL305: \nL306: \nL307: 【3†Stop Analysis】\nL308: \nL309: 【3†Start Engine Analysis】\nL310: \nL311: Stored Analysis: +0.22 Depth 45\nL312: \nL313: Opening Explorer Database:  [Select]\nL314: \nL315: Moves List:\nL316: \nL317: 1. 【28†e4】 【29†d6】 2. 【30†d4】 【31†Nf6】\nL318: \nL319: 【3†Game List】\nL320: \nL321: 【3†Save】\nL322: \nL323: 【3†Play】\nL324: \nL325: 【3†Analysis】\nL326: Next Move  | # of Games  | Last Played  | Winnings percentage\nL327: White / Draw / Black  | Engine Eval.\nL328: 【32†3. Nc3】  |  59,118  | 2026  |\nL329: 40.4 % 30 % 29.6 %\nL330:  | +0.54 Dpt 30\nL331: 【33†3. Bd3】  |  3,841  | 2026  |\nL332: 38.2 % 28.5 % 33.4 %\nL333:  | +0.15 Dpt 33\nL334: 【34†3. f3】  |  2,636  | 2026  |\nL335: 41.9 % 30.9 % 27.2 %\nL336:  | +0.13 Dpt 33\nL337: 【35†3. Nd2】  |  392  | 2026  |\nL338: 32.9 % 34.2 % 32.9 %\nL339:  | +0.38 Dpt 18\nL340: 【36†3. Bc4】  |  78  | 2026  |\nL341: 42.3 % 15.4 % 42.3 %\nL342:  | +0.00 Dpt 38\nL343: 【37†3. Nf3】  |  47  | 2025  |\nL344: 34 % 27.7 % 38.3 %\nL345:  | -0.40 Dpt 27\nL346: 【38†3. e5】  |  13  | 2012  |\nL347: 23.1 % 15.4 % 61.5 %\nL348:  | -1.50 Dpt 28\nL349: 【39†3. Bg5】  |  8  | 2007  |\nL350: 75 %\nL351:  | -0.52 Dpt 22\nL352: 【40†3. f4】  |  6  | 2006  |\nL353: 16.7 % 83.3 %\nL354:  | -1.34 Dpt 24\nL355: 【41†3. Be3】  |  4  | 2007  |\nL356: 50 % 25 % 25 %\nL357:  | -0.61 Dpt 20\nL358: 【42†3. Bb5+】  |  4  | 2000  |\nL359: 25 % 75 %\nL360:  |\nL361: 【43†3. Qd3】  |  2  | 2002  |\nL362: 100 %\nL363:  | +0.29 Dpt 24\nL364: 【44†3. c4】  |  2  | 2019  |\nL365: 100 %\nL366:  | -0.55 Dpt 33\nL367: 【45†3. c3】  |  2  | 1973  |\nL368: 100 %\nL369:  | -0.91 Dpt 18\nL370: 【3†3. Bf4】  |  【46†1-0】, 【47†Larios】 (1944) vs. 【48†Jaume Pons】 (1812)\nL371: 【3†3. d5】  |  【49†0-1】, 【50†Nichols】 vs. 【51†Unruh】 (1132)\nL372: 【3†3. Qe2】  |  【52†0-1】, 【53†Belloni】 (1955) vs. 【54†Ventura】 (2175)\nL373: 【3†3. g3】  |  【55†½-½】, 【56†Lazic】 (2452) vs. 【57†Kumic】 (2223)\nL374: 【3†3. Na3】  |  【58†0-1】, 【59†Lu】 (2643) vs. 【60†Alekseenko】 (2625)\nL375: [Input] Hide Engine Analysis\nL376: \nL377: 【61†Download games】\nL378: ### Latest Played Games\nL379: \nL380: Players  | Result  |\nL381: 【62†Praggnanandhaa R vs Keymer, V】   | 1 - 0  |\nL382: 【63†Alsina Leal, D vs Chavez Suarez, C】   | 1 - 0  |\nL383: 【64†Kulon, K vs Lishoy Gengis Paratazham, D】   | ½ - ½  |\nL384: 【65†Willow, J vs Vihaan Dumir】   | ½ - ½  |\nL385: 【66†Korszanski, S vs Szikszai, B】   | ½ - ½  |\nL386: ### Top Games by Average ELO\nL387: \nL388: Players  | Result  |\nL389: 【67†Anand, V vs Carlsen, M】   | ½ - ½  |\nL390: 【68†Yu, Y vs Carlsen, M】   | ½ - ½  |\nL391: 【69†Caruana, F vs Mamedyarov, S】   | 0 - 1  |\nL392: 【70†Caruana, F vs Mamedyarov, S】   | 0 - 1  |\nL393: 【71†Vachier Lagrave, M vs Carlsen, M】   | 0 - 1  |\nL394: ### Played frequently by\nL395: \nL396: As White  |\nL397: Michele Godena  | 【72†80 games】\nL398: Eduardas Rozentalis  | 【73†50 games】\nL399: Oleg Korneev  | 【74†50 games】\nL400: \nL401: As Black  |\nL402: Josef Pribyl  | 【75†212 games】\nL403: Yuri Zimmerman  | 【76†155 games】\nL404: Mihail Marin  | 【77†150 games】\nL405: \nL406: #### Opening Explorer Message\nL407: \nL408: This position doesn't exist in the Opening Explorer\nL409: \nL410: [Button: Continue]\nL411: #### Opening Explorer Message\nL412: \nL413: Dear Chessfriend, we're thrilled that you're enjoying this powerful tool!!!\nL414: \nL415: As you know, most of the features in 365Chess are free for everyone, anywhere; we believe in this philosophy and we want to keep it that way.\nL416: To keep the site free for everyone the development of this site relies on the support and contributions of its members. Therefore, we kindly ask you to consider becoming a Supporter. By doing so, you will receive some extra and nice benefits and you will be helping to improve this site.\nL417: \nL418: Thank you in advance for your contribution. You have no idea how much it means to us to have your Support.\nL419: \nL420: [Button: Yes, I want to contribute now]\nL421: \nL422: 【3†Maybe later】\nL423: #### Download PGN\nL424: \nL425: PGN Analysis\nL426: \nL427: [Input]        [Input]\n"
+}

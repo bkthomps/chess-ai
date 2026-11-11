@@ -1,0 +1,96 @@
+{
+  "path": [
+    "e4",
+    "g6",
+    "d4"
+  ],
+  "url": "https://www.365chess.com/opening.php?m=4&ms=e4.g6.d4&n=81&ns=3.143.81",
+  "ref": "turn51view0",
+  "rows": [
+    {
+      "san": "Bg7",
+      "games": 52923,
+      "link": 31,
+      "score_cp": 52,
+      "depth": 40
+    },
+    {
+      "san": "d6",
+      "games": 4766,
+      "link": 32,
+      "score_cp": 60,
+      "depth": 40
+    },
+    {
+      "san": "c6",
+      "games": 2216,
+      "link": 33,
+      "score_cp": 79,
+      "depth": 40
+    },
+    {
+      "san": "Nf6",
+      "games": 420,
+      "link": 34,
+      "score_cp": 96,
+      "depth": 32
+    },
+    {
+      "san": "c5",
+      "games": 196,
+      "link": 35,
+      "score_cp": 74,
+      "depth": 27
+    },
+    {
+      "san": "d5",
+      "games": 61,
+      "link": 36,
+      "score_cp": null,
+      "depth": null
+    },
+    {
+      "san": "e6",
+      "games": 37,
+      "link": 37,
+      "score_cp": 94,
+      "depth": 25
+    },
+    {
+      "san": "Nh6",
+      "games": 29,
+      "link": 38,
+      "score_cp": 119,
+      "depth": 31
+    },
+    {
+      "san": "b6",
+      "games": 15,
+      "link": 39,
+      "score_cp": null,
+      "depth": null
+    },
+    {
+      "san": "Nc6",
+      "games": 3,
+      "link": 40,
+      "score_cp": 127,
+      "depth": 20
+    },
+    {
+      "san": "a6",
+      "games": 3,
+      "link": 41,
+      "score_cp": 78,
+      "depth": 27
+    },
+    {
+      "san": "f6",
+      "games": 2,
+      "link": 42,
+      "score_cp": 140,
+      "depth": 20
+    }
+  ],
+  "raw": "B06: Robatsch (modern) defence - 1. e4 g6 2. d4 - Chess Opening explorer (https://www.365chess.com/opening.php?m=4&ms=e4.g6.d4&n=81&ns=3.143.81)\nciteturn51view0 [wordlim: 200] Crawled: last month; Content type: text/html; Source: click({\"ref_id\":\"turn15view0\",\"id\":30}); Total lines: 228\nL0: ##### Login 365Chess\nL1: \nL2: 【0†Image: google†d2rnvyacaewvx6.cloudfront.net】Sign in with Google\nL3: \nL4: OR\nL5: \nL6: [Input: Username]\nL7: \nL8: [Input: Password] 【1†Forgot your password?】\nL9: \nL10: [Input]\nL11: \nL12: Not registered? 【2†Sign up】\nL13: \nL14:   * 【3†Search】\nL15:     * 【4†Game Position】\nL16:     * 【5†Chess Games】\nL17:     * 【6†Chess Tournaments】\nL18:     * 【7†Endgames】\nL19:     * 【8†Chess Players】\nL20:   * 【3†Training】\nL21:     * 【9†Openings Trainer】\nL22:     * 【10†Play vs Computer】\nL23:     * 【11†Puzzles】\nL24:     * 【12†Endgames】\nL25: #####\nL26: \nL27: Welcome!\nL28: \nL29: 【3†LOGIN】 | 【2†REGISTER】\nL30: \nL31: Main\nL32: \nL33:   * 【13†Home】\nL34:   * 【14†Opening Explorer】\nL35:   * 【15†Chess Courses】\nL36:   * 【16†ECO Codes】\nL37: \nL38: Search\nL39: \nL40:   * 【4†Position】\nL41:   * 【5†Games】\nL42:   * 【6†Tournaments】\nL43:   * 【7†Endgames】\nL44:   * 【8†Chess Players】\nL45: \nL46: Training\nL47: \nL48:   * 【9†Openings Trainer】\nL49:   * 【10†Play vs Computer】\nL50:   * 【11†Puzzles】\nL51:   * 【12†Endgames】\nL52: \nL53: Resources\nL54: \nL55:   * 【17†Analysis Board】\nL56:   * 【18†Board Editor】\nL57:   * 【19†Chess Openings】\nL58:   * 【20†Blog】\nL59: \nL60: Help\nL61: \nL62:   * 【21†F.A.Q.】\nL63:   * 【22†Contact Us】\nL64:   * 【23†Membership】\nL65: \nL66: Chess Opening Explorer\nL67: With our Opening Explorer you can browse our entire chess database move by move obtaining statistics about the results of each possible continuation.\nL68: The Opening Explorer is a great tool if you want to study chess openings.\nL69: # 【24†B06 Robatsch (modern) defence】\nL70: \nL71: [Input]\nL72: \nL73: [Input]\nL74: \nL75: [Input]\nL76: \nL77: [Input]\nL78: \nL79: [Input]\nL80: \nL81: 【14†Top】\nL82: \nL83: Fen: [Input] 【25†Image: Copy Position†d2rnvyacaewvx6.cloudfront.net】\nL84: \nL85: Url: [Input] 【25†Image: Copy Position†d2rnvyacaewvx6.cloudfront.net】\nL86: \nL87: ## Personal notes\nL88: #### Create notes\nL89: \nL90: If you want to create a note in this position you have to log into your account and have a Supporter membership.\nL91: \nL92: 【26†I'm already a Supporter. Log me in now.】\nL93: \nL94: 【27†I'm not a Supporter yet. Tell me more.】\nL95: \nL96: [Button: Close]\nL97: \nL98: Use your Personal notes to store information and comments about this position. Remember, the notes are private. Nobody but you can see them.\nL99: \nL100: Create a note for this position\nL101: ### Related Openings:\nL102: \nL103:   * A41: 【3†Robatsch defence, Rossolimo variation】\nL104:   * B06: 【3†Robatsch (modern) defence】\nL105:   * B07: 【3†Robatsch defence, Geller's system】\nL106: \nL107: \nL108: \nL109: \nL110: \nL111: 【3†Stop Analysis】\nL112: \nL113: 【3†Start Engine Analysis】\nL114: \nL115: Stored Analysis: +0.53 Depth 50\nL116: \nL117: Opening Explorer Database:  [Select]\nL118: \nL119: Moves List:\nL120: \nL121: 1. 【28†e4】 【29†g6】 2. 【30†d4】\nL122: \nL123: 【3†Game List】\nL124: \nL125: 【3†Save】\nL126: \nL127: 【3†Play】\nL128: \nL129: 【3†Analysis】\nL130: Next Move  | # of Games  | Last Played  | Winnings percentage\nL131: White / Draw / Black  | Engine Eval.\nL132: 【31†2... Bg7】  |  52,923  | 2026  |\nL133: 38.3 % 28.7 % 33.1 %\nL134:  | +0.52 Dpt 40\nL135: 【32†2... d6】  |  4,766  | 2026  |\nL136: 40.7 % 28.4 % 30.9 %\nL137:  | +0.60 Dpt 40\nL138: 【33†2... c6】  |  2,216  | 2026  |\nL139: 38 % 31.9 % 30.2 %\nL140:  | +0.79 Dpt 40\nL141: 【34†2... Nf6】  |  420  | 2026  |\nL142: 48.1 % 25 % 26.9 %\nL143:  | +0.96 Dpt 32\nL144: 【35†2... c5】  |  196  | 2025  |\nL145: 50 % 28.1 % 21.9 %\nL146:  | +0.74 Dpt 27\nL147: 【36†2... d5】  |  61  | 2025  |\nL148: 47.5 % 27.9 % 24.6 %\nL149:  |\nL150: 【37†2... e6】  |  37  | 2021  |\nL151: 62.2 % 16.2 % 21.6 %\nL152:  | +0.94 Dpt 25\nL153: 【38†2... Nh6】  |  29  | 2012  |\nL154: 51.7 % 27.6 % 20.7 %\nL155:  | +1.19 Dpt 31\nL156: 【39†2... b6】  |  15  | 2024  |\nL157: 60 % 26.7 %\nL158:  |\nL159: 【40†2... Nc6】  |  3  | 2006  |\nL160: 100 %\nL161:  | +1.27 Dpt 20\nL162: 【41†2... a6】  |  3  | 2025  |\nL163: 33.3 % 66.7 %\nL164:  | +0.78 Dpt 27\nL165: 【42†2... f6】  |  2  | 2007  |\nL166: 50 % 50 %\nL167:  | +1.40 Dpt 20\nL168: 【3†2... g5】  |  【43†1-0】, 【44†Bojkovic】 (2452) vs. 【45†Benderac】 (2276)\nL169: 【3†2... Bh6】  |  【46†1-0】, 【47†Beso Portales】 (2236) vs. 【48†Selva Salvador】 (2069)\nL170: 【3†2... f5】  |  【49†1-0】, 【50†Xiong】 vs. 【51†Robinson】\nL171: 【3†2... e5】  |  【52†1-0】, 【53†Hartmann】 (1675) vs. 【54†Pitz】 (1368)\nL172: 【3†2... h5】  |  【55†0-1】, 【56†Martinsen】 (2206) vs. 【57†Kjoita】 (2068)\nL173: [Input] Hide Engine Analysis\nL174: \nL175: 【58†Download games】\nL176: \nL177: 【24†Modern Defense Guide】\nL178: ### Latest Played Games\nL179: \nL180: Players  | Result  |\nL181: 【59†Caruana, F vs So, W】   | 1 - 0  |\nL182: 【60†Navara, D vs Dardha, D】   | ½ - ½  |\nL183: 【61†Kovacsy, B vs Bihercz, G】   | 1 - 0  |\nL184: 【62†Om Batra vs Kosakowski, J】   | 0 - 1  |\nL185: 【63†Geher, K vs Samyak Dharewa】   | 0 - 1  |\nL186: ### Top Games by Average ELO\nL187: \nL188: Players  | Result  |\nL189: 【64†Caruana, F vs Carlsen, M】   | 0 - 1  |\nL190: 【65†Topalov, V vs Carlsen, M】   | 0 - 1  |\nL191: 【66†Anand, V vs Carlsen, M】   | 0 - 1  |\nL192: 【67†Aronian, L vs Carlsen, M】   | 1 - 0  |\nL193: 【68†Giri, A vs Carlsen, M】   | ½ - ½  |\nL194: ### Played frequently by\nL195: \nL196: As White  |\nL197: Heikki MJ Westerinen  | 【69†63 games】\nL198: Michele Godena  | 【70†54 games】\nL199: Evgeny Sveshnikov  | 【71†44 games】\nL200: \nL201: As Black  |\nL202: Colin Anderson McNab  | 【72†301 games】\nL203: Miodrag Todorcevic  | 【73†218 games】\nL204: Peter Petran  | 【74†206 games】\nL205: \nL206: #### Opening Explorer Message\nL207: \nL208: This position doesn't exist in the Opening Explorer\nL209: \nL210: [Button: Continue]\nL211: #### Opening Explorer Message\nL212: \nL213: Dear Chessfriend, we're thrilled that you're enjoying this powerful tool!!!\nL214: \nL215: As you know, most of the features in 365Chess are free for everyone, anywhere; we believe in this philosophy and we want to keep it that way.\nL216: To keep the site free for everyone the development of this site relies on the support and contributions of its members. Therefore, we kindly ask you to consider becoming a Supporter. By doing so, you will receive some extra and nice benefits and you will be helping to improve this site.\nL217: \nL218: Thank you in advance for your contribution. You have no idea how much it means to us to have your Support.\nL219: \nL220: [Button: Yes, I want to contribute now]\nL221: \nL222: 【3†Maybe later】\nL223: #### Download PGN\nL224: \nL225: PGN Analysis\nL226: \nL227: [Input]        [Input]\n"
+}

@@ -1,0 +1,104 @@
+{
+  "path": [
+    "e4",
+    "e6",
+    "d3",
+    "d5"
+  ],
+  "url": "https://www.365chess.com/opening.php?m=5&ms=e4.e6.d3.d5&n=78&ns=3.16.43.78",
+  "ref": "turn100view0",
+  "rows": [
+    {
+      "san": "Nd2",
+      "games": 11964,
+      "link": 33,
+      "score_cp": 0,
+      "depth": 33
+    },
+    {
+      "san": "Qe2",
+      "games": 1982,
+      "link": 34,
+      "score_cp": -24,
+      "depth": 28
+    },
+    {
+      "san": "Nc3",
+      "games": 115,
+      "link": 35,
+      "score_cp": -23,
+      "depth": 35
+    },
+    {
+      "san": "exd5",
+      "games": 63,
+      "link": 36,
+      "score_cp": -13,
+      "depth": 26
+    },
+    {
+      "san": "Nf3",
+      "games": 36,
+      "link": 37,
+      "score_cp": -60,
+      "depth": 25
+    },
+    {
+      "san": "e5",
+      "games": 28,
+      "link": 38,
+      "score_cp": -61,
+      "depth": 22
+    },
+    {
+      "san": "Be2",
+      "games": 23,
+      "link": 39,
+      "score_cp": -15,
+      "depth": 24
+    },
+    {
+      "san": "Bd2",
+      "games": 16,
+      "link": 40,
+      "score_cp": -12,
+      "depth": 20
+    },
+    {
+      "san": "g3",
+      "games": 8,
+      "link": 41,
+      "score_cp": -40,
+      "depth": 24
+    },
+    {
+      "san": "f3",
+      "games": 6,
+      "link": 42,
+      "score_cp": null,
+      "depth": null
+    },
+    {
+      "san": "c3",
+      "games": 4,
+      "link": 43,
+      "score_cp": null,
+      "depth": null
+    },
+    {
+      "san": "Bf4",
+      "games": 2,
+      "link": 44,
+      "score_cp": null,
+      "depth": null
+    },
+    {
+      "san": "f4",
+      "games": 2,
+      "link": 45,
+      "score_cp": -9,
+      "depth": 22
+    }
+  ],
+  "raw": "C00: French, King's Indian attack - 1. e4 e6 2. d3 d5 - Chess Opening explorer (https://www.365chess.com/opening.php?m=5&ms=e4.e6.d3.d5&n=78&ns=3.16.43.78)\nciteturn100view0 [wordlim: 200] Crawled: 2 months ago; Content type: text/html; Source: click({\"ref_id\":\"turn46view0\",\"id\":32}); Total lines: 223\nL0: ##### Login 365Chess\nL1: \nL2: 【0†Image: google†d2rnvyacaewvx6.cloudfront.net】Sign in with Google\nL3: \nL4: OR\nL5: \nL6: [Input: Username]\nL7: \nL8: [Input: Password] 【1†Forgot your password?】\nL9: \nL10: [Input]\nL11: \nL12: Not registered? 【2†Sign up】\nL13: \nL14:   * 【3†Search】\nL15:     * 【4†Game Position】\nL16:     * 【5†Chess Games】\nL17:     * 【6†Chess Tournaments】\nL18:     * 【7†Endgames】\nL19:     * 【8†Chess Players】\nL20:   * 【3†Training】\nL21:     * 【9†Openings Trainer】\nL22:     * 【10†Play vs Computer】\nL23:     * 【11†Puzzles】\nL24:     * 【12†Endgames】\nL25: #####\nL26: \nL27: Welcome!\nL28: \nL29: 【3†LOGIN】 | 【2†REGISTER】\nL30: \nL31: Main\nL32: \nL33:   * 【13†Home】\nL34:   * 【14†Opening Explorer】\nL35:   * 【15†Chess Courses】\nL36:   * 【16†ECO Codes】\nL37: \nL38: Search\nL39: \nL40:   * 【4†Position】\nL41:   * 【5†Games】\nL42:   * 【6†Tournaments】\nL43:   * 【7†Endgames】\nL44:   * 【8†Chess Players】\nL45: \nL46: Training\nL47: \nL48:   * 【9†Openings Trainer】\nL49:   * 【10†Play vs Computer】\nL50:   * 【11†Puzzles】\nL51:   * 【12†Endgames】\nL52: \nL53: Resources\nL54: \nL55:   * 【17†Analysis Board】\nL56:   * 【18†Board Editor】\nL57:   * 【19†Chess Openings】\nL58:   * 【20†Blog】\nL59: \nL60: Help\nL61: \nL62:   * 【21†F.A.Q.】\nL63:   * 【22†Contact Us】\nL64:   * 【23†Membership】\nL65: \nL66: Chess Opening Explorer\nL67: With our Opening Explorer you can browse our entire chess database move by move obtaining statistics about the results of each possible continuation.\nL68: The Opening Explorer is a great tool if you want to study chess openings.\nL69: # 【24†C00 French, King's Indian attack】\nL70: \nL71: [Input]\nL72: \nL73: [Input]\nL74: \nL75: [Input]\nL76: \nL77: [Input]\nL78: \nL79: [Input]\nL80: \nL81: 【14†Top】\nL82: \nL83: Fen: [Input] 【25†Image: Copy Position†d2rnvyacaewvx6.cloudfront.net】\nL84: \nL85: Url: [Input] 【25†Image: Copy Position†d2rnvyacaewvx6.cloudfront.net】\nL86: \nL87: ## Personal notes\nL88: #### Create notes\nL89: \nL90: If you want to create a note in this position you have to log into your account and have a Supporter membership.\nL91: \nL92: 【26†I'm already a Supporter. Log me in now.】\nL93: \nL94: 【27†I'm not a Supporter yet. Tell me more.】\nL95: \nL96: [Button: Close]\nL97: \nL98: Use your Personal notes to store information and comments about this position. Remember, the notes are private. Nobody but you can see them.\nL99: \nL100: Create a note for this position\nL101: ### Related Openings:\nL102: \nL103:   * C00: 【3†French, King's Indian attack】\nL104: \nL105: \nL106: \nL107: \nL108: \nL109: 【3†Stop Analysis】\nL110: \nL111: 【3†Start Engine Analysis】\nL112: \nL113: Opening Explorer Database:  [Select]\nL114: \nL115: Moves List:\nL116: \nL117: 1. 【28†e4】 【29†e6】 2. 【30†d3】 【31†d5】\nL118: \nL119: 【32†Game List】\nL120: \nL121: 【3†Save】\nL122: \nL123: 【3†Play】\nL124: \nL125: 【3†Analysis】\nL126: Next Move  | # of Games  | Last Played  | Winnings percentage\nL127: White / Draw / Black  | Engine Eval.\nL128: 【33†3. Nd2】  |  11,964  | 2026  |\nL129: 41.4 % 28.4 % 30.2 %\nL130:  | +0.00 Dpt 33\nL131: 【34†3. Qe2】  |  1,982  | 2026  |\nL132: 44.9 % 29.4 % 25.8 %\nL133:  | -0.24 Dpt 28\nL134: 【35†3. Nc3】  |  115  | 2026  |\nL135: 31.3 % 24.3 % 44.3 %\nL136:  | -0.23 Dpt 35\nL137: 【36†3. exd5】  |  63  | 2007  |\nL138: 15.9 % 28.6 % 55.6 %\nL139:  | -0.13 Dpt 26\nL140: 【37†3. Nf3】  |  36  | 2025  |\nL141: 19.4 % 33.3 % 47.2 %\nL142:  | -0.60 Dpt 25\nL143: 【38†3. e5】  |  28  | 2006  |\nL144: 21.4 % 17.9 % 60.7 %\nL145:  | -0.61 Dpt 22\nL146: 【39†3. Be2】  |  23  | 2025  |\nL147: 34.8 % 21.7 % 43.5 %\nL148:  | -0.15 Dpt 24\nL149: 【40†3. Bd2】  |  16  | 2019  |\nL150: 43.8 % 31.3 % 25 %\nL151:  | -0.12 Dpt 20\nL152: 【41†3. g3】  |  8  | 2007  |\nL153: 25 % 62.5 %\nL154:  | -0.40 Dpt 24\nL155: 【42†3. f3】  |  6  | 2006  |\nL156: 16.7 % 33.3 % 50 %\nL157:  |\nL158: 【43†3. c3】  |  4  | 2005  |\nL159: 25 % 25 % 50 %\nL160:  |\nL161: 【44†3. Bf4】  |  2  | 2007  |\nL162: 100 %\nL163:  |\nL164: 【45†3. f4】  |  2  | 2018  |\nL165: 50 % 50 %\nL166:  | -0.09 Dpt 22\nL167: 【3†3. Qd2】  |  【46†1-0】, 【47†Biti】 (2320) vs. 【48†Karer】 (2123)\nL168: [Input] Hide Engine Analysis\nL169: \nL170: 【49†Download games】\nL171: \nL172: 【50†The French Defense Decoded: A Detailed Guide】\nL173: ### Latest Played Games\nL174: \nL175: Players  | Result  |\nL176: 【51†Leszko, B vs Jakab, A】   | 0 - 1  |\nL177: 【52†Ballecer, D vs Ang, E】   | ½ - ½  |\nL178: 【53†Rahmilevitz, A vs Gruzman, I】   | ½ - ½  |\nL179: 【54†Morais, T vs Cantin, L】   | 1 - 0  |\nL180: 【55†Byambaa, Z vs Tsengel, G】   | 1 - 0  |\nL181: ### Top Games by Average ELO\nL182: \nL183: Players  | Result  |\nL184: 【56†Carlsen, M vs Caruana, F】   | 1 - 0  |\nL185: 【57†Kasparov, G vs Kramnik, V】   | ½ - ½  |\nL186: 【58†Yu, Y vs Caruana, F】   | 0 - 1  |\nL187: 【59†Rapport, R vs Caruana, F】   | 1 - 0  |\nL188: 【60†Duda, J vs So, W】   | 0 - 1  |\nL189: ### Played frequently by\nL190: \nL191: As White  |\nL192: Bassem Amin  | 【61†36 games】\nL193: Viktor Komliakov  | 【62†33 games】\nL194: Vladislav Nevednichy  | 【63†33 games】\nL195: \nL196: As Black  |\nL197: Wolfgang Uhlmann  | 【64†44 games】\nL198: Alexei Barsov  | 【65†27 games】\nL199: Ivan Farago  | 【66†25 games】\nL200: \nL201: #### Opening Explorer Message\nL202: \nL203: This position doesn't exist in the Opening Explorer\nL204: \nL205: [Button: Continue]\nL206: #### Opening Explorer Message\nL207: \nL208: Dear Chessfriend, we're thrilled that you're enjoying this powerful tool!!!\nL209: \nL210: As you know, most of the features in 365Chess are free for everyone, anywhere; we believe in this philosophy and we want to keep it that way.\nL211: To keep the site free for everyone the development of this site relies on the support and contributions of its members. Therefore, we kindly ask you to consider becoming a Supporter. By doing so, you will receive some extra and nice benefits and you will be helping to improve this site.\nL212: \nL213: Thank you in advance for your contribution. You have no idea how much it means to us to have your Support.\nL214: \nL215: [Button: Yes, I want to contribute now]\nL216: \nL217: 【3†Maybe later】\nL218: #### Download PGN\nL219: \nL220: PGN Analysis\nL221: \nL222: [Input]        [Input]\n"
+}

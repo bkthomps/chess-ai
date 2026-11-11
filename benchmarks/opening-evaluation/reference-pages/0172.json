@@ -1,0 +1,112 @@
+{
+  "path": [
+    "e4",
+    "c5",
+    "Nf3",
+    "d6",
+    "c3"
+  ],
+  "url": "https://www.365chess.com/opening.php?m=6&ms=e4.c5.Nf3.d6.c3&n=1215&ns=3.3.4.4.1215",
+  "ref": "turn186view0",
+  "rows": [
+    {
+      "san": "Nf6",
+      "games": 10493,
+      "link": 34,
+      "score_cp": 0,
+      "depth": 45
+    },
+    {
+      "san": "Nc6",
+      "games": 410,
+      "link": 35,
+      "score_cp": 36,
+      "depth": 25
+    },
+    {
+      "san": "g6",
+      "games": 247,
+      "link": 36,
+      "score_cp": 59,
+      "depth": 32
+    },
+    {
+      "san": "e6",
+      "games": 109,
+      "link": 37,
+      "score_cp": 40,
+      "depth": 24
+    },
+    {
+      "san": "e5",
+      "games": 48,
+      "link": 38,
+      "score_cp": 122,
+      "depth": 25
+    },
+    {
+      "san": "d5",
+      "games": 45,
+      "link": 39,
+      "score_cp": null,
+      "depth": null
+    },
+    {
+      "san": "Bg4",
+      "games": 41,
+      "link": 40,
+      "score_cp": null,
+      "depth": null
+    },
+    {
+      "san": "a6",
+      "games": 38,
+      "link": 41,
+      "score_cp": 41,
+      "depth": 30
+    },
+    {
+      "san": "Qa5",
+      "games": 28,
+      "link": 42,
+      "score_cp": 146,
+      "depth": 18
+    },
+    {
+      "san": "Nd7",
+      "games": 20,
+      "link": 43,
+      "score_cp": null,
+      "depth": null
+    },
+    {
+      "san": "Qc7",
+      "games": 11,
+      "link": 44,
+      "score_cp": null,
+      "depth": null
+    },
+    {
+      "san": "b6",
+      "games": 9,
+      "link": 45,
+      "score_cp": 101,
+      "depth": 27
+    },
+    {
+      "san": "Bd7",
+      "games": 5,
+      "link": 46,
+      "score_cp": null,
+      "depth": null
+    },
+    {
+      "san": "f5",
+      "games": 2,
+      "link": 47,
+      "score_cp": 165,
+      "depth": 22
+    }
+  ],
+  "raw": "B50: Sicilian - 1. e4 c5 2. Nf3 d6 3. c3 - Chess Opening explorer (https://www.365chess.com/opening.php?m=6&ms=e4.c5.Nf3.d6.c3&n=1215&ns=3.3.4.4.1215)\nciteturn186view0 [wordlim: 200] Crawled: 3 weeks ago; Content type: text/html; Source: click({\"ref_id\":\"turn84view0\",\"id\":34}); Total lines: 292\nL0: ##### Login 365Chess\nL1: \nL2: 【0†Image: google†d2rnvyacaewvx6.cloudfront.net】Sign in with Google\nL3: \nL4: OR\nL5: \nL6: [Input: Username]\nL7: \nL8: [Input: Password] 【1†Forgot your password?】\nL9: \nL10: [Input]\nL11: \nL12: Not registered? 【2†Sign up】\nL13: \nL14:   * 【3†Search】\nL15:     * 【4†Game Position】\nL16:     * 【5†Chess Games】\nL17:     * 【6†Chess Tournaments】\nL18:     * 【7†Endgames】\nL19:     * 【8†Chess Players】\nL20:   * 【3†Training】\nL21:     * 【9†Openings Trainer】\nL22:     * 【10†Play vs Computer】\nL23:     * 【11†Puzzles】\nL24:     * 【12†Endgames】\nL25: #####\nL26: \nL27: Welcome!\nL28: \nL29: 【3†LOGIN】 | 【2†REGISTER】\nL30: \nL31: Main\nL32: \nL33:   * 【13†Home】\nL34:   * 【14†Opening Explorer】\nL35:   * 【15†Chess Courses】\nL36:   * 【16†ECO Codes】\nL37: \nL38: Search\nL39: \nL40:   * 【4†Position】\nL41:   * 【5†Games】\nL42:   * 【6†Tournaments】\nL43:   * 【7†Endgames】\nL44:   * 【8†Chess Players】\nL45: \nL46: Training\nL47: \nL48:   * 【9†Openings Trainer】\nL49:   * 【10†Play vs Computer】\nL50:   * 【11†Puzzles】\nL51:   * 【12†Endgames】\nL52: \nL53: Resources\nL54: \nL55:   * 【17†Analysis Board】\nL56:   * 【18†Board Editor】\nL57:   * 【19†Chess Openings】\nL58:   * 【20†Blog】\nL59: \nL60: Help\nL61: \nL62:   * 【21†F.A.Q.】\nL63:   * 【22†Contact Us】\nL64:   * 【23†Membership】\nL65: \nL66: Chess Opening Explorer\nL67: With our Opening Explorer you can browse our entire chess database move by move obtaining statistics about the results of each possible continuation.\nL68: The Opening Explorer is a great tool if you want to study chess openings.\nL69: # 【24†B50 Sicilian】\nL70: \nL71: [Input]\nL72: \nL73: [Input]\nL74: \nL75: [Input]\nL76: \nL77: [Input]\nL78: \nL79: [Input]\nL80: \nL81: 【14†Top】\nL82: \nL83: Fen: [Input] 【25†Image: Copy Position†d2rnvyacaewvx6.cloudfront.net】\nL84: \nL85: Url: [Input] 【25†Image: Copy Position†d2rnvyacaewvx6.cloudfront.net】\nL86: \nL87: ## Personal notes\nL88: #### Create notes\nL89: \nL90: If you want to create a note in this position you have to log into your account and have a Supporter membership.\nL91: \nL92: 【26†I'm already a Supporter. Log me in now.】\nL93: \nL94: 【27†I'm not a Supporter yet. Tell me more.】\nL95: \nL96: [Button: Close]\nL97: \nL98: Use your Personal notes to store information and comments about this position. Remember, the notes are private. Nobody but you can see them.\nL99: \nL100: Create a note for this position\nL101: ### Related Openings:\nL102:   * B50: 【3†Sicilian】\nL103:   * B51: 【3†Sicilian, Canal-Sokolsky (Nimzovich-Rossolimo, Moscow) attack】\nL104:   * B52: 【3†Sicilian, Canal-Sokolsky attack, 3...Bd7】\nL105:   * B53: 【3†Sicilian, Chekhover variation】\nL106:   * B54: 【3†Sicilian】\nL107:   * B55: 【3†Sicilian, Prins variation, Venice attack】\nL108:   * B56: 【3†Sicilian】\nL109:   * B57: 【3†Sicilian, Sozin, not Scheveningen】\nL110:   * B60: 【3†Sicilian, Richter-Rauzer】\nL111:   * B61: 【3†Sicilian, Richter-Rauzer, Larsen variation, 7.Qd2】\nL112:   * B62: 【3†Sicilian, Richter-Rauzer, 6...e6】\nL113:   * B63: 【3†Sicilian, Richter-Rauzer, Rauzer attack】\nL114:   * B64: 【3†Sicilian, Richter-Rauzer, Rauzer attack, 7...Be7 defence, 9.f4】\nL115:   * B65: 【3†Sicilian, Richter-Rauzer, Rauzer attack, 7...Be7 defence, 9...Nxd4】\nL116:   * B66: 【3†Sicilian, Richter-Rauzer, Rauzer attack, 7...a6】\nL117:   * B67: 【3†Sicilian, Richter-Rauzer, Rauzer attack, 7...a6 defence, 8...Bd7】\nL118:   * B68: 【3†Sicilian, Richter-Rauzer, Rauzer attack, 7...a6 defence, 9...Be7】\nL119:   * B69: 【3†Sicilian, Richter-Rauzer, Rauzer attack, 7...a6 defence, 11.Bxf6】\nL120:   * B70: 【3†Sicilian, dragon variation】\nL121:   * B71: 【3†Sicilian, dragon, Levenfish variation】\nL122:   * B72: 【3†Sicilian, dragon, 6.Be3】\nL123:   * B73: 【3†Sicilian, dragon, classical, 8.O-O】\nL124:   * B74: 【3†Sicilian, dragon, classical, 9.Nb3】\nL125:   * B75: 【3†Sicilian, dragon, Yugoslav attack】\nL126:   * B76: 【3†Sicilian, dragon, Yugoslav attack, 7...O-O】\nL127:   * B77: 【3†Sicilian, dragon, Yugoslav attack, 9.Bc4】\nL128:   * B78: 【3†Sicilian, dragon, Yugoslav attack, 10.O-O-O】\nL129:   * B79: 【3†Sicilian, dragon, Yugoslav attack, 12.h4】\nL130:   * B80: 【3†Sicilian, Scheveningen variation】\nL131:   * B81: 【3†Sicilian, Scheveningen, Keres attack】\nL132:   * B82: 【3†Sicilian, Scheveningen, 6.f4】\nL133:   * B83: 【3†Sicilian, Scheveningen, 6.Be2】\nL134:   * B84: 【3†Sicilian, Scheveningen (Paulsen), classical variation】\nL135:   * B85: 【3†Sicilian, Scheveningen, classical variation with ...Qc7 and ...Nc6】\nL136:   * B86: 【3†Sicilian, Sozin attack】\nL137:   * B87: 【3†Sicilian, Sozin with ...a6 and ...b5】\nL138:   * B88: 【3†Sicilian, Sozin, Leonhardt variation】\nL139:   * B89: 【3†Sicilian, Sozin, 7.Be3】\nL140:   * B90: 【3†Sicilian, Najdorf】\nL141:   * B91: 【3†Sicilian, Najdorf, Zagreb (fianchetto) variation】\nL142:   * B92: 【3†Sicilian, Najdorf, Opovcensky variation】\nL143:   * B93: 【3†Sicilian, Najdorf, 6.f4】\nL144:   * B94: 【3†Sicilian, Najdorf, 6.Bg5】\nL145:   * B95: 【3†Sicilian, Najdorf, 6...e6】\nL146:   * B96: 【3†Sicilian, Najdorf, 7.f4】\nL147:   * B97: 【3†Sicilian, Najdorf, 7...Qb6】\nL148:   * B98: 【3†Sicilian, Najdorf, 7...Be7】\nL149:   * B99: 【3†Sicilian, Najdorf, 7...Be7 main line】\nL150: \nL151: \nL152: \nL153: \nL154: 【3†Stop Analysis】\nL155: \nL156: 【3†Start Engine Analysis】\nL157: \nL158: Opening Explorer Database:  [Select]\nL159: \nL160: Moves List:\nL161: \nL162: 1. 【28†e4】 【29†c5】 2. 【30†Nf3】 【31†d6】 3. 【32†c3】\nL163: \nL164: 【33†Game List】\nL165: \nL166: 【3†Save】\nL167: \nL168: 【3†Play】\nL169: \nL170: 【3†Analysis】\nL171: Next Move  | # of Games  | Last Played  | Winnings percentage\nL172: White / Draw / Black  | Engine Eval.\nL173: 【34†3... Nf6】  |  10,493  | 2026  |\nL174: 36.8 % 30 % 33.3 %\nL175:  | +0.00 Dpt 45\nL176: 【35†3... Nc6】  |  410  | 2026  |\nL177: 60.2 % 16.3 % 23.4 %\nL178:  | +0.36 Dpt 25\nL179: 【36†3... g6】  |  247  | 2025  |\nL180: 51 % 28.3 % 20.6 %\nL181:  | +0.59 Dpt 32\nL182: 【37†3... e6】  |  109  | 2024  |\nL183: 61.5 % 20.2 % 18.3 %\nL184:  | +0.40 Dpt 24\nL185: 【38†3... e5】  |  48  | 2017  |\nL186: 58.3 % 18.8 % 22.9 %\nL187:  | +1.22 Dpt 25\nL188: 【39†3... d5】  |  45  | 2024  |\nL189: 71.1 % 24.4 %\nL190:  |\nL191: 【40†3... Bg4】  |  41  | 2011  |\nL192: 46.3 % 17.1 % 36.6 %\nL193:  |\nL194: 【41†3... a6】  |  38  | 2026  |\nL195: 71.1 % 15.8 %\nL196:  | +0.41 Dpt 30\nL197: 【42†3... Qa5】  |  28  | 2024  |\nL198: 71.4 %\nL199:  | +1.46 Dpt 18\nL200: 【43†3... Nd7】  |  20  | 2006  |\nL201: 50 % 30 % 20 %\nL202:  |\nL203: 【44†3... Qc7】  |  11  | 2021  |\nL204: 72.7 % 27.3 %\nL205:  |\nL206: 【45†3... b6】  |  9  | 2007  |\nL207: 44.4 % 55.6 %\nL208:  | +1.01 Dpt 27\nL209: 【46†3... Bd7】  |  5  | 2006  |\nL210: 80 % 20 %\nL211:  |\nL212: 【47†3... f5】  |  2  | 2003  |\nL213: 50 % 50 %\nL214:  | +1.65 Dpt 22\nL215: 【3†3... c4】  |  【48†½-½】, 【49†Ortiz】 (2386) vs. 【50†Ricardi】 (2663)\nL216: [Input] Hide Engine Analysis\nL217: \nL218: 【51†Download games】\nL219: \nL220: 【52†Sicilian Defense: Full Guide, Main Lines, and Secondary Options】\nL221: ### Latest Played Games\nL222: \nL223: Players  | Result  |\nL224: 【53†Sivathanujan, S vs Atanasov, A】   | 0 - 1  |\nL225: 【54†Mwale, G vs Lwebuga, R】   | 1 - 0  |\nL226: 【55†Diop Mamadou Lamine Dame vs Lui, J】   | 1 - 0  |\nL227: 【56†Saraci, K vs Federer, C】   | 0 - 1  |\nL228: 【57†Sosef, N vs Grooten, T】   | 0 - 1  |\nL229: ### Top Games by Average ELO\nL230: \nL231: Players  | Result  |\nL232: 【58†Carlsen, M vs Karjakin, S】   | 1 - 0  |\nL233: 【59†Harikrishna, P vs Carlsen, M】   | 1 - 0  |\nL234: 【60†Adams, M vs Kasparov, G】   | ½ - ½  |\nL235: 【61†Kramnik, V vs Karjakin, S】   | 1 - 0  |\nL236: 【62†Aronian, L vs Vachier Lagrave, M】   | 0 - 1  |\nL237: ### Played frequently by\nL238: \nL239: As White  |\nL240: Khaled Mahdy  | 【63†34 games】\nL241: Krum Georgiev  | 【64†32 games】\nL242: Leonid Yudasin  | 【65†28 games】\nL243: \nL244: As Black  |\nL245: Loek Van Wely  | 【66†16 games】\nL246: Joseph G Gallagher  | 【67†14 games】\nL247: Sergey Kudrin  | 【68†13 games】\nL248: \nL249: #### Opening Explorer Message\nL250: \nL251: This position doesn't exist in the Opening Explorer\nL252: \nL253: [Button: Continue]\nL254: #### Opening Explorer Message\nL255: \nL256: Dear Chessfriend, we're thrilled that you're enjoying this powerful tool!!!\nL257: \nL258: As you know, most of the features in 365Chess are free for everyone, anywhere; we believe in this philosophy and we want to keep it that way.\nL259: To keep the site free for everyone the development of this site relies on the support and contributions of its members. Therefore, we kindly ask you to consider becoming a Supporter. By doing so, you will receive some extra and nice benefits and you will be helping to improve this site.\nL260: \nL261: Thank you in advance for your contribution. You have no idea how much it means to us to have your Support.\nL262: \nL263: [Button: Yes, I want to contribute now]\nL264: \nL265: 【3†Maybe later】\nL266: #### Download PGN\nL267: \nL268: PGN Analysis\nL269: \nL270: [Input]        [Input]\nL271: \nL272: 【13†365Chess】\nL273: \nL274: Chess games database online — more than 4.4 million games, updated every week.\nL275: \nL276: #### Database\nL277: \nL278: 【5†Chess games】 【4†Search position】 【6†Tournaments】 【14†Opening Explorer】 【16†ECO codes】\nL279: \nL280: #### Training\nL281: \nL282: 【9†Openings Trainer】 【11†Puzzles & tactics】 【12†Endgames training】 【10†Play vs computer】 【15†Courses】\nL283: \nL284: #### Players & tools\nL285: \nL286: 【69†Players by rating】 【70†Women by rating】 【8†Players A–Z】 【17†Analysis Board】 【18†Board Editor】\nL287: #### 365Chess\nL288: \nL289: 【27†Membership】 【21†FAQ】 【22†Contact】 【20†Blog】 【71†Terms of service】 【72†Privacy policy】\nL290: \nL291: © 2026 365Chess.com 【73†Follow @365chess on X†twitter.com】\n"
+}

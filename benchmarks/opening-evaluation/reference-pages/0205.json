@@ -1,0 +1,63 @@
+{
+  "path": [
+    "Nf3",
+    "c5",
+    "c4",
+    "Nf6",
+    "Nc3"
+  ],
+  "url": "https://www.365chess.com/opening.php?m=6&ms=Nf3.c5.c4.Nf6.Nc3&n=266&ns=1.1.2.88.266",
+  "ref": "turn233view0",
+  "rows": [
+    {
+      "san": "Nc6",
+      "games": 6895,
+      "link": 34,
+      "score_cp": 39,
+      "depth": 18
+    },
+    {
+      "san": "e6",
+      "games": 5412,
+      "link": 35,
+      "score_cp": 25,
+      "depth": 42
+    },
+    {
+      "san": "d5",
+      "games": 3892,
+      "link": 36,
+      "score_cp": 29,
+      "depth": 26
+    },
+    {
+      "san": "g6",
+      "games": 2174,
+      "link": 37,
+      "score_cp": 79,
+      "depth": 38
+    },
+    {
+      "san": "b6",
+      "games": 1807,
+      "link": 38,
+      "score_cp": 46,
+      "depth": 35
+    },
+    {
+      "san": "d6",
+      "games": 222,
+      "link": 39,
+      "score_cp": 40,
+      "depth": 18
+    },
+    {
+      "san": "a6",
+      "games": 22,
+      "link": 40,
+      "score_cp": 61,
+      "depth": 18
+    }
+  ],
+  "raw": "A04: Reti opening - 1. Nf3 c5 2. c4 Nf6 3. Nc3 - Chess Opening explorer (https://www.365chess.com/opening.php?m=6&ms=Nf3.c5.c4.Nf6.Nc3&n=266&ns=1.1.2.88.266)\nciteturn233view0 [wordlim: 200] Crawled: 2 months ago; Content type: text/html; Source: click({\"ref_id\":\"turn178view0\",\"id\":32}); Total lines: 210\nL0: ##### Login 365Chess\nL1: \nL2: 【0†Image: google†d2rnvyacaewvx6.cloudfront.net】Sign in with Google\nL3: \nL4: OR\nL5: \nL6: [Input: Username]\nL7: \nL8: [Input: Password] 【1†Forgot your password?】\nL9: \nL10: [Input]\nL11: \nL12: Not registered? 【2†Sign up】\nL13: \nL14:   * 【3†Search】\nL15:     * 【4†Game Position】\nL16:     * 【5†Chess Games】\nL17:     * 【6†Chess Tournaments】\nL18:     * 【7†Endgames】\nL19:     * 【8†Chess Players】\nL20:   * 【3†Training】\nL21:     * 【9†Openings Trainer】\nL22:     * 【10†Play vs Computer】\nL23:     * 【11†Puzzles】\nL24:     * 【12†Endgames】\nL25: #####\nL26: \nL27: Welcome!\nL28: \nL29: 【3†LOGIN】 | 【2†REGISTER】\nL30: \nL31: Main\nL32: \nL33:   * 【13†Home】\nL34:   * 【14†Opening Explorer】\nL35:   * 【15†Chess Courses】\nL36:   * 【16†ECO Codes】\nL37: \nL38: Search\nL39: \nL40:   * 【4†Position】\nL41:   * 【5†Games】\nL42:   * 【6†Tournaments】\nL43:   * 【7†Endgames】\nL44:   * 【8†Chess Players】\nL45: \nL46: Training\nL47: \nL48:   * 【9†Openings Trainer】\nL49:   * 【10†Play vs Computer】\nL50:   * 【11†Puzzles】\nL51:   * 【12†Endgames】\nL52: \nL53: Resources\nL54: \nL55:   * 【17†Analysis Board】\nL56:   * 【18†Board Editor】\nL57:   * 【19†Chess Openings】\nL58:   * 【20†Blog】\nL59: \nL60: Help\nL61: \nL62:   * 【21†F.A.Q.】\nL63:   * 【22†Contact Us】\nL64:   * 【23†Membership】\nL65: \nL66: Chess Opening Explorer\nL67: With our Opening Explorer you can browse our entire chess database move by move obtaining statistics about the results of each possible continuation.\nL68: The Opening Explorer is a great tool if you want to study chess openings.\nL69: # 【24†A04 Reti opening】\nL70: \nL71: [Input]\nL72: \nL73: [Input]\nL74: \nL75: [Input]\nL76: \nL77: [Input]\nL78: \nL79: [Input]\nL80: \nL81: 【14†Top】\nL82: \nL83: Fen: [Input] 【25†Image: Copy Position†d2rnvyacaewvx6.cloudfront.net】\nL84: \nL85: Url: [Input] 【25†Image: Copy Position†d2rnvyacaewvx6.cloudfront.net】\nL86: \nL87: ## Personal notes\nL88: #### Create notes\nL89: \nL90: If you want to create a note in this position you have to log into your account and have a Supporter membership.\nL91: \nL92: 【26†I'm already a Supporter. Log me in now.】\nL93: \nL94: 【27†I'm not a Supporter yet. Tell me more.】\nL95: \nL96: [Button: Close]\nL97: \nL98: Use your Personal notes to store information and comments about this position. Remember, the notes are private. Nobody but you can see them.\nL99: \nL100: Create a note for this position\nL101: ### Related Openings:\nL102: \nL103:   * A04: 【3†Reti opening】\nL104:   * A05: 【3†Reti opening】\nL105:   * A06: 【3†Reti opening】\nL106:   * A07: 【3†Reti, King's Indian attack (Barcza system)】\nL107:   * A08: 【3†Reti, King's Indian attack】\nL108:   * A09: 【3†Reti opening】\nL109: \nL110: \nL111: \nL112: \nL113: \nL114: 【3†Stop Analysis】\nL115: \nL116: 【3†Start Engine Analysis】\nL117: \nL118: Opening Explorer Database:  [Select]\nL119: \nL120: Moves List:\nL121: \nL122: 1. 【28†Nf3】 【29†c5】 2. 【30†c4】 【31†Nf6】 3. 【32†Nc3】\nL123: \nL124: 【33†Game List】\nL125: \nL126: 【3†Save】\nL127: \nL128: 【3†Play】\nL129: \nL130: 【3†Analysis】\nL131: Next Move  | # of Games  | Last Played  | Winnings percentage\nL132: White / Draw / Black  | Engine Eval.\nL133: 【34†3... Nc6】  |  6,895  | 2026  |\nL134: 39.7 % 41.7 % 18.6 %\nL135:  | +0.39 Dpt 18\nL136: 【35†3... e6】  |  5,412  | 2026  |\nL137: 33.4 % 45.1 % 21.5 %\nL138:  | +0.25 Dpt 42\nL139: 【36†3... d5】  |  3,892  | 2026  |\nL140: 35.3 % 41.2 % 23.5 %\nL141:  | +0.29 Dpt 26\nL142: 【37†3... g6】  |  2,174  | 2026  |\nL143: 41.4 % 37.9 % 20.7 %\nL144:  | +0.79 Dpt 38\nL145: 【38†3... b6】  |  1,807  | 2026  |\nL146: 36.2 % 38.2 % 25.6 %\nL147:  | +0.46 Dpt 35\nL148: 【39†3... d6】  |  222  | 2025  |\nL149: 48.2 % 29.3 % 22.5 %\nL150:  | +0.40 Dpt 18\nL151: 【40†3... a6】  |  22  | 2022  |\nL152: 54.5 % 31.8 %\nL153:  | +0.61 Dpt 18\nL154: 【3†3... e5】  |  【41†1-0】, 【42†Todortsev】 vs. 【43†Jones】\nL155: [Input] Hide Engine Analysis\nL156: \nL157: 【44†Download games】\nL158: \nL159: 【24†Reti Opening Guide】\nL160: ### Latest Played Games\nL161: \nL162: Players  | Result  |\nL163: 【45†Muthaiah, A vs Moreto Quintana, A】   | 1 - 0  |\nL164: 【46†Matlakov, M vs Kezin, R】   | ½ - ½  |\nL165: 【47†Muradli, M vs Can, I】   | ½ - ½  |\nL166: 【48†Cornette, M vs Daulyte-Cornette, D】   | ½ - ½  |\nL167: 【49†Lee, A vs Chasin, N】   | 1 - 0  |\nL168: ### Top Games by Average ELO\nL169: \nL170: Players  | Result  |\nL171: 【50†Vachier Lagrave, M vs Carlsen, M】   | 1 - 0  |\nL172: 【51†Carlsen, M vs Giri, A】   | ½ - ½  |\nL173: 【52†Aronian, L vs Carlsen, M】   | ½ - ½  |\nL174: 【53†So, W vs Carlsen, M】   | ½ - ½  |\nL175: 【54†Kramnik, V vs Kasparov, G】   | ½ - ½  |\nL176: ### Played frequently by\nL177: \nL178: As White  |\nL179: Wolfgang Uhlmann  | 【55†132 games】\nL180: Viktor Korchnoi  | 【56†101 games】\nL181: Lutz Espig  | 【57†73 games】\nL182: \nL183: As Black  |\nL184: Lubomir Ftacnik  | 【58†110 games】\nL185: Peter Leko  | 【59†65 games】\nL186: Gyula Sax  | 【60†62 games】\nL187: \nL188: #### Opening Explorer Message\nL189: \nL190: This position doesn't exist in the Opening Explorer\nL191: \nL192: [Button: Continue]\nL193: #### Opening Explorer Message\nL194: \nL195: Dear Chessfriend, we're thrilled that you're enjoying this powerful tool!!!\nL196: \nL197: As you know, most of the features in 365Chess are free for everyone, anywhere; we believe in this philosophy and we want to keep it that way.\nL198: To keep the site free for everyone the development of this site relies on the support and contributions of its members. Therefore, we kindly ask you to consider becoming a Supporter. By doing so, you will receive some extra and nice benefits and you will be helping to improve this site.\nL199: \nL200: Thank you in advance for your contribution. You have no idea how much it means to us to have your Support.\nL201: \nL202: [Button: Yes, I want to contribute now]\nL203: \nL204: 【3†Maybe later】\nL205: #### Download PGN\nL206: \nL207: PGN Analysis\nL208: \nL209: [Input]        [Input]\n"
+}

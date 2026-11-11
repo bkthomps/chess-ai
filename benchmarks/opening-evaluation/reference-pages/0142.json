@@ -1,0 +1,126 @@
+{
+  "path": [
+    "d4",
+    "d5",
+    "c4",
+    "e6",
+    "Nf3"
+  ],
+  "url": "https://www.365chess.com/opening.php?m=6&ms=d4.d5.c4.e6.Nf3&n=303&ns=7.8.23.41.303",
+  "ref": "turn143view0",
+  "rows": [
+    {
+      "san": "Nf6",
+      "games": 25387,
+      "link": 30,
+      "score_cp": 4,
+      "depth": 45
+    },
+    {
+      "san": "c6",
+      "games": 8237,
+      "link": 31,
+      "score_cp": 8,
+      "depth": 45
+    },
+    {
+      "san": "c5",
+      "games": 4553,
+      "link": 32,
+      "score_cp": 22,
+      "depth": 45
+    },
+    {
+      "san": "a6",
+      "games": 1256,
+      "link": 33,
+      "score_cp": 13,
+      "depth": 39
+    },
+    {
+      "san": "dxc4",
+      "games": 899,
+      "link": 34,
+      "score_cp": 22,
+      "depth": 42
+    },
+    {
+      "san": "Be7",
+      "games": 899,
+      "link": 35,
+      "score_cp": 36,
+      "depth": 22
+    },
+    {
+      "san": "f5",
+      "games": 591,
+      "link": 36,
+      "score_cp": 83,
+      "depth": 50
+    },
+    {
+      "san": "Nd7",
+      "games": 270,
+      "link": 37,
+      "score_cp": 29,
+      "depth": 31
+    },
+    {
+      "san": "Nc6",
+      "games": 232,
+      "link": 38,
+      "score_cp": 61,
+      "depth": 41
+    },
+    {
+      "san": "Bb4+",
+      "games": 170,
+      "link": 39,
+      "score_cp": 38,
+      "depth": 26
+    },
+    {
+      "san": "h6",
+      "games": 97,
+      "link": 40,
+      "score_cp": 58,
+      "depth": 43
+    },
+    {
+      "san": "b6",
+      "games": 54,
+      "link": 41,
+      "score_cp": 70,
+      "depth": 20
+    },
+    {
+      "san": "Bd6",
+      "games": 23,
+      "link": 42,
+      "score_cp": null,
+      "depth": null
+    },
+    {
+      "san": "g6",
+      "games": 19,
+      "link": 43,
+      "score_cp": null,
+      "depth": null
+    },
+    {
+      "san": "Ne7",
+      "games": 11,
+      "link": 44,
+      "score_cp": null,
+      "depth": null
+    },
+    {
+      "san": "Bd7",
+      "games": 4,
+      "link": 45,
+      "score_cp": null,
+      "depth": null
+    }
+  ],
+  "raw": "D30: Queen's gambit declined - 1. d4 d5 2. c4 e6 3. Nf3 - Chess Opening explorer (https://www.365chess.com/opening.php?m=6&ms=d4.d5.c4.e6.Nf3&n=303&ns=7.8.23.41.303)\nciteturn143view0 [wordlim: 200] Crawled: 4 months ago; Content type: text/html; Source: click({\"ref_id\":\"turn106view0\",\"id\":33}); Total lines: 294\nL0: \nL1: \nL2: ##### Login 365Chess\nL3: \nL4: 【74†Image: google†www.365chess.com】Sign in with Google\nL5: \nL6: OR\nL7: \nL8: 【0†Forgot your password?】\nL9: \nL10: Not registered? 【1†Sign up】\nL11: \nL12: 【2† 】\nL13: \nL14: 【3† 365Chess.com 】\nL15:   * 【4†Opening Explorer】\nL16:   * 【5†Courses】\nL17:   *  Search\nL18:     * 【6†Game Position】\nL19:     * 【7†Chess Games】\nL20:     * 【8†Chess Tournaments】\nL21:     * 【9†Endgames】\nL22:   *  Training\nL23:     * 【10†Openings Trainer】\nL24:     * 【11†Play vs Computer】\nL25:     * 【12†Puzzles】\nL26:     * 【13†Endgames】\nL27:   * 【14†ECO Codes】\nL28:   *  Resources\nL29:     * 【15†Analysis Board】\nL30:     * 【16†Board Editor】\nL31:     * 【17†Chess Openings】\nL32:     * 【18†Blog】\nL33:   *  Help\nL34:     * 【19†F.A.Q.】\nL35:     * 【20†Contact Us】\nL36:   * 【21†Membership】\nL37: \nL38: Login 【1†Register】\nL39: #####\nL40: \nL41: Welcome!\nL42: \nL43: LOGIN | 【1†REGISTER】\nL44: \nL45: Main\nL46: \nL47:   * 【3†Home】\nL48:   * 【4†Opening Explorer】\nL49:   * 【5†Chess Courses】\nL50:   * 【14†ECO Codes】\nL51: \nL52: Search\nL53: \nL54:   * 【6†Position】\nL55:   * 【7†Games】\nL56:   * 【8†Tournaments】\nL57:   * 【9†Endgames】\nL58: \nL59: Training\nL60: \nL61:   * 【10†Openings Trainer】\nL62:   * 【11†Play vs Computer】\nL63:   * 【12†Puzzles】\nL64:   * 【13†Endgames】\nL65: \nL66: Resources\nL67: \nL68:   * 【15†Analysis Board】\nL69:   * 【16†Board Editor】\nL70:   * 【17†Chess Openings】\nL71:   * 【18†Blog】\nL72: \nL73: Help\nL74: \nL75:   * 【19†F.A.Q.】\nL76:   * 【20†Contact Us】\nL77:   * 【21†Membership】\nL78: \nL79: Chess Opening Explorer\nL80: With our Opening Explorer you can browse our entire chess database move by move obtaining statistics about the results of each possible continuation.\nL81: The Opening Explorer is a great tool if you want to study chess openings.\nL82: \nL83:   * 【3†Search games】\nL84:   * 【6†Search position】\nL85:   * Opening Explorer\nL86: #  【22†D30 Queen's gambit declined】\nL87: \nL88: Settings\nL89: \nL90: 【4†Top】\nL91: \nL92: Fen:  【75†Image: Copy Position†www.365chess.com】\nL93: \nL94: Url:  【76†Image: Copy Position†www.365chess.com】\nL95: \nL96: ## Personal notes\nL97: #### Create notes\nL98: \nL99: If you want to create a note in this position you have to log into your account and have a Supporter membership.\nL100: \nL101: 【23†I'm already a Supporter. Log me in now.】\nL102: \nL103: 【24†I'm not a Supporter yet. Tell me more.】\nL104: \nL105: Close\nL106: \nL107: Use your Personal notes to store information and comments about this position. Remember, the notes are private. Nobody but you can see them.\nL108: \nL109: Create a note for this position\nL110: ### Related Openings:\nL111:   * D30: Queen's gambit declined\nL112:   * D31: Queen's Gambit Declined, 3.Nc3\nL113:   * D32: Queen's Gambit Declined, Tarrasch defence\nL114:   * D33: Queen's Gambit Declined, Tarrasch, Schlechter-Rubinstein system\nL115:   * D34: Queen's Gambit Declined, Tarrasch, Prague variation, 7...Be7\nL116:   * D35: Queen's Gambit Declined, 3...Nf6\nL117:   * D36: Queen's Gambit Declined, exchange, positional line, 6.Qc2\nL118:   * D37: Queen's Gambit Declined, 4.Nf3\nL119:   * D38: Queen's Gambit Declined, Ragozin variation\nL120:   * D39: Queen's Gambit Declined, Ragozin, Vienna variation\nL121:   * D40: Queen's Gambit Declined, Semi-Tarrasch defence\nL122:   * D41: Queen's Gambit Declined, Semi-Tarrasch, 5.cd\nL123:   * D42: Queen's Gambit Declined, Semi-Tarrasch, 7.Bd3\nL124:   * D43: Queen's Gambit Declined semi-Slav\nL125:   * D44: Queen's Gambit Declined semi-Slav, 5.Bg5 dc\nL126:   * D45: Queen's Gambit Declined semi-Slav, 5.e3\nL127:   * D46: Queen's Gambit Declined semi-Slav, 6.Bd3\nL128:   * D47: Queen's Gambit Declined semi-Slav, 7.Bc4\nL129:   * D48: Queen's Gambit Declined semi-Slav, Meran, 8...a6\nL130:   * D49: Queen's Gambit Declined semi-Slav, Meran, Blumenfeld variation\nL131:   * D50: Queen's Gambit Declined, 4.Bg5\nL132:   * D51: Queen's Gambit Declined, 4.Bg5 Nbd7\nL133:   * D52: Queen's Gambit Declined\nL134:   * D53: Queen's Gambit Declined, 4.Bg5 Be7\nL135:   * D54: Queen's Gambit Declined, Anti-neo-orthodox variation\nL136:   * D55: Queen's Gambit Declined, 6.Nf3\nL137:   * D56: Queen's Gambit Declined, Lasker defence\nL138:   * D57: Queen's Gambit Declined, Lasker defence, main line\nL139:   * D58: Queen's Gambit Declined, Tartakower (Makagonov-Bondarevsky) system\nL140:   * D59: Queen's Gambit Declined, Tartakower (Makagonov-Bondarevsky) system, 8.cd Nxd5\nL141:   * D60: Queen's Gambit Declined, Orthodox defence\nL142:   * D61: Queen's Gambit Declined, Orthodox defence, Rubinstein variation\nL143:   * D62: Queen's Gambit Declined, Orthodox defence, 7.Qc2 c5, 8.cd (Rubinstein)\nL144:   * D63: Queen's Gambit Declined, Orthodox defence, 7.Rc1\nL145:   * D64: Queen's Gambit Declined, Orthodox defence, Rubinstein attack (with Rc1)\nL146:   * D65: Queen's Gambit Declined, Orthodox defence, Rubinstein attack, main line\nL147:   * D66: Queen's Gambit Declined, Orthodox defence, Bd3 line\nL148:   * D67: Queen's Gambit Declined, Orthodox defence, Bd3 line, Capablanca freeing manoevre\nL149:   * D68: Queen's Gambit Declined, Orthodox defence, classical variation\nL150:   * D69: Queen's Gambit Declined, Orthodox defence, classical, 13.de\nL151: Stop Analysis\nL152: \nL153: Start Engine Analysis\nL154: \nL155: Stored Analysis: +0.04 Depth 45\nL156: \nL157: Opening Explorer Database:   Big Database Masters Database   【77†Image: help†www.365chess.com】\nL158: \nL159:  Moves List:\nL160: \nL161: 1. 【25†d4】 【26†d5】 2. 【27†c4】 【28†e6】 3. 【29†Nf3】\nL162: \nL163:  Game List\nL164: \nL165:  Save\nL166: \nL167: Play Position\nL168: \nL169: Play\nL170: \nL171: Analysis Board\nL172: \nL173: Analysis\nL174:   Next Move # of Games Last Played Winnings percentage\nL175: White / Draw / Black Engine Eval.\nL176:   【30†3... Nf6】   25,387 2026 39.7 %  39.3 %  21 %\nL177: +0.04 Dpt 45\nL178: 【31†3... c6】   8,237 2026 40 %  34.7 %  25.4 %\nL179: +0.08 Dpt 45\nL180: 【32†3... c5】   4,553 2026 42.6 %  37.1 %  20.3 %\nL181: +0.22 Dpt 45\nL182: 【33†3... a6】   1,256 2026 34.6 %  43 %  22.5 %\nL183: +0.13 Dpt 39\nL184: 【34†3... dxc4】   899 2026 35 %  43.2 %  21.8 %\nL185: +0.22 Dpt 42\nL186: 【35†3... Be7】   899 2026 47.3 %  34 %  18.7 %\nL187: +0.36 Dpt 22\nL188: 【36†3... f5】   591 2026 50.8 %  27.4 %  21.8 %\nL189: +0.83 Dpt 50\nL190: 【37†3... Nd7】   270 2026 35.6 %  34.4 %  30 %\nL191: +0.29 Dpt 31\nL192: 【38†3... Nc6】   232 2026 65.1 %  20.3 %\nL193: +0.61 Dpt 41\nL194: 【39†3... Bb4+】   170 2026 50 %  27.1 %  22.9 %\nL195: +0.38 Dpt 26\nL196: 【40†3... h6】   97 2026 47.4 %  37.1 %  15.5 %\nL197: +0.58 Dpt 43\nL198: 【41†3... b6】   54 2023 63 %  24.1 %\nL199: +0.70 Dpt 20\nL200: 【42†3... Bd6】   23 2007 69.6 %  21.7 %\nL201: 【43†3... g6】   19 2023 73.7 %  15.8 %\nL202: 【44†3... Ne7】   11 2022 81.8 %\nL203: 【45†3... Bd7】   4 2007 100 %\nL204: 3... f6   【46†1-0】, 【47†Bryant】 (965) vs. 【48† Renz】 (1216)\nL205: Hide Engine Analysis\nL206: \nL207:  【49†Download games】\nL208: \nL209:  【22†Queen's Gambit Declined】\nL210: ### Latest Played Games\nL211: \nL212: Players Result\nL213: 【50†Suder, J vs Krallis, C】  ½ - ½ 【78†Image: Open Game†www.365chess.com】\nL214: 【51†Sanjay, V vs Nemeth, Z】  1 - 0 【79†Image: Open Game†www.365chess.com】\nL215: 【52†Berczes, D vs Coicev, M】  ½ - ½ 【80†Image: Open Game†www.365chess.com】\nL216: 【53†Nemeth, Z vs Karwowski, K】  ½ - ½ 【81†Image: Open Game†www.365chess.com】\nL217: 【54†Ftacnik, L vs Michalik, P】  ½ - ½ 【82†Image: Open Game†www.365chess.com】\nL218: ### Top Games by Average ELO\nL219: \nL220: Players Result\nL221: 【55†Carlsen, M vs Nakamura, H】  ½ - ½ 【83†Image: Open Game†www.365chess.com】\nL222: 【56†Ding, L vs Carlsen, M】  ½ - ½ 【84†Image: Open Game†www.365chess.com】\nL223: 【57†Mamedyarov, S vs Carlsen, M】  0 - 1 【85†Image: Open Game†www.365chess.com】\nL224: 【58†Nakamura, H vs Carlsen, M】  0 - 1 【86†Image: Open Game†www.365chess.com】\nL225: 【59†Nakamura, H vs Carlsen, M】  1 - 0 【87†Image: Open Game†www.365chess.com】\nL226: ### Played frequently by\nL227: \nL228:   As White\nL229: Zdenko Kozul【60†68 games】\nL230: Pavel V Tregubov【61†63 games】\nL231: Vladimir P Malaniuk【62†59 games】\nL232: \nL233:   As Black\nL234: Evgeny Sveshnikov【63†210 games】\nL235: Oleg Korneev【64†126 games】\nL236: Dusko Pavasovic【65†115 games】\nL237: \nL238: #### Opening Explorer Message\nL239: \nL240: This position doesn't exist in the Opening Explorer\nL241: \nL242: Continue\nL243: #### Opening Explorer Message\nL244: \nL245: Dear Chessfriend, we're thrilled that you're enjoying this powerful tool!!!\nL246: \nL247: As you know, most of the features in 365Chess are free for everyone, anywhere; we believe in this philosophy and we want to keep it that way.\nL248: To keep the site free for everyone the development of this site relies on the support and contributions of its members. Therefore, we kindly ask you to consider becoming a Supporter. By doing so, you will receive some extra and nice benefits and you will be helping to improve this site.\nL249: \nL250: Thank you in advance for your contribution. You have no idea how much it means to us to have your Support.\nL251: \nL252: Yes, I want to contribute now\nL253: \nL254: Maybe later\nL255: #### Download PGN\nL256: \nL257: PGN Analysis\nL258: \nL259: ### Browse\nL260: \nL261:   * 【3†Home】\nL262:   * 【7†Chess Games】\nL263:   * 【6†Search Position】\nL264:   * 【8†Tournaments】\nL265:   * 【4†Opening Explorer】\nL266:   * 【14†ECO Codes】\nL267: \nL268: ### Training\nL269: \nL270:   * 【10†Openings Trainer】\nL271:   * 【12†Puzzles & Tactics】\nL272:   * 【13†Endgames Training】\nL273:   * 【11†Play vs Computer】\nL274:   * 【5†Courses】\nL275: \nL276: ### Players & Tools\nL277: \nL278:   * 【66†Players by Rating】\nL279:   * 【67†Women by Rating】\nL280:   * 【68†Players by # Games】\nL281:   * 【69†Players A-Z】\nL282:   * 【15†Analysis Board】\nL283:   * 【16†Board Editor】\nL284: ### Company\nL285: \nL286:   * 【70†Membership】\nL287:   * 【19†F.A.Q.】\nL288:   * 【20†Contact Us】\nL289:   * 【18†Blog】\nL290:   * 【71†Terms of Service】\nL291:   * 【72†Privacy Policy】\nL292: \nL293: 【73† @365Chess on X †twitter.com】\n"
+}

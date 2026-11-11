@@ -1,0 +1,98 @@
+{
+  "path": [
+    "d4",
+    "Nf6",
+    "c4",
+    "e6",
+    "g3"
+  ],
+  "url": "https://www.365chess.com/opening.php?m=6&ms=d4.Nf6.c4.e6.g3&n=264&ns=7.14.11.33.264",
+  "ref": "turn139view0",
+  "rows": [
+    {
+      "san": "d5",
+      "games": 12454,
+      "link": 34,
+      "score_cp": 31,
+      "depth": 40
+    },
+    {
+      "san": "Bb4+",
+      "games": 4968,
+      "link": 35,
+      "score_cp": 14,
+      "depth": 36
+    },
+    {
+      "san": "c5",
+      "games": 4676,
+      "link": 36,
+      "score_cp": 27,
+      "depth": 28
+    },
+    {
+      "san": "Be7",
+      "games": 175,
+      "link": 37,
+      "score_cp": 30,
+      "depth": 32
+    },
+    {
+      "san": "c6",
+      "games": 66,
+      "link": 38,
+      "score_cp": null,
+      "depth": null
+    },
+    {
+      "san": "b6",
+      "games": 58,
+      "link": 39,
+      "score_cp": 58,
+      "depth": 20
+    },
+    {
+      "san": "Nc6",
+      "games": 43,
+      "link": 40,
+      "score_cp": 39,
+      "depth": 28
+    },
+    {
+      "san": "e5",
+      "games": 19,
+      "link": 41,
+      "score_cp": null,
+      "depth": null
+    },
+    {
+      "san": "g6",
+      "games": 18,
+      "link": 42,
+      "score_cp": null,
+      "depth": null
+    },
+    {
+      "san": "Ne4",
+      "games": 12,
+      "link": 43,
+      "score_cp": null,
+      "depth": null
+    },
+    {
+      "san": "d6",
+      "games": 4,
+      "link": 44,
+      "score_cp": null,
+      "depth": null
+    },
+    {
+      "san": "a6",
+      "games": 4,
+      "link": 45,
+      "score_cp": null,
+      "depth": null
+    }
+  ],
+  "raw": "E00: Catalan opening - 1. d4 Nf6 2. c4 e6 3. g3 - Chess Opening explorer (https://www.365chess.com/opening.php?m=6&ms=d4.Nf6.c4.e6.g3&n=264&ns=7.14.11.33.264)\nciteturn139view0 [wordlim: 200] Crawled: 2 weeks ago; Content type: text/html; Source: click({\"ref_id\":\"turn117view0\",\"id\":34}); Total lines: 251\nL0: ##### Login 365Chess\nL1: \nL2: 【0†Image: google†d2rnvyacaewvx6.cloudfront.net】Sign in with Google\nL3: \nL4: OR\nL5: \nL6: [Input: Username]\nL7: \nL8: [Input: Password] 【1†Forgot your password?】\nL9: \nL10: [Input]\nL11: \nL12: Not registered? 【2†Sign up】\nL13: \nL14:   * 【3†Search】\nL15:     * 【4†Game Position】\nL16:     * 【5†Chess Games】\nL17:     * 【6†Chess Tournaments】\nL18:     * 【7†Endgames】\nL19:     * 【8†Chess Players】\nL20:   * 【3†Training】\nL21:     * 【9†Openings Trainer】\nL22:     * 【10†Play vs Computer】\nL23:     * 【11†Puzzles】\nL24:     * 【12†Endgames】\nL25: #####\nL26: \nL27: Welcome!\nL28: \nL29: 【3†LOGIN】 | 【2†REGISTER】\nL30: \nL31: Main\nL32: \nL33:   * 【13†Home】\nL34:   * 【14†Opening Explorer】\nL35:   * 【15†Chess Courses】\nL36:   * 【16†ECO Codes】\nL37: \nL38: Search\nL39: \nL40:   * 【4†Position】\nL41:   * 【5†Games】\nL42:   * 【6†Tournaments】\nL43:   * 【7†Endgames】\nL44:   * 【8†Chess Players】\nL45: \nL46: Training\nL47: \nL48:   * 【9†Openings Trainer】\nL49:   * 【10†Play vs Computer】\nL50:   * 【11†Puzzles】\nL51:   * 【12†Endgames】\nL52: \nL53: Resources\nL54: \nL55:   * 【17†Analysis Board】\nL56:   * 【18†Board Editor】\nL57:   * 【19†Chess Openings】\nL58:   * 【20†Blog】\nL59: \nL60: Help\nL61: \nL62:   * 【21†F.A.Q.】\nL63:   * 【22†Contact Us】\nL64:   * 【23†Membership】\nL65: \nL66: Chess Opening Explorer\nL67: With our Opening Explorer you can browse our entire chess database move by move obtaining statistics about the results of each possible continuation.\nL68: The Opening Explorer is a great tool if you want to study chess openings.\nL69: # 【24†E00 Catalan opening】\nL70: \nL71: [Input]\nL72: \nL73: [Input]\nL74: \nL75: [Input]\nL76: \nL77: [Input]\nL78: \nL79: [Input]\nL80: \nL81: 【14†Top】\nL82: \nL83: Fen: [Input] 【25†Image: Copy Position†d2rnvyacaewvx6.cloudfront.net】\nL84: \nL85: Url: [Input] 【25†Image: Copy Position†d2rnvyacaewvx6.cloudfront.net】\nL86: \nL87: ## Personal notes\nL88: #### Create notes\nL89: \nL90: If you want to create a note in this position you have to log into your account and have a Supporter membership.\nL91: \nL92: 【26†I'm already a Supporter. Log me in now.】\nL93: \nL94: 【27†I'm not a Supporter yet. Tell me more.】\nL95: \nL96: [Button: Close]\nL97: \nL98: Use your Personal notes to store information and comments about this position. Remember, the notes are private. Nobody but you can see them.\nL99: \nL100: Create a note for this position\nL101: ### Related Openings:\nL102: \nL103:   * E00: 【3†Catalan opening】\nL104:   * E01: 【3†Catalan, closed】\nL105:   * E02: 【3†Catalan, open, 5.Qa4】\nL106:   * E03: 【3†Catalan, open, Alekhine variation】\nL107:   * E04: 【3†Catalan, open, 5.Nf3】\nL108:   * E05: 【3†Catalan, open, classical line】\nL109:   * E06: 【3†Catalan, closed, 5.Nf3】\nL110:   * E07: 【3†Catalan, closed, 6...Nbd7】\nL111:   * E08: 【3†Catalan, closed, 7.Qc2】\nL112:   * E09: 【3†Catalan, closed, main line】\nL113: \nL114: \nL115: \nL116: \nL117: \nL118: 【3†Stop Analysis】\nL119: \nL120: 【3†Start Engine Analysis】\nL121: \nL122: Stored Analysis: +0.30 Depth 18\nL123: Opening Explorer Database:  [Select]\nL124: \nL125: Moves List:\nL126: \nL127: 1. 【28†d4】 【29†Nf6】 2. 【30†c4】 【31†e6】 3. 【32†g3】\nL128: \nL129: 【33†Game List】\nL130: \nL131: 【3†Save】\nL132: \nL133: 【3†Play】\nL134: \nL135: 【3†Analysis】\nL136: Next Move  | # of Games  | Last Played  | Winnings percentage\nL137: White / Draw / Black  | Engine Eval.\nL138: 【34†3... d5】  |  12,454  | 2026  |\nL139: 34.1 % 42.1 % 23.8 %\nL140:  | +0.31 Dpt 40\nL141: 【35†3... Bb4+】  |  4,968  | 2026  |\nL142: 34.5 % 41.8 % 23.7 %\nL143:  | +0.14 Dpt 36\nL144: 【36†3... c5】  |  4,676  | 2026  |\nL145: 32.8 % 33.1 % 34.1 %\nL146:  | +0.27 Dpt 28\nL147: 【37†3... Be7】  |  175  | 2026  |\nL148: 46.9 % 34.9 % 18.3 %\nL149:  | +0.30 Dpt 32\nL150: 【38†3... c6】  |  66  | 2023  |\nL151: 56.1 % 21.2 % 22.7 %\nL152:  |\nL153: 【39†3... b6】  |  58  | 2025  |\nL154: 48.3 % 32.8 % 19 %\nL155:  | +0.58 Dpt 20\nL156: 【40†3... Nc6】  |  43  | 2026  |\nL157: 48.8 % 30.2 % 20.9 %\nL158:  | +0.39 Dpt 28\nL159: 【41†3... e5】  |  19  | 2012  |\nL160: 57.9 % 26.3 % 15.8 %\nL161:  |\nL162: 【42†3... g6】  |  18  | 2025  |\nL163: 55.6 % 27.8 % 16.7 %\nL164:  |\nL165: 【43†3... Ne4】  |  12  | 2007  |\nL166: 50 % 41.7 %\nL167:  |\nL168: 【44†3... d6】  |  4  | 2004  |\nL169: 50 % 25 % 25 %\nL170:  |\nL171: 【45†3... a6】  |  4  | 2011  |\nL172: 50 % 25 % 25 %\nL173:  |\nL174: 【3†3... a5】  |  【46†1-0】, 【47†Hausner】 (2410) vs. 【48†Moosleitner】 (2145)\nL175: 【3†3... b5】  |  【49†½-½】, 【50†Kurajica】 (2495) vs. 【51†Polugaevsky】 (2585)\nL176: 【3†3... h6】  |  【52†0-1】, 【53†Levchenko】 (2292) vs. 【54†Shubenkova】 (2085)\nL177: [Input] Hide Engine Analysis\nL178: \nL179: 【55†Download games】\nL180: ### Latest Played Games\nL181: \nL182: Players  | Result  |\nL183: 【56†Makhetha, L vs Jiang, Q】   | 0 - 1  |\nL184: 【57†Grebnev, A vs Goganov, A】   | ½ - ½  |\nL185: 【58†Khanbutaev, A vs Padhya, S】   | 0 - 1  |\nL186: 【59†Senthil Maran K vs Edelsteen, J】   | 1 - 0  |\nL187: 【60†Khanbutaev, A vs Guo, E】   | ½ - ½  |\nL188: ### Top Games by Average ELO\nL189: \nL190: Players  | Result  |\nL191: 【61†Ding, L vs Carlsen, M】   | ½ - ½  |\nL192: 【62†Caruana, F vs Carlsen, M】   | ½ - ½  |\nL193: 【63†Kramnik, V vs Carlsen, M】   | ½ - ½  |\nL194: 【64†Kramnik, V vs Carlsen, M】   | ½ - ½  |\nL195: 【65†Ding, L vs Carlsen, M】   | ½ - ½  |\nL196: ### Played frequently by\nL197: \nL198: As White  |\nL199: Evgeny Gleizerov  | 【66†169 games】\nL200: Gennadi Sosonko  | 【67†147 games】\nL201: Victor Mikhalevski  | 【68†121 games】\nL202: \nL203: As Black  |\nL204: Sergei Tiviakov  | 【69†64 games】\nL205: Sergey Karjakin  | 【70†64 games】\nL206: Anatoly Karpov  | 【71†56 games】\nL207: \nL208: #### Opening Explorer Message\nL209: \nL210: This position doesn't exist in the Opening Explorer\nL211: \nL212: [Button: Continue]\nL213: #### Opening Explorer Message\nL214: \nL215: Dear Chessfriend, we're thrilled that you're enjoying this powerful tool!!!\nL216: \nL217: As you know, most of the features in 365Chess are free for everyone, anywhere; we believe in this philosophy and we want to keep it that way.\nL218: To keep the site free for everyone the development of this site relies on the support and contributions of its members. Therefore, we kindly ask you to consider becoming a Supporter. By doing so, you will receive some extra and nice benefits and you will be helping to improve this site.\nL219: \nL220: Thank you in advance for your contribution. You have no idea how much it means to us to have your Support.\nL221: \nL222: [Button: Yes, I want to contribute now]\nL223: \nL224: 【3†Maybe later】\nL225: #### Download PGN\nL226: \nL227: PGN Analysis\nL228: \nL229: [Input]        [Input]\nL230: \nL231: 【13†365Chess】\nL232: \nL233: Chess games database online — more than 4.4 million games, updated every week.\nL234: \nL235: #### Database\nL236: \nL237: 【5†Chess games】 【4†Search position】 【6†Tournaments】 【14†Opening Explorer】 【16†ECO codes】\nL238: \nL239: #### Training\nL240: \nL241: 【9†Openings Trainer】 【11†Puzzles & tactics】 【12†Endgames training】 【10†Play vs computer】 【15†Courses】\nL242: \nL243: #### Players & tools\nL244: \nL245: 【72†Players by rating】 【73†Women by rating】 【8†Players A–Z】 【17†Analysis Board】 【18†Board Editor】\nL246: #### 365Chess\nL247: \nL248: 【27†Membership】 【21†FAQ】 【22†Contact】 【20†Blog】 【74†Terms of service】 【75†Privacy policy】\nL249: \nL250: © 2026 365Chess.com 【76†Follow @365chess on X†twitter.com】\n"
+}
