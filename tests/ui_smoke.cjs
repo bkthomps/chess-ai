@@ -141,6 +141,9 @@ const context = vm.createContext({
     if (u.pathname === '/api/resign') {
       server.result = 'Black wins by resignation'; server.revision++; server.clocks.running = false;
     }
+    if (u.pathname === '/api/leave') {
+      server.host_left = true; server.clocks.running = false; server.revision++;
+    }
     return {ok: true, json: async () => structuredClone(server)};
   }
 });
@@ -162,7 +165,7 @@ const drop = (to, overrides = {}) => {
   documentListeners.pointerup(pointer(to, {buttons:0, ...overrides}));
   if (to !== null) clickSquare(to); // Browser compatibility click must not move twice or change selection.
 };
-const openMenu = () => { elements['menu-button'].onclick(); if (elements.menu.hidden) elements['menu-button'].onclick(); };
+const openMenu = async () => { await elements['menu-button'].onclick(); if (elements.menu.hidden) await elements['menu-button'].onclick(); };
 const moveRequests = () => requests.filter(r => r.url.startsWith('/api/move?'));
 (async () => {
   await tick(); assert(!elements.menu.hidden); assert(elements.game.hidden);
@@ -216,7 +219,7 @@ const moveRequests = () => requests.filter(r => r.url.startsWith('/api/move?'));
     server.opening = 'Sicilian Defense'; server.revision++;
     await vm.runInContext('poll()', context);
     assert.equal(elements['moves-title'].textContent, 'Sicilian Defense');
-    openMenu();
+    await openMenu();
   }
   elements['time-control'].value = '2+1'; await submit();
   elements['menu-button'].onclick();
@@ -247,7 +250,7 @@ const moveRequests = () => requests.filter(r => r.url.startsWith('/api/move?'));
   assert(elements['promotion-dialog'].open); elements['promotion-choices'].children[3].onclick(); await tick();
   assert(requests.at(-1).url.includes('promotion=2'));
   // Custom controls remain available in both modes, including fractional minutes.
-  openMenu(); mode = 'one'; color = 'black'; elements['time-control'].value = 'custom';
+  await openMenu(); mode = 'one'; color = 'black'; elements['time-control'].value = 'custom';
   elements['time-control'].listeners.change(); assert(!elements['custom-time'].hidden); assert(!elements['base-minutes'].disabled);
   elements['base-minutes'].value = '1.5'; elements['increment-seconds'].value = '3'; await submit();
   assert(requests.at(-1).url.includes('base_seconds=90&increment_seconds=3'));
@@ -301,7 +304,7 @@ const moveRequests = () => requests.filter(r => r.url.startsWith('/api/move?'));
   vm.runInContext('state.clocks.black_ms=0;state.legal=[[52,44,0]];render()', context);
   clickSquare(52); clickSquare(44); await tick(); assert.equal(requests.length, before);
   // Unlimited disables game clocks and offers all five thinking presets.
-  openMenu(); mode = 'one'; color = 'white';
+  await openMenu(); mode = 'one'; color = 'white';
   elements['time-control'].value = 'unlimited'; elements['time-control'].listeners.change();
   assert(!elements['unlimited-thinking'].hidden); assert(!elements['thinking-time'].disabled);
   for (const seconds of ['1','2','3','4','5']) {
@@ -310,7 +313,7 @@ const moveRequests = () => requests.filter(r => r.url.startsWith('/api/move?'));
     await submit(); const params = new URL(requests.at(-1).url, 'http://localhost').searchParams;
     assert.equal(params.get('thinking_seconds'), seconds); assert.equal(params.get('unlimited'), 'true');
     assert(elements['game-clocks'].hidden); assert(elements['game-mode'].textContent.includes(seconds + 's per move'));
-    openMenu();
+    await openMenu();
   }
   elements['thinking-time'].value = 'custom'; elements['thinking-time'].listeners.change();
   assert(!elements['custom-thinking'].hidden); assert(!elements['thinking-seconds'].disabled);
@@ -318,15 +321,15 @@ const moveRequests = () => requests.filter(r => r.url.startsWith('/api/move?'));
   assert(requests.at(-1).url.includes('thinking_seconds=13.75')); assert(elements['game-clocks'].hidden);
   clickSquare(12); clickSquare(28); await tick();
   assert(requests.at(-1).url.includes('/api/move?')); // Zero-valued disabled clocks must not block play.
-  openMenu(); mode = 'two'; vm.runInContext('changeMode()', context);
+  await openMenu(); mode = 'two'; vm.runInContext('changeMode()', context);
   assert(elements['unlimited-thinking'].hidden); assert(elements['thinking-seconds'].disabled);
   await submit(); assert.equal(elements['game-mode'].textContent, 'Two players · Unlimited');
   assert(elements['game-clocks'].hidden);
-  openMenu(); elements['time-control'].value = '5'; elements['time-control'].listeners.change();
+  await openMenu(); elements['time-control'].value = '5'; elements['time-control'].listeners.change();
   assert(elements['unlimited-thinking'].hidden); await submit(); assert(!elements['game-clocks'].hidden);
   // LAN setup keeps the selected host color and orients the board accordingly.
   for (const hostColor of ['white', 'black', 'random']) {
-    openMenu(); elements['two-player-mode'].value = 'lan';
+    await openMenu(); elements['two-player-mode'].value = 'lan';
     elements['two-player-mode'].listeners.change();
     assert(!elements['color-options'].hidden);
     color = hostColor; await submit();
@@ -335,6 +338,7 @@ const moveRequests = () => requests.filter(r => r.url.startsWith('/api/move?'));
     assert(!elements['menu-button'].disabled);
     assert(elements['lan-status'].textContent.includes('You play ' + (hostColor === 'white' ? 'White' : 'Black')));
   }
+  assert(requests.some(r => r.url.startsWith('/api/leave')));
   color = 'white';
   // LAN seats gate browser input and expose the host's invitation.
   vm.runInContext(`state.lan=true;state.is_host=true;state.player=true;state.waiting=true;state.join_url='http://192.168.1.2:7878/join=maple.river.otter.moon';render()`, context);
@@ -390,11 +394,27 @@ const moveRequests = () => requests.filter(r => r.url.startsWith('/api/move?'));
   await vm.runInContext('connectLan()', context);
   assert.equal(elements['disconnected-message'].textContent, 'Error: Cannot reach the chess server.');
   assert.equal(vm.runInContext('invalidInvite', context), false);
+  await tick();
   offline = false; joinError = null; context.window.location.pathname = '/';
   await vm.runInContext('poll()', context);
   await vm.runInContext('poll()', context);
+  // A guest loses the session when the host leaves or replaces the game.
+  for (const replacement of [{lan:true, host_left:true, player:null}, {lan:true, player:null}, {lan:false, player:null}]) {
+    vm.runInContext('state.lan=true;state.is_host=false;state.player=false', context);
+    server = {...fresh(), ...replacement};
+    await vm.runInContext('poll()', context);
+    assert(!elements.disconnected.hidden);
+    assert.equal(elements['disconnected-message'].textContent, 'Error: Cannot reach the chess server.');
+    const requestCount = requests.length;
+    await vm.runInContext('poll()', context);
+    assert.equal(requests.length, requestCount);
+    server = {...fresh(), lan:true, is_host:false, player:false};
+    vm.runInContext('lanHostLeft=false;state=null', context);
+    await vm.runInContext('poll()', context);
+    await vm.runInContext('poll()', context);
+  }
   // AI spectators cannot move or queue premoves, including between searches.
-  openMenu(); elements['two-player-mode'].value = 'ai';
+  await openMenu(); elements['two-player-mode'].value = 'ai';
   elements['time-control'].value = 'unlimited'; elements['two-player-mode'].listeners.change();
   assert(!elements['two-player-options'].hidden); assert(!elements['unlimited-thinking'].hidden);
   await submit();
@@ -411,7 +431,7 @@ const moveRequests = () => requests.filter(r => r.url.startsWith('/api/move?'));
   server.analysis = {active:true, pondering:false, depth:2, searching_depth:3, nodes:100, hits:4, millis:10, budget_millis:13750, threads:1, cache_bytes:1024, cache_limit:2048};
   await vm.runInContext('poll()', context);
   assert(!elements['engine-stats'].hidden);
-  openMenu(); mode = 'one'; vm.runInContext('changeMode()', context);
+  await openMenu(); mode = 'one'; vm.runInContext('changeMode()', context);
   assert(elements['two-player-options'].hidden); assert(elements['two-player-mode'].disabled);
   mode = 'two'; elements['two-player-mode'].value = 'same'; vm.runInContext('changeMode()', context);
   elements['time-control'].value = '5'; elements['time-control'].listeners.change(); await submit();
@@ -435,13 +455,13 @@ const moveRequests = () => requests.filter(r => r.url.startsWith('/api/move?'));
   audioNotes.length = 0;
   await vm.runInContext('poll()', context); await elements.undo.onclick(); await tick();
   assert.equal(audioNotes.length, 0); // No replay on duplicate responses or undo.
-  openMenu(); await submit();
+  await openMenu(); await submit();
   audioNotes.length = 0; rejectNextMove = true;
   clickSquare(12); clickSquare(28); await tick(); assert.equal(audioNotes.length, 0);
   assert(!elements.error.hidden); elements['dismiss-error'].onclick();
   clickSquare(12); clickSquare(28); await tick(); assert.equal(audioNotes.length, 1);
   audioNotes.length = 0;
-  openMenu(); await tick(); assert.equal(audioNotes.length, 31);
+  await openMenu(); await tick(); assert.equal(audioNotes.length, 31);
   await submit(); await tick(); assert.equal(vm.runInContext('musicActive', context), false);
   audioNotes.length = 0;
   // Timeout has no new move, but still gets the game-end sound once.
@@ -450,11 +470,11 @@ const moveRequests = () => requests.filter(r => r.url.startsWith('/api/move?'));
   // Browsers without audio support must keep the game playable.
   audioNotes.length = 0;
   vm.runInContext('cancelSounds();audioContext=null;window.AudioContext=undefined', context);
-  openMenu(); await submit(); clickSquare(12); clickSquare(28); await tick();
+  await openMenu(); await submit(); clickSquare(12); clickSquare(28); await tick();
   assert.equal(elements.status.textContent, 'Black to move.'); assert.equal(audioNotes.length, 0);
   // Pointer gestures share click-to-move's legality and promotion flow.
   mode = 'two'; elements['time-control'].value = 'unlimited';
-  const resetBoard = async () => { openMenu(); await submit(); };
+  const resetBoard = async () => { await openMenu(); await submit(); };
   await resetBoard();
   const movesBeforeDrag = moveRequests().length;
   startDrag(12, 28);
@@ -801,7 +821,7 @@ const moveRequests = () => requests.filter(r => r.url.startsWith('/api/move?'));
     () => elements['cancel-premove'].onclick(),
     async () => { await elements.undo.onclick(); },
     () => { elements.resign.onclick(); elements['resign-dialog'].close(); },
-    async () => { openMenu(); await submit(); }
+    async () => { await openMenu(); await submit(); }
   ]) {
     await waitForComputer(); const before = moveRequests().length;
     clickSquare(6); clickSquare(21); clickSquare(21); clickSquare(38); await cancel(); await computerReply([[6,21,0]]);

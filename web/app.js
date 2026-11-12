@@ -356,6 +356,7 @@ function showError(error) {
 $('dismiss-error').onclick = () => { $('error').hidden = true; };
 let lanMenuOpen = false;
 let invalidInvite = false;
+let lanHostLeft = false;
 let playerToken = '';
 try { playerToken = window.sessionStorage?.getItem('chess-player') || ''; } catch {}
 function showUnavailable(message) {
@@ -455,7 +456,8 @@ function enterGame() {
   $('board').querySelector(`[data-square="${flipped ? 52 : 12}"]`)?.focus({preventScroll:true});
   window.scrollTo({top:0, behavior:'instant'});
 }
-$('menu-button').onclick = () => {
+$('menu-button').onclick = async () => {
+  if (busy) return;
   clearBoardInput();
   if (state && !state.result && !confirmingNewGame) {
     confirmingNewGame = true; $('menu-button').textContent = 'Confirm'; $('menu-button').classList.add('confirm');
@@ -464,6 +466,12 @@ $('menu-button').onclick = () => {
     return;
   }
   resetNewGameConfirmation();
+  if (state?.lan && state.is_host) {
+    busy = true;
+    try { await api('leave', {}); }
+    catch (error) { showError(error); return; }
+    finally { busy = false; }
+  }
   playing = false; lanMenuOpen = true; selected = null; $('menu').hidden = false; $('game').hidden = true;
   document.body.classList.remove('in-game'); syncMusic(); $('start').focus({preventScroll:true});
   window.scrollTo({top:0, behavior:'instant'});
@@ -986,11 +994,18 @@ $('confirm-resign').onclick = async () => {
   finally { busy = false; render(); }
 };
 async function poll() {
-  if (invalidInvite) return;
+  if (invalidInvite || lanHostLeft) return;
   if (!busy && !polling && !document.hidden) {
     polling = true;
     try {
       const next = await api('state');
+      if (state?.lan && !state.is_host && state.player !== null
+          && (next.host_left || !next.lan || next.player === null)) {
+        lanHostLeft = true;
+        clearBoardInput();
+        showUnavailable('Cannot reach the chess server.');
+        return;
+      }
       if (document.body.classList.contains('disconnected')) {
         clearBoardInput(); cancelSounds(); soundSnapshot = null;
         state = null; playing = false; flipped = false; focusSquare = 12;

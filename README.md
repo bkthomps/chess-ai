@@ -44,6 +44,8 @@ There are no crate dependencies, external assets, accounts, or network services.
 
 If the browser cannot reach the server, it shows a connection message over the falling-piece background and checks for reconnection automatically. When the server responds, the browser clears its game state and returns to the main menu. LAN players then reconnect automatically if their seat still exists.
 
+When the LAN host confirms New game and returns to the menu, the guest sees “Error: Cannot reach the chess server.” on the next update. The old session stays closed even if the host starts another game; the guest needs a new invitation.
+
 ## Play
 
 - Select one or two players, and choose Random (default), White, or Black in one-player or LAN mode. Under Two players, Mode offers LAN (default), Same computer, or AI vs. AI.

@@ -24,6 +24,7 @@ struct Lan {
     host: String,
     guest: String,
     joined: bool,
+    host_left: bool,
     host_white: bool,
     address: Option<Ipv4Addr>,
 }
@@ -31,7 +32,7 @@ impl Lan {
     fn player(&self, token: &str) -> Option<bool> {
         if token == self.host {
             Some(self.host_white)
-        } else if self.joined && token == self.guest {
+        } else if !self.host_left && self.joined && token == self.guest {
             Some(!self.host_white)
         } else {
             None
@@ -74,10 +75,12 @@ fn lan_address() -> Option<Ipv4Addr> {
 fn authorized(a: &App, path: &str, token: &str, local: bool) -> bool {
     match path {
         "/api/new" => local && a.lan.as_ref().map_or(true, |lan| lan.host == token),
+        "/api/leave" => local && a.lan.as_ref().is_some_and(|lan| lan.host == token),
         "/api/undo" => local && a.lan.is_none(),
         "/api/move" | "/api/resign" => {
             if let Some(lan) = &a.lan {
-                lan.player(token).is_some()
+                !lan.host_left
+                    && lan.player(token).is_some()
                     && (path != "/api/move"
                         || lan.joined && lan.player(token) == Some(a.game.position().white))
             } else {
@@ -103,10 +106,11 @@ fn viewer_json(a: &mut App, token: &str, port: u16) -> String {
         })
         .unwrap_or_else(|| "null".into());
     json.push_str(&format!(
-        ",\"lan\":{},\"player\":{},\"is_host\":{},\"waiting\":{waiting},\"join_url\":{link}}}",
+        ",\"lan\":{},\"player\":{},\"is_host\":{},\"host_left\":{},\"waiting\":{waiting},\"join_url\":{link}}}",
         a.lan.is_some(),
         player.map_or("null", |white| if white { "true" } else { "false" }),
-        a.lan.as_ref().is_some_and(|lan| lan.host == token)
+        a.lan.as_ref().is_some_and(|lan| lan.host == token),
+        a.lan.as_ref().is_some_and(|lan| lan.host_left)
     ));
     json
 }
@@ -583,6 +587,9 @@ fn serve_connection(
                 return Err("This game has ended.".into());
             }
             let lan = a.lan.as_mut().ok_or("No LAN game is waiting.")?;
+            if lan.host_left {
+                return Err("This invitation is invalid or already used.".into());
+            }
             if lan.player(&token).is_none() {
                 if lan.joined || params.get("invite").copied() != Some(lan.invite.as_str()) {
                     return Err("This invitation is invalid or already used.".into());
@@ -599,6 +606,21 @@ fn serve_connection(
             Ok(format!("{json},\"player_token\":{}}}", quote(&token)))
         })(),
         ("GET", "/api/state") => Ok(viewer_json(&mut app.lock().unwrap(), &token, port)),
+        ("POST", "/api/leave") => {
+            let mut a = app.lock().unwrap();
+            if !authorized(&a, path, &token, local) {
+                return respond(
+                    &mut stream,
+                    403,
+                    "application/json",
+                    b"{\"error\":\"This action is unavailable for this player.\"}",
+                );
+            }
+            a.lan.as_mut().unwrap().host_left = true;
+            a.clock.stop(Instant::now());
+            a.revision += 1;
+            Ok(viewer_json(&mut a, &token, port))
+        }
         ("POST", "/api/new") => (|| {
             let mode = params.get("mode").copied().unwrap_or("");
             let color = params.get("color").copied().unwrap_or("");
@@ -667,6 +689,7 @@ fn serve_connection(
                         host: token.clone(),
                         guest: seat_token(),
                         joined: false,
+                        host_left: false,
                         host_white: white,
                         address: lan_address(),
                     })
@@ -1276,6 +1299,50 @@ mod tests {
             let spoof = "POST /api/join HTTP/1.1\r\nHost: 192.168.1.10:7878\r\nOrigin: http://192.168.1.11:7878\r\nX-Chess-Request: 1\r\n\r\n";
             assert_eq!(raw_peer(&app, spoof, false).0, 403);
         }
+    }
+
+    #[test]
+    fn lan_host_leaving_revokes_guest_and_invitation() {
+        let app = shared();
+        request(
+            &app,
+            "POST",
+            "/api/new?mode=two&two_player_mode=lan&color=white&base_seconds=60&increment_seconds=0",
+            200,
+        );
+        let (host, guest, invite) = {
+            let a = app.lock().unwrap();
+            let lan = a.lan.as_ref().unwrap();
+            (lan.host.clone(), lan.guest.clone(), lan.invite.clone())
+        };
+        request(&app, "POST", &format!("/api/join?invite={invite}"), 200);
+        request(&app, "POST", &format!("/api/leave?player={guest}"), 403);
+        let remote_leave = format!("POST /api/leave?player={host} HTTP/1.1\r\nHost: 192.168.1.10:7878\r\nX-Chess-Request: 1\r\n\r\n");
+        assert_eq!(raw_peer(&app, &remote_leave, false).0, 403);
+        request(&app, "POST", &format!("/api/leave?player={host}"), 200);
+        assert_eq!(app.lock().unwrap().clock.active, None);
+        let state = request(&app, "GET", &format!("/api/state?player={guest}"), 200);
+        assert!(state.contains("\"host_left\":true"));
+        assert!(state.contains("\"player\":null"));
+        request(&app, "POST", &format!("/api/join?invite={invite}"), 400);
+        request(&app, "POST", &format!("/api/join?player={guest}"), 400);
+        request(
+            &app,
+            "POST",
+            &format!("/api/move?from=52&to=36&promotion=0&player={guest}"),
+            403,
+        );
+        request(
+            &app,
+            "POST",
+            &format!(
+                "/api/new?mode=two&two_player_mode=lan&color=white&unlimited=true&player={host}"
+            ),
+            200,
+        );
+        let state = request(&app, "GET", &format!("/api/state?player={guest}"), 200);
+        assert!(state.contains("\"host_left\":false"));
+        assert!(state.contains("\"player\":null"));
     }
 
     #[test]
