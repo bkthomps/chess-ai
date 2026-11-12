@@ -480,7 +480,8 @@ const MATE: i32 = 30_000;
 const INF: i32 = 32_000;
 #[cfg(test)]
 const TABLE_SIZE: usize = 2_000_000;
-pub const DEFAULT_MEMORY_LIMIT: usize = 100_000_000;
+/// Fixed cache ceiling in decimal bytes, independent of CPU count.
+pub const DEFAULT_CACHE_LIMIT: usize = 100_000_000;
 pub const MAX_MEMORY_LIMIT: usize = 1_000_000_000;
 const MAX_SEARCH_THREADS: usize = 64;
 const BUCKET_SIZE: usize = 4;
@@ -773,15 +774,15 @@ pub fn search_with_cancel(
 
 impl SearchCache {
     /// Choose an explicit search-thread limit (including the calling worker).
-    /// Default reserves CPU capacity automatically; the RAM budget can lower
-    /// the limit further to preserve at least 32 MiB for the cache.
+    /// The default uses only CPU headroom; cache capacity is independent.
     pub fn with_threads(threads: usize) -> Self {
-        let thread_budget = (DEFAULT_MEMORY_LIMIT
-            - 16 * 1024 * 1024
-            - DEFAULT_MEMORY_LIMIT / 50
-            - 32 * 1024 * 1024)
-            / (2 * 1024 * 1024 + MOVE_BUFFER_LIMIT);
-        Self::with_threads_and_memory(threads.min(thread_budget.max(1)), DEFAULT_MEMORY_LIMIT)
+        Self {
+            table: SharedTable::with_limit(DEFAULT_CACHE_LIMIT),
+            buffers: MoveBuffers::default(),
+            helpers: Vec::new(),
+            threads: threads.clamp(1, MAX_SEARCH_THREADS),
+            single_cpu: thread::available_parallelism().map_or(true, |n| n.get() == 1),
+        }
     }
 
     /// Bound the engine's total RAM budget, including conservative allowance for
@@ -2541,15 +2542,13 @@ mod tests {
     }
 
     #[test]
-    fn default_memory_budget_is_100_mb_and_keeps_cache_space_on_many_cpus() {
-        assert_eq!(DEFAULT_MEMORY_LIMIT, 100_000_000);
-        let cache = SearchCache::with_threads(6);
-        assert_eq!(cache.threads, 6);
-        assert_eq!(cache.table.limit(), 65_494_144);
-        let many = SearchCache::with_threads(64);
-        assert_eq!(many.threads, 18);
-        assert!(many.table.limit() >= 32 * 1024 * 1024);
-        assert!(many.table.limit() < DEFAULT_MEMORY_LIMIT);
+    fn default_cache_is_fixed_without_a_ram_based_thread_cap() {
+        assert_eq!(DEFAULT_CACHE_LIMIT, 100_000_000);
+        for requested in [0, 1, 2, 6, 8, 12, 18, 64, 96, 128] {
+            let cache = SearchCache::with_threads(requested);
+            assert_eq!(cache.threads, requested.clamp(1, MAX_SEARCH_THREADS));
+            assert_eq!(cache.table.limit(), DEFAULT_CACHE_LIMIT);
+        }
     }
 
     #[test]

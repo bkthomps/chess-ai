@@ -5,8 +5,8 @@
 - Keep the application dependency-free: Rust standard library, bundled assets, and plain browser JavaScript/CSS. Do not add crates, frontend packages, external assets, or required network services.
 - Support Rust 1.70 or newer, as declared in `Cargo.toml`.
 - Use the same engine logic on macOS, Windows, and Linux. Cache storage uses ordinary Rust vectors; do not reintroduce platform-specific allocation or cleanup paths.
-- Preserve the default **100,000,000-byte total server RAM budget**. This includes reservations for server state, stacks, scratch storage, and allocator overhead; it is not a 100 MB cache allowance. Browser memory is separate. Experimental benchmark budgets do not change the application default.
-- Preserve CPU headroom. The portable thread policy reserves roughly a quarter of logical CPUs and always permits at least one search thread. The single-logical-CPU path yields periodically. Parallel phases must not multiply the configured concurrency limit.
+- Preserve the fixed **100,000,000-byte cache ceiling**, independent of CPU count and other memory use. Cache pages grow on demand up to that ceiling. Server state, stacks, scratch storage, and allocator overhead use additional memory; there is no application-wide RAM budget. Keep retained scratch bounded per thread. Historical explicit-budget constructors remain available for benchmark reproduction only.
+- Preserve CPU headroom. The portable thread policy uses `max(1, floor(0.75 × logical CPUs))`, capped at 64 search threads, with no RAM-based reduction. The single-logical-CPU path pauses for about 1 ms after roughly 9 ms of computation, targeting 10% idle time. Parallel phases must not multiply the configured concurrency limit.
 - Treat these as defaults to preserve unless the user explicitly requests a change.
 
 ## Source map
