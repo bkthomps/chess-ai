@@ -73,6 +73,7 @@ elements['copy-input-log'].textContent = 'Copy input log';
 let mode = 'two', color = 'white', server, requests = [], rejectNextMove = false, afterNextMove = null, pollDelay, offline = false;
 let confirmationTimeout = null, copiedFen = null, clipboardFails = false;
 let moveResponseGate = null;
+let joinError = null;
 const initial = [4,2,3,5,6,3,2,4,...Array(8).fill(1),...Array(32).fill(0),...Array(8).fill(-1),-4,-2,-3,-5,-6,-3,-2,-4];
 const fresh = (human = null, base = 300, increment = 0) => ({
   board: [...initial], started_at: new Date(2026, 10, 8, 12).getTime() / 1000, white: true, human, thinking_seconds: 3, revision: 1, thinking: false, pondering: human === true, check: false, result: null,
@@ -94,6 +95,9 @@ const context = vm.createContext({
       const gate = moveResponseGate; moveResponseGate = null; await gate;
     }
     if (offline) throw new Error('Network error');
+    if (u.pathname === '/api/join' && joinError) {
+      return {ok: false, json: async () => ({error: joinError})};
+    }
     if (u.pathname === '/api/move' && rejectNextMove) {
       rejectNextMove = false; return {ok: false, json: async () => ({error: 'That move is not legal.'})};
     }
@@ -180,6 +184,7 @@ const moveRequests = () => requests.filter(r => r.url.startsWith('/api/move?'));
   assert.equal(vm.runInContext('musicActive', context), true);
   offline = true; await vm.runInContext('poll()', context);
   assert(documentBody.classes.has('disconnected')); assert(!elements.disconnected.hidden);
+  assert.equal(elements['disconnected-message'].textContent, 'Error: Cannot reach the chess server.');
   await tick(); assert.equal(vm.runInContext('musicTheme', context), 'disconnected');
   assert.equal(vm.runInContext('musicActive', context), true);
   assert(elements['disconnected-king'].innerHTML.includes('stroke="#b33a3a"'));
@@ -363,6 +368,31 @@ const moveRequests = () => requests.filter(r => r.url.startsWith('/api/move?'));
   vm.runInContext('playing=false;state=null;lanMenuOpen=false', context);
   await vm.runInContext('poll()', context);
   assert.equal(vm.runInContext('playing', context), true);
+  // Rejected invitation links stay on the full error screen despite polling.
+  for (const message of ['This invitation is invalid or already used.', 'No LAN game is waiting.', 'This game has ended.']) {
+    context.window.location.pathname = '/join=wrong';
+    joinError = message;
+    await vm.runInContext('connectLan()', context); await tick();
+    assert(documentBody.classes.has('disconnected')); assert(!elements.disconnected.hidden);
+    assert.equal(elements['disconnected-message'].textContent, 'Error: Invite link invalid.');
+    assert(elements.error.hidden);
+    const requestCount = requests.length;
+    await vm.runInContext('poll()', context);
+    assert.equal(requests.length, requestCount);
+    assert(!elements.disconnected.hidden);
+    vm.runInContext('invalidInvite=false', context);
+  }
+  context.window.location.pathname = '/join=';
+  await vm.runInContext('connectLan()', context);
+  assert.equal(elements['disconnected-message'].textContent, 'Error: Invite link invalid.');
+  vm.runInContext('invalidInvite=false', context);
+  offline = true;
+  await vm.runInContext('connectLan()', context);
+  assert.equal(elements['disconnected-message'].textContent, 'Error: Cannot reach the chess server.');
+  assert.equal(vm.runInContext('invalidInvite', context), false);
+  offline = false; joinError = null; context.window.location.pathname = '/';
+  await vm.runInContext('poll()', context);
+  await vm.runInContext('poll()', context);
   // AI spectators cannot move or queue premoves, including between searches.
   openMenu(); elements['two-player-mode'].value = 'ai';
   elements['time-control'].value = 'unlimited'; elements['two-player-mode'].listeners.change();

@@ -355,8 +355,19 @@ function showError(error) {
 }
 $('dismiss-error').onclick = () => { $('error').hidden = true; };
 let lanMenuOpen = false;
+let invalidInvite = false;
 let playerToken = '';
 try { playerToken = window.sessionStorage?.getItem('chess-player') || ''; } catch {}
+function showUnavailable(message) {
+  if (!document.body.classList.contains('disconnected')) {
+    const white = state ? (state.human === null ? state.white : state.human) : true;
+    $('disconnected-king').innerHTML = piece(white ? 6 : -6).replace('</svg>', '<path d="M45 48l10 10m0-10L45 58" fill="none" stroke="#b33a3a" stroke-width="4"/></svg>');
+  }
+  $('disconnected-message').textContent = 'Error: ' + message;
+  document.body.classList.add('disconnected'); $('disconnected').hidden = false;
+  cancelSounds(); syncMusic();
+  for (const id of ['promotion-dialog', 'resign-dialog']) if ($(id).open) $(id).close();
+}
 async function api(path, params) {
   const options = { cache: 'no-store', signal: AbortSignal.timeout(10000) };
   if (params) { options.method = 'POST'; options.headers = { 'X-Chess-Request': '1' }; }
@@ -365,13 +376,7 @@ async function api(path, params) {
   if (playerToken) query.set('player', playerToken);
   try { response = await fetch('/api/' + path + (query.toString() ? '?' + query : ''), options); }
   catch {
-    if (!document.body.classList.contains('disconnected')) {
-      const white = state ? (state.human === null ? state.white : state.human) : true;
-      $('disconnected-king').innerHTML = piece(white ? 6 : -6).replace('</svg>', '<path d="M45 48l10 10m0-10L45 58" fill="none" stroke="#b33a3a" stroke-width="4"/></svg>');
-    }
-    document.body.classList.add('disconnected'); $('disconnected').hidden = false;
-    cancelSounds(); syncMusic();
-    for (const id of ['promotion-dialog', 'resign-dialog']) if ($(id).open) $(id).close();
+    showUnavailable('Cannot reach the chess server.');
     throw new Error('Cannot reach the chess server.');
   }
   const data = await response.json();
@@ -981,6 +986,7 @@ $('confirm-resign').onclick = async () => {
   finally { busy = false; render(); }
 };
 async function poll() {
+  if (invalidInvite) return;
   if (!busy && !polling && !document.hidden) {
     polling = true;
     try {
@@ -1020,15 +1026,20 @@ async function poll() {
 }
 async function connectLan() {
   const invite = new URLSearchParams((window.location?.pathname || '').replace(/^\//, '')).get('join')
-    || new URLSearchParams((window.location?.hash || '').replace(/^#/, '')).get('join');
-  if (invite) {
+    ?? new URLSearchParams((window.location?.hash || '').replace(/^#/, '')).get('join');
+  if (invite !== null) {
     busy = true;
     try {
       const next = await api('join', {invite});
       state = next; flipped = next.player === false;
       window.history?.replaceState(null, '', '/');
       enterGame();
-    } catch (error) { showError(error); }
+    } catch (error) {
+      if (error.message !== 'Cannot reach the chess server.') {
+        invalidInvite = true;
+        showUnavailable('Invite link invalid.');
+      }
+    }
     finally { busy = false; if (playing) render(); }
   }
   void poll();
