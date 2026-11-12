@@ -892,8 +892,8 @@ function render() {
     lastStatus = signature;
   }
   $('menu-button').disabled = state.lan && !state.is_host;
-  $('lan-panel').hidden = !state.lan;
-  $('lan-status').textContent = state.waiting ? `Clocks start when your opponent joins. You play ${state.player ? 'White' : 'Black'}.` : 'LAN game · reconnect by refreshing this tab.';
+  $('lan-panel').hidden = !(state.lan && state.is_host && state.waiting);
+  $('lan-status').textContent = state.waiting ? `Clocks start when your opponent joins. You play ${state.player ? 'White' : 'Black'}.` : '';
   $('lan-link-label').hidden = !state.join_url;
   $('lan-link').hidden = !state.join_url;
   $('lan-link').value = state.join_url || '';
