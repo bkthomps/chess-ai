@@ -605,7 +605,14 @@ fn serve_connection(
             json.pop();
             Ok(format!("{json},\"player_token\":{}}}", quote(&token)))
         })(),
-        ("GET", "/api/state") => Ok(viewer_json(&mut app.lock().unwrap(), &token, port)),
+        ("GET", "/api/state") => {
+            let mut a = app.lock().unwrap();
+            let invite_required =
+                !local && a.lan.as_ref().and_then(|lan| lan.player(&token)).is_none();
+            let mut json = viewer_json(&mut a, &token, port);
+            json.pop();
+            Ok(format!("{json},\"invite_required\":{invite_required}}}"))
+        }
         ("POST", "/api/leave") => {
             let mut a = app.lock().unwrap();
             if !authorized(&a, path, &token, local) {
@@ -1226,6 +1233,19 @@ mod tests {
             let remote = |path: &str| {
                 raw_peer(&app, &format!("POST {path} HTTP/1.1\r\nHost: 192.168.1.10:7878\r\nOrigin: http://192.168.1.10:7878\r\nX-Chess-Request: 1\r\n\r\n"), false)
             };
+            let remote_state = |token: &str| {
+                raw_peer(
+                    &app,
+                    &format!(
+                        "GET /api/state?player={token} HTTP/1.1\r\nHost: 192.168.1.10:7878\r\n\r\n"
+                    ),
+                    false,
+                )
+                .1
+            };
+            assert!(remote_state("").contains("\"invite_required\":true"));
+            assert!(remote_state("invalid").contains("\"invite_required\":true"));
+            assert!(request(&app, "GET", "/api/state", 200).contains("\"invite_required\":false"));
             let rev = app.lock().unwrap().revision;
             request(
                 &app,
@@ -1244,6 +1264,7 @@ mod tests {
             assert_eq!(app.lock().unwrap().clock.active, Some(true));
             assert_eq!(remote(&format!("/api/join?invite={invite}")).0, 400);
             assert_eq!(remote(&format!("/api/join?player={guest}")).0, 200);
+            assert!(remote_state(&guest).contains("\"invite_required\":false"));
             let rev = app.lock().unwrap().revision;
             assert_eq!(
                 remote(&format!(

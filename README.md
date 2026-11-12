@@ -46,6 +46,8 @@ If the browser cannot reach the server, it shows a connection message over the f
 
 When the LAN host confirms New game and returns to the menu, the guest sees “Error: Cannot reach the chess server.” on the next update. The old session stays closed even if the host starts another game; the guest needs a new invitation.
 
+Opening the base server address from another device without a saved LAN seat shows “Error: Invite link invalid.” Use the full invitation link displayed by the host to join.
+
 ## Play
 
 - Select one or two players, and choose Random (default), White, or Black in one-player or LAN mode. Under Two players, Mode offers LAN (default), Same computer, or AI vs. AI.

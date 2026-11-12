@@ -1006,6 +1006,11 @@ async function poll() {
         showUnavailable('Cannot reach the chess server.');
         return;
       }
+      if (next.invite_required) {
+        invalidInvite = true;
+        showUnavailable('Invite link invalid.');
+        return;
+      }
       if (document.body.classList.contains('disconnected')) {
         clearBoardInput(); cancelSounds(); soundSnapshot = null;
         state = null; playing = false; flipped = false; focusSquare = 12;

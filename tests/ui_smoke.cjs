@@ -375,6 +375,17 @@ const moveRequests = () => requests.filter(r => r.url.startsWith('/api/move?'));
   vm.runInContext('playing=false;state=null;lanMenuOpen=false', context);
   await vm.runInContext('poll()', context);
   assert.equal(vm.runInContext('playing', context), true);
+  // A remote visitor opening the base address needs an invitation.
+  vm.runInContext('state=null;playing=false', context);
+  server = {...fresh(), invite_required:true};
+  await vm.runInContext('poll()', context);
+  assert(!elements.disconnected.hidden);
+  assert.equal(elements['disconnected-message'].textContent, 'Error: Invite link invalid.');
+  const invalidVisitorRequests = requests.length;
+  await vm.runInContext('poll()', context);
+  assert.equal(requests.length, invalidVisitorRequests);
+  vm.runInContext('invalidInvite=false', context);
+  server = {...fresh(), lan:true, waiting:false, player:false};
   // Rejected invitation links stay on the full error screen despite polling.
   for (const message of ['This invitation is invalid or already used.', 'No LAN game is waiting.', 'This game has ended.']) {
     context.window.location.pathname = '/join=wrong';
