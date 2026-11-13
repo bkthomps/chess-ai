@@ -1,8 +1,6 @@
-<div align="center">
-  <video src="demo/demo.mov" controls width="800">
-    <a href="demo/demo.mov">Watch the demo</a>
-  </video>
-</div>
+<p align="center">
+  <img src="demo/demo.gif" alt="Chess AI gameplay demo" width="800">
+</p>
 
 A dependency-free Rust chess program with a local browser interface.
 
