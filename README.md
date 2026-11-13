@@ -1,6 +1,4 @@
-<p align="center">
-  <img src="demo/gameplay.gif" alt="Chess AI gameplay demo" width="66.67%">
-</p>
+# Chess AI
 
 A dependency-free Rust chess program with a local browser interface.
 
@@ -9,6 +7,10 @@ A dependency-free Rust chess program with a local browser interface.
 - Move pieces by clicking, dragging, or using the keyboard, and queue premoves against the computer.
 - View move history, opening names, and live engine statistics, including evaluation, search depth, nodes, and cache usage. Copy games as PGN.
 - Runs on macOS, Windows, and Linux using Rust 1.70 or newer, the standard library, and bundled browser assets. No crates, frontend packages, accounts, or external services; gameplay works offline.
+
+<p align="center">
+  <img src="demo/gameplay.gif" alt="Chess AI gameplay demo" width="66.67%">
+</p>
 
 ## Run
 
