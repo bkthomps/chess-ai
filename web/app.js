@@ -611,6 +611,7 @@ function takeReadyPremove() {
 $('cancel-premove').onclick = () => { clearBoardInput(); renderBoard(); };
 function renderBoard(keepDrag = false) {
   if (!keepDrag) cancelDrag();
+  $('board').classList.toggle('finished', !!state.result);
   const focusWasBoard = $('board').contains(document.activeElement);
   if (focusWasBoard) focusSquare = Number(document.activeElement.dataset.square);
   const premoving = canPremove(), movable = canInput();

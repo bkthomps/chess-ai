@@ -107,6 +107,9 @@ legend { margin-bottom: 10px; }
 #menu-button { flex-shrink: 0; padding-top: 2px; }
 #menu-button.confirm, #menu-button.confirm:hover:not(:disabled) { background: #a33d35; color: white; padding: 8px 12px; text-decoration: none; }
 .board { display: grid; grid-template-columns: repeat(8, minmax(0, 1fr)); aspect-ratio: 1; user-select: none; -webkit-user-select: none; touch-action: none; overflow: hidden; border-radius: 3px; }
+.board.finished { filter: grayscale(1); opacity: .65; }
+.board.finished .square { cursor: default; }
+.board.finished .square:hover { box-shadow: none; }
 .square { display: grid; place-items: center; position: relative; aspect-ratio: 1; min-width: 0; padding: 0; border: 0; border-radius: 0; isolation: isolate; }
 .square.light, .square.light:hover { background: #eee9d8; }
 .square.dark, .square.dark:hover { background: #88a17d; }
