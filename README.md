@@ -1,4 +1,8 @@
-# chess-ai
+<p align="center">
+  <img src="demo/gameplay.gif" alt="Chess AI gameplay demo" width="66.67%">
+</p>
+
+# Chess AI
 
 A dependency-free Rust chess program with a local browser interface.
 
